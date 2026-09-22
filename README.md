@@ -10,7 +10,8 @@ All current copy and artwork are development placeholders. Replace them through 
 
 Prerequisites:
 
-- Bun or Node.js
+- Bun
+- Node.js
 - Nuxt
 - Modern Chromium browser
 
