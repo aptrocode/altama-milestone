@@ -58,14 +58,14 @@ export function useMilestoneAnimation(root: Ref<HTMLElement | null>): MilestoneA
         .set('.story-copy', { opacity: 0.65 })
         .to('.artwork-slot[data-active="true"] .artwork-color', {
           clipPath: 'inset(0% 0% 0% 0%)',
-          duration: 1.2,
-          ease: 'power3.inOut',
+          duration: 1.8,
+          ease: 'power2.inOut',
         })
         .to('.story-copy', {
           opacity: 1,
-          duration: 0.5,
+          duration: 0.8,
           ease: 'power2.out',
-        }, 0.5);
+        }, 0.6);
     });
   }
 
@@ -74,12 +74,12 @@ export function useMilestoneAnimation(root: Ref<HTMLElement | null>): MilestoneA
       activeTimeline
         .to('.story-copy', {
           opacity: 0.65,
-          duration: 0.2,
+          duration: 0.5,
           ease: 'power2.in',
         })
         .to('.artwork-slot[data-active="true"] .artwork-color', {
           clipPath: 'inset(100% 0% 0% 0%)',
-          duration: 0.32,
+          duration: 1.2,
           ease: 'power2.inOut',
         }, 0);
     });
