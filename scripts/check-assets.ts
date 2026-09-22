@@ -1,10 +1,12 @@
 import { readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import milestones from '../shared/milestones.json';
 
-const root = path.resolve(import.meta.dir, '..');
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(dirname, '..');
 const assetRoot = path.join(root, 'public', 'milestones');
 const errors: string[] = [];
 const warnings: string[] = [];
