@@ -37,6 +37,6 @@ This is a Nuxt 4 client-rendered kiosk for a 2304 × 1344 fullscreen LED install
 
 ## Library and change workflow
 
-Use Context7 before changing a framework/library API: resolve the library ID, then query one concept at a time. If Context7 is unavailable, use only the library's current official documentation and record this in the handoff. Follow `docs/push.md` for repository work.
+Read `package.json` to inspect the exact versions of dependencies and scripts before changing framework or library usage. Use Context7 before changing a framework/library API: resolve the library ID, then query one concept at a time. If Context7 is unavailable, use only the library's current official documentation and record this in the handoff. Follow `docs/push.md` for repository work.
 
 Run the checks in `docs/testing.md` after relevant changes. Update the matching document whenever an invariant, protocol, asset rule, dependency, or workflow changes.
