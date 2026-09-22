@@ -8,6 +8,7 @@ This is a Nuxt 4 client-rendered kiosk for a 2304 × 1344 fullscreen LED install
 - `docs/sensor.md`: WebSocket v1 contract and the Sensor Service boundary.
 - `docs/testing.md`: commands, browser checks, and acceptance criteria.
 - `docs/push.md`: required issue, branch, commit, pull request, merge, and cleanup workflow.
+- `docs/release.md`: version bump, git tag, repository metadata, and release notes style.
 - `docs/status.md`: implemented scope, dependency snapshot, and open production work.
 
 ## Source map
