@@ -1,20 +1,14 @@
 {
-  "name": "@adydetra/nuxt-starter",
-  "description": "Look at the [Nuxt 4 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.",
+  "name": "altama-interactive-milestone",
+  "type": "module",
+  "description": "Interactive three-section company milestone renderer for a 2304 x 1344 LED installation.",
   "author": "Adityawarman Dewa Putra",
   "license": "MIT",
-  "homepage": "https://github.com/adydetra/nuxt-starter#readme",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/adydetra/nuxt-starter"
-  },
-  "bugs": {
-    "url": "https://github.com/adydetra/nuxt-starter/issues"
-  },
   "keywords": [
-    "Create",
-    "Nuxt",
-    "Complete"
+    "nuxt",
+    "kiosk",
+    "interactive-installation",
+    "lidar"
   ],
   "scripts": {
     "build": "nuxt build",
@@ -23,21 +17,29 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint",
-    "lint:fix": "eslint --fix"
+    "lint:fix": "eslint --fix",
+    "typecheck": "nuxt typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "assets:check": "bun scripts/check-assets.ts",
+    "assets:fixtures": "bun scripts/generate-fixtures.ts"
   },
   "dependencies": {
+    "@pinia/nuxt": "^1.0.2",
     "@tailwindcss/vite": "^4.3.3",
+    "gsap": "^3.15.0",
     "nuxt": "^4.5.2",
+    "pinia": "^4.0.3",
     "tailwindcss": "^4.3.3",
-    "vue": "^3.5.41",
-    "vue-router": "^5.2.0"
+    "vue": "^3.5.43",
+    "vue-router": "^5.3.1"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^9.3.0",
-    "@iconify-json/line-md": "^1.2.16",
-    "@nuxt/devtools": "^3.4.1",
-    "@nuxt/icon": "^2.4.1",
-    "@nuxtjs/color-mode": "^4.0.1",
-    "eslint": "^10.8.0"
+    "@antfu/eslint-config": "^9.5.1",
+    "eslint": "^10.11.0",
+    "sharp": "^0.35.4",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.1",
+    "vue-tsc": "^3.3.11"
   }
 }

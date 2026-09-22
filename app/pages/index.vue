@@ -1,5 +1,3 @@
 <template>
-  <section>
-    <OrganismsTheExample />
-  </section>
+  <KioskStage />
 </template>

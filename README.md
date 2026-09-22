@@ -1,37 +1,47 @@
-# Nuxt Starter ⚡️
+# Altama Interactive Milestone
 
-[![Nuxt](https://img.shields.io/badge/Nuxt-002E3B?logo=nuxt&logoColor=#00DC82)](https://nuxt.com)
+Fullscreen Nuxt 4 SPA for a 2304 × 1344 interactive LED installation. The illustrated interface has three independent sections, 19 year buttons (4 / 8 / 7), sketch-to-color GSAP reveals, and a WebSocket boundary for a separate Sensor Service.
 
-This Nuxt 4 Starter is a robust foundation for web development projects. It provides a wide array of features and modules to streamline your development process. Whether you're a beginner or an experienced developer, this starter kit offers a user-friendly experience, a modular architecture, and an organized folder structure to enhance your workflow.
+All current copy and artwork are development placeholders. Replace them through `shared/milestones.json` and `public/milestones/` only after content approval.
 
-### Module Included:
+## Local development
 
-- [x] [Tailwind CSS](https://tailwindcss.com/)
-- [x] [Nuxt Color Mode](https://nuxt.com/modules/color-mode)
-- [x] [Icon](https://nuxt.com/modules/icon)
+Verified toolchain:
 
-## Get Started
-
-Clone repository
-
-```bash
-git clone https://github.com/adydetra/nuxt-starter.git
-cd nuxt-starter
-```
-
-Install depedencies
+- Bun 1.4.2
+- Node.js 24.14.1
+- Nuxt 4.5.2
+- a modern Chromium browser
 
 ```bash
-bun install
+bun install --frozen-lockfile
+bun run dev
 ```
 
----
+The initial selection is 1967 / 2007 / 2026. Click an artwork or press `1`, `2`, or `3` to reveal a section. Click any year to load its sketch. Press `R` to reset all sections; `D` toggles diagnostics in development.
 
-> [!NOTE]
-> if not using `bun` just delete `bun-lock.yaml`, and switch to another package manager like:
+## Checks
 
 ```bash
-# npm install
-# yarn install
-# pnpm install
+bun run lint
+bun run typecheck
+bun run test
+bun run assets:check
+bun run build
+bun run generate
 ```
+
+Static deployment output is written to `.output/public` and must be served over HTTP.
+
+## Documentation
+
+- [Architecture](./docs/architecture.md)
+- [Visual design and client canvas](./docs/design.md)
+- [Assets](./docs/assets.md)
+- [Sensor Service](./docs/sensor.md)
+- [Testing](./docs/testing.md)
+- [Issue and pull-request workflow](./docs/push.md)
+- [Current status](./docs/status.md)
+- [Agent entry point](./AGENTS.md)
+
+The application follows Nuxt 4's standard `app/`, `public/`, `shared/`, and `test/` structure. Contributors should start with the relevant document above instead of duplicating rules in source comments.

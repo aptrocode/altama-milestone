@@ -1,0 +1,61 @@
+import { describe, expect, it } from 'vitest';
+import { parseSensorMessage } from '../app/utils/sensor-message';
+
+function message(overrides: Record<string, unknown> = {}) {
+  return JSON.stringify({
+    version: 1,
+    sessionId: 'service-boot-1',
+    seq: 1,
+    layoutVersion: 'layout-v3',
+    type: 'touchStart',
+    section: 'center',
+    target: 'artwork',
+    pointerId: 'lidar-02',
+    x: 1120,
+    y: 650,
+    ...overrides,
+  });
+}
+
+describe('parseSensorMessage', () => {
+  it('accepts a valid artwork touch', () => {
+    const result = parseSensorMessage(message());
+
+    expect(result.ok).toBe(true);
+    if (result.ok)
+      expect(result.message.type).toBe('touchStart');
+  });
+
+  it('rejects malformed JSON and unsupported versions', () => {
+    expect(parseSensorMessage('{').ok).toBe(false);
+    expect(parseSensorMessage(message({ version: 2 })).ok).toBe(false);
+  });
+
+  it('rejects coordinates outside the logical canvas', () => {
+    const result = parseSensorMessage(message({ x: 9999 }));
+
+    expect(result).toEqual({ ok: false, error: 'coordinates are outside the logical canvas' });
+  });
+
+  it('rejects a milestone assigned to another section', () => {
+    const result = parseSensorMessage(message({
+      type: 'selectMilestone',
+      milestoneId: 'left-1967',
+    }));
+
+    expect(result).toEqual({ ok: false, error: 'milestone does not belong to section' });
+  });
+
+  it('accepts status messages without interaction fields', () => {
+    const result = parseSensorMessage(message({
+      type: 'status',
+      sensorReady: true,
+      calibrated: false,
+      detail: 'warming up',
+    }));
+
+    expect(result.ok).toBe(true);
+    if (result.ok && result.message.type === 'status')
+      expect(result.message.calibrated).toBe(false);
+  });
+});

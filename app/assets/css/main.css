@@ -1,3 +1,45 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
+@theme {
+  --font-sans: "Arial", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+  font-family: var(--font-sans);
+  background: #fff;
+  color: #123477;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+html, body, #__nuxt { width: 100%; height: 100%; margin: 0; overflow: clip; overscroll-behavior: none; }
+body { user-select: none; -webkit-font-smoothing: antialiased; touch-action: none; }
+button { font-family: inherit; }
+img { max-width: none; -webkit-user-drag: none; }
+
+[data-section="left"] {
+  --accent: #f49908;
+  --accent-dark: #e68100;
+  --accent-light: #ffc627;
+  --tint: #ffebc4;
+  --line: #f2c079;
+  --wash: #fffbef;
+}
+[data-section="center"] {
+  --accent: #008feb;
+  --accent-dark: #0057cb;
+  --accent-light: #27d2ff;
+  --tint: #c2eefe;
+  --line: #90dcef;
+  --wash: #eefbff;
+}
+[data-section="right"] {
+  --accent: #f12b37;
+  --accent-dark: #e21524;
+  --accent-light: #ff7980;
+  --tint: #ffdadb;
+  --line: #ffbaba;
+  --wash: #fff7f5;
+}

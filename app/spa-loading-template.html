@@ -1,0 +1,10 @@
+<div class="installation-loader" role="status" aria-label="Menyiapkan perjalanan Altama">
+  <span></span>
+</div>
+<style>
+  html, body { margin: 0; background: #fff; }
+  .installation-loader { position: fixed; inset: 0; display: grid; place-items: center; background: #fff; }
+  .installation-loader span { width: 40px; height: 40px; border: 3px solid #d8f3ff; border-top-color: #008feb; border-right-color: #f49908; border-bottom-color: #f12b37; border-radius: 50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .installation-loader span { animation: none; } }
+</style>

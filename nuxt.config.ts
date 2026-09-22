@@ -1,26 +1,31 @@
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineNuxtConfig({
+  ssr: false,
+
   app: {
     head: {
       charset: 'utf-8',
-      viewport: 'width=device-width, initial-scale=1',
+      viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
       htmlAttrs: {
-        lang: 'en',
+        lang: 'id',
       },
+      link: [
+        { rel: 'icon', href: '/favicon.ico', sizes: 'any' },
+      ],
+      title: 'Altama Interactive Milestone',
     },
   },
-  modules: [
-    '@nuxt/icon',
-    '@nuxtjs/color-mode',
-  ],
+  modules: ['@pinia/nuxt'],
 
-  colorMode: {
-    classSuffix: '',
-    preference: 'dark',
+  css: ['~/assets/css/main.css'],
+
+  runtimeConfig: {
+    public: {
+      sensorEnabled: false,
+      sensorWsUrl: '',
+    },
   },
-
-  css: ['./app/assets/css/main.css'],
 
   vite: {
     plugins: [
@@ -29,7 +34,7 @@ export default defineNuxtConfig({
   },
 
   devtools: {
-    enabled: true,
+    enabled: false,
   },
 
   compatibilityDate: '2025-07-15',
