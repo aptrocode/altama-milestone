@@ -43,9 +43,26 @@ function buttonStyle(id: string) {
 .milestone-timeline { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 .timeline-track { position: absolute; left: 9%; top: 68.7%; width: 88%; height: 5.9%; border: 0.1cqw solid var(--accent); border-radius: 100px; background: var(--wash); box-shadow: inset 0 0 0 0.22cqw white; }
 .timeline-year { position: absolute; pointer-events: auto; padding: 0.38vh 0.25cqw; border: 0; background: none; color: var(--accent-dark); font-weight: 800; font-size: 1.03cqw; cursor: pointer; }
-.timeline-year span { display: flex; align-items: center; justify-content: center; height: 100%; border-radius: 100px; transition: background 180ms, color 180ms, box-shadow 180ms; }
+.timeline-year span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  border-radius: 100px;
+  transition: background 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              color 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform, background, color, box-shadow;
+}
 .timeline-year:hover span { background: var(--tint); }
-.timeline-year.is-current span { color: white; background: linear-gradient(var(--accent-light), var(--accent)); box-shadow: inset 0 2px 1px #ffffff95, 0 0.22vh 0.12vh var(--line); font-size: 1.16cqw; }
+.timeline-year.is-current span {
+  color: white;
+  background: linear-gradient(var(--accent-light), var(--accent));
+  box-shadow: inset 0 2px 1px #ffffff95, 0 0.22vh 0.12vh var(--line);
+  font-size: 1.16cqw;
+  transform: scale(1.05);
+}
 .timeline-year.is-pending span { outline: 2px dashed var(--accent); outline-offset: -2px; }
 .timeline-year:focus-visible { outline: 2px solid var(--accent-dark); border-radius: 100px; outline-offset: 1px; }
 </style>

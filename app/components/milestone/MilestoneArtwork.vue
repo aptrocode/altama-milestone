@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Milestone } from '~/types/milestone';
-import { nextTick, ref } from 'vue';
+import { nextTick, onUnmounted, ref } from 'vue';
 
 const props = defineProps<{
   milestone: Milestone;
@@ -15,6 +15,7 @@ const frame = ref<HTMLElement | null>(null);
 const slots = ref<[Milestone | null, Milestone | null]>([props.milestone, null]);
 const activeIndex = ref<0 | 1>(0);
 let stagedIndex: 0 | 1 | null = null;
+let cleanupTimer: ReturnType<typeof setTimeout> | null = null;
 
 function nextFrame(): Promise<void> {
   return new Promise(resolve => requestAnimationFrame(() => resolve()));
@@ -43,14 +44,33 @@ async function commit() {
   if (stagedIndex === null)
     throw new Error('No staged artwork to commit');
 
+  if (cleanupTimer) {
+    clearTimeout(cleanupTimer);
+    cleanupTimer = null;
+  }
+
   const previousIndex = activeIndex.value;
-  activeIndex.value = stagedIndex;
+  const nextIndex = stagedIndex;
   stagedIndex = null;
+  activeIndex.value = nextIndex;
+
   await nextTick();
   await nextFrame();
   await nextFrame();
-  slots.value[previousIndex] = null;
+
+  // Retain previous slot throughout the slow, smooth crossfade transition
+  cleanupTimer = setTimeout(() => {
+    if (activeIndex.value === nextIndex) {
+      slots.value[previousIndex] = null;
+    }
+    cleanupTimer = null;
+  }, 1900);
 }
+
+onUnmounted(() => {
+  if (cleanupTimer)
+    clearTimeout(cleanupTimer);
+});
 
 defineExpose({ stage, commit });
 </script>
@@ -72,7 +92,6 @@ defineExpose({ stage, commit });
       :data-active="index === activeIndex"
       :data-artwork-id="slot?.id"
       :data-slot="index"
-      :style="{ opacity: index === activeIndex ? 1 : 0, zIndex: index === activeIndex ? 2 : 1 }"
     >
       <template v-if="slot">
         <img class="artwork-sketch" :src="slot.artwork.sketch" :width="slot.artwork.width" :height="slot.artwork.height" alt="" draggable="false">
@@ -86,7 +105,28 @@ defineExpose({ stage, commit });
 <style scoped>
 .artwork-frame { position: relative; display: block; height: 100%; width: 100%; padding: 0; border: 0; background: transparent; cursor: pointer; }
 .artwork-frame:focus-visible { outline: 2px dashed var(--accent); outline-offset: -6px; }
-.artwork-slot { position: absolute; inset: 0; mask-image: linear-gradient(to bottom, #000 83%, transparent 100%); }
+.artwork-slot {
+  position: absolute;
+  inset: 0;
+  mask-image: linear-gradient(to bottom, #000 83%, transparent 100%);
+  opacity: 0;
+  transform: scale(0.975);
+  transition: opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1), transform 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+  pointer-events: none;
+}
+.artwork-slot[data-active="true"] {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 2;
+  pointer-events: auto;
+}
+.artwork-slot:not([data-active="true"]) {
+  z-index: 1;
+  opacity: 0;
+  transform: scale(1.025);
+  pointer-events: none;
+}
 .artwork-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
 .artwork-sketch { filter: grayscale(1); opacity: 0.8; }
 .artwork-color { clip-path: inset(100% 0 0 0); will-change: clip-path; }

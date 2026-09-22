@@ -21,9 +21,13 @@ defineProps<{ milestone: Milestone }>();
       </p>
     </div>
     <div class="story-copy">
-      <p v-for="(paragraph, index) in milestone.description.split('\n\n')" :key="index">
-        {{ paragraph }}
-      </p>
+      <Transition name="story-morph" mode="out-in">
+        <div :key="milestone.id" class="story-body">
+          <p v-for="(paragraph, index) in milestone.description.split('\n\n')" :key="index">
+            {{ paragraph }}
+          </p>
+        </div>
+      </Transition>
     </div>
     <span class="story-spark spark-one" aria-hidden="true">✧</span>
     <span class="story-spark spark-two" aria-hidden="true">✧</span>
@@ -43,6 +47,24 @@ h2 { margin: 0; white-space: pre-line; color: var(--accent-dark); font-size: 1.4
 .story-badge svg { width: 67%; height: 74%; transform: rotate(8deg); }
 .story-copy { position: relative; padding: 0.8vh 8% 0 10%; font-size: 1cqw; font-weight: 400; line-height: 1.22; }
 .story-copy p { margin: 0 0 0.75vh; }
+.story-body { will-change: opacity, transform, filter; }
+.story-morph-enter-active,
+.story-morph-leave-active {
+  transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 1.2s ease;
+  will-change: opacity, transform, filter;
+}
+.story-morph-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+  filter: blur(3px);
+}
+.story-morph-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+  filter: blur(3px);
+}
 .story-spark { position: absolute; font-size: 2cqw; font-weight: 800; color: var(--accent); }
 .spark-one { top: 48%; left: -4%; }
 .spark-two { right: -2%; bottom: 18%; }

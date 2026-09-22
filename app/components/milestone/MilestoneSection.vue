@@ -71,7 +71,9 @@ defineExpose({ reveal, selectMilestone, reset });
     <div class="milestone-year" aria-live="polite">
       <div class="year-number">
         <span class="year-rays" aria-hidden="true">≋</span>
-        <strong>{{ current.year }}</strong>
+        <Transition name="year-morph" mode="out-in">
+          <strong :key="current.id">{{ current.year }}</strong>
+        </Transition>
         <span class="year-rays" aria-hidden="true">≋</span>
       </div>
       <p>{{ presentation.caption }}</p>
@@ -99,6 +101,23 @@ defineExpose({ reveal, selectMilestone, reset });
 .year-number strong { display: block; color: var(--accent); font-size: 4.5cqw; font-weight: 950; font-style: italic; line-height: 1; letter-spacing: -0.045em; -webkit-text-stroke: 0.06cqw var(--accent-dark); text-shadow: 0 0.26vh 0 var(--accent-dark), 0.08cqw -0.1vh white; }
 .year-rays { color: var(--accent); font-size: 2.3cqw; transform: rotate(-90deg); font-weight: 900; }
 .year-rays:last-child { transform: rotate(90deg); }
+.year-morph-enter-active,
+.year-morph-leave-active {
+  transition: opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 1.4s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 1.4s ease;
+  will-change: opacity, transform, filter;
+}
+.year-morph-enter-from {
+  opacity: 0;
+  transform: translateY(18px) scale(0.92);
+  filter: blur(5px);
+}
+.year-morph-leave-to {
+  opacity: 0;
+  transform: translateY(-18px) scale(1.08);
+  filter: blur(5px);
+}
 .milestone-year p { margin: 0.2vh 0 0; font-size: 1.02cqw; font-weight: 850; text-transform: uppercase; line-height: 1.15; }
 .asset-error { position: absolute; top: 66%; width: 100%; color: #c3222b; text-align: center; font-size: 0.6cqw; }
 </style>
