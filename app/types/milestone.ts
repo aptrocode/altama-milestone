@@ -1,6 +1,8 @@
 export const SECTION_IDS = ['left', 'center', 'right'] as const;
+export const LOCALES = ['id', 'en', 'zh-Hans'] as const;
 
 export type SectionId = typeof SECTION_IDS[number];
+export type Locale = typeof LOCALES[number];
 export type MilestonePhase = 'IDLE' | 'REVEALING' | 'ACTIVE' | 'HIDING';
 export type AssetStatus = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -23,6 +25,7 @@ export interface Milestone {
 }
 
 export interface SectionState {
+  locale: Locale;
   phase: MilestonePhase;
   currentId: string;
   pendingId: string | null;
@@ -46,10 +49,15 @@ export interface TimelineHitbox extends Rect {
   milestoneId: string;
 }
 
+export interface LanguageHitbox extends Rect {
+  locale: Locale;
+}
+
 export interface SectionLayout {
   section: Rect;
   artwork: Rect;
   timeline: TimelineHitbox[];
+  languages: LanguageHitbox[];
 }
 
 export interface InstallationLayout {

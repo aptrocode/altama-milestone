@@ -1,18 +1,19 @@
 # Project status
 
-Updated 22 September 2026.
+Updated 24 September 2026.
 
 ## Implemented
 
 - Fullscreen Nuxt 4 SPA for the official 2304 × 1344 LED canvas.
 - Reference-inspired white illustrated interface with orange, blue, and red sections.
 - 19 selectable years: LEFT 4, CENTER 8, RIGHT 7; initial years 1967, 2007, and 2026.
+- Independent per-section Indonesian, English, and Simplified Chinese flag controls, with Indonesian as the fresh-load default and no added dependency.
 - Real text and buttons, three illustrated scenes, icon badges, values, and decorative scenery.
 - Independent sketch-to-color GSAP interaction and retained two-slot image staging.
 - Latest-request-wins state coordination and bounded decoded-image cache.
 - Pinia snapshots, click/keyboard simulator, hidden development diagnostics, and themed error/loading pages.
 - WebSocket v1 parser/client with session, sequence, layout-version, heartbeat, stale timeout, and reconnect handling.
-- Shared layout-v3 geometry drives artwork and timeline DOM positions.
+- Shared layout-v4 geometry drives artwork, timeline, and language-control positions.
 - Asset validator, fixture generator, behavior tests, and static output.
 
 All 19 catalog entries remain marked `placeholder`. The three opening stories follow the reference image but still require client approval. Other stories are explicitly provisional, and each section currently reuses one generated illustration. This is a functional visual implementation, not approved historical content.
@@ -33,11 +34,11 @@ Context7 is now available and was used for the Nuxt 4 component and Vue style AP
 
 ## Open production work
 
-- Approve history, figures, brand spelling, duplicate-year labels, and year-specific artwork with the client.
+- Approve history, figures, brand spelling, English/Chinese translations, duplicate-year labels, and year-specific artwork with the client.
 - Replace all placeholder content and preview sketch/color pairs.
 - Test output offline and run a long-duration memory/performance soak.
 - Decide kiosk browser launch, startup supervision, endpoint override, release, and rollback procedures.
-- Deploy matching layout-v3 geometry to Sensor Service and recalibrate timeline targets.
+- Deploy matching layout-v4 geometry to Sensor Service and recalibrate timeline and language targets.
 - Test Hokuyo placement, occlusion, release timing, and multi-user coverage.
 - Choose the Sensor Service language/SDK after the hardware spike.
 - Profile the final PC, GPU, LED processor, browser, and display refresh rate.
@@ -54,3 +55,10 @@ The actual LED wall and sensor hardware have not been validated by browser check
 - The production console was clean during the milestone interaction checks.
 
 The Nuxt preview query returned no Context7 matches. Preview tooling was checked with the installed Nuxt CLI help and the [official Vite CLI documentation](https://github.com/vitejs/vite/blob/main/docs/guide/cli.md) through Context7. The generated output was tested with the existing Vite preview server; no package was added. A transient Nitro development-worker failure after a loading-template reload was avoided for verification by using the generated output.
+
+## Language validation on 24 September
+
+- Lint, typecheck, 18 tests, asset validation, production build, and static generation passed. Nuxt/Nitro emitted upstream dependency warnings, with no application build error.
+- Browser checks at the exact 2304 × 1344 CSS viewport and 1600 × 900 preview found no page scrolling or clipped stories in the three languages. The nine flag bounds matched layout-v4 at the official size.
+- In the generated production output, LEFT switched to Chinese while RIGHT switched to English and CENTER stayed Indonesian. The production console had no errors. Year changes preserved a section's language; reload restored all three defaults. Custom 404 recovery worked.
+- Physical LED readability, Chinese font availability on the event PC, translation approval, and Sensor Service layout-v4 calibration remain open.

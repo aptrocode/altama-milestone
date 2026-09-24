@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { AssetCache } from '~/composables/useAssetCache';
 import type { MilestoneArtworkHandle } from '~/types/components';
-import type { SectionId } from '~/types/milestone';
+import type { Locale, SectionId } from '~/types/milestone';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useMilestoneAnimation } from '~/composables/useMilestoneAnimation';
 import { useMilestoneMachine } from '~/composables/useMilestoneMachine';
 import { installationLayout } from '~/data/installation-layout';
+import { getSectionCopy } from '~/data/localization';
 import { getAdjacentMilestone, getMilestoneForSection, initialMilestoneId, milestonesBySection } from '~/data/milestones';
-import { sectionPresentation } from '~/data/sections';
 import { useMilestoneStore } from '~/stores/milestone';
 import { layoutStyle } from '~/utils/layout-style';
 
@@ -22,7 +22,7 @@ const store = useMilestoneStore();
 const state = computed(() => store.sections[props.section]);
 const current = computed(() => getMilestoneForSection(props.section, state.value.currentId)!);
 const animation = useMilestoneAnimation(root);
-const presentation = computed(() => sectionPresentation[props.section]);
+const presentation = computed(() => getSectionCopy(props.section, state.value.locale));
 const layout = computed(() => installationLayout.sections[props.section]);
 
 const machine = useMilestoneMachine({
@@ -48,6 +48,10 @@ function selectMilestone(id: string) {
   machine.selectMilestone(id);
 }
 
+function setLocale(locale: Locale) {
+  store.setLocale(props.section, locale);
+}
+
 function reset() {
   machine.reset();
 }
@@ -57,15 +61,15 @@ onMounted(async () => {
 });
 onUnmounted(() => machine.dispose());
 
-defineExpose({ reveal, selectMilestone, reset });
+defineExpose({ reveal, selectMilestone, setLocale, reset });
 </script>
 
 <template>
-  <section ref="root" class="milestone-section" :data-section="section" :data-phase="state.phase">
-    <MilestoneInfo :milestone="current" />
+  <section ref="root" class="milestone-section" :data-section="section" :data-phase="state.phase" :lang="state.locale">
+    <MilestoneInfo :milestone="current" :locale="state.locale" />
 
     <div class="scene-area" :style="layoutStyle(layout.artwork, layout.section)">
-      <MilestoneArtwork ref="artwork" :milestone="current" :ready="state.assetStatus === 'ready'" @activate="reveal" />
+      <MilestoneArtwork ref="artwork" :milestone="current" :locale="state.locale" :ready="state.assetStatus === 'ready'" @activate="reveal" />
     </div>
 
     <div class="milestone-year" aria-live="polite">
@@ -84,9 +88,11 @@ defineExpose({ reveal, selectMilestone, reset });
       :milestones="milestonesBySection[section]"
       :current-id="state.currentId"
       :pending-id="state.pendingId"
+      :locale="state.locale"
       @select="selectMilestone"
     />
-    <MilestoneValues :section="section" />
+    <MilestoneLanguageSwitcher :section="section" :locale="state.locale" @select="setLocale" />
+    <MilestoneValues :section="section" :locale="state.locale" />
     <p v-if="state.error" class="asset-error" role="status">
       {{ state.error }}
     </p>

@@ -1,5 +1,5 @@
 {
-  "layoutVersion": "layout-v3",
+  "layoutVersion": "layout-v4",
   "canvas": {
     "width": 2304,
     "height": 1344
@@ -47,6 +47,11 @@
           "width": 168.96,
           "height": 79.29599999999999
         }
+      ],
+      "languages": [
+        { "locale": "id", "x": 254, "y": 1018.08, "width": 76, "height": 75.264 },
+        { "locale": "en", "x": 346, "y": 1018.08, "width": 76, "height": 75.264 },
+        { "locale": "zh-Hans", "x": 438, "y": 1018.08, "width": 76, "height": 75.264 }
       ]
     },
     "center": {
@@ -119,6 +124,11 @@
           "width": 84.48,
           "height": 79.29599999999999
         }
+      ],
+      "languages": [
+        { "locale": "id", "x": 1022, "y": 1018.08, "width": 76, "height": 75.264 },
+        { "locale": "en", "x": 1114, "y": 1018.08, "width": 76, "height": 75.264 },
+        { "locale": "zh-Hans", "x": 1206, "y": 1018.08, "width": 76, "height": 75.264 }
       ]
     },
     "right": {
@@ -184,6 +194,11 @@
           "width": 96.54857142857144,
           "height": 79.29599999999999
         }
+      ],
+      "languages": [
+        { "locale": "id", "x": 1790, "y": 1018.08, "width": 76, "height": 75.264 },
+        { "locale": "en", "x": 1882, "y": 1018.08, "width": 76, "height": 75.264 },
+        { "locale": "zh-Hans", "x": 1974, "y": 1018.08, "width": 76, "height": 75.264 }
       ]
     }
   }

@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import type { Milestone } from '~/types/milestone';
+import type { Locale, Milestone } from '~/types/milestone';
 import { nextTick, onUnmounted, ref } from 'vue';
+import { getMilestoneCopy, interfaceCopy } from '~/data/localization';
 
 const props = defineProps<{
   milestone: Milestone;
+  locale: Locale;
   ready: boolean;
 }>();
 
@@ -81,7 +83,7 @@ defineExpose({ stage, commit });
     type="button"
     class="artwork-frame"
     :disabled="!ready"
-    :aria-label="`Warnai ilustrasi ${milestone.year} — ${milestone.title}`"
+    :aria-label="`${interfaceCopy[locale].reveal} ${milestone.year} — ${getMilestoneCopy(milestone, locale).title}`"
     @click="emit('activate')"
   >
     <span
@@ -98,7 +100,7 @@ defineExpose({ stage, commit });
         <img class="artwork-color" :src="slot.artwork.color" :width="slot.artwork.width" :height="slot.artwork.height" alt="" draggable="false">
       </template>
     </span>
-    <span v-if="!ready" class="artwork-loading">Menyiapkan cerita…</span>
+    <span v-if="!ready" class="artwork-loading">{{ interfaceCopy[locale].loading }}</span>
   </button>
 </template>
 

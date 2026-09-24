@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import type { Milestone } from '~/types/milestone';
-import { sectionPresentation } from '~/data/sections';
+import type { Locale, Milestone } from '~/types/milestone';
+import { computed } from 'vue';
+import { getMilestoneCopy, getSectionCopy } from '~/data/localization';
 
-defineProps<{ milestone: Milestone }>();
+const props = defineProps<{ milestone: Milestone; locale: Locale }>();
+const sectionCopy = computed(() => getSectionCopy(props.milestone.section, props.locale));
+const story = computed(() => getMilestoneCopy(props.milestone, props.locale));
 </script>
 
 <template>
@@ -13,17 +16,17 @@ defineProps<{ milestone: Milestone }>();
     </svg>
     <div class="story-heading">
       <span class="story-badge">
-        <MilestoneIcon :name="sectionPresentation[milestone.section].icon" />
+        <MilestoneIcon :name="sectionCopy.icon" />
       </span>
-      <h2>{{ sectionPresentation[milestone.section].title }}</h2>
+      <h2>{{ sectionCopy.title }}</h2>
       <p class="story-subtitle">
-        {{ sectionPresentation[milestone.section].subtitle }}
+        {{ sectionCopy.subtitle }}
       </p>
     </div>
     <div class="story-copy">
       <Transition name="story-morph" mode="out-in">
         <div :key="milestone.id" class="story-body">
-          <p v-for="(paragraph, index) in milestone.description.split('\n\n')" :key="index">
+          <p v-for="(paragraph, index) in story.description.split('\n\n')" :key="index">
             {{ paragraph }}
           </p>
         </div>

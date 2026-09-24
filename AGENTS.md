@@ -4,6 +4,7 @@ This is a Nuxt 4 client-rendered kiosk for a 2304 × 1344 fullscreen LED install
 
 - `docs/architecture.md`: boundaries, state flow, directory ownership, and invariants.
 - `docs/design.md`: client canvas, reference composition, year controls, and illustration provenance.
+- `docs/language.md`: per-section languages, translation ownership, flag controls, and approval rules.
 - `docs/assets.md`: artwork names, dimensions, validation, and contributor rules.
 - `docs/sensor.md`: WebSocket v1 contract and the Sensor Service boundary.
 - `docs/testing.md`: commands, browser checks, and acceptance criteria.
@@ -26,6 +27,7 @@ This is a Nuxt 4 client-rendered kiosk for a 2304 × 1344 fullscreen LED install
 ## Non-negotiable rules
 
 - LEFT, CENTER, and RIGHT animate and fail independently.
+- LEFT, CENTER, and RIGHT choose language independently; Indonesian is the fresh-load default.
 - The newest milestone selection replaces the previous pending selection.
 - Keep the current artwork visible until the replacement pair is decoded and staged.
 - Keep DOM nodes, Images, WebSockets, timers, Promises, and GSAP instances out of Pinia.
