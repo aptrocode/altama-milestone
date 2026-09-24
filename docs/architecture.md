@@ -16,12 +16,13 @@ Input follows one path:
 click / keyboard / sensor message
   -> KioskStage
   -> MilestoneSection public API
-  -> useMilestoneMachine
-  -> cache + renderer
-  -> Pinia serializable snapshot
+  -> useMilestoneMachine for artwork/year input, or Pinia setLocale for language input
+  -> Pinia serializable snapshot and section rendering
 ```
 
 The machine exposes `reveal`, `selectMilestone`, `reset`, and `dispose`. It keeps request and lifecycle counters outside Pinia. When selections arrive rapidly, only the latest target can commit. An obsolete decode may finish and remain cached, but it cannot replace the current UI.
+
+Language changes use the section's public `setLocale` method and a plain Pinia field. They do not restart the machine or change the selected artwork. See [language](./language.md) for copy ownership and fallback rules.
 
 ## Rendering rules
 
@@ -32,7 +33,7 @@ The machine exposes `reveal`, `selectMilestone`, `reset`, and `dispose`. It keep
 - Sketch and color are retained as aligned image layers. The color layer is revealed with GSAP and `clip-path`.
 - Initial years are 1967 / 2007 / 2026. Each section starts in IDLE, and story text remains readable before and after reveal.
 - A replacement pair is decoded in the inactive DOM slot before commit, preventing a blank frame.
-- Artwork and timeline positions come directly from `shared/installation-layout.json` through `layoutStyle`; update the layout version whenever sensor target geometry changes.
+- Artwork, timeline, and flag positions come directly from `shared/installation-layout.json` through `layoutStyle`; update the layout version whenever sensor target geometry changes.
 - Artwork creates a local stacking context; image-slot z-index values must not cover the large year or controls.
 
 ## Ownership

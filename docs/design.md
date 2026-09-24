@@ -10,7 +10,7 @@ The supplied reference is 1600 × 900 (16:9). Preserve its composition, colors, 
 
 - White background with illustrated clouds, foliage, hills, and a quiet footer.
 - Three orange, blue, and red sections with organic speech bubbles and circular icon badges.
-- Each section contains story copy, an illustration, a large year, a timeline capsule, and three values.
+- Each section contains story copy, an illustration, a large year, a timeline capsule, three flag-only language buttons, and three values.
 - Text, icons, year labels, and controls are real Vue/HTML/SVG elements. Do not bake them into the illustrations.
 - Keep scenery behind text and controls. The artwork owns a stacking context so its retained image slots cannot cover the large year.
 - Color reveals start on interaction. Initial and newly selected milestones show a grayscale preview; the story remains readable in both states.
@@ -24,18 +24,20 @@ The supplied reference is 1600 × 900 (16:9). Preserve its composition, colors, 
 
 There are 19 buttons. The two 2013 entries have distinct IDs and accessible names.
 
+Each section also has three independent flag controls immediately below its timeline: Indonesia, English, and Simplified Chinese. The controls have no visible text, but expose spoken names, a selected ring, and a keyboard focus indicator. Switching a language changes only its section; see [language](./language.md).
+
 ## Layout ownership
 
 - `app/data/sections.ts`: section headings, captions, values, colors' semantic grouping, and initial IDs.
 - `shared/milestones.json`: milestone years and story content.
-- `shared/installation-layout.json`: logical canvas, artwork rectangles, and every timeline button rectangle.
+- `shared/installation-layout.json`: logical canvas, artwork rectangles, and every timeline and language button rectangle.
 - `app/utils/layout-style.ts`: maps logical rectangles into section-relative CSS percentages.
 - `MilestoneInfo.vue`, `MilestoneValues.vue`, and `KioskScenery.vue`: visual composition.
 - `MilestoneSection.vue`: year layer and interaction orchestration.
 
-At the official size, artwork starts at y = 497.28 and timeline buttons at y = 923.328. The smallest timeline targets are approximately 84.48 × 79.296 px. Sensor Service must use layout-v3 and the same shared geometry; do not maintain separate guessed hitboxes.
+At the official size, artwork starts at y = 497.28, timeline buttons at y = 923.328, and language buttons at y = 1018.08. The smallest timeline targets are approximately 84.48 × 79.296 px; each language target is 76 × 75.264 px. Sensor Service must use layout-v4 and the same shared geometry; do not maintain separate guessed hitboxes.
 
-Type scales with stage width, vertical spacing with viewport height. After editing copy, check the longest story and all heading lines at 2304 × 1344. Preserve comfortable space between text, bubble outline, artwork, timeline, and footer.
+Type scales with stage width, vertical spacing with viewport height. After editing copy, check the longest story and all heading lines in all three languages at 2304 × 1344. Preserve comfortable space between text, bubble outline, artwork, timeline, flags, values, and footer.
 
 ## Illustration provenance
 

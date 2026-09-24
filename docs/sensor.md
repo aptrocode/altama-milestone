@@ -20,14 +20,14 @@ Every message includes:
   "version": 1,
   "sessionId": "service-boot-id",
   "seq": 42,
-  "layoutVersion": "layout-v3",
+  "layoutVersion": "layout-v4",
   "type": "touchStart"
 }
 ```
 
 - `sessionId` changes whenever the service starts a new session.
 - `seq` increases for every message in one session.
-- `layoutVersion` must equal `shared/installation-layout.json`. The current layout-v3 has 19 timeline targets (4 / 8 / 7); update the Sensor Service geometry and calibration together with the renderer.
+- `layoutVersion` must equal `shared/installation-layout.json`. The current layout-v4 has 19 timeline targets (4 / 8 / 7) and 9 language targets (3 per section); update the Sensor Service geometry and calibration together with the renderer.
 - Unknown, duplicate, out-of-order, oversized, stale-session, and invalid messages are ignored safely.
 
 ### Handshake and status
@@ -41,7 +41,7 @@ Every message includes:
   "version": 1,
   "sessionId": "service-boot-id",
   "seq": 43,
-  "layoutVersion": "layout-v3",
+  "layoutVersion": "layout-v4",
   "type": "touchStart",
   "section": "center",
   "target": "artwork",
@@ -60,7 +60,7 @@ Every message includes:
   "version": 1,
   "sessionId": "service-boot-id",
   "seq": 44,
-  "layoutVersion": "layout-v3",
+  "layoutVersion": "layout-v4",
   "type": "selectMilestone",
   "section": "center",
   "pointerId": "lidar-02",
@@ -72,9 +72,28 @@ Every message includes:
 
 The milestone must exist in the named section. The renderer applies its normal latest-request-wins rule.
 
+### Section language selection
+
+```json
+{
+  "version": 1,
+  "sessionId": "service-boot-id",
+  "seq": 45,
+  "layoutVersion": "layout-v4",
+  "type": "selectLanguage",
+  "section": "center",
+  "pointerId": "lidar-02",
+  "locale": "zh-Hans",
+  "x": 1152,
+  "y": 1050
+}
+```
+
+`locale` must be exactly `id`, `en`, or `zh-Hans`. Coordinates use the same logical canvas. Sensor Service owns hit detection against `sections[section].languages` and sends one selection per deliberate contact; the renderer checks the locale, canvas bounds, and envelope, then updates only that section. Language selection never changes its milestone or reveal phase. The message is a backwards-compatible protocol-v1 type, but the geometry change requires layout-v4 on both sides. Deploy the matching Sensor Service geometry before enabling the sensor connection; a layout mismatch is rejected.
+
 ### Contact end
 
-`touchEnd` includes `section` and `pointerId`. It releases service contact state but does not hide the active milestone. Lost tracking must eventually emit or infer a release in the service.
+`touchEnd` includes `section` and `pointerId`. It releases service contact state but does not hide the active milestone or reset its language. Lost tracking must eventually emit or infer a release in the service.
 
 ## Connection behavior
 

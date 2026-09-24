@@ -31,6 +31,8 @@ function handleSensorMessage(message: SensorMessage) {
     void sectionHandle(message.section)?.reveal();
   else if (message.type === 'selectMilestone')
     sectionHandle(message.section)?.selectMilestone(message.milestoneId);
+  else if (message.type === 'selectLanguage')
+    sectionHandle(message.section)?.setLocale(message.locale);
 }
 
 const sensorSocket = useSensorSocket({

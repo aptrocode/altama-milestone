@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import type { Milestone, SectionId } from '~/types/milestone';
+import type { Locale, Milestone, SectionId } from '~/types/milestone';
 import { installationLayout } from '~/data/installation-layout';
+import { getMilestoneCopy, interfaceCopy } from '~/data/localization';
 import { layoutStyle } from '~/utils/layout-style';
 
 const props = defineProps<{
   section: SectionId;
+  locale: Locale;
   milestones: readonly Milestone[];
   currentId: string;
   pendingId: string | null;
@@ -19,7 +21,7 @@ function buttonStyle(id: string) {
 </script>
 
 <template>
-  <nav class="milestone-timeline" :aria-label="`Pilihan tahun ${section}`">
+  <nav class="milestone-timeline" :aria-label="interfaceCopy[locale].timeline">
     <div class="timeline-track" aria-hidden="true" />
     <button
       v-for="item in milestones"
@@ -28,8 +30,8 @@ function buttonStyle(id: string) {
       class="timeline-year"
       :class="{ 'is-current': item.id === currentId, 'is-pending': item.id === pendingId }"
       :style="buttonStyle(item.id)"
-      :title="item.title"
-      :aria-label="`${item.year} — ${item.title}`"
+      :title="getMilestoneCopy(item, locale).title"
+      :aria-label="`${item.year} — ${getMilestoneCopy(item, locale).title}`"
       :aria-current="item.id === currentId ? 'true' : undefined"
       :aria-busy="item.id === pendingId"
       @click="emit('select', item.id)"

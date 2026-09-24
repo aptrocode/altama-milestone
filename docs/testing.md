@@ -20,13 +20,14 @@ Run `bun run generate` after configuration, routing, asset, or deployment change
 2. Confirm the stage fills both dimensions without scrolling, an outer container, maximum width, or letterboxing.
 3. On a fresh load, verify 1967 / 2007 / 2026 are selected and every section starts in IDLE with its sketch ready.
 4. Reveal LEFT, CENTER, and RIGHT with click or keys 1, 2, and 3. Check that the colored composition follows the reference.
-5. Confirm every heading, story, large year, caption, value, and footer stays readable. Check stacking at the illustration/year boundary.
+5. Confirm every heading, story, large year, caption, value, and footer stays readable in Indonesian, English, and Simplified Chinese. Check stacking at the illustration/year boundary.
 6. Verify 4 / 8 / 7 timeline buttons are visible, with two separately selectable 2013 entries. Confirm active pill text fits.
 7. Select several years rapidly: only the newest request should commit, with no blank image and no effect on other sections.
-8. Compare DOM artwork/button bounds with the scaled rectangles in `shared/installation-layout.json`. Focus must not scroll the stage.
-9. Press R: all sections return to their initial sketch. In development, D toggles diagnostics; diagnostics stay hidden by default.
-10. Open an unknown route and use the custom error page's recovery button.
-11. Check application console errors and repeat core interaction checks on the production output.
+8. Switch LEFT to Chinese and RIGHT to English. CENTER must remain Indonesian; all three years and artwork phases must stay unchanged. Change a year in LEFT and confirm it keeps Chinese. A fresh reload must restore Indonesian in all sections. Verify flag-only controls, selected ring, accessible names, and keyboard focus.
+9. Compare DOM artwork, year-button, and flag-button bounds with the scaled rectangles in `shared/installation-layout.json`. Focus must not scroll the stage.
+10. Press R: all sections return to their initial sketch while keeping their languages. In development, D toggles diagnostics; diagnostics stay hidden by default.
+11. Open an unknown route and use the custom error page's recovery button.
+12. Check application console errors and repeat core interaction checks on the production output.
 
 ## Automated coverage
 
@@ -34,8 +35,9 @@ Current tests cover:
 
 - Machine readiness, latest-request-wins during decode, selection during reveal, and failed target preservation.
 - Cache request deduplication and decoded dimension mismatch.
-- Protocol parsing: valid touch/status, malformed JSON, unsupported version, out-of-canvas coordinates, and wrong-section milestone.
-- Catalog/layout target synchronization and independently addressable duplicate years.
+- Protocol parsing: valid touch/status/language selection, malformed JSON, unsupported version or locale, out-of-canvas coordinates, and wrong-section milestone.
+- Catalog/layout target synchronization, nine language targets, and independently addressable duplicate years.
+- Per-section language isolation, complete translated copy, and mandatory explicit translations for approved stories.
 
 ## Remaining production validation
 

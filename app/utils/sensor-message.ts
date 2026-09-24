@@ -1,8 +1,8 @@
-import type { SectionId } from '~/types/milestone';
+import type { Locale, SectionId } from '~/types/milestone';
 import type { SensorMessage, SensorParseResult } from '~/types/sensor';
 import { isPointInsideCanvas } from '~/data/installation-layout';
 import { getMilestoneForSection } from '~/data/milestones';
-import { SECTION_IDS } from '~/types/milestone';
+import { LOCALES, SECTION_IDS } from '~/types/milestone';
 import { SENSOR_PROTOCOL_VERSION } from '~/types/sensor';
 
 const MAX_POINTER_ID_LENGTH = 96;
@@ -124,6 +124,24 @@ export function parseSensorMessage(raw: string): SensorParseResult {
         section: value.section,
         pointerId: value.pointerId,
         milestoneId: value.milestoneId,
+        x: value.x as number,
+        y: value.y as number,
+      },
+    };
+  }
+
+  if (value.type === 'selectLanguage') {
+    if (typeof value.locale !== 'string' || !LOCALES.includes(value.locale as Locale))
+      return failure('unsupported locale');
+
+    return {
+      ok: true,
+      message: {
+        ...envelope,
+        type: 'selectLanguage',
+        section: value.section,
+        pointerId: value.pointerId,
+        locale: value.locale as Locale,
         x: value.x as number,
         y: value.y as number,
       },

@@ -1,4 +1,4 @@
-import type { SectionId } from './milestone';
+import type { Locale, SectionId } from './milestone';
 
 export const SENSOR_PROTOCOL_VERSION = 1 as const;
 
@@ -50,13 +50,23 @@ export interface SensorSelectMilestoneMessage extends SensorEnvelope {
   y: number;
 }
 
+export interface SensorSelectLanguageMessage extends SensorEnvelope {
+  type: 'selectLanguage';
+  section: SectionId;
+  pointerId: string;
+  locale: Locale;
+  x: number;
+  y: number;
+}
+
 export type SensorMessage
   = | SensorHelloMessage
     | SensorStatusMessage
     | SensorHeartbeatMessage
     | SensorTouchStartMessage
     | SensorTouchEndMessage
-    | SensorSelectMilestoneMessage;
+    | SensorSelectMilestoneMessage
+    | SensorSelectLanguageMessage;
 
 export type SensorSocketStatus = 'disabled' | 'connecting' | 'connected' | 'reconnecting' | 'stale' | 'error';
 

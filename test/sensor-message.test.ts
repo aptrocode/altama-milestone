@@ -6,7 +6,7 @@ function message(overrides: Record<string, unknown> = {}) {
     version: 1,
     sessionId: 'service-boot-1',
     seq: 1,
-    layoutVersion: 'layout-v3',
+    layoutVersion: 'layout-v4',
     type: 'touchStart',
     section: 'center',
     target: 'artwork',
@@ -57,5 +57,22 @@ describe('parseSensorMessage', () => {
     expect(result.ok).toBe(true);
     if (result.ok && result.message.type === 'status')
       expect(result.message.calibrated).toBe(false);
+  });
+
+  it('accepts a section language selection and rejects unsupported languages', () => {
+    const valid = parseSensorMessage(message({
+      type: 'selectLanguage',
+      locale: 'zh-Hans',
+      x: 1152,
+      y: 1050,
+    }));
+    expect(valid.ok).toBe(true);
+    if (valid.ok && valid.message.type === 'selectLanguage') {
+      expect(valid.message.section).toBe('center');
+      expect(valid.message.locale).toBe('zh-Hans');
+    }
+
+    expect(parseSensorMessage(message({ type: 'selectLanguage', locale: 'fr' })))
+      .toEqual({ ok: false, error: 'unsupported locale' });
   });
 });

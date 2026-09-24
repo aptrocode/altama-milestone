@@ -1,5 +1,5 @@
 import type { InstallationLayout, Rect } from '~/types/milestone';
-import { SECTION_IDS } from '~/types/milestone';
+import { LOCALES, SECTION_IDS } from '~/types/milestone';
 import rawLayout from '../../shared/installation-layout.json';
 import { getMilestoneForSection } from './milestones';
 
@@ -29,7 +29,7 @@ export function validateInstallationLayout(layout: InstallationLayout): void {
 
   for (const sectionId of SECTION_IDS) {
     const section = layout.sections[sectionId];
-    const rects = [section.section, section.artwork, ...section.timeline];
+    const rects = [section.section, section.artwork, ...section.timeline, ...section.languages];
 
     if (rects.some(rect => !isFiniteRect(rect, layout.canvas.width, layout.canvas.height)))
       throw new Error(`layout contains an invalid rectangle in ${sectionId}`);
@@ -39,10 +39,30 @@ export function validateInstallationLayout(layout: InstallationLayout): void {
         throw new Error(`layout target ${hitbox.milestoneId} does not belong to ${sectionId}`);
     }
 
+    if (section.languages.map(item => item.locale).join(',') !== LOCALES.join(','))
+      throw new Error(`language targets are incomplete or out of order in ${sectionId}`);
+
+    for (const hitbox of section.languages) {
+      if (hitbox.x < section.section.x || hitbox.x + hitbox.width > section.section.x + section.section.width)
+        throw new Error(`language target ${hitbox.locale} is outside ${sectionId}`);
+
+      for (const year of section.timeline) {
+        if (rectanglesOverlap(hitbox, year))
+          throw new Error(`language target ${hitbox.locale} overlaps timeline in ${sectionId}`);
+      }
+    }
+
     for (let index = 0; index < section.timeline.length; index++) {
       for (let otherIndex = index + 1; otherIndex < section.timeline.length; otherIndex++) {
         if (rectanglesOverlap(section.timeline[index]!, section.timeline[otherIndex]!))
           throw new Error(`timeline hitboxes overlap in ${sectionId}`);
+      }
+    }
+
+    for (let index = 0; index < section.languages.length; index++) {
+      for (let otherIndex = index + 1; otherIndex < section.languages.length; otherIndex++) {
+        if (rectanglesOverlap(section.languages[index]!, section.languages[otherIndex]!))
+          throw new Error(`language targets overlap in ${sectionId}`);
       }
     }
   }
