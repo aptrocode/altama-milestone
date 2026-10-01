@@ -1,5 +1,6 @@
 /* ==========================================================================
    ALTAMA Interactive Wall — Interactions & Logic Controller
+   Fluid Kinetic Motion Engine & Staggered Text Animations
    ========================================================================== */
 
 const ColumnTimer = {
@@ -62,6 +63,12 @@ const Interactions = {
 
     // Update this column's text
     this.updateColumnText(colId);
+
+    // If column is active, re-trigger smooth text entrance animation for new language
+    const state = WallState.getColumnState(colId);
+    if (state === 'active') {
+      this.triggerTextEntrance(colId);
+    }
 
     // Reset inactivity timer for this column
     if (window.ColumnTimer) {
@@ -173,6 +180,29 @@ const Interactions = {
     }
   },
 
+  triggerTextEntrance(colId) {
+    const header = document.querySelector(`.content-header[data-col="${colId}"]`);
+    if (header) {
+      header.classList.remove('anim-playing');
+      void header.offsetWidth; // Force CSS reflow to replay keyframes
+      header.classList.add('anim-playing');
+    }
+
+    const bDesc = document.querySelector(`.bottom-desc[data-col="${colId}"]`);
+    if (bDesc) {
+      bDesc.classList.remove('anim-playing');
+      void bDesc.offsetWidth; // Force CSS reflow
+      bDesc.classList.add('anim-playing');
+    }
+
+    const activeCard = document.querySelector(`.active-content[data-col="${colId}"]`);
+    if (activeCard && !activeCard.classList.contains('hidden')) {
+      activeCard.classList.remove('anim-card-playing');
+      void activeCard.offsetWidth; // Force CSS reflow
+      activeCard.classList.add('anim-card-playing');
+    }
+  },
+
   updateZoneTop() {
     const brandingEl = document.getElementById('branding-default');
     const headersEl = document.getElementById('content-headers');
@@ -190,18 +220,26 @@ const Interactions = {
 
         const state = WallState.getColumnState(col.id);
         // ONLY SHOW EXPLANATION WHEN ACTIVE (PHOTO CARD IS OPEN)!
-        // When in 'submenu' (the choices are shown), DO NOT SHOW EXPLANATION YET!
         if (state === 'active') {
           header.classList.remove('col-hidden');
           header.classList.add('active');
         } else {
           header.classList.add('col-hidden');
           header.classList.remove('active');
+          header.classList.remove('anim-playing');
         }
       });
     } else {
       if (brandingEl) brandingEl.classList.remove('hidden');
       if (headersEl) headersEl.classList.add('hidden');
+      WALL_CONFIG.columns.forEach(col => {
+        const header = headersEl.querySelector(`.content-header[data-col="${col.id}"]`);
+        if (header) {
+          header.classList.add('col-hidden');
+          header.classList.remove('active');
+          header.classList.remove('anim-playing');
+        }
+      });
     }
   },
 
@@ -223,13 +261,24 @@ const Interactions = {
         // ONLY SHOW BOTTOM EXPLANATION WHEN ACTIVE!
         if (state === 'active') {
           desc.classList.remove('col-hidden');
+          desc.classList.add('active');
         } else {
           desc.classList.add('col-hidden');
+          desc.classList.remove('active');
+          desc.classList.remove('anim-playing');
         }
       });
     } else {
       if (bottomDefault) bottomDefault.classList.remove('hidden');
       if (bottomDescs) bottomDescs.classList.add('hidden');
+      WALL_CONFIG.columns.forEach(col => {
+        const desc = bottomDescs.querySelector(`.bottom-desc[data-col="${col.id}"]`);
+        if (desc) {
+          desc.classList.add('col-hidden');
+          desc.classList.remove('active');
+          desc.classList.remove('anim-playing');
+        }
+      });
     }
   },
 
@@ -271,14 +320,19 @@ const Interactions = {
       case 'idle':
         if (btnGroup) btnGroup.classList.remove('hidden');
         if (submenuGroup) submenuGroup.classList.add('hidden');
-        if (activeContent) activeContent.classList.add('hidden');
+        if (activeContent) {
+          activeContent.classList.add('hidden');
+          activeContent.classList.remove('anim-card-playing');
+        }
         break;
 
       case 'submenu':
         if (btnGroup) btnGroup.classList.add('hidden');
         if (submenuGroup) submenuGroup.classList.remove('hidden');
-        if (activeContent) activeContent.classList.add('hidden');
-        // Clear active sub styling in submenu
+        if (activeContent) {
+          activeContent.classList.add('hidden');
+          activeContent.classList.remove('anim-card-playing');
+        }
         if (submenuGroup) {
           submenuGroup.querySelectorAll('.sub-btn').forEach(btn => {
             btn.classList.remove('active-sub');
@@ -309,12 +363,16 @@ const Interactions = {
     this.updateColumn(colId);
     this.updateColumnText(colId);
     this.refreshAll();
+    
+    if (WallState.getColumnState(colId) === 'active') {
+      this.triggerTextEntrance(colId);
+    }
     ColumnTimer.start(colId);
   },
 
   selectSubItem(colId, subKey) {
     WallState.setActiveSubItem(colId, subKey);
-    // User selected the item -> IMAGE CAROUSEL CARD OPENS ("image keluar sama seperti yang lain")!
+    // User selected the item -> IMAGE CAROUSEL CARD OPENS!
     WallState.setColumnState(colId, 'active');
 
     // Reset carousel index to 0
@@ -323,6 +381,7 @@ const Interactions = {
     this.updateColumn(colId);
     this.updateColumnText(colId);
     this.refreshAll();
+    this.triggerTextEntrance(colId);
     ColumnTimer.reset(colId);
   },
 

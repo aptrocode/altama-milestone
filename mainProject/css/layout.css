@@ -98,6 +98,7 @@ html, body {
   pointer-events: none;
   z-index: 10;
   box-sizing: border-box;
+  transition: opacity 0.35s ease;
 }
 
 .col-border {
@@ -120,6 +121,20 @@ html, body {
   display: none !important;
 }
 
-.col-hidden {
+/* Smooth layer overrides for cross-fading zones */
+#branding-default.hidden,
+#content-headers.hidden,
+#bottom-default.hidden,
+#bottom-descriptions.hidden {
+  display: flex !important;
+  opacity: 0 !important;
   visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.col-hidden:not(.active) {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translateY(16px) !important;
 }

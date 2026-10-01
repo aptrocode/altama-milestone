@@ -17,6 +17,23 @@
   box-sizing: border-box;
 }
 
+.active-content.anim-card-playing {
+  animation: activeCardEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes activeCardEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    box-shadow: var(--shadow-card);
+  }
+}
+
 .card-inner-header {
   display: flex;
   align-items: center;
@@ -27,8 +44,6 @@
   position: relative;
 }
 
-
-
 .card-inner-title {
   font-size: 22px;
   font-weight: 900;
@@ -36,6 +51,23 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   text-align: center;
+}
+
+.active-content.anim-card-playing .card-inner-title {
+  animation: cardTitleKinetic 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+}
+
+@keyframes cardTitleKinetic {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
 }
 
 .carousel {
@@ -52,6 +84,21 @@
   overflow: hidden;
   background: var(--color-card-bg-inner);
   min-height: 0;
+}
+
+.active-content.anim-card-playing .carousel-viewport {
+  animation: viewportKinetic 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both;
+}
+
+@keyframes viewportKinetic {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .carousel-slide {
@@ -96,15 +143,6 @@
 }
 
 /* ── Glassmorphism Carousel Arrows (Middle Left & Right of Image) ── */
-.carousel-viewport {
-  flex: 1;
-  position: relative;
-  border-radius: 10px;
-  overflow: hidden;
-  background: var(--color-card-bg-inner);
-  min-height: 0;
-}
-
 .carousel-arrow {
   position: absolute;
   top: 50%;
@@ -140,13 +178,7 @@
   right: 10px;
 }
 
-.carousel-arrow.carousel-prev:hover {
-  background: rgba(255, 255, 255, 0.28);
-  border-color: rgba(255, 255, 255, 0.65);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45), 0 0 14px rgba(255, 255, 255, 0.3);
-  transform: translateY(-50%) scale(1.1);
-}
-
+.carousel-arrow.carousel-prev:hover,
 .carousel-arrow.carousel-next:hover {
   background: rgba(255, 255, 255, 0.28);
   border-color: rgba(255, 255, 255, 0.65);
@@ -154,11 +186,7 @@
   transform: translateY(-50%) scale(1.1);
 }
 
-.carousel-arrow.carousel-prev:active {
-  transform: translateY(-50%) scale(0.94);
-  background: rgba(255, 255, 255, 0.42);
-}
-
+.carousel-arrow.carousel-prev:active,
 .carousel-arrow.carousel-next:active {
   transform: translateY(-50%) scale(0.94);
   background: rgba(255, 255, 255, 0.42);

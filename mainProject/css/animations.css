@@ -1,46 +1,29 @@
-/* ============================================
-   Animations & Transitions
-   ============================================ */
+/* ==========================================================================
+   ALTAMA Interactive Wall — Kinetic Motion & Animation Master Tokens
+   Exhibition-Grade Smooth Acceleration, Blur-Dissolve, & Light-Sweep
+   ========================================================================== */
 
-/* Fade-in for content panels */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+:root {
+  --ease-spring-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --anim-text-duration: 0.75s;
 }
 
-@keyframes fadeOut {
-  from { opacity: 1; transform: translateY(0); }
-  to   { opacity: 0; transform: translateY(8px); }
+/* Utility classes for kinetic entrance */
+.kinetic-fade-in {
+  animation: kineticFadeIn 0.5s var(--ease-spring-out) forwards;
 }
 
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-12px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes kineticFadeIn {
+  from { opacity: 0; transform: translateY(12px); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0px); }
 }
 
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
+.kinetic-fade-out {
+  animation: kineticFadeOut 0.35s var(--ease-smooth-in-out) forwards;
 }
 
-/* Applied via JS */
-.anim-fade-in {
-  animation: fadeIn var(--transition-base) forwards;
+@keyframes kineticFadeOut {
+  from { opacity: 1; transform: translateY(0); filter: blur(0px); }
+  to { opacity: 0; transform: translateY(-10px); filter: blur(3px); }
 }
-
-.anim-fade-out {
-  animation: fadeOut var(--transition-fast) forwards;
-}
-
-.anim-slide-down {
-  animation: slideDown var(--transition-base) forwards;
-}
-
-.anim-scale-in {
-  animation: scaleIn var(--transition-base) forwards;
-}
-
-/* Submenu stagger animation */
-.submenu-group .sub-btn:nth-child(2) { animation-delay: 0.05s; }
-.submenu-group .sub-btn:nth-child(3) { animation-delay: 0.10s; }
-.submenu-group .sub-btn:nth-child(4) { animation-delay: 0.15s; }

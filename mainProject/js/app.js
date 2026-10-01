@@ -204,9 +204,14 @@ document.addEventListener('DOMContentLoaded', () => {
       Interactions.updateColumnText(col.id);
     });
     Interactions.refreshAll();
+
+    // Trigger smooth entrance animation for active columns
+    [1, 3, 4, 6].forEach(colId => {
+      Interactions.triggerTextEntrance(colId);
+    });
   }
 
-  console.log('✅ ALTAMA Interactive Wall initialized.');
+  console.log('✅ ALTAMA Interactive Wall initialized with kinetic typography animations.');
   console.log('🌐 Language switcher active: ID (🇮🇩), EN (🇬🇧), ZH (🇨🇳)');
   console.log('⏱️ 15-second inactivity timer enabled per column.');
 });
