@@ -1,4 +1,5 @@
-﻿import { defineStore } from 'pinia';
+import type { ColumnConfig, WallLocale } from '~/data/wall-config';
+import { defineStore } from 'pinia';
 import { WALL_CONFIG } from '~/data/wall-config';
 
 export type ColumnState = 'idle' | 'submenu' | 'active';
@@ -180,7 +181,10 @@ export const useWallStore = defineStore('wall', {
   actions: {
     startColumnTimer(colId: number) {
       this.clearColumnTimer(colId);
-      if (this.columnStates[colId] === 'idle') return;
+      const isIdle = this.columnStates[colId] === 'idle';
+      const isDefaultLocale = (this.columnLocales[colId] || 'id') === 'id';
+      if (isIdle && isDefaultLocale)
+        return;
 
       columnTimers[colId] = setTimeout(() => {
         this.resetColumn(colId);
@@ -188,7 +192,9 @@ export const useWallStore = defineStore('wall', {
     },
 
     resetColumnTimer(colId: number) {
-      if (this.columnStates[colId] !== 'idle') {
+      const isIdle = this.columnStates[colId] === 'idle';
+      const isDefaultLocale = (this.columnLocales[colId] || 'id') === 'id';
+      if (!isIdle || !isDefaultLocale) {
         this.startColumnTimer(colId);
       }
     },
@@ -201,7 +207,7 @@ export const useWallStore = defineStore('wall', {
     },
 
     clearAllColumnTimers() {
-      Object.keys(columnTimers).forEach(id => {
+      Object.keys(columnTimers).forEach((id) => {
         clearTimeout(columnTimers[Number(id)]);
         delete columnTimers[Number(id)];
       });
@@ -211,9 +217,26 @@ export const useWallStore = defineStore('wall', {
       this.clearColumnTimer(colId);
       this.columnStates[colId] = 'idle';
       this.carouselIndex[colId] = 0;
+      this.columnLocales[colId] = 'id';
       const colConfig = WALL_CONFIG.columns.find(c => c.id === colId);
       if (colConfig?.defaultSub) {
         this.activeSubItem[colId] = colConfig.defaultSub;
+      }
+    },
+
+    closeSubmenu(colId: number) {
+      this.resetColumn(colId);
+    },
+
+    closeActiveContent(colId: number) {
+      const colConfig = WALL_CONFIG.columns.find(c => c.id === colId);
+      if (colConfig?.type === 'expandable') {
+        this.columnStates[colId] = 'submenu';
+        this.carouselIndex[colId] = 0;
+        this.startColumnTimer(colId);
+      }
+      else {
+        this.resetColumn(colId);
       }
     },
 
@@ -223,6 +246,7 @@ export const useWallStore = defineStore('wall', {
 
     setColumnLocale(colId: number, locale: WallLocale) {
       this.columnLocales[colId] = locale;
+      this.startColumnTimer(colId);
     },
 
     setActiveSubItem(colId: number, subKey: string) {
