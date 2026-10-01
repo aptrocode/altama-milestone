@@ -1,54 +1,37 @@
 # Architecture
 
-## Runtime shape
-
-The renderer is a Nuxt 4.5 SPA with `ssr: false`. Nuxt application code lives under `app/`; static files stay in `public/`; shared catalog and geometry stay in `shared/`; tests stay in `test/`. This follows the Nuxt 4 default directory model.
-
-`app/app.vue` owns the fullscreen root and renders `app/pages/index.vue`. The index page mounts one `KioskStage`. The stage owns one asset cache, one Sensor Service socket, keyboard simulation, and refs to three `MilestoneSection` instances.
-
-Each section combines its own state-machine controller, scoped GSAP controller, and retained artwork slots. Presentational components receive props and emit intent. A section can reveal, switch, fail, or recover without changing the animation phase of another section.
+The renderer is a Nuxt 4 SPA (`ssr: false`). Application code is under `app/`, static assets under `public/`, shared domain/geometry under `shared/`, and behavior tests under `test/`.
 
 ## State flow
 
-Input follows one path:
-
 ```text
-click / keyboard / sensor message
-  -> KioskStage
-  -> MilestoneSection public API
-  -> useMilestoneMachine for artwork/year input, or Pinia setLocale for language input
-  -> Pinia serializable snapshot and section rendering
+pointer hold / native keyboard / operator shortcut / validated sensor input
+  -> useWallController.dispatch(WallAction)
+  -> wall store validates phase and column ownership
+  -> serializable column snapshot
+  -> presentational Vue components
 ```
 
-The machine exposes `reveal`, `selectMilestone`, `reset`, and `dispose`. It keeps request and lifecycle counters outside Pinia. When selections arrive rapidly, only the latest target can commit. An obsolete decode may finish and remain cached, but it cannot replace the current UI.
+`KioskStage` owns one wall controller and one socket. `WallColumn` receives configuration, snapshot, and copy; it emits actions/activity. `WallLanguageSwitcher`, `WallCarousel`, and `WallHoldCue` contain reusable UI. Header/footer copy renders only in the active phase.
 
-Language changes use the section's public `setLocale` method and a plain Pinia field. They do not restart the machine or change the selected artwork. See [language](./language.md) for copy ownership and fallback rules.
+## State and transitions
 
-## Rendering rules
+Each column has `phase`, `locale`, `subItem`, and `slide`. Columns 2/5 open a submenu; other columns open content directly. Main input opens only idle columns, so repeated sensor input does not close content. Operator digits map an open column to Back.
 
-- The kiosk and stage use the full viewport. Do not add an outer container, maximum width, fixed aspect ratio, or letterbox.
-- The logical sensor canvas remains 2304 × 1344. CSS scaling and browser pixels do not change incoming logical sensor coordinates.
-- Three equal grid columns represent LEFT, CENTER, and RIGHT.
-- The illustrated reference composition is documented in `docs/design.md`; the official canvas is 12:7, not the reference image's 16:9.
-- Sketch and color are retained as aligned image layers. The color layer is revealed with GSAP and `clip-path`.
-- Initial years are 1967 / 2007 / 2026. Each section starts in IDLE, and story text remains readable before and after reveal.
-- A replacement pair is decoded in the inactive DOM slot before commit, preventing a blank frame.
-- Artwork, timeline, and flag positions come directly from `shared/installation-layout.json` through `layoutStyle`; update the layout version whenever sensor target geometry changes.
-- Artwork creates a local stacking context; image-slot z-index values must not cover the large year or controls.
+Sub-item selection is accepted only in its owning column's submenu. Carousel input is accepted only in active content and wraps using the configured slide count. Back from expandable content returns to the submenu; other Back input returns to idle. Manual reset preserves locale immediately.
 
-## Ownership
+One `getColumnCopy` resolver chooses localized column/sub-item copy. Labels are plain text; no HTML interpolation or localization dependency is used.
 
-| Path | Responsibility |
-| --- | --- |
-| `app/components/kiosk/` | Fullscreen shell, diagnostics, and input routing |
-| `app/components/milestone/` | Artwork, copy, timeline, and one reusable section |
-| `app/composables/` | Machine, animation, cache, and socket lifecycle |
-| `app/stores/` | Serializable application snapshots |
-| `app/data/` | Typed adapters for shared JSON and section presentation |
-| `app/types/` | Renderer-specific TypeScript contracts |
-| `app/utils/` | Pure protocol validation and logical-to-CSS rectangle mapping |
-| `shared/` | Canonical milestone catalog and sensor geometry |
+## Resource lifecycle
 
-## Dependency policy
+`useWallController` owns a private timer map per instance. Accepted actions and activity restart only that column's 15-second timer. Idle Indonesian columns need no timer; idle English/Chinese columns do. Timeout restores the initial sub-item, slide zero, idle phase, and Indonesian. R/Escape reschedules any remaining language timer. Scope disposal clears every timer.
 
-Keep dependencies only when they solve an active requirement. Pinia stores serializable state, GSAP owns animation, Vitest checks behavior, and Sharp validates development assets. Use native browser WebSocket and image decoding. Do not add an event bus, Socket.IO, XState, VueUse, Nuxt UI, or Nuxt Image unless a measured requirement justifies it.
+`bindHold` owns pointer listeners and progress/completion timers. Leaving, cancellation, pointer release, blur, or unmount cancels incomplete contact. The directive updates its callback when Vue updates it. Native keyboard/assistive clicks activate immediately.
+
+`useSensorSocket` owns native WebSocket, reconnect, heartbeat, and session state. It publishes serializable UI snapshots so Sensor Service knows which target group is visible. Pinia contains none of those browser resources.
+
+## Geometry and dependency policy
+
+The stage fills the viewport in both dimensions. CSS x/y units scale independently from the logical 2304 × 1344 canvas. Frame spacing and control dimensions come from `shared/installation-layout.json`. Logical sensor coordinates never use browser pixels.
+
+Nuxt/Vue handle rendering, Pinia stores state, Tailwind styles controls, and Vitest checks behavior. Native pointer events, WebSocket, and timers handle interaction. GSAP, Sharp, legacy milestone state/types/artwork, and fixture generation are removed because the current wall does not use them. Add a dependency only for an active requirement.

@@ -31,11 +31,11 @@ Priority meanings: P0 blocks the installation or causes data/safety loss; P1 blo
 Update the default branch, then create one branch per issue:
 
 ```text
-feat/123-short-description
-fix/123-short-description
-asset/123-short-description
-docs/123-short-description
-chore/123-short-description
+codex/feat-123-short-description
+codex/fix-123-short-description
+codex/asset-123-short-description
+codex/docs-123-short-description
+codex/chore-123-short-description
 ```
 
 Keep unrelated work out of the branch. Never place secrets, local `.env` files, generated `.nuxt/`, `.output/`, `dist/`, coverage, or `node_modules/` in commits.

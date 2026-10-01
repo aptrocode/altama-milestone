@@ -26,14 +26,14 @@ function recover() {
           {{ error.status === 404 ? 'Halaman tidak ditemukan' : 'Tampilan perlu dimuat ulang' }}
         </h1>
         <p class="mt-[2vh] text-[1.25vw] leading-relaxed">
-          Kembali ke perjalanan milestone untuk melanjutkan.
+          Kembali ke wall interaktif untuk melanjutkan.
         </p>
         <button
           type="button"
           class="mt-[4vh] rounded-full border-2 border-[#ec9808] bg-[#ffb317] px-[2.5vw] py-[1.6vh] text-[1.1vw] font-bold text-[#123477] transition-colors hover:bg-[#ffc644] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#0057cb]"
           @click="recover"
         >
-          Kembali ke milestone
+          Kembali ke wall
         </button>
       </div>
     </section>

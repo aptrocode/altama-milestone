@@ -1,6 +1,6 @@
-import type { Locale, SectionId } from './milestone';
+import type { WallAction } from '../../shared/wall';
 
-export const SENSOR_PROTOCOL_VERSION = 1 as const;
+export const SENSOR_PROTOCOL_VERSION = 2 as const;
 
 interface SensorEnvelope {
   version: typeof SENSOR_PROTOCOL_VERSION;
@@ -26,58 +26,14 @@ export interface SensorHeartbeatMessage extends SensorEnvelope {
   type: 'heartbeat';
 }
 
-export interface SensorTouchStartMessage extends SensorEnvelope {
-  type: 'touchStart';
-  section: SectionId;
-  target: 'artwork';
+export interface SensorInputMessage extends SensorEnvelope {
+  type: 'input';
+  action: WallAction;
   pointerId: string;
   x: number;
   y: number;
 }
 
-export interface SensorTouchEndMessage extends SensorEnvelope {
-  type: 'touchEnd';
-  section: SectionId;
-  pointerId: string;
-}
-
-export interface SensorSelectMilestoneMessage extends SensorEnvelope {
-  type: 'selectMilestone';
-  section: SectionId;
-  pointerId: string;
-  milestoneId: string;
-  x: number;
-  y: number;
-}
-
-export interface SensorSelectLanguageMessage extends SensorEnvelope {
-  type: 'selectLanguage';
-  section: SectionId;
-  pointerId: string;
-  locale: Locale;
-  x: number;
-  y: number;
-}
-
-export type SensorMessage
-  = | SensorHelloMessage
-    | SensorStatusMessage
-    | SensorHeartbeatMessage
-    | SensorTouchStartMessage
-    | SensorTouchEndMessage
-    | SensorSelectMilestoneMessage
-    | SensorSelectLanguageMessage;
-
+export type SensorMessage = SensorHelloMessage | SensorStatusMessage | SensorHeartbeatMessage | SensorInputMessage;
 export type SensorSocketStatus = 'disabled' | 'connecting' | 'connected' | 'reconnecting' | 'stale' | 'error';
-
-export interface SensorParseSuccess {
-  ok: true;
-  message: SensorMessage;
-}
-
-export interface SensorParseFailure {
-  ok: false;
-  error: string;
-}
-
-export type SensorParseResult = SensorParseSuccess | SensorParseFailure;
+export type SensorParseResult = { ok: true; message: SensorMessage } | { ok: false; error: string };

@@ -1,5 +1,7 @@
+import type { ColumnId, ColumnSnapshot } from '../../shared/wall';
 import type { SensorMessage } from '~/types/sensor';
 import { useSystemStore } from '~/stores/system';
+import { SENSOR_PROTOCOL_VERSION } from '~/types/sensor';
 import { parseSensorMessage } from '~/utils/sensor-message';
 
 export interface SensorSocketOptions {
@@ -7,6 +9,7 @@ export interface SensorSocketOptions {
   url: string;
   expectedLayoutVersion: string;
   onMessage: (message: SensorMessage) => void;
+  getColumns: () => Record<ColumnId, ColumnSnapshot>;
   heartbeatTimeoutMs?: number;
   maxMessageBytes?: number;
 }
@@ -15,6 +18,7 @@ export interface SensorSocketController {
   start: () => void;
   stop: () => void;
   reconnect: () => void;
+  publishState: () => void;
 }
 
 const RECONNECT_DELAYS = [500, 1_000, 2_000, 4_000, 8_000, 10_000] as const;
@@ -74,6 +78,8 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
     }
 
     if (message.type === 'hello') {
+      if (activeSessionId !== null)
+        return false;
       activeSessionId = message.sessionId;
       lastSequence = message.seq;
       return true;
@@ -97,7 +103,14 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
 
     closeSocket();
     system.setSocketStatus(reconnectAttempt > 0 ? 'reconnecting' : 'connecting');
-    const nextSocket = new WebSocket(options.url);
+    let nextSocket: WebSocket;
+    try {
+      nextSocket = new WebSocket(options.url);
+    }
+    catch {
+      system.setSocketStatus('error', 'Sensor WebSocket URL tidak valid atau tidak diizinkan browser');
+      return;
+    }
     socket = nextSocket;
 
     nextSocket.onopen = () => {
@@ -110,9 +123,10 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
       lastSeenAt = Date.now();
       system.setSocketStatus('connected');
       nextSocket.send(JSON.stringify({
-        version: 1,
+        version: SENSOR_PROTOCOL_VERSION,
         type: 'clientHello',
         layoutVersion: options.expectedLayoutVersion,
+        columns: options.getColumns(),
       }));
 
       heartbeatTimer = setInterval(() => {
@@ -149,7 +163,8 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
         system.setSensorHealth(result.message.sensorReady, result.message.calibrated);
         system.setSocketStatus('connected');
       }
-      options.onMessage(result.message);
+      if (result.message.type !== 'input' || (system.sensorReady && system.calibrationReady))
+        options.onMessage(result.message);
     };
 
     nextSocket.onerror = () => {
@@ -169,6 +184,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
   }
 
   function start() {
+    stop();
     if (!options.enabled) {
       stopped = true;
       system.setSocketStatus('disabled');
@@ -193,12 +209,19 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
   }
 
   function reconnect() {
-    stop();
-    stopped = false;
-    generation++;
-    reconnectAttempt = 0;
-    connect(generation);
+    start();
   }
 
-  return { start, stop, reconnect };
+  function publishState() {
+    if (stopped || socket?.readyState !== WebSocket.OPEN)
+      return;
+    socket.send(JSON.stringify({
+      version: SENSOR_PROTOCOL_VERSION,
+      type: 'clientState',
+      layoutVersion: options.expectedLayoutVersion,
+      columns: options.getColumns(),
+    }));
+  }
+
+  return { start, stop, reconnect, publishState };
 }

@@ -1,22 +1,39 @@
-import type { Locale, SectionId } from '~/types/milestone';
+import type { ColumnId, WallAction, WallLocale } from '../../shared/wall';
 import type { SensorMessage, SensorParseResult } from '~/types/sensor';
-import { isPointInsideCanvas } from '~/data/installation-layout';
-import { LOCALES, SECTION_IDS } from '~/types/milestone';
+import { getActionRects, isPointInsideCanvas, isPointInsideRect } from '~/data/installation-layout';
+import { WALL_CONFIG } from '~/data/wall-config';
 import { SENSOR_PROTOCOL_VERSION } from '~/types/sensor';
-
-const MAX_POINTER_ID_LENGTH = 96;
-const MAX_DETAIL_LENGTH = 240;
+import { COLUMN_IDS, WALL_LOCALES } from '../../shared/wall';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function isSectionId(value: unknown): value is SectionId {
-  return typeof value === 'string' && SECTION_IDS.includes(value as SectionId);
+function isShortString(value: unknown, maxLength = 96): value is string {
+  return typeof value === 'string' && value.length > 0 && value.length <= maxLength;
 }
 
-function isShortString(value: unknown, maxLength = MAX_POINTER_ID_LENGTH): value is string {
-  return typeof value === 'string' && value.length > 0 && value.length <= maxLength;
+function parseAction(value: unknown): WallAction | null {
+  if (!isRecord(value) || !COLUMN_IDS.includes(value.columnId as ColumnId))
+    return null;
+  const columnId = value.columnId as ColumnId;
+  switch (value.type) {
+    case 'main':
+    case 'back':
+    case 'previous':
+    case 'next':
+      return { type: value.type, columnId };
+    case 'language':
+      return WALL_LOCALES.includes(value.locale as WallLocale)
+        ? { type: 'language', columnId, locale: value.locale as WallLocale }
+        : null;
+    case 'subItem':
+      return WALL_CONFIG.columns.find(column => column.id === columnId)?.subItems?.some(sub => sub.key === value.subItemId)
+        ? { type: 'subItem', columnId, subItemId: value.subItemId as string }
+        : null;
+    default:
+      return null;
+  }
 }
 
 function failure(error: string): SensorParseResult {
@@ -25,7 +42,6 @@ function failure(error: string): SensorParseResult {
 
 export function parseSensorMessage(raw: string): SensorParseResult {
   let value: unknown;
-
   try {
     value = JSON.parse(raw);
   }
@@ -35,16 +51,12 @@ export function parseSensorMessage(raw: string): SensorParseResult {
 
   if (!isRecord(value))
     return failure('message must be an object');
-
   if (value.version !== SENSOR_PROTOCOL_VERSION)
     return failure('unsupported protocol version');
-
   if (!isShortString(value.sessionId))
     return failure('invalid sessionId');
-
   if (!Number.isSafeInteger(value.seq) || (value.seq as number) < 0)
     return failure('invalid sequence number');
-
   if (!isShortString(value.layoutVersion))
     return failure('invalid layoutVersion');
 
@@ -58,10 +70,8 @@ export function parseSensorMessage(raw: string): SensorParseResult {
   if (value.type === 'hello' || value.type === 'status') {
     if (typeof value.sensorReady !== 'boolean' || typeof value.calibrated !== 'boolean')
       return failure('invalid sensor status');
-
-    if (value.detail !== undefined && !isShortString(value.detail, MAX_DETAIL_LENGTH))
+    if (value.detail !== undefined && !isShortString(value.detail, 240))
       return failure('invalid status detail');
-
     return {
       ok: true,
       message: {
@@ -73,76 +83,22 @@ export function parseSensorMessage(raw: string): SensorParseResult {
       } as SensorMessage,
     };
   }
-
   if (value.type === 'heartbeat')
     return { ok: true, message: { ...envelope, type: 'heartbeat' } };
+  if (value.type !== 'input')
+    return failure('unknown message type');
 
-  if (!isSectionId(value.section))
-    return failure('invalid section');
-
+  const action = parseAction(value.action);
+  if (!action)
+    return failure('invalid wall action');
   if (!isShortString(value.pointerId))
     return failure('invalid pointerId');
-
-  if (value.type === 'touchEnd') {
-    return {
-      ok: true,
-      message: { ...envelope, type: 'touchEnd', section: value.section, pointerId: value.pointerId },
-    };
-  }
-
   if (!Number.isFinite(value.x) || !Number.isFinite(value.y) || !isPointInsideCanvas(value.x as number, value.y as number))
     return failure('coordinates are outside the logical canvas');
+  const x = value.x as number;
+  const y = value.y as number;
+  if (!getActionRects(action).some(rect => isPointInsideRect(x, y, rect)))
+    return failure('coordinates do not match the declared target');
 
-  if (value.type === 'touchStart') {
-    return {
-      ok: true,
-      message: {
-        ...envelope,
-        type: 'touchStart',
-        section: value.section,
-        target: 'artwork',
-        pointerId: value.pointerId,
-        x: value.x as number,
-        y: value.y as number,
-      },
-    };
-  }
-
-  if (value.type === 'selectMilestone') {
-    if (!isShortString(value.milestoneId))
-      return failure('invalid milestoneId');
-
-    return {
-      ok: true,
-      message: {
-        ...envelope,
-        type: 'selectMilestone',
-        section: value.section,
-        pointerId: value.pointerId,
-        milestoneId: value.milestoneId,
-        x: value.x as number,
-        y: value.y as number,
-      },
-    };
-  }
-
-  if (value.type === 'selectLanguage') {
-    if (typeof value.locale !== 'string' || !LOCALES.includes(value.locale as Locale))
-      return failure('unsupported locale');
-
-    return {
-      ok: true,
-      message: {
-        ...envelope,
-        type: 'selectLanguage',
-        section: value.section,
-        pointerId: value.pointerId,
-        locale: value.locale as Locale,
-        x: value.x as number,
-        y: value.y as number,
-      },
-    };
-  }
-
-  return failure('unknown message type');
+  return { ok: true, message: { ...envelope, type: 'input', action, pointerId: value.pointerId, x, y } };
 }
