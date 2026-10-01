@@ -531,14 +531,15 @@ onUnmounted(() => {
 /* Hand hold gesture animation */
 .animate-hand-press {
   animation: handHoldHint 2s ease-in-out infinite;
+  transform-origin: center center;
 }
 
 @keyframes handHoldHint {
   0%, 100% {
-    transform: translateY(0);
+    transform: scale(1);
   }
   50% {
-    transform: translateY(-2px) scale(1.08);
+    transform: scale(1.12);
   }
 }
 
