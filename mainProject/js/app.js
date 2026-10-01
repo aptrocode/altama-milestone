@@ -6,78 +6,139 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Initialize State
   WallState.init();
 
-  // 2. Set Up Individual Language Switchers (Independent per Column)
+  // 2. Set Up Individual Language Switchers with STRICT HOLD
   document.querySelectorAll('.lang-pill').forEach(pill => {
     const colId = parseInt(pill.dataset.col);
     pill.querySelectorAll('.lang-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      let langHoldTimer = null;
+      let langCompleted = false;
+
+      const startLangHold = (e) => {
+        if (e.button !== undefined && e.button !== 0) return;
         e.stopPropagation();
-        const lang = btn.dataset.lang;
-        Interactions.setColumnLanguage(colId, lang);
+
+        langCompleted = false;
+        btn.classList.add('holding');
+
+        langHoldTimer = setTimeout(() => {
+          langCompleted = true;
+          btn.classList.remove('holding');
+          const lang = btn.dataset.lang;
+          Interactions.setColumnLanguage(colId, lang);
+        }, 800); // 800ms hold to switch language
+      };
+
+      const cancelLangHold = (e) => {
+        e.stopPropagation();
+        if (!langCompleted) {
+          btn.classList.remove('holding');
+          if (langHoldTimer) {
+            clearTimeout(langHoldTimer);
+            langHoldTimer = null;
+          }
+        }
+      };
+
+      btn.addEventListener('pointerdown', startLangHold);
+      btn.addEventListener('pointerup', cancelLangHold);
+      btn.addEventListener('pointerleave', cancelLangHold);
+      btn.addEventListener('pointercancel', cancelLangHold);
+
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
       });
     });
   });
 
-  // 3. Main Idle Buttons Click / Hold
+  // 3. Main Idle Buttons STRICT HOLD (NO entry if released midway / clicked)
   document.querySelectorAll('.main-btn').forEach(btn => {
     const colId = parseInt(btn.dataset.col);
-
-    btn.addEventListener('click', () => {
-      Interactions.openCard(colId);
-    });
-
     let holdTimer = null;
-    btn.addEventListener('pointerdown', () => {
+    let holdCompleted = false;
+
+    const startHold = (e) => {
+      if (e.button !== undefined && e.button !== 0) return;
+      // Do not hold if clicked inside bottom bar / lang pill
+      if (e.target.closest('.main-btn-bottom-bar') || e.target.closest('.lang-pill')) {
+        return;
+      }
+
+      holdCompleted = false;
       btn.classList.add('holding');
+
       holdTimer = setTimeout(() => {
+        holdCompleted = true;
         btn.classList.remove('holding');
+        // Only open card when 100% full duration completed!
         Interactions.openCard(colId);
       }, WALL_CONFIG.settings.holdDuration);
-    });
+    };
 
     const cancelHold = () => {
-      btn.classList.remove('holding');
-      if (holdTimer) {
-        clearTimeout(holdTimer);
-        holdTimer = null;
+      if (!holdCompleted) {
+        btn.classList.remove('holding');
+        if (holdTimer) {
+          clearTimeout(holdTimer);
+          holdTimer = null;
+        }
       }
     };
+
+    btn.addEventListener('pointerdown', startHold);
     btn.addEventListener('pointerup', cancelHold);
     btn.addEventListener('pointerleave', cancelHold);
     btn.addEventListener('pointercancel', cancelHold);
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // Regular click does NOTHING. Must hold full duration!
+    });
   });
 
-  // 4. Submenu Buttons (Choosing opens the Image Carousel!)
+  // 4. Submenu Buttons STRICT HOLD (NO entry if released midway / clicked)
   document.querySelectorAll('.sub-btn').forEach(btn => {
     const colId = parseInt(btn.dataset.col);
     const subKey = btn.dataset.sub;
+    let subHoldTimer = null;
+    let subCompleted = false;
 
-    btn.addEventListener('click', () => {
-      Interactions.selectSubItem(colId, subKey);
-    });
+    const startSubHold = (e) => {
+      if (e.button !== undefined && e.button !== 0) return;
+      e.stopPropagation();
 
-    let holdTimer = null;
-    btn.addEventListener('pointerdown', () => {
+      subCompleted = false;
       btn.classList.add('holding');
-      holdTimer = setTimeout(() => {
+
+      subHoldTimer = setTimeout(() => {
+        subCompleted = true;
         btn.classList.remove('holding');
         Interactions.selectSubItem(colId, subKey);
       }, WALL_CONFIG.settings.holdDuration);
-    });
+    };
 
-    const cancelHold = () => {
-      btn.classList.remove('holding');
-      if (holdTimer) {
-        clearTimeout(holdTimer);
-        holdTimer = null;
+    const cancelSubHold = (e) => {
+      e.stopPropagation();
+      if (!subCompleted) {
+        btn.classList.remove('holding');
+        if (subHoldTimer) {
+          clearTimeout(subHoldTimer);
+          subHoldTimer = null;
+        }
       }
     };
-    btn.addEventListener('pointerup', cancelHold);
-    btn.addEventListener('pointerleave', cancelHold);
-    btn.addEventListener('pointercancel', cancelHold);
+
+    btn.addEventListener('pointerdown', startSubHold);
+    btn.addEventListener('pointerup', cancelSubHold);
+    btn.addEventListener('pointerleave', cancelSubHold);
+    btn.addEventListener('pointercancel', cancelSubHold);
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
   });
-
-
 
   // 6. Carousel Controls (Sensor / Touch Ready)
   document.querySelectorAll('.carousel-prev').forEach(btn => {
