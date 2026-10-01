@@ -105,7 +105,7 @@ onUnmounted(() => {
         leave-to-class="opacity-0 -translate-y-3"
       >
         <div v-if="!wall.hasAnyActive" id="branding-default" class="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <h1 class="text-[length:calc(64*var(--wall-x))] italic tracking-[0.14em] text-neutral-800 font-normal">
+          <h1 class="text-[length:calc(64*var(--wall-x))] italic tracking-[0.14em] text-neutral-800 font-medium">
             ALTAMA
           </h1>
           <p class="text-[length:calc(18*var(--wall-x))] tracking-[0.08em] text-neutral-500 italic mt-[calc(12*var(--wall-y))]">

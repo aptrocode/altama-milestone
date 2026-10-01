@@ -1,8 +1,12 @@
 import antfu from '@antfu/eslint-config';
 
-export default antfu({
-  ignores: ['dika/**'],
-  stylistic: {
-    semi: true,
+export default antfu(
+  {
+    stylistic: {
+      semi: true,
+    },
   },
-});
+  {
+    ignores: ['dika/**', '.output/**', '.nuxt/**', 'dist/**'],
+  },
+);

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "League Spartan", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   --color-primary: #2d6a4f;
   --color-primary-hover: #40916c;
   --color-primary-active: #1b4332;
@@ -16,7 +16,7 @@
 @layer base {
   :root {
     @apply scheme-light font-sans;
-    font-synthesis: none;
+    font-synthesis: style;
     text-rendering: optimizeLegibility;
   }
 

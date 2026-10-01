@@ -24,10 +24,10 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       {
-        name: 'Inter',
+        name: 'League Spartan',
         provider: 'google',
-        weights: [400, 500, 600, 700, 800, 900],
-        styles: ['normal', 'italic'],
+        weights: [100, 200, 300, 400, 500, 600, 700, 800, 900],
+        styles: ['normal'],
         global: true,
       },
     ],
