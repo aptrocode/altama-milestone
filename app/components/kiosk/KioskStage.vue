@@ -171,6 +171,7 @@ onUnmounted(() => {
             'opacity-0 -translate-y-4 pointer-events-none': wall.getColumnState(col.id) !== 'active',
             'opacity-100 translate-y-0': wall.getColumnState(col.id) === 'active',
           }"
+          @pointerdown="wall.resetColumnTimer(col.id)"
         >
           <h2 class="text-[clamp(13px,1.2vw,22px)] font-black text-emerald-800 uppercase mb-1.5 tracking-wide leading-tight whitespace-nowrap overflow-hidden text-ellipsis max-w-full px-2">
             {{ wall.getHeaderTitle(col.id) }}
@@ -265,7 +266,7 @@ onUnmounted(() => {
               class="w-6 h-6 rounded-full bg-white/20 hover:bg-red-500 hover:text-white border border-white/25 text-white text-xs font-bold flex items-center justify-center cursor-pointer transition-all duration-150"
               :title="getBackLabel(col.id)"
               :aria-label="getBackLabel(col.id)"
-              @click.stop="wall.setColumnState(col.id, 'idle')"
+              @click.stop="wall.closeSubmenu(col.id)"
             >
               ✕
             </button>
@@ -321,7 +322,7 @@ onUnmounted(() => {
               class="w-6 h-6 rounded-full bg-neutral-200 hover:bg-red-500 hover:text-white border border-neutral-300 text-neutral-700 text-xs font-bold flex items-center justify-center cursor-pointer transition-all duration-150"
               :title="getBackLabel(col.id)"
               :aria-label="getBackLabel(col.id)"
-              @click.stop="col.type === 'expandable' ? wall.setColumnState(col.id, 'submenu') : wall.setColumnState(col.id, 'idle')"
+              @click.stop="wall.closeActiveContent(col.id)"
             >
               ✕
             </button>
@@ -404,6 +405,7 @@ onUnmounted(() => {
             'opacity-0 translate-y-4 pointer-events-none': wall.getColumnState(col.id) !== 'active',
             'opacity-100 translate-y-0': wall.getColumnState(col.id) === 'active',
           }"
+          @pointerdown="wall.resetColumnTimer(col.id)"
         >
           <h4 class="text-xs font-black uppercase mb-1 tracking-wide text-emerald-800 whitespace-nowrap overflow-hidden text-ellipsis max-w-full" :data-col="col.id">
             {{ wall.getBottomTitle(col.id) }}
