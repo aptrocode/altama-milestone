@@ -143,8 +143,8 @@ onUnmounted(() => {
       <!-- Default branding (shown when all columns are idle) -->
       <div
         id="branding-default"
-        class="w-full h-full flex flex-col items-center justify-center text-center transition-all duration-300"
-        :class="{ 'hidden opacity-0': wall.hasAnyActive }"
+        class="absolute inset-0 flex flex-col items-center justify-center text-center transition-all duration-500 ease-out"
+        :class="{ 'opacity-0 scale-95 pointer-events-none': wall.hasAnyActive, 'opacity-100 scale-100': !wall.hasAnyActive }"
       >
         <div>
           <h1 class="text-3xl lg:text-4xl italic tracking-[0.14em] text-neutral-800 uppercase font-normal">
@@ -159,17 +159,17 @@ onUnmounted(() => {
       <!-- Content headers (shown when at least one column is active) -->
       <div
         id="content-headers"
-        class="w-full h-full flex flex-row px-5 pb-3 gap-2.5"
-        :class="{ hidden: !wall.hasAnyActive }"
+        class="absolute inset-0 flex flex-row px-5 pb-3 gap-2.5 transition-opacity duration-300"
+        :class="{ 'opacity-0 pointer-events-none': !wall.hasAnyActive, 'opacity-100': wall.hasAnyActive }"
       >
         <div
           v-for="col in WALL_CONFIG.columns"
           :key="`header-${col.id}`"
-          class="flex-1 flex flex-col justify-center items-center text-center px-2 py-3 min-w-0 overflow-hidden transition-all duration-300"
+          class="flex-1 flex flex-col justify-center items-center text-center px-2 py-3 min-w-0 overflow-hidden transition-all duration-500 ease-out"
           :data-col="col.id"
           :class="{
-            'invisible opacity-0 pointer-events-none': wall.getColumnState(col.id) !== 'active',
-            'opacity-100': wall.getColumnState(col.id) === 'active',
+            'opacity-0 -translate-y-4 pointer-events-none': wall.getColumnState(col.id) !== 'active',
+            'opacity-100 translate-y-0': wall.getColumnState(col.id) === 'active',
           }"
         >
           <h2 class="text-base md:text-lg lg:text-xl font-black text-emerald-800 uppercase mb-1.5 tracking-wide leading-tight">
@@ -210,7 +210,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Main Button (Idle State) -->
-        <div class="flex-1 flex flex-col" :class="{ hidden: wall.getColumnState(col.id) !== 'idle' }">
+        <div class="flex-1 flex flex-col animate-kiosk-enter" :class="{ hidden: wall.getColumnState(col.id) !== 'idle' }">
           <button
             v-hold="() => wall.onMainButtonClick(col.id)"
             class="laser-target idle-breathe flex-1 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-b from-white via-slate-50 to-neutral-100 hover:from-white hover:to-emerald-50/50 active:from-neutral-100 active:to-neutral-200 border border-neutral-300/80 hover:border-emerald-500/60 rounded-xl text-neutral-900 font-extrabold uppercase tracking-wider text-center p-3 cursor-pointer select-none relative transition-all duration-150 shadow-xs hover:shadow-md"
@@ -250,7 +250,7 @@ onUnmounted(() => {
         <!-- Submenu Group (Expandable columns in Submenu State) -->
         <div
           v-if="col.type === 'expandable'"
-          class="flex-1 flex flex-col relative bg-white border-2 border-emerald-600/30 rounded-xl overflow-hidden shadow-xs transition-all duration-200"
+          class="flex-1 flex flex-col relative bg-white border-2 border-emerald-600/30 rounded-xl overflow-hidden shadow-xs animate-kiosk-enter"
           :class="{
             hidden: wall.getColumnState(col.id) !== 'submenu',
             flex: wall.getColumnState(col.id) === 'submenu',
@@ -306,7 +306,7 @@ onUnmounted(() => {
 
         <!-- Active Content / Carousel (Active State) -->
         <div
-          class="flex-1 flex flex-col overflow-hidden"
+          class="flex-1 flex flex-col overflow-hidden animate-kiosk-enter"
           :class="{
             hidden: wall.getColumnState(col.id) !== 'active',
             flex: wall.getColumnState(col.id) === 'active',
@@ -330,8 +330,8 @@ onUnmounted(() => {
               <div
                 v-for="slideIdx in col.slides"
                 :key="`slide-${slideIdx}`"
-                class="absolute inset-0 flex items-center justify-center transition-opacity duration-300 pointer-events-none opacity-0"
-                :class="{ '!opacity-100 !pointer-events-auto': wall.getCarouselIndex(col.id) === slideIdx - 1 }"
+                class="absolute inset-0 flex items-center justify-center transition-all duration-500 pointer-events-none opacity-0 scale-95"
+                :class="{ '!opacity-100 !scale-100 !pointer-events-auto': wall.getCarouselIndex(col.id) === slideIdx - 1 }"
               >
                 <div class="w-[85%] h-[75%] flex flex-col items-center justify-center bg-black/25 border-2 border-dashed border-white/25 rounded-lg gap-2 text-white/90 shadow-inner">
                   <svg viewBox="0 0 100 80" class="w-9 h-7 text-white/50">
@@ -391,17 +391,17 @@ onUnmounted(() => {
     <div id="zone-bottom" class="w-full flex-1 flex flex-col items-center justify-end pb-3 overflow-hidden">
       <div
         id="bottom-descriptions"
-        class="w-full flex flex-row px-5 pt-2 gap-2.5 shrink-0"
-        :class="{ hidden: !wall.hasAnyActive }"
+        class="w-full flex flex-row px-5 pt-2 gap-2.5 shrink-0 transition-opacity duration-300"
+        :class="{ 'opacity-0 pointer-events-none': !wall.hasAnyActive, 'opacity-100': wall.hasAnyActive }"
       >
         <div
           v-for="col in WALL_CONFIG.columns"
           :key="`bottom-${col.id}`"
-          class="flex-1 flex flex-col justify-start p-2 min-w-0 overflow-hidden transition-all duration-300"
+          class="flex-1 flex flex-col justify-start p-2 min-w-0 overflow-hidden transition-all duration-500 ease-out"
           :data-col="col.id"
           :class="{
-            'invisible opacity-0 pointer-events-none': wall.getColumnState(col.id) !== 'active',
-            'opacity-100': wall.getColumnState(col.id) === 'active',
+            'opacity-0 translate-y-4 pointer-events-none': wall.getColumnState(col.id) !== 'active',
+            'opacity-100 translate-y-0': wall.getColumnState(col.id) === 'active',
           }"
         >
           <h4 class="text-xs font-black uppercase mb-1 tracking-wide text-emerald-800" :data-col="col.id">
@@ -539,5 +539,21 @@ onUnmounted(() => {
   50% {
     transform: translateY(-2px) scale(1.08);
   }
+}
+
+/* Card Content Entrance Motion */
+@keyframes kioskCardEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-kiosk-enter {
+  animation: kioskCardEnter 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 </style>
