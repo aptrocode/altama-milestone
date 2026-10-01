@@ -1,5 +1,5 @@
 import { createPinia, setActivePinia } from 'pinia';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { WALL_CONFIG } from '../app/data/wall-config';
 import { useWallStore } from '../app/stores/wall';
 
@@ -203,5 +203,95 @@ describe('useWallStore', () => {
     expect(wall.hasAnyActive).toBe(true);
     wall.resetAll();
     expect(wall.hasAnyActive).toBe(false);
+  });
+
+  describe('15-second per-section auto-reset', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('auto-resets active column back to idle after 15 seconds of inactivity', () => {
+      const wall = useWallStore();
+      wall.onMainButtonClick(1);
+      expect(wall.getColumnState(1)).toBe('active');
+
+      vi.advanceTimersByTime(14999);
+      expect(wall.getColumnState(1)).toBe('active');
+
+      vi.advanceTimersByTime(1);
+      expect(wall.getColumnState(1)).toBe('idle');
+      expect(wall.getCarouselIndex(1)).toBe(0);
+      expect(wall.getColumnLocale(1)).toBe('id');
+    });
+
+    it('maintains independent 15s timers per section without affecting other sections', () => {
+      const wall = useWallStore();
+
+      // Open Col 1 at t=0
+      wall.onMainButtonClick(1);
+      expect(wall.getColumnState(1)).toBe('active');
+
+      // 5 seconds later, open Col 2 (submenu)
+      vi.advanceTimersByTime(5000);
+      wall.onMainButtonClick(2);
+      expect(wall.getColumnState(2)).toBe('submenu');
+
+      // Advance 10 more seconds (total 15s for Col 1, 10s for Col 2)
+      vi.advanceTimersByTime(10000);
+      expect(wall.getColumnState(1)).toBe('idle');
+      expect(wall.getColumnState(2)).toBe('submenu');
+
+      // Advance 5 more seconds (total 15s for Col 2)
+      vi.advanceTimersByTime(5000);
+      expect(wall.getColumnState(2)).toBe('idle');
+    });
+
+    it('restarts 15s countdown on user interaction within the active section', () => {
+      const wall = useWallStore();
+      wall.onMainButtonClick(1);
+
+      // Advance 10 seconds
+      vi.advanceTimersByTime(10000);
+      expect(wall.getColumnState(1)).toBe('active');
+
+      // User interacts: navigates carousel
+      wall.navigateCarousel(1, 1);
+      expect(wall.getCarouselIndex(1)).toBe(1);
+
+      // Advance 10 seconds (total 20s, but only 10s since interaction)
+      vi.advanceTimersByTime(10000);
+      expect(wall.getColumnState(1)).toBe('active');
+
+      // Advance 5 more seconds (15s since interaction)
+      vi.advanceTimersByTime(5000);
+      expect(wall.getColumnState(1)).toBe('idle');
+      expect(wall.getCarouselIndex(1)).toBe(0);
+    });
+
+    it('properly resets and cleans up timers on closeSubmenu and closeActiveContent', () => {
+      const wall = useWallStore();
+
+      // Test expandable column closeSubmenu
+      wall.onMainButtonClick(2); // opens submenu
+      expect(wall.getColumnState(2)).toBe('submenu');
+      wall.closeSubmenu(2);
+      expect(wall.getColumnState(2)).toBe('idle');
+
+      // Test expandable column closeActiveContent (returns to submenu)
+      wall.onSubButtonClick(2, 'ryu');
+      expect(wall.getColumnState(2)).toBe('active');
+      wall.closeActiveContent(2);
+      expect(wall.getColumnState(2)).toBe('submenu');
+
+      // Test single column closeActiveContent (returns to idle)
+      wall.onMainButtonClick(1);
+      expect(wall.getColumnState(1)).toBe('active');
+      wall.closeActiveContent(1);
+      expect(wall.getColumnState(1)).toBe('idle');
+    });
   });
 });
