@@ -1,28 +1,48 @@
-﻿@import "tailwindcss";
-
-@import "./variables.css";
-@import "./base.css";
-@import "./layout.css";
-@import "./zones.css";
-@import "./buttons.css";
-@import "./submenu.css";
-@import "./carousel.css";
-@import "./content-panel.css";
-@import "./animations.css";
+@import "tailwindcss";
+@import "./kiosk-effects.css";
 
 @theme {
   --font-sans: "Inter", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --color-primary: #2d6a4f;
+  --color-primary-hover: #40916c;
+  --color-primary-active: #1b4332;
+  --color-accent: #52b788;
+  --color-kiosk-bg: #d5d5d5;
+  --color-kiosk-hover: #c8c8c8;
+  --color-kiosk-active: #bababa;
+  --color-kiosk-border: #c0c0c0;
 }
 
 :root {
   color-scheme: light;
-  font-family: var(--font-family);
+  font-family: var(--font-sans);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
 
-* { box-sizing: border-box; }
-html, body, #__nuxt { width: 100%; height: 100%; margin: 0; overflow: clip; overscroll-behavior: none; }
-body { user-select: none; -webkit-font-smoothing: antialiased; touch-action: none; }
-button { font-family: inherit; }
-img { max-width: none; -webkit-user-drag: none; }
+* {
+  box-sizing: border-box;
+}
+
+html, body, #__nuxt {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: clip;
+  overscroll-behavior: none;
+}
+
+body {
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  touch-action: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+img {
+  max-width: none;
+  -webkit-user-drag: none;
+}
