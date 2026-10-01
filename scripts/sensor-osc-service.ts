@@ -1,3 +1,5 @@
+/// <reference types="@types/bun" />
+
 import type { Server, ServerWebSocket } from 'bun';
 import type { Buffer } from 'node:buffer';
 import type { RemoteInfo } from 'node:dgram';
@@ -103,24 +105,24 @@ if (typeof Bun !== 'undefined') {
   Bun.serve({
     port: WS_PORT,
     websocket: {
-      open(ws: ServerWebSocket<unknown>) {
+      open(ws: ServerWebSocket<undefined>) {
         const client: ConnectedClient = { send: data => ws.send(data) };
         (ws as unknown as { clientRef: ConnectedClient }).clientRef = client;
         clients.add(client);
         console.log(`[WS] Nuxt kiosk connected (${clients.size} client(s) active)`);
       },
-      message(ws: ServerWebSocket<unknown>, message: string | Buffer) {
+      message(ws: ServerWebSocket<undefined>, message: string | Buffer) {
         const client = (ws as unknown as { clientRef: ConnectedClient }).clientRef;
         handleClientMessage(String(message), client);
       },
-      close(ws: ServerWebSocket<unknown>) {
+      close(ws: ServerWebSocket<undefined>) {
         const client = (ws as unknown as { clientRef: ConnectedClient }).clientRef;
         if (client)
           clients.delete(client);
         console.log(`[WS] Nuxt kiosk disconnected (${clients.size} client(s) active)`);
       },
     },
-    fetch(req: Request, server: Server<unknown>) {
+    fetch(req: Request, server: Server<undefined>) {
       if (server.upgrade(req))
         return;
       return new Response('Altama Sensor & OSC Service is running on ws://127.0.0.1:8787');
