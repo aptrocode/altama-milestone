@@ -6,8 +6,6 @@ defineProps<{
   sensorReady: boolean;
   calibrationReady: boolean;
   error: string | null;
-  cacheReady: number;
-  cacheLoading: number;
 }>();
 </script>
 
@@ -19,8 +17,7 @@ defineProps<{
     />
     <span>{{ socketStatus }}</span>
     <span class="text-white/22">/</span>
-    <span>asset {{ cacheReady }} siap</span>
-    <span v-if="cacheLoading">· {{ cacheLoading }} load</span>
+    <span>{{ sensorReady && calibrationReady ? 'sensor siap' : 'sensor belum siap' }}</span>
     <span v-if="error" class="truncate text-red-300">· {{ error }}</span>
   </aside>
 </template>

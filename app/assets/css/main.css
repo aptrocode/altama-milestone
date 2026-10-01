@@ -45,3 +45,160 @@ img {
   max-width: none;
   -webkit-user-drag: none;
 }
+
+/* Logical control dimensions come from shared/installation-layout.json. */
+.wall-row {
+  padding-inline: calc(var(--wall-inset) * var(--wall-x));
+  gap: calc(var(--wall-gap) * var(--wall-x));
+}
+.wall-language-bar {
+  display: flex;
+  padding: calc(var(--wall-language-padding) * var(--wall-y)) calc(var(--wall-language-padding) * var(--wall-x));
+  gap: calc(var(--wall-language-gap) * var(--wall-x));
+}
+.wall-flag, .wall-back, .wall-carousel-arrow {
+  width: calc(var(--wall-flag-size) * var(--wall-x));
+  height: calc(var(--wall-flag-size) * var(--wall-y));
+  flex-shrink: 0;
+}
+.wall-flag { display: flex; align-items: center; justify-content: center; }
+.wall-flag-image { width: calc(28 * var(--wall-x)); height: calc(19 * var(--wall-y)); object-fit: cover; }
+.wall-panel { margin-top: calc(var(--wall-panel-gap) * var(--wall-y)); }
+.wall-submenu { padding: calc(var(--wall-panel-inset) * var(--wall-y)) calc(var(--wall-panel-inset) * var(--wall-x)); box-shadow: inset 0 0 0 2px rgb(5 150 105 / .3); }
+.wall-submenu-heading, .wall-active-heading {
+  height: calc(var(--wall-heading-height) * var(--wall-y));
+  padding: calc(var(--wall-back-padding) * var(--wall-y)) calc(var(--wall-back-padding) * var(--wall-x));
+}
+.wall-carousel-controls {
+  height: calc(var(--wall-carousel-footer) * var(--wall-y));
+  padding-inline: calc(var(--wall-carousel-padding) * var(--wall-x));
+}
+button:focus-visible { outline: 3px solid #059669; outline-offset: 3px; }
+
+@property --hold-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* Neon laser outline tracer on hold */
+.laser-target::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 12px;
+  background: conic-gradient(
+    from 0deg,
+    rgba(5, 150, 105, 0.3) 0deg,
+    #059669 0deg,
+    #10b981 calc(var(--hold-angle, 0deg) - 20deg),
+    #6ee7b7 calc(var(--hold-angle, 0deg) - 6deg),
+    #ffffff var(--hold-angle, 0deg),
+    transparent var(--hold-angle, 0deg)
+  );
+  padding: 3.5px;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  filter:
+    drop-shadow(0 0 2px #ffffff)
+    drop-shadow(0 0 6px #10b981)
+    drop-shadow(0 0 14px rgba(16, 185, 129, 0.8));
+}
+
+.laser-target.holding {
+  border-color: rgba(16, 185, 129, 0.8);
+  box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.12);
+}
+
+.laser-target.holding::after {
+  opacity: 1;
+  animation: holdBorderFill 1s linear forwards;
+}
+
+.laser-target.hold-complete {
+  animation: holdSuccessBurst 0.35s ease-out;
+}
+
+.laser-target.hold-complete::after {
+  opacity: 1;
+  --hold-angle: 360deg;
+  background: conic-gradient(
+    from 0deg,
+    #10b981 0deg,
+    #34d399 180deg,
+    #ffffff 360deg
+  );
+  filter:
+    drop-shadow(0 0 4px #ffffff)
+    drop-shadow(0 0 12px #34d399)
+    drop-shadow(0 0 24px rgba(16, 185, 129, 0.9));
+}
+
+@keyframes holdBorderFill {
+  from { --hold-angle: 0deg; }
+  to   { --hold-angle: 360deg; }
+}
+
+@keyframes holdSuccessBurst {
+  0% {
+    box-shadow: 0 0 0 rgba(16, 185, 129, 0);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(16, 185, 129, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+/* Subtle Idle Breathing Border */
+.idle-breathe {
+  animation: idleBreathe 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes idleBreathe {
+  0% {
+    border-color: rgba(212, 212, 212, 0.8);
+  }
+  100% {
+    border-color: rgba(16, 185, 129, 0.6);
+  }
+}
+
+/* Hand hold gesture animation */
+.animate-hand-press {
+  animation: handHoldHint 2s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+@keyframes handHoldHint {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+/* Card Content Entrance Motion */
+@keyframes kioskCardEnter {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-kiosk-enter {
+  animation: kioskCardEnter 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}

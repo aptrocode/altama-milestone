@@ -1,69 +1,65 @@
+import { createPinia } from 'pinia';
 import { describe, expect, it } from 'vitest';
+import { effectScope } from 'vue';
+import { useWallController } from '../app/composables/useWallController';
+import { useWallStore } from '../app/stores/wall';
 import { parseSensorMessage } from '../app/utils/sensor-message';
+import { COLUMN_IDS } from '../shared/wall';
+import { sensorInput } from './helpers';
 
-function message(overrides: Record<string, unknown> = {}) {
-  return JSON.stringify({
-    version: 1,
-    sessionId: 'service-boot-1',
-    seq: 1,
-    layoutVersion: 'layout-v4',
-    type: 'touchStart',
-    section: 'center',
-    target: 'artwork',
-    pointerId: 'lidar-02',
-    x: 1120,
-    y: 650,
-    ...overrides,
-  });
-}
-
-describe('parseSensorMessage', () => {
-  it('accepts a valid touchStart', () => {
-    const result = parseSensorMessage(message());
-
-    expect(result.ok).toBe(true);
-    if (result.ok)
-      expect(result.message.type).toBe('touchStart');
-  });
-
-  it('rejects malformed JSON and unsupported versions', () => {
-    expect(parseSensorMessage('{').ok).toBe(false);
-    expect(parseSensorMessage(message({ version: 2 })).ok).toBe(false);
-  });
-
-  it('rejects coordinates outside the logical canvas', () => {
-    const result = parseSensorMessage(message({ x: 9999 }));
-
-    expect(result).toEqual({ ok: false, error: 'coordinates are outside the logical canvas' });
-  });
-
-  it('accepts status messages without interaction fields', () => {
-    const result = parseSensorMessage(message({
-      type: 'status',
-      sensorReady: true,
-      calibrated: false,
-      detail: 'warming up',
-    }));
-
-    expect(result.ok).toBe(true);
-    if (result.ok && result.message.type === 'status')
-      expect(result.message.calibrated).toBe(false);
-  });
-
-  it('accepts a section language selection and rejects unsupported languages', () => {
-    const valid = parseSensorMessage(message({
-      type: 'selectLanguage',
-      locale: 'zh-Hans',
-      x: 1152,
-      y: 1050,
-    }));
-    expect(valid.ok).toBe(true);
-    if (valid.ok && valid.message.type === 'selectLanguage') {
-      expect(valid.message.section).toBe('center');
-      expect(valid.message.locale).toBe('zh-Hans');
+describe('sensor protocol v2 and shared action routing', () => {
+  it.each(COLUMN_IDS)('opens column %i and switches only its language through parsed input', (columnId) => {
+    const scope = effectScope();
+    const wall = useWallStore(createPinia());
+    const controls = scope.run(() => useWallController(wall))!;
+    try {
+      for (const action of [{ type: 'main', columnId }, { type: 'language', columnId, locale: 'zh-Hans' }] as const) {
+        const parsed = parseSensorMessage(sensorInput(action));
+        expect(parsed.ok).toBe(true);
+        if (parsed.ok && parsed.message.type === 'input')
+          expect(controls.dispatch(parsed.message.action)).toBe(true);
+      }
+      expect(wall.getColumnState(columnId)).not.toBe('idle');
+      expect(wall.getColumnLocale(columnId)).toBe('zh-Hans');
+      COLUMN_IDS.filter(id => id !== columnId).forEach(id => expect(wall.getColumnLocale(id)).toBe('id'));
     }
+    finally { scope.stop(); }
+  });
 
-    expect(parseSensorMessage(message({ type: 'selectLanguage', locale: 'fr' })))
-      .toEqual({ ok: false, error: 'unsupported locale' });
+  it('routes sub-item, carousel, and back actions through the same controller', () => {
+    const scope = effectScope();
+    const wall = useWallStore(createPinia());
+    const controls = scope.run(() => useWallController(wall))!;
+    try {
+      const actions = [
+        { type: 'main', columnId: 2 },
+        { type: 'subItem', columnId: 2, subItemId: 'ryu' },
+        { type: 'next', columnId: 2 },
+        { type: 'back', columnId: 2 },
+      ] as const;
+      for (const action of actions) {
+        const parsed = parseSensorMessage(sensorInput(action));
+        expect(parsed.ok).toBe(true);
+        if (parsed.ok && parsed.message.type === 'input')
+          expect(controls.dispatch(parsed.message.action)).toBe(true);
+      }
+      expect(wall.columns[2]).toMatchObject({ phase: 'submenu', subItem: 'ryu', slide: 0 });
+    }
+    finally { scope.stop(); }
+  });
+
+  it('rejects malformed data, old protocol, unknown columns, and unknown actions', () => {
+    expect(parseSensorMessage('{').ok).toBe(false);
+    expect(parseSensorMessage(sensorInput({ type: 'main', columnId: 1 }, { version: 1 })).ok).toBe(false);
+    for (const action of [{ type: 'main', columnId: 7 }, { type: 'other', columnId: 1 }, { type: 'language', columnId: 1, locale: 'fr' }, { type: 'subItem', columnId: 5, subItemId: 'ryu' }])
+      expect(parseSensorMessage(sensorInput({ type: 'main', columnId: 1 }, { action })).ok).toBe(false);
+  });
+
+  it('rejects out-of-canvas and wrong-target coordinates', () => {
+    expect(parseSensorMessage(sensorInput({ type: 'main', columnId: 1 }, { x: 2304 })).ok).toBe(false);
+    const columnSixPoint = JSON.parse(sensorInput({ type: 'main', columnId: 6 }));
+    expect(parseSensorMessage(sensorInput({ type: 'main', columnId: 1 }, { x: columnSixPoint.x })).ok).toBe(false);
+    const idFlag = JSON.parse(sensorInput({ type: 'language', columnId: 1, locale: 'id' }));
+    expect(parseSensorMessage(sensorInput({ type: 'language', columnId: 1, locale: 'en' }, { x: idFlag.x })).ok).toBe(false);
   });
 });

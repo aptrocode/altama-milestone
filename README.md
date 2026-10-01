@@ -1,92 +1,42 @@
-# Altama Interactive Wall & Milestone
+# Altama Interactive Wall
 
-![Static Badge](https://img.shields.io/badge/license-MIT-brightgreen?label=LICENSE)
+Fullscreen Nuxt 4 kiosk for ALTAMA's **2304 × 1344** LED installation.
 
-Aplikasi kiosk interaktif fullscreen berbasis **Nuxt 4** untuk instalasi LED wall interaktif ALTAMA beresolusi **2304 × 1344** (rasio 12:7). Dilengkapi kontrol sensor LiDAR melalui WebSocket, interaksi *hold-to-activate*, navigasi komprehensif, dan arsitektur modular yang stabil.
+Six independent columns cover About Altama, Our Brands, Infrastructure, Digital Partners, Distribution, and Summit 2026. Each column has Indonesian (default), English, and Simplified Chinese flag controls. Carousel photos and company copy remain provisional.
 
----
+## Run
 
-## 🌟 Fitur Utama
-
-- **Layout 6 Kolom Interaktif**:
-  1. **ABOUT ALTAMA** — Tombol utama dengan galeri foto carousel & deskripsi.
-  2. **OUR BRANDS** — Kategori bertingkat dengan sub-menu (TEKIRO, RYU, REXCO) & galeri foto.
-  3. **INFRASTRUCTURE** — Galeri foto infrastruktur & deskripsi operasional.
-  4. **DIGITAL PARTNERS** — Tampilan mitra digital & kolaborasi.
-  5. **DISTRIBUTION** — Kategori bertingkat (OUR WAY FOR DISTRIBUTION, BRAND ACTIVATION).
-  6. **SUMMIT 2026** — Informasi agenda Summit 2026 & galeri foto.
-- **Interaksi Hold-to-Activate (1 Detik)**: Mencegah sentuhan tidak sengaja pada layar sentuh / sensor LiDAR dengan animasi cincin laser (*laser spark tracer*) dan efek emerald neon glow.
-- **Integrasi Sensor LiDAR**: Koneksi native WebSocket (`useSensorSocket`) untuk menangani event sentuhan sensor Hokuyo secara real-time.
-- **Keyboard Shortcuts (Mode Operator / Testing)**:
-  - `1` – `6`: Membuka atau mengaktifkan kolom 1 sampai 6.
-  - `Escape` / `R`: Mereset seluruh kolom kembali ke status *idle*.
-  - `D`: Menampilkan panel diagnostik status sensor & WebSocket (hanya mode dev).
-
----
-
-## 🚀 Menjalankan Aplikasi
-
-Pastikan Anda telah memasang **[Bun](https://bun.sh/)** (atau Node.js).
-
-### 1. Instalasi Dependensi
 ```bash
-bun install
-```
-
-### 2. Jalankan Server Pengembangan
-```bash
+bun install --frozen-lockfile
 bun run dev
 ```
-Buka browser di `http://localhost:3000`.
 
-### 3. Build & Pratinjau Produksi
+Open the URL printed by Nuxt. Build with `bun run build`, create static output with `bun run generate`, and preview with `bun run preview`.
+
+## Interaction
+
+- Hold main/sub-item buttons for one second with mouse/touch.
+- Enter/Space activate a focused button directly.
+- Digits 1–6 open/go back in their column.
+- R/Escape reset content immediately while preserving languages.
+- After 15 seconds without activity, only that column resets to idle/Indonesian.
+- D toggles diagnostics in development.
+
+Sensor integration uses **protocol v2 / wall-v1**. It requires a matching external Sensor Service and hardware calibration; see [docs/sensor.md](docs/sensor.md). Sensor input is disabled by default.
+
+## Project guide
+
+Start with [AGENTS.md](AGENTS.md). Architecture, design, languages, assets, sensor, testing, push, and release instructions are split under `docs/`. Production UI lives in `app/`; shared actions/geometry live in `shared/`. `dika/` is an isolated prototype sandbox.
+
+## Checks
+
 ```bash
-# Build aplikasi untuk production
+bun run lint
+bun run typecheck
+bun run test
+bun run assets:check
 bun run build
-
-# Menghasilkan static site (SSG)
 bun run generate
-
-# Preview hasil build
-bun run preview
 ```
 
----
-
-## 🧪 Validasi & Pengujian
-
-Sebelum melakukan commit atau push, seluruh pemeriksaan kualitas dapat dijalankan dengan:
-
-```bash
-bun run lint          # Cek linting dan formatting ESLint
-bun run typecheck     # Cek tipe data TypeScript Nuxt
-bun run test          # Jalankan unit test Vitest
-bun run assets:check  # Validasi kelengkapan aset & resolusi gambar
-```
-
----
-
-## 📁 Struktur Direktori
-
-```text
-altama-milestone/
-├── app/                  # Kode aplikasi Nuxt 4 (Vue 3 + TypeScript)
-│   ├── assets/css/       # Desain sistem modular, variabel, & animasi
-│   ├── components/kiosk/ # Komponen utama dinding interaktif & status
-│   ├── composables/      # useSensorSocket & integrasi WebSocket
-│   ├── data/             # Konfigurasi dinding (wall-config.ts) & layout
-│   ├── plugins/          # Direktif kustom (v-hold)
-│   ├── stores/           # State management Pinia (wall.ts, system.ts)
-│   └── pages/index.vue   # Halaman utama kiosk
-├── public/               # Aset statis publik (bendera, ikon, gambar)
-├── shared/               # Definisi geometri sensor & layout JSON
-├── test/                 # Pengujian otomatis berbasis Vitest
-├── docs/                 # Dokumentasi arsitektur, alur push, & rilis
-└── nuxt.config.ts        # Konfigurasi utama Nuxt
-```
-
----
-
-## 📄 Lisensi
-
-Proyek ini dilisensikan di bawah lisensi [MIT](LICENSE).
+See [docs/testing.md](docs/testing.md) for behavior and browser acceptance. [MIT license](LICENSE).

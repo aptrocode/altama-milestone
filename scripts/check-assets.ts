@@ -1,92 +1,69 @@
-import { readdir, stat } from 'node:fs/promises';
-import path from 'node:path';
+import { readFile } from 'node:fs/promises';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import sharp from 'sharp';
-import milestones from '../shared/milestones.json';
+import { installationLayout, isPointInsideCanvas } from '../app/data/installation-layout';
+import { WALL_CONFIG } from '../app/data/wall-config';
+import { FLAG_SOURCES } from '../app/data/wall-copy';
+import { COLUMN_IDS, WALL_LOCALES } from '../shared/wall';
 
-const dirname = path.dirname(fileURLToPath(import.meta.url));
-const root = path.resolve(dirname, '..');
-const assetRoot = path.join(root, 'public', 'milestones');
 const errors: string[] = [];
-const warnings: string[] = [];
-const knownDirectories = new Set<string>();
-const ids = new Set<string>();
+const root = new URL('../', import.meta.url);
+const ids = WALL_CONFIG.columns.map(column => column.id);
+if (JSON.stringify(ids) !== JSON.stringify(COLUMN_IDS))
+  errors.push('Wall config must define columns 1–6 in order');
+if (JSON.stringify(installationLayout.columns.map(column => column.id)) !== JSON.stringify(ids))
+  errors.push('Sensor layout column IDs must match wall config');
 
-async function inspectImage(filePath: string) {
-  try {
-    const metadata = await sharp(filePath).metadata();
-    return metadata;
+for (const column of WALL_CONFIG.columns) {
+  const geometry = installationLayout.columns.find(item => item.id === column.id)!;
+  if (!Number.isSafeInteger(column.slides) || column.slides < 1)
+    errors.push(`Column ${column.id}: invalid slide count`);
+  for (const locale of WALL_LOCALES) {
+    const copy = column.i18n?.[locale];
+    if (!copy || Object.values(copy).some(text => typeof text !== 'string' || !text.trim()))
+      errors.push(`Column ${column.id}: incomplete ${locale} copy`);
+    const flags = geometry?.languages.filter(flag => flag.locale === locale) || [];
+    if (flags.length !== 1)
+      errors.push(`Column ${column.id}: missing/duplicate ${locale} target`);
+    for (const sub of column.subItems || []) {
+      const translated = sub.i18n?.[locale];
+      const content = WALL_CONFIG.subItemContent[sub.key]?.[locale];
+      if (!translated || !content || [...Object.values(translated), ...Object.values(content)].some(text => !text.trim()))
+        errors.push(`Column ${column.id}/${sub.key}: incomplete ${locale} copy`);
+    }
   }
-  catch (error) {
-    errors.push(`${path.relative(root, filePath)} cannot be read: ${error instanceof Error ? error.message : String(error)}`);
-    return null;
-  }
-}
+  if (JSON.stringify(column.subItems?.map(sub => sub.key) || []) !== JSON.stringify(geometry?.submenu?.items.map(item => item.key) || []))
+    errors.push(`Column ${column.id}: submenu geometry differs from config`);
 
-for (const milestone of milestones) {
-  if (ids.has(milestone.id))
-    errors.push(`Duplicate milestone id: ${milestone.id}`);
-  ids.add(milestone.id);
-
-  if (!milestone.id.startsWith(`${milestone.section}-`))
-    errors.push(`${milestone.id} must start with ${milestone.section}-`);
-
-  const directory = path.join(assetRoot, milestone.section, milestone.id);
-  knownDirectories.add(path.normalize(directory).toLowerCase());
-  const sketchPath = path.join(directory, 'sketch.webp');
-  const colorPath = path.join(directory, 'color.webp');
-  const [sketch, color] = await Promise.all([inspectImage(sketchPath), inspectImage(colorPath)]);
-
-  if (!sketch || !color)
-    continue;
-
-  for (const [variant, metadata] of [['sketch', sketch], ['color', color]] as const) {
-    if (metadata.format !== 'webp')
-      errors.push(`${milestone.id}/${variant}.webp is ${metadata.format ?? 'unknown'}, expected WebP`);
-    if ((metadata.pages ?? 1) !== 1)
-      errors.push(`${milestone.id}/${variant}.webp must be a static image`);
-  }
-
-  if (sketch.width !== color.width || sketch.height !== color.height)
-    errors.push(`${milestone.id} sketch/color dimensions do not match`);
-
-  if (sketch.width !== milestone.artworkWidth || sketch.height !== milestone.artworkHeight)
-    errors.push(`${milestone.id} is ${sketch.width}x${sketch.height}, expected ${milestone.artworkWidth}x${milestone.artworkHeight}`);
-
-  console.log(`✓ ${milestone.id} ${sketch.width}x${sketch.height}`);
-}
-
-try {
-  for (const sectionEntry of await readdir(assetRoot, { withFileTypes: true })) {
-    if (!sectionEntry.isDirectory())
-      continue;
-    const sectionPath = path.join(assetRoot, sectionEntry.name);
-    for (const milestoneEntry of await readdir(sectionPath, { withFileTypes: true })) {
-      if (!milestoneEntry.isDirectory())
-        continue;
-      const directory = path.normalize(path.join(sectionPath, milestoneEntry.name)).toLowerCase();
-      if (!knownDirectories.has(directory))
-        warnings.push(`Unreferenced asset directory: ${path.relative(root, directory)}`);
+  const targets = geometry
+    ? [geometry.main, ...geometry.languages, ...Object.values(geometry.active), ...(geometry.submenu ? [geometry.submenu.back, ...geometry.submenu.items] : [])]
+    : [];
+  for (const target of targets) {
+    if (![target.x, target.y, target.width, target.height].every(Number.isFinite)
+      || target.width <= 0 || target.height <= 0 || !isPointInsideCanvas(target.x, target.y)
+      || target.x + target.width > installationLayout.canvas.width || target.y + target.height > installationLayout.canvas.height) {
+      errors.push(`Column ${column.id}: target is outside the canvas`);
     }
   }
 }
-catch (error) {
-  const exists = await stat(assetRoot).then(() => true, () => false);
-  if (!exists)
-    errors.push('public/milestones does not exist');
-  else
-    errors.push(error instanceof Error ? error.message : String(error));
+
+for (const source of Object.values(FLAG_SOURCES)) {
+  try {
+    const path = fileURLToPath(new URL(`public${source}`, root));
+    const svg = await readFile(path, 'utf8');
+    if (!svg.includes('<svg') || !/viewBox="0 0 \d+ \d+"/.test(svg))
+      errors.push(`${source}: invalid SVG/viewBox`);
+  }
+  catch {
+    errors.push(`${source}: missing local flag`);
+  }
 }
 
-for (const warning of warnings)
-  console.warn(`WARN: ${warning}`);
-
-if (errors.length > 0) {
-  for (const error of errors)
-    console.error(`ERROR: ${error}`);
+if (errors.length) {
+  console.error(errors.join('\n'));
   process.exitCode = 1;
 }
 else {
-  console.log(`Asset validation passed (${milestones.length} milestones).`);
+  console.log('Asset/config validation passed: 6 columns, 18 flag targets, 5 submenu targets, 3 local SVG flags.');
+  console.log('Carousel photos remain placeholders; no approved photo assets are declared.');
 }

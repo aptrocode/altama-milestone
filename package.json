@@ -2,7 +2,7 @@
   "name": "altama-interactive-milestone",
   "type": "module",
   "version": "0.3.0",
-  "description": "Interactive three-section company milestone renderer for a 2304 x 1344 LED installation.",
+  "description": "Interactive six-column fullscreen wall for a 2304 x 1344 LED installation.",
   "author": "Adityawarman Dewa Putra",
   "license": "MIT",
   "keywords": [
@@ -22,14 +22,12 @@
     "typecheck": "nuxt typecheck",
     "test": "vitest run",
     "test:watch": "vitest",
-    "assets:check": "bun scripts/check-assets.ts",
-    "assets:fixtures": "bun scripts/generate-fixtures.ts"
+    "assets:check": "bun scripts/check-assets.ts"
   },
   "dependencies": {
     "@nuxt/fonts": "^0.14.0",
     "@pinia/nuxt": "^1.0.2",
     "@tailwindcss/vite": "^4.3.3",
-    "gsap": "^3.15.0",
     "nuxt": "^4.5.2",
     "pinia": "^4.0.3",
     "tailwindcss": "^4.3.3",
@@ -39,7 +37,6 @@
   "devDependencies": {
     "@antfu/eslint-config": "^9.5.1",
     "eslint": "^10.11.0",
-    "sharp": "^0.35.5",
     "typescript": "^6.0.3",
     "vitest": "^5.0.3",
     "vue-tsc": "^3.3.11"

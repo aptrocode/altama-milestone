@@ -13,7 +13,7 @@ export default defineNuxtConfig({
       link: [
         { rel: 'icon', href: '/favicon.ico', sizes: 'any' },
       ],
-      title: 'Altama Interactive Milestone',
+      title: 'Altama Interactive Wall',
     },
   },
   modules: [

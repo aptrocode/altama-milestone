@@ -10,7 +10,7 @@ Ketika melakukan rilis atau sinkronisasi repositori, metadata GitHub wajib mengi
 
 1. **Deskripsi Repositori**:
    - Dibuat ringkas, jelas, dan **wajib diawali dengan emoji**.
-   - Contoh standar: `✨ Interactive three-section company milestone renderer for 2304x1344 LED installation`
+   - Contoh standar: `✨ Interactive six-column fullscreen wall for 2304x1344 LED installation`
 2. **Topik / Tags Repositori**:
    - Dibatasi **hanya 3 tag** (tidak boleh lebih dan tidak boleh kurang).
    - Tag resmi: `nuxt`, `kiosk`, `interactive-installation`.
@@ -22,7 +22,7 @@ Ketika melakukan rilis atau sinkronisasi repositori, metadata GitHub wajib mengi
 Setiap permintaan rilis harus dijalankan secara berurutan:
 
 ### Langkah 1: Bump Versi
-Perbarui field `"version"` pada [`package.json`](file:///package.json) sesuai kaidah Semantic Versioning (SemVer: `Major.Minor.Patch`).
+Perbarui field `"version"` pada `package.json` sesuai kaidah Semantic Versioning (SemVer: `Major.Minor.Patch`).
 
 ### Langkah 2: Verifikasi & Quality Gates
 Pastikan seluruh validasi lokal lolos 100% tanpa error:
@@ -35,12 +35,7 @@ bun run build
 ```
 
 ### Langkah 3: Git Commit & Push
-Commit perubahan versi dan dokumen terkait:
-```bash
-git add package.json docs/
-git commit -m "chore(release): bump version to X.Y.Z"
-git push origin main
-```
+Buat issue dan branch rilis, commit perubahan versi/dokumentasi, lalu buka PR sesuai `docs/push.md`. Jangan push langsung ke main. Pemeriksaan dan review harus selesai sebelum PR digabungkan; tag dibuat dari commit hasil merge pada main.
 
 ### Langkah 4: Git Tag
 Buat tag dengan format `vX.Y.Z` lalu push ke remote origin:

@@ -1,322 +1,103 @@
-import type { ColumnConfig, WallLocale } from '~/data/wall-config';
+import type { ColumnId, ColumnSnapshot, WallAction } from '../../shared/wall';
 import { defineStore } from 'pinia';
 import { WALL_CONFIG } from '~/data/wall-config';
+import { COLUMN_IDS, WALL_LOCALES } from '../../shared/wall';
 
-export type ColumnState = 'idle' | 'submenu' | 'active';
+function getConfig(columnId: ColumnId) {
+  return WALL_CONFIG.columns.find(column => column.id === columnId)!;
+}
 
-const AUTO_RESET_DELAY_MS = 15000;
-const columnTimers: Record<number, any> = {};
+function initialColumn(columnId: ColumnId): ColumnSnapshot {
+  return { phase: 'idle', locale: 'id', subItem: getConfig(columnId).defaultSub || '', slide: 0 };
+}
+
+function columnCopy(columnId: ColumnId, snapshot: ColumnSnapshot) {
+  const config = getConfig(columnId);
+  const copy = config.i18n?.[snapshot.locale];
+  const subCopy = config.type === 'expandable'
+    ? WALL_CONFIG.subItemContent[snapshot.subItem]?.[snapshot.locale]
+    : undefined;
+  return {
+    label: copy?.label || config.label,
+    headerTitle: subCopy?.title || copy?.headerTitle || config.headerTitle,
+    headerDesc: subCopy?.desc || copy?.headerDesc || config.headerDesc,
+    bottomTitle: subCopy?.title || copy?.bottomTitle || config.bottomTitle,
+    bottomDesc: subCopy?.desc || copy?.bottomDesc || config.bottomDesc,
+    activeLabel: config.subItems?.find(sub => sub.key === snapshot.subItem)?.i18n?.[snapshot.locale]?.label
+      || copy?.label || config.label,
+  };
+}
 
 export const useWallStore = defineStore('wall', {
   state: () => ({
-    columnStates: {
-      1: 'idle' as ColumnState,
-      2: 'idle' as ColumnState,
-      3: 'idle' as ColumnState,
-      4: 'idle' as ColumnState,
-      5: 'idle' as ColumnState,
-      6: 'idle' as ColumnState,
-    } as Record<number, ColumnState>,
-    columnLocales: {
-      1: 'id' as WallLocale,
-      2: 'id' as WallLocale,
-      3: 'id' as WallLocale,
-      4: 'id' as WallLocale,
-      5: 'id' as WallLocale,
-      6: 'id' as WallLocale,
-    } as Record<number, WallLocale>,
-    activeSubItem: {
-      2: 'tekiro',
-      5: 'brand-activation',
-    } as Record<number, string>,
-    carouselIndex: {
-      1: 0,
-      2: 0,
-      3: 0,
-      4: 0,
-      5: 0,
-      6: 0,
-    } as Record<number, number>,
+    columns: Object.fromEntries(COLUMN_IDS.map(id => [id, initialColumn(id)])) as Record<ColumnId, ColumnSnapshot>,
   }),
-
   getters: {
-    hasAnyActive: (state) => {
-      return Object.values(state.columnStates).some(s => s !== 'idle');
-    },
-
-    getColumnState: state => (colId: number): ColumnState => {
-      return state.columnStates[colId] || 'idle';
-    },
-
-    getColumnLocale: state => (colId: number): WallLocale => {
-      return state.columnLocales[colId] || 'id';
-    },
-
-    getActiveSubItem: state => (colId: number): string => {
-      return state.activeSubItem[colId] || '';
-    },
-
-    getCarouselIndex: state => (colId: number): number => {
-      return state.carouselIndex[colId] || 0;
-    },
-
-    getColumnConfig: () => (colId: number): ColumnConfig | undefined => {
-      return WALL_CONFIG.columns.find(c => c.id === colId);
-    },
-
-    getColumnLabel: state => (colId: number): string => {
-      const col = WALL_CONFIG.columns.find(c => c.id === colId);
-      if (!col)
-        return '';
-      const locale = state.columnLocales[colId] || 'id';
-      return col.i18n?.[locale]?.label || col.label;
-    },
-
-    getColumnLabelHtml: state => (colId: number): string => {
-      const col = WALL_CONFIG.columns.find(c => c.id === colId);
-      if (!col)
-        return '';
-      const locale = state.columnLocales[colId] || 'id';
-      return col.i18n?.[locale]?.labelHtml || col.labelHtml;
-    },
-
-    getHeaderTitle: state => (colId: number): string => {
-      const col = WALL_CONFIG.columns.find(c => c.id === colId);
-      if (!col)
-        return '';
-      const locale = state.columnLocales[colId] || 'id';
-
-      if (col.type === 'expandable') {
-        const subKey = state.activeSubItem[colId] || col.defaultSub || '';
-        const subContent = WALL_CONFIG.subItemContent[subKey]?.[locale];
-        if (subContent?.title)
-          return subContent.title;
-      }
-      return col.i18n?.[locale]?.headerTitle || col.headerTitle;
-    },
-
-    getHeaderDesc: state => (colId: number): string => {
-      const col = WALL_CONFIG.columns.find(c => c.id === colId);
-      if (!col)
-        return '';
-      const locale = state.columnLocales[colId] || 'id';
-
-      if (col.type === 'expandable') {
-        const subKey = state.activeSubItem[colId] || col.defaultSub || '';
-        const subContent = WALL_CONFIG.subItemContent[subKey]?.[locale];
-        if (subContent?.desc)
-          return subContent.desc;
-      }
-      return col.i18n?.[locale]?.headerDesc || col.headerDesc;
-    },
-
-    getBottomTitle: state => (colId: number): string => {
-      const col = WALL_CONFIG.columns.find(c => c.id === colId);
-      if (!col)
-        return '';
-      const locale = state.columnLocales[colId] || 'id';
-
-      if (col.type === 'expandable') {
-        const subKey = state.activeSubItem[colId] || col.defaultSub || '';
-        const subContent = WALL_CONFIG.subItemContent[subKey]?.[locale];
-        if (subContent?.title)
-          return subContent.title;
-        const sub = col.subItems?.find(s => s.key === subKey);
-        if (sub?.i18n?.[locale]?.title)
-          return sub.i18n[locale].title;
-      }
-      return col.i18n?.[locale]?.bottomTitle || col.bottomTitle;
-    },
-
-    getBottomDesc: state => (colId: number): string => {
-      const col = WALL_CONFIG.columns.find(c => c.id === colId);
-      if (!col)
-        return '';
-      const locale = state.columnLocales[colId] || 'id';
-
-      if (col.type === 'expandable') {
-        const subKey = state.activeSubItem[colId] || col.defaultSub || '';
-        const subContent = WALL_CONFIG.subItemContent[subKey]?.[locale];
-        if (subContent?.desc)
-          return subContent.desc;
-        const sub = col.subItems?.find(s => s.key === subKey);
-        if (sub?.i18n?.[locale]?.desc)
-          return sub.i18n[locale].desc;
-      }
-      return col.i18n?.[locale]?.bottomDesc || col.bottomDesc;
-    },
-
-    getSubItemLabel: state => (colId: number, subKey: string): string => {
-      const col = WALL_CONFIG.columns.find(c => c.id === colId);
-      if (!col || !col.subItems)
-        return '';
-      const locale = state.columnLocales[colId] || 'id';
-      const sub = col.subItems.find(s => s.key === subKey);
-      return sub?.i18n?.[locale]?.label || sub?.label || '';
-    },
-
-    getSubItemLabelHtml: state => (colId: number, subKey: string): string => {
-      const col = WALL_CONFIG.columns.find(c => c.id === colId);
-      if (!col || !col.subItems)
-        return '';
-      const locale = state.columnLocales[colId] || 'id';
-      const sub = col.subItems.find(s => s.key === subKey);
-      return sub?.i18n?.[locale]?.labelHtml || sub?.labelHtml || sub?.label || '';
-    },
-
-    getActiveSubItemLabel: state => (colId: number): string => {
-      const col = WALL_CONFIG.columns.find(c => c.id === colId);
-      if (!col)
-        return '';
-      const locale = state.columnLocales[colId] || 'id';
-      if (col.type === 'expandable') {
-        const subKey = state.activeSubItem[colId] || col.defaultSub || '';
-        const sub = col.subItems?.find(s => s.key === subKey);
-        return sub?.i18n?.[locale]?.label || sub?.label || col.parentLabel || col.label;
-      }
-      return col.i18n?.[locale]?.label || col.label;
-    },
+    hasAnyActive: state => COLUMN_IDS.some(id => state.columns[id].phase !== 'idle'),
+    getColumnState: state => (id: ColumnId) => state.columns[id].phase,
+    getColumnLocale: state => (id: ColumnId) => state.columns[id].locale,
+    getCarouselIndex: state => (id: ColumnId) => state.columns[id].slide,
+    getColumnCopy: state => (id: ColumnId) => columnCopy(id, state.columns[id]),
+    getHeaderTitle: state => (id: ColumnId) => columnCopy(id, state.columns[id]).headerTitle,
+    getHeaderDesc: state => (id: ColumnId) => columnCopy(id, state.columns[id]).headerDesc,
+    getBottomTitle: state => (id: ColumnId) => columnCopy(id, state.columns[id]).bottomTitle,
+    getBottomDesc: state => (id: ColumnId) => columnCopy(id, state.columns[id]).bottomDesc,
   },
-
   actions: {
-    startColumnTimer(colId: number) {
-      this.clearColumnTimer(colId);
-      const isIdle = this.columnStates[colId] === 'idle';
-      const isDefaultLocale = (this.columnLocales[colId] || 'id') === 'id';
-      if (isIdle && isDefaultLocale)
-        return;
-
-      columnTimers[colId] = setTimeout(() => {
-        this.resetColumn(colId);
-      }, AUTO_RESET_DELAY_MS);
+    resetColumn(id: ColumnId, preserveLocale = false) {
+      const locale = this.columns[id].locale;
+      this.columns[id] = initialColumn(id);
+      if (preserveLocale)
+        this.columns[id].locale = locale;
     },
-
-    resetColumnTimer(colId: number) {
-      const isIdle = this.columnStates[colId] === 'idle';
-      const isDefaultLocale = (this.columnLocales[colId] || 'id') === 'id';
-      if (!isIdle || !isDefaultLocale) {
-        this.startColumnTimer(colId);
-      }
-    },
-
-    clearColumnTimer(colId: number) {
-      if (columnTimers[colId]) {
-        clearTimeout(columnTimers[colId]);
-        delete columnTimers[colId];
-      }
-    },
-
-    clearAllColumnTimers() {
-      Object.keys(columnTimers).forEach((id) => {
-        clearTimeout(columnTimers[Number(id)]);
-        delete columnTimers[Number(id)];
-      });
-    },
-
-    resetColumn(colId: number) {
-      this.clearColumnTimer(colId);
-      this.columnStates[colId] = 'idle';
-      this.carouselIndex[colId] = 0;
-      this.columnLocales[colId] = 'id';
-      const colConfig = WALL_CONFIG.columns.find(c => c.id === colId);
-      if (colConfig?.defaultSub) {
-        this.activeSubItem[colId] = colConfig.defaultSub;
-      }
-    },
-
-    closeSubmenu(colId: number) {
-      this.resetColumn(colId);
-    },
-
-    closeActiveContent(colId: number) {
-      const colConfig = WALL_CONFIG.columns.find(c => c.id === colId);
-      if (colConfig?.type === 'expandable') {
-        this.columnStates[colId] = 'submenu';
-        this.carouselIndex[colId] = 0;
-        this.startColumnTimer(colId);
-      }
-      else {
-        this.resetColumn(colId);
-      }
-    },
-
-    setColumnState(colId: number, state: ColumnState) {
-      this.columnStates[colId] = state;
-    },
-
-    setColumnLocale(colId: number, locale: WallLocale) {
-      this.columnLocales[colId] = locale;
-      this.startColumnTimer(colId);
-    },
-
-    setActiveSubItem(colId: number, subKey: string) {
-      this.activeSubItem[colId] = subKey;
-    },
-
-    setCarouselIndex(colId: number, index: number) {
-      this.carouselIndex[colId] = index;
-    },
-
-    navigateCarousel(colId: number, direction: number, totalSlides = 3) {
-      let current = this.carouselIndex[colId] || 0;
-      current += direction;
-      if (current >= totalSlides)
-        current = 0;
-      if (current < 0)
-        current = totalSlides - 1;
-      this.carouselIndex[colId] = current;
-      this.resetColumnTimer(colId);
-    },
-
     resetAll() {
-      this.clearAllColumnTimers();
-      WALL_CONFIG.columns.forEach((col) => {
-        this.columnStates[col.id] = 'idle';
-        this.carouselIndex[col.id] = 0;
-        if (col.defaultSub) {
-          this.activeSubItem[col.id] = col.defaultSub;
-        }
-      });
+      COLUMN_IDS.forEach(id => this.resetColumn(id, true));
     },
+    dispatch(action: WallAction): boolean {
+      const config = WALL_CONFIG.columns.find(column => column.id === action.columnId);
+      if (!config)
+        return false;
+      const column = this.columns[action.columnId];
 
-    onMainButtonClick(colId: number) {
-      const colConfig = WALL_CONFIG.columns.find(c => c.id === colId);
-      if (!colConfig)
-        return;
-
-      const current = this.columnStates[colId];
-      if (colConfig.type === 'expandable') {
-        if (current === 'idle') {
-          this.columnStates[colId] = 'submenu';
-          this.startColumnTimer(colId);
-        }
-        else if (current === 'submenu') {
-          this.columnStates[colId] = 'idle';
-          this.clearColumnTimer(colId);
-        }
-        else if (current === 'active') {
-          this.columnStates[colId] = 'submenu';
-          this.startColumnTimer(colId);
-        }
+      switch (action.type) {
+        case 'language':
+          if (!WALL_LOCALES.includes(action.locale))
+            return false;
+          column.locale = action.locale;
+          break;
+        case 'main':
+          if (column.phase !== 'idle')
+            return false;
+          column.phase = config.type === 'expandable' ? 'submenu' : 'active';
+          break;
+        case 'subItem':
+          if (column.phase !== 'submenu' || !config.subItems?.some(sub => sub.key === action.subItemId))
+            return false;
+          column.subItem = action.subItemId;
+          column.phase = 'active';
+          column.slide = 0;
+          break;
+        case 'back':
+          if (column.phase === 'idle')
+            return false;
+          if (column.phase === 'active' && config.type === 'expandable') {
+            column.phase = 'submenu';
+            column.slide = 0;
+          }
+          else {
+            this.resetColumn(action.columnId, true);
+          }
+          break;
+        case 'previous':
+        case 'next':
+          if (column.phase !== 'active')
+            return false;
+          column.slide = (column.slide + (action.type === 'next' ? 1 : -1) + config.slides) % config.slides;
+          break;
+        default:
+          return false;
       }
-      else {
-        if (current === 'idle') {
-          this.columnStates[colId] = 'active';
-          this.startColumnTimer(colId);
-        }
-        else {
-          this.columnStates[colId] = 'idle';
-          this.carouselIndex[colId] = 0;
-          this.clearColumnTimer(colId);
-        }
-      }
-    },
-
-    onSubButtonClick(colId: number, subKey: string) {
-      this.activeSubItem[colId] = subKey;
-      this.columnStates[colId] = 'active';
-      this.carouselIndex[colId] = 0;
-      this.startColumnTimer(colId);
+      return true;
     },
   },
 });
