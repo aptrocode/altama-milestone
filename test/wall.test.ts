@@ -36,6 +36,30 @@ describe('wALL_CONFIG', () => {
       expect(col.i18n?.['zh-Hans']).toBeDefined();
     });
   });
+
+  it('formats all labelHtml without <br> line breaks for single-line presentation', () => {
+    const locales = ['id', 'en', 'zh-Hans'] as const;
+    WALL_CONFIG.columns.forEach((col) => {
+      expect(col.labelHtml).not.toContain('<br');
+      expect(col.labelHtml).not.toContain('\n');
+      locales.forEach((loc) => {
+        if (col.i18n?.[loc]?.labelHtml) {
+          expect(col.i18n[loc].labelHtml).not.toContain('<br');
+          expect(col.i18n[loc].labelHtml).not.toContain('\n');
+        }
+      });
+      col.subItems?.forEach((sub) => {
+        expect(sub.labelHtml).not.toContain('<br');
+        expect(sub.labelHtml).not.toContain('\n');
+        locales.forEach((loc) => {
+          if (sub.i18n?.[loc]?.labelHtml) {
+            expect(sub.i18n[loc].labelHtml).not.toContain('<br');
+            expect(sub.i18n[loc].labelHtml).not.toContain('\n');
+          }
+        });
+      });
+    });
+  });
 });
 
 describe('useWallStore', () => {
