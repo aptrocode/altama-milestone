@@ -1,8 +1,8 @@
 /* ============================================
    Active Content Panel
    ============================================
-   When active: shows category label on top,
-   then green carousel box below.
+   When active: shows category label and close
+   button on top, then green carousel box below.
    ============================================ */
 
 .active-content {
@@ -15,17 +15,47 @@
   border: none;
 }
 
-/* Category label ABOVE the green box */
-.active-content > .submenu-parent-label {
+.active-content-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px var(--spacing-xs);
+  flex-shrink: 0;
+}
+
+.active-content-header .submenu-parent-label {
   display: block;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-black);
   color: var(--color-text-primary);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  padding: 0 0 var(--spacing-xs) 0;
-  text-align: center;
-  flex-shrink: 0;
+  text-align: left;
+  padding: 0;
+}
+
+.active-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.active-close-btn:hover {
+  background: rgba(239, 68, 68, 0.35);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #ffffff;
+  transform: scale(1.1);
 }
 
 /* Green carousel container */
@@ -38,11 +68,12 @@
   border-radius: var(--radius-btn);
   overflow: hidden;
   min-height: 0;
+  box-shadow: none;
 }
 
 /* Override carousel colors inside active panel */
 .active-content .carousel-indicator {
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .active-content .carousel-prev,
@@ -55,18 +86,18 @@
 .active-content .carousel-prev:hover,
 .active-content .carousel-next:hover {
   background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.08);
 }
-
 
 .active-content .placeholder-img {
   background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
 .active-content .placeholder-img .img-icon {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .active-content .placeholder-img span {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.8);
 }

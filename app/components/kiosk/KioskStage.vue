@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { ColumnConfig } from '~/data/wall-config';
+import type { WallLocale } from '~/data/wall-config';
 import type { SensorMessage } from '~/types/sensor';
 import { onMounted, onUnmounted, ref } from 'vue';
 import KioskStatus from '~/components/kiosk/KioskStatus.vue';
 import { useSensorSocket } from '~/composables/useSensorSocket';
 import { installationLayout } from '~/data/installation-layout';
-import { WALL_CONFIG } from '~/data/wall-config';
+import { WALL_CONFIG, WALL_LOCALES } from '~/data/wall-config';
 import { useSystemStore } from '~/stores/system';
 import { useWallStore } from '~/stores/wall';
 
@@ -17,43 +17,67 @@ const showDiagnostics = ref(false);
 const sensorEnabled = runtimeConfig.public.sensorEnabled === true
   || String(runtimeConfig.public.sensorEnabled).toLowerCase() === 'true';
 
-function getHeaderTitle(col: ColumnConfig): string {
-  if (col.type === 'expandable') {
-    const subKey = wall.getActiveSubItem(col.id);
-    return WALL_CONFIG.subItemContent[subKey]?.title || col.headerTitle;
+function getFlagSrc(locale: WallLocale): string {
+  switch (locale) {
+    case 'en':
+      return '/flags/english.svg';
+    case 'zh-Hans':
+      return '/flags/china.svg';
+    case 'id':
+    default:
+      return '/flags/indonesia.svg';
   }
-  return col.headerTitle;
 }
 
-function getHeaderDesc(col: ColumnConfig): string {
-  if (col.type === 'expandable') {
-    const subKey = wall.getActiveSubItem(col.id);
-    return WALL_CONFIG.subItemContent[subKey]?.desc || col.headerDesc;
-  }
-  return col.headerDesc;
+function getHoldCueText(colId: number): string {
+  const locale = wall.getColumnLocale(colId);
+  if (locale === 'en')
+    return 'HOLD 3 SECONDS';
+  if (locale === 'zh-Hans')
+    return '长按 3 秒';
+  return 'HOLD 3 DETIK';
 }
 
-function getBottomTitle(col: ColumnConfig): string {
-  if (col.type === 'expandable') {
-    const subKey = wall.getActiveSubItem(col.id);
-    return WALL_CONFIG.subItemContent[subKey]?.title || col.bottomTitle;
-  }
-  return col.bottomTitle;
+function getBackLabel(colId: number): string {
+  const locale = wall.getColumnLocale(colId);
+  if (locale === 'en')
+    return 'BACK';
+  if (locale === 'zh-Hans')
+    return '返回';
+  return 'KEMBALI';
 }
 
-function getActiveLabel(col: ColumnConfig): string {
-  if (col.type === 'expandable') {
-    const subKey = wall.getActiveSubItem(col.id);
-    const sub = col.subItems?.find(s => s.key === subKey);
-    return sub?.label || col.parentLabel || col.label;
-  }
-  return col.label;
+function getSlidePlaceholderText(colId: number, slideIdx: number): string {
+  const locale = wall.getColumnLocale(colId);
+  const num = String(slideIdx).padStart(2, '0');
+  if (locale === 'en')
+    return `PHOTO ${num}`;
+  if (locale === 'zh-Hans')
+    return `图片 ${num}`;
+  return `FOTO ${num}`;
+}
+
+function getPrevLabel(colId: number): string {
+  const locale = wall.getColumnLocale(colId);
+  if (locale === 'en')
+    return 'Previous';
+  if (locale === 'zh-Hans')
+    return '上一张';
+  return 'Sebelumnya';
+}
+
+function getNextLabel(colId: number): string {
+  const locale = wall.getColumnLocale(colId);
+  if (locale === 'en')
+    return 'Next';
+  if (locale === 'zh-Hans')
+    return '下一张';
+  return 'Berikutnya';
 }
 
 // ── Sensor Socket handler ──
 function handleSensorMessage(message: SensorMessage) {
   if (message.type === 'touchStart') {
-    // Map touch to column or reset
     if (message.section === 'left')
       wall.onMainButtonClick(1);
     else if (message.section === 'center')
@@ -129,9 +153,9 @@ onUnmounted(() => {
           }"
         >
           <h2 class="content-header-title" :data-col="col.id">
-            {{ getHeaderTitle(col) }}
+            {{ wall.getHeaderTitle(col.id) }}
           </h2>
-          <p>{{ getHeaderDesc(col) }}</p>
+          <p>{{ wall.getHeaderDesc(col.id) }}</p>
         </div>
       </div>
     </div>
@@ -145,6 +169,21 @@ onUnmounted(() => {
         :class="{ 'has-submenu': col.type === 'expandable' }"
         :data-col="col.id"
       >
+        <!-- Per-column independent language switcher -->
+        <div class="col-lang-switcher" role="group" :aria-label="`Language switcher for column ${col.id}`">
+          <button
+            v-for="loc in WALL_LOCALES"
+            :key="loc"
+            type="button"
+            class="col-flag-btn"
+            :class="{ active: wall.getColumnLocale(col.id) === loc }"
+            :aria-label="`Column ${col.id} language ${loc}`"
+            @click.stop="wall.setColumnLocale(col.id, loc)"
+          >
+            <img :src="getFlagSrc(loc)" :alt="loc" class="flag-icon">
+          </button>
+        </div>
+
         <!-- Main Button (Idle State) -->
         <div class="btn-group" :class="{ hidden: wall.getColumnState(col.id) !== 'idle' }">
           <button
@@ -154,7 +193,33 @@ onUnmounted(() => {
             :data-category="col.key"
             :data-col="col.id"
           >
-            <span class="btn-label" v-html="col.labelHtml" />
+            <!-- Column Number Badge -->
+            <div class="col-number-badge">
+              <span class="col-number">{{ col.id }}</span>
+            </div>
+
+            <!-- Button Label (Reactively localized) -->
+            <span class="btn-label" v-html="wall.getColumnLabelHtml(col.id)" />
+
+            <!-- Interactive Hold Indicator with Hand Icon -->
+            <div class="hold-cue">
+              <svg
+                class="hand-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M18 11V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2" />
+                <path d="M14 10V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v2" />
+                <path d="M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8" />
+                <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+              </svg>
+              <span class="hold-cue-text">{{ getHoldCueText(col.id) }}</span>
+            </div>
           </button>
         </div>
 
@@ -168,7 +233,17 @@ onUnmounted(() => {
           }"
           :data-col="col.id"
         >
-          <span class="submenu-parent-label">{{ col.parentLabel }}</span>
+          <div class="submenu-header">
+            <span class="submenu-parent-label">{{ wall.getColumnLabel(col.id) }}</span>
+            <button
+              type="button"
+              class="submenu-close-btn"
+              :aria-label="getBackLabel(col.id)"
+              @click.stop="wall.setColumnState(col.id, 'idle')"
+            >
+              ✕
+            </button>
+          </div>
           <button
             v-for="sub in col.subItems"
             :key="sub.key"
@@ -178,7 +253,25 @@ onUnmounted(() => {
             :data-sub="sub.key"
             :data-col="col.id"
           >
-            <span class="btn-label" v-html="sub.labelHtml || sub.label" />
+            <span class="btn-label" v-html="wall.getSubItemLabelHtml(col.id, sub.key)" />
+            <div class="sub-hold-cue">
+              <svg
+                class="sub-hand-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M18 11V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2" />
+                <path d="M14 10V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v2" />
+                <path d="M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8" />
+                <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+              </svg>
+              <span class="sub-hold-text">{{ getHoldCueText(col.id) }}</span>
+            </div>
           </button>
         </div>
 
@@ -191,7 +284,17 @@ onUnmounted(() => {
           }"
           :data-col="col.id"
         >
-          <span class="submenu-parent-label">{{ getActiveLabel(col) }}</span>
+          <div class="active-content-header">
+            <span class="submenu-parent-label">{{ wall.getActiveSubItemLabel(col.id) }}</span>
+            <button
+              type="button"
+              class="active-close-btn"
+              :aria-label="getBackLabel(col.id)"
+              @click.stop="col.type === 'expandable' ? wall.setColumnState(col.id, 'submenu') : wall.setColumnState(col.id, 'idle')"
+            >
+              ✕
+            </button>
+          </div>
           <div class="carousel" :data-col="col.id">
             <div class="carousel-viewport">
               <div
@@ -204,22 +307,22 @@ onUnmounted(() => {
                   <svg viewBox="0 0 100 80" class="img-icon">
                     <polygon points="50,15 85,65 15,65" fill="currentColor" />
                   </svg>
-                  <span>PLACEHOLDER FOTO {{ String(slideIdx).padStart(2, '0') }}</span>
+                  <span>{{ getSlidePlaceholderText(col.id, slideIdx) }}</span>
                 </div>
               </div>
             </div>
             <div class="carousel-controls">
               <button
-                v-hold="() => wall.navigateCarousel(col.id, -1, col.slides)"
                 class="carousel-prev"
-                aria-label="Previous"
+                :aria-label="getPrevLabel(col.id)"
+                @click.stop="wall.navigateCarousel(col.id, -1, col.slides)"
               >
                 ←
               </button>
               <button
-                v-hold="() => wall.navigateCarousel(col.id, 1, col.slides)"
                 class="carousel-next"
-                aria-label="Next"
+                :aria-label="getNextLabel(col.id)"
+                @click.stop="wall.navigateCarousel(col.id, 1, col.slides)"
               >
                 →
               </button>
@@ -243,9 +346,9 @@ onUnmounted(() => {
           :class="{ 'col-hidden': wall.getColumnState(col.id) !== 'active' }"
         >
           <h4 class="bottom-desc-title" :data-col="col.id">
-            {{ getBottomTitle(col) }}
+            {{ wall.getBottomTitle(col.id) }}
           </h4>
-          <p>{{ col.bottomDesc }}</p>
+          <p>{{ wall.getBottomDesc(col.id) }}</p>
         </div>
       </div>
     </div>

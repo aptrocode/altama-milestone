@@ -4,43 +4,90 @@
 
 /* Fade-in for content panels */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeOut {
-  from { opacity: 1; transform: translateY(0); }
-  to   { opacity: 0; transform: translateY(8px); }
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-/* Applied via JS */
+@keyframes subItemSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Applied via CSS / classes */
 .anim-fade-in {
-  animation: fadeIn var(--transition-base) forwards;
+  animation: fadeIn var(--transition-base) cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .anim-fade-out {
-  animation: fadeOut var(--transition-fast) forwards;
+  animation: fadeOut var(--transition-fast) cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .anim-slide-down {
-  animation: slideDown var(--transition-base) forwards;
+  animation: slideDown var(--transition-base) cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .anim-scale-in {
-  animation: scaleIn var(--transition-base) forwards;
+  animation: scaleIn var(--transition-base) cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Submenu stagger animation */
-.submenu-group .sub-btn:nth-child(2) { animation-delay: 0.05s; }
-.submenu-group .sub-btn:nth-child(3) { animation-delay: 0.10s; }
-.submenu-group .sub-btn:nth-child(4) { animation-delay: 0.15s; }
+.submenu-group .sub-btn {
+  animation: subItemSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.submenu-group .sub-btn:nth-child(2) {
+  animation-delay: 0.05s;
+}
+
+.submenu-group .sub-btn:nth-child(3) {
+  animation-delay: 0.1s;
+}
+
+.submenu-group .sub-btn:nth-child(4) {
+  animation-delay: 0.15s;
+}

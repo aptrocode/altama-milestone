@@ -4,10 +4,8 @@
    Shown inside the same card-shaped container
    when an expandable category is clicked.
 
-   Hold-to-activate: User must press and hold
-   for 1 second. A luminous green neon outline
-   fills smoothly around each sub-button as
-   a visual timer with multi-layered glow.
+   Supports instant tap & hold-to-activate with
+   neon laser timer and success burst.
    ============================================ */
 
 .submenu-group {
@@ -16,29 +14,62 @@
   flex-direction: column;
   position: relative;
   background: var(--color-btn-bg);
-  border: 1px solid var(--color-btn-border);
+  border: 1.5px solid rgba(16, 185, 129, 0.4);
   border-radius: var(--radius-btn);
   overflow: hidden;
-  box-shadow: var(--shadow-btn);
+  box-shadow: none;
+}
+
+.submenu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md) 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .submenu-parent-label {
   display: block;
   font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-black);
+  color: #10b981;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: var(--spacing-sm) var(--spacing-sm) 0;
-  text-align: center;
+  letter-spacing: 0.08em;
   user-select: none;
+}
+
+.submenu-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.submenu-close-btn:hover {
+  background: rgba(239, 68, 68, 0.35);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #ffffff;
+  transform: scale(1.1);
 }
 
 .sub-btn {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   background: transparent;
   border: none;
   border-top: 1px solid var(--color-btn-border);
@@ -49,11 +80,12 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   text-align: center;
-  padding: var(--spacing-xs) var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-sm);
   transition:
     background var(--transition-fast),
     transform var(--transition-fast),
-    color var(--transition-fast);
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
   cursor: pointer;
   user-select: none;
   position: relative;
@@ -62,15 +94,45 @@
 }
 
 .sub-btn:first-of-type {
-  border-top: 1px solid var(--color-btn-border);
+  border-top: none;
 }
 
 .sub-btn:hover {
-  background: rgba(16, 185, 129, 0.06);
+  background: rgba(16, 185, 129, 0.12);
+  color: #ffffff;
 }
 
 .sub-btn:active {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(16, 185, 129, 0.18);
+  transform: scale(0.98);
+}
+
+.sub-hold-cue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 4px;
+  opacity: 0.65;
+  transition: opacity 0.2s ease;
+}
+
+.sub-hand-icon {
+  width: 12px;
+  height: 12px;
+  color: #10b981;
+}
+
+.sub-hold-text {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+}
+
+.sub-btn:hover .sub-hold-cue {
+  opacity: 1;
 }
 
 /* ── Guide track & ambient aura (pseudo-element ::before) ── */
@@ -83,14 +145,11 @@
   background: transparent;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+  transition: opacity 0.15s ease;
 }
 
 .sub-btn.holding::before {
   opacity: 1;
-  box-shadow:
-    0 0 12px rgba(16, 185, 129, 0.22),
-    inset 0 0 6px rgba(16, 185, 129, 0.08);
 }
 
 /* ── Neon laser outline tracer (pseudo-element ::after) ── */
@@ -126,19 +185,20 @@
     drop-shadow(0 0 10px rgba(16, 185, 129, 0.75));
 }
 
-/* ── Holding state: animate outline & button feedback ── */
+/* ── Holding state: animate outline & button feedback for 3 seconds ── */
 .sub-btn.holding {
-  transform: scale(0.975);
-  background: rgba(16, 185, 129, 0.08);
-  color: #065f46;
+  transform: scale(0.98);
+  background: rgba(16, 185, 129, 0.14);
+  color: #ffffff;
+  box-shadow: none;
 }
 
 .sub-btn.holding::after {
   opacity: 1;
-  animation: holdBorderFill 1s linear forwards;
+  animation: holdBorderFill 3s linear forwards;
 }
 
-/* ── Completed hold burst / flash ── */
+/* ── Completed hold burst / instant tap burst ── */
 .sub-btn.hold-complete {
   animation: subBtnSuccessBurst 0.35s ease-out;
 }
@@ -165,8 +225,7 @@
   }
   50% {
     transform: scale(1.02);
-    background: rgba(16, 185, 129, 0.4);
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+    background: rgba(16, 185, 129, 0.45);
   }
   100% {
     transform: scale(1);
@@ -175,6 +234,7 @@
 }
 
 .sub-btn.active {
-  background: rgba(16, 185, 129, 0.12);
-  color: #065f46;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  font-weight: 800;
 }

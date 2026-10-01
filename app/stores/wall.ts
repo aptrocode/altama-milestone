@@ -1,3 +1,4 @@
+import type { ColumnConfig, WallLocale } from '~/data/wall-config';
 import { defineStore } from 'pinia';
 import { WALL_CONFIG } from '~/data/wall-config';
 
@@ -13,6 +14,14 @@ export const useWallStore = defineStore('wall', {
       5: 'idle' as ColumnState,
       6: 'idle' as ColumnState,
     } as Record<number, ColumnState>,
+    columnLocales: {
+      1: 'id' as WallLocale,
+      2: 'id' as WallLocale,
+      3: 'id' as WallLocale,
+      4: 'id' as WallLocale,
+      5: 'id' as WallLocale,
+      6: 'id' as WallLocale,
+    } as Record<number, WallLocale>,
     activeSubItem: {
       2: 'tekiro',
       5: 'brand-activation',
@@ -36,6 +45,10 @@ export const useWallStore = defineStore('wall', {
       return state.columnStates[colId] || 'idle';
     },
 
+    getColumnLocale: state => (colId: number): WallLocale => {
+      return state.columnLocales[colId] || 'id';
+    },
+
     getActiveSubItem: state => (colId: number): string => {
       return state.activeSubItem[colId] || '';
     },
@@ -43,11 +56,132 @@ export const useWallStore = defineStore('wall', {
     getCarouselIndex: state => (colId: number): number => {
       return state.carouselIndex[colId] || 0;
     },
+
+    getColumnConfig: () => (colId: number): ColumnConfig | undefined => {
+      return WALL_CONFIG.columns.find(c => c.id === colId);
+    },
+
+    getColumnLabel: state => (colId: number): string => {
+      const col = WALL_CONFIG.columns.find(c => c.id === colId);
+      if (!col)
+        return '';
+      const locale = state.columnLocales[colId] || 'id';
+      return col.i18n?.[locale]?.label || col.label;
+    },
+
+    getColumnLabelHtml: state => (colId: number): string => {
+      const col = WALL_CONFIG.columns.find(c => c.id === colId);
+      if (!col)
+        return '';
+      const locale = state.columnLocales[colId] || 'id';
+      return col.i18n?.[locale]?.labelHtml || col.labelHtml;
+    },
+
+    getHeaderTitle: state => (colId: number): string => {
+      const col = WALL_CONFIG.columns.find(c => c.id === colId);
+      if (!col)
+        return '';
+      const locale = state.columnLocales[colId] || 'id';
+
+      if (col.type === 'expandable') {
+        const subKey = state.activeSubItem[colId] || col.defaultSub || '';
+        const subContent = WALL_CONFIG.subItemContent[subKey]?.[locale];
+        if (subContent?.title)
+          return subContent.title;
+      }
+      return col.i18n?.[locale]?.headerTitle || col.headerTitle;
+    },
+
+    getHeaderDesc: state => (colId: number): string => {
+      const col = WALL_CONFIG.columns.find(c => c.id === colId);
+      if (!col)
+        return '';
+      const locale = state.columnLocales[colId] || 'id';
+
+      if (col.type === 'expandable') {
+        const subKey = state.activeSubItem[colId] || col.defaultSub || '';
+        const subContent = WALL_CONFIG.subItemContent[subKey]?.[locale];
+        if (subContent?.desc)
+          return subContent.desc;
+      }
+      return col.i18n?.[locale]?.headerDesc || col.headerDesc;
+    },
+
+    getBottomTitle: state => (colId: number): string => {
+      const col = WALL_CONFIG.columns.find(c => c.id === colId);
+      if (!col)
+        return '';
+      const locale = state.columnLocales[colId] || 'id';
+
+      if (col.type === 'expandable') {
+        const subKey = state.activeSubItem[colId] || col.defaultSub || '';
+        const subContent = WALL_CONFIG.subItemContent[subKey]?.[locale];
+        if (subContent?.title)
+          return subContent.title;
+        const sub = col.subItems?.find(s => s.key === subKey);
+        if (sub?.i18n?.[locale]?.title)
+          return sub.i18n[locale].title;
+      }
+      return col.i18n?.[locale]?.bottomTitle || col.bottomTitle;
+    },
+
+    getBottomDesc: state => (colId: number): string => {
+      const col = WALL_CONFIG.columns.find(c => c.id === colId);
+      if (!col)
+        return '';
+      const locale = state.columnLocales[colId] || 'id';
+
+      if (col.type === 'expandable') {
+        const subKey = state.activeSubItem[colId] || col.defaultSub || '';
+        const subContent = WALL_CONFIG.subItemContent[subKey]?.[locale];
+        if (subContent?.desc)
+          return subContent.desc;
+        const sub = col.subItems?.find(s => s.key === subKey);
+        if (sub?.i18n?.[locale]?.desc)
+          return sub.i18n[locale].desc;
+      }
+      return col.i18n?.[locale]?.bottomDesc || col.bottomDesc;
+    },
+
+    getSubItemLabel: state => (colId: number, subKey: string): string => {
+      const col = WALL_CONFIG.columns.find(c => c.id === colId);
+      if (!col || !col.subItems)
+        return '';
+      const locale = state.columnLocales[colId] || 'id';
+      const sub = col.subItems.find(s => s.key === subKey);
+      return sub?.i18n?.[locale]?.label || sub?.label || '';
+    },
+
+    getSubItemLabelHtml: state => (colId: number, subKey: string): string => {
+      const col = WALL_CONFIG.columns.find(c => c.id === colId);
+      if (!col || !col.subItems)
+        return '';
+      const locale = state.columnLocales[colId] || 'id';
+      const sub = col.subItems.find(s => s.key === subKey);
+      return sub?.i18n?.[locale]?.labelHtml || sub?.labelHtml || sub?.label || '';
+    },
+
+    getActiveSubItemLabel: state => (colId: number): string => {
+      const col = WALL_CONFIG.columns.find(c => c.id === colId);
+      if (!col)
+        return '';
+      const locale = state.columnLocales[colId] || 'id';
+      if (col.type === 'expandable') {
+        const subKey = state.activeSubItem[colId] || col.defaultSub || '';
+        const sub = col.subItems?.find(s => s.key === subKey);
+        return sub?.i18n?.[locale]?.label || sub?.label || col.parentLabel || col.label;
+      }
+      return col.i18n?.[locale]?.label || col.label;
+    },
   },
 
   actions: {
     setColumnState(colId: number, state: ColumnState) {
       this.columnStates[colId] = state;
+    },
+
+    setColumnLocale(colId: number, locale: WallLocale) {
+      this.columnLocales[colId] = locale;
     },
 
     setActiveSubItem(colId: number, subKey: string) {
