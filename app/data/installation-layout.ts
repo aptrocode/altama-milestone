@@ -6,6 +6,8 @@ export interface Rect { x: number; y: number; width: number; height: number }
 interface ColumnLayout {
   id: ColumnId;
   section: Rect;
+  card: Rect;
+  languageBar: Rect;
   main: Rect;
   languages: (Rect & { locale: WallLocale })[];
   submenu?: { back: Rect; items: (Rect & { key: string })[] };

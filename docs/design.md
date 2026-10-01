@@ -6,20 +6,24 @@ Official client output: **2304 × 1344 CSS pixels**, approximately 6 × 3.5 m. T
 
 Fill the viewport without fixed aspect ratio, maximum width, letterboxing, or scrolling. Preview at 1600 × 900 as well as the official canvas.
 
-The three vertical zones use 35% / 40% / 25% height:
+The three vertical zones use 35% / 38% / 27% height:
 - Header: centered ALTAMA branding when idle; each selected column's heading/story when active.
-- Interaction: independent flag controls above the main card, submenu, or carousel.
-- Footer: each active column's supporting title/description.
+- Interaction: equal portrait cards containing the main action, submenu, or carousel, plus independent floating flags inside the lower area only while idle.
+- Footer: each active column's supporting title/description, centered horizontally and vertically in its zone.
 
-Six equal columns have 20 logical px outside padding and 10 px gaps; each interactive column is 369 px wide at the official canvas. White, neutral, and emerald styling remains the current visual treatment.
+Six equal columns have 52 logical px outside padding and 20 px gaps; each card is **350 × 510.72 px**, approximately **0.685 : 1**. Idle cards are neutral gray; submenu cards are white; active carousels are dark emerald.
+
+All zones use the same six-column grid. Header/footer text uses 28 px horizontal padding and consistent title/description space. Main labels use 24 px padding and show only the title plus localized hold cue, without numbered badges. Typography and flag artwork scale from logical canvas units; long translated labels wrap. See [style](./style.md) for the Tailwind-first implementation policy.
 
 ## Controls and geometry
 
 `shared/installation-layout.json` owns frame/zone/control dimensions and all logical targets. CSS derives horizontal/vertical units from the viewport independently. Changing geometry requires a layout version bump and matching Sensor Service deployment.
 
-Flag, Back, and arrow targets are 44 × 44 logical px. Flag buttons show icons only, with accessible names, selected state, and visible focus. Main/sub-item labels remain real text. Headings may wrap so full translated titles remain readable.
+Flag targets are 56 × 44 logical px; Back and arrow targets are 44 × 44 px. The 232 × 60 px language bar is centered 48 px above the card's lower edge only in idle. It is an absolute overlay sibling of the full-card hold button, avoiding nested interactive elements and reserved layout space. The group is hidden in submenu/carousel.
 
-Entrance/hold feedback uses opacity, border, and glow without moving the target rectangles. Hand-icon motion remains inside the fixed button bounds.
+Carousel arrows sit 20 px from the left/right edges, centered vertically on the full card. Title/Back sit at the top and the counter at the bottom; portrait photo placeholders fill the card behind these controls. Flag buttons show icons only, with accessible names, selected state, and visible focus. Main/sub-item labels remain real text. Headings may wrap so full translated titles remain readable.
+
+Hold feedback traces a 4 px SVG stroke around the button over one second without moving target rectangles. Card corners are 14 logical px; the 2 px inset submenu uses 12 px outer corners and square internal separators. Outline arcs follow those same corners. Photo frames have 12 px corners; card panels inherit and clip to the outer radius. Reduced motion uses a static border during hold and suppresses the decorative hand animation. Release/cancel clears incomplete progress.
 
 Pointer users hold main/sub-item buttons for one second. Enter/Space activate a focused button immediately. Language, Back, and carousel controls activate normally. Operator keys 1–6 open an idle column or go back in that column; R/Escape reset all content while retaining languages until their inactivity timeout. D toggles diagnostics only in development.
 

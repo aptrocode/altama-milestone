@@ -2,7 +2,7 @@
 
 Fullscreen Nuxt 4 kiosk for ALTAMA's **2304 × 1344** LED installation.
 
-Six independent columns cover About Altama, Our Brands, Infrastructure, Digital Partners, Distribution, and Summit 2026. Each column has Indonesian (default), English, and Simplified Chinese flag controls. Carousel photos and company copy remain provisional.
+Six independent columns cover About Altama, Our Brands, Infrastructure, Digital Partners, Distribution, and Summit 2026. Each idle card has floating Indonesian (default), English, and Simplified Chinese flag controls. The chosen language stays with that column through its submenu/carousel. Carousel photos and company copy remain provisional.
 
 ## Run
 
@@ -22,7 +22,7 @@ Open the URL printed by Nuxt. Build with `bun run build`, create static output w
 - After 15 seconds without activity, only that column resets to idle/Indonesian.
 - D toggles diagnostics in development.
 
-Sensor integration uses **protocol v2 / wall-v1**. It requires a matching external Sensor Service and hardware calibration; see [docs/sensor.md](docs/sensor.md). Sensor input is disabled by default.
+Sensor integration uses **protocol v2 / wall-v2**. It requires a matching external Sensor Service and hardware calibration; see [docs/sensor.md](docs/sensor.md). Sensor input is disabled by default.
 
 ## Project guide
 

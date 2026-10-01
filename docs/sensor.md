@@ -11,11 +11,11 @@ NUXT_PUBLIC_SENSOR_WS_URL=ws://127.0.0.1:8787
 
 Static output embeds public runtime values; rebuild when these change. Mouse/keyboard operation works while sensor input is disabled.
 
-**Breaking migration:** current protocol is **v2**, geometry is **wall-v1**. Protocol v1 / layout-v4 describes the retired three-section UI and is rejected. Deploy the new renderer and matching Sensor Service contract/geometry together, recalibrate, then enable the sensor. Keep sensor input disabled until that service is ready.
+**Breaking migration:** current protocol is **v2**, geometry is **wall-v2**. Protocol v1 / layout-v4 describes the retired three-section UI. The preceding six-column wall-v1 placed languages above cards and arrows at the bottom. Both old layouts are rejected. Deploy the new renderer and matching Sensor Service contract/geometry together, recalibrate, then enable the sensor. Keep sensor input disabled until that service is ready.
 
 ## Envelope and health
 
-Every service message includes `version: 2`, nonempty `sessionId`, increasing integer `seq`, `layoutVersion: "wall-v1"`, and `type`.
+Every service message includes `version: 2`, nonempty `sessionId`, increasing integer `seq`, `layoutVersion: "wall-v2"`, and `type`.
 
 `hello` is required once per connection and contains boolean `sensorReady`/`calibrated`. `status` updates those booleans with optional short `detail`. `heartbeat` establishes liveness. Expect heartbeat every 2 seconds; after more than 6 seconds without valid traffic the socket closes and reconnects with jittered backoff up to 10 seconds.
 
@@ -25,12 +25,12 @@ Input is forwarded only after handshake while device and calibration are ready. 
 
 On connection, the renderer sends:
 ```json
-{ "version": 2, "type": "clientHello", "layoutVersion": "wall-v1", "columns": { "1": { "phase": "idle", "locale": "id", "subItem": "", "slide": 0 } } }
+{ "version": 2, "type": "clientHello", "layoutVersion": "wall-v2", "columns": { "1": { "phase": "idle", "locale": "id", "subItem": "", "slide": 0 } } }
 ```
 The actual `columns` payload always includes IDs 1–6. Changes send the same snapshot with `type: "clientState"`.
 
 Sensor Service combines that snapshot with `shared/installation-layout.json`:
-- language targets are always visible;
+- language targets are visible only in idle;
 - `main` is visible only in idle;
 - `submenu.items`/`submenu.back` only in submenu;
 - `active.back`/`active.previous`/`active.next` only in active.
@@ -44,7 +44,7 @@ Do not detect against hidden target groups. Main and sub-item targets require on
   "version": 2,
   "sessionId": "service-boot-id",
   "seq": 42,
-  "layoutVersion": "wall-v1",
+  "layoutVersion": "wall-v2",
   "type": "input",
   "pointerId": "lidar-02",
   "x": 1310,
@@ -64,6 +64,8 @@ Coordinates are logical 2304 × 1344 pixels inside the declared target. All six 
 | `previous` / `next` | `columnId` | Navigate active carousel |
 
 Valid sub-items: column 2 = `tekiro`, `ryu`, `rexco`; column 5 = `our-way`, `brand-activation`. Languages: `id`, `en`, `zh-Hans`. The renderer validates the declared target and current phase; it does not perform raw hit detection.
+
+The wall-v2 card is 350 × 510.72 logical px. Languages float inside its lower area only in idle; arrows use the full card's vertical midpoint. The main hit rectangle covers the full card, but its floating languageBar occludes that area: detect a flag there or ignore padding/gaps. Main events inside languageBar are rejected. Hidden language actions in submenu/carousel are also rejected. Submenu/active content fills the card. Refer to each column's `card` and target rectangles in the canonical JSON; do not reuse wall-v1 coordinates.
 
 ## Hardware acceptance
 

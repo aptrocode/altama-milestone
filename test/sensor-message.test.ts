@@ -13,7 +13,7 @@ describe('sensor protocol v2 and shared action routing', () => {
     const wall = useWallStore(createPinia());
     const controls = scope.run(() => useWallController(wall))!;
     try {
-      for (const action of [{ type: 'main', columnId }, { type: 'language', columnId, locale: 'zh-Hans' }] as const) {
+      for (const action of [{ type: 'language', columnId, locale: 'zh-Hans' }, { type: 'main', columnId }] as const) {
         const parsed = parseSensorMessage(sensorInput(action));
         expect(parsed.ok).toBe(true);
         if (parsed.ok && parsed.message.type === 'input')
@@ -61,5 +61,13 @@ describe('sensor protocol v2 and shared action routing', () => {
     expect(parseSensorMessage(sensorInput({ type: 'main', columnId: 1 }, { x: columnSixPoint.x })).ok).toBe(false);
     const idFlag = JSON.parse(sensorInput({ type: 'language', columnId: 1, locale: 'id' }));
     expect(parseSensorMessage(sensorInput({ type: 'language', columnId: 1, locale: 'en' }, { x: idFlag.x })).ok).toBe(false);
+  });
+
+  it('does not route an idle language overlay contact to the underlying main action', () => {
+    const flag = JSON.parse(sensorInput({ type: 'language', columnId: 1, locale: 'en' }));
+    expect(parseSensorMessage(sensorInput({ type: 'main', columnId: 1 }, { x: flag.x, y: flag.y })).ok).toBe(false);
+    // Padding/gaps of the floating group are also occluded in the browser.
+    expect(parseSensorMessage(sensorInput({ type: 'main', columnId: 1 }, { x: flag.x - 30, y: flag.y })).ok).toBe(false);
+    expect(parseSensorMessage(sensorInput({ type: 'language', columnId: 1, locale: 'en' })).ok).toBe(true);
   });
 });

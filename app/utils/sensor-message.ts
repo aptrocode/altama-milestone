@@ -1,6 +1,6 @@
 import type { ColumnId, WallAction, WallLocale } from '../../shared/wall';
 import type { SensorMessage, SensorParseResult } from '~/types/sensor';
-import { getActionRects, isPointInsideCanvas, isPointInsideRect } from '~/data/installation-layout';
+import { getActionRects, installationLayout, isPointInsideCanvas, isPointInsideRect } from '~/data/installation-layout';
 import { WALL_CONFIG } from '~/data/wall-config';
 import { SENSOR_PROTOCOL_VERSION } from '~/types/sensor';
 import { COLUMN_IDS, WALL_LOCALES } from '../../shared/wall';
@@ -99,6 +99,9 @@ export function parseSensorMessage(raw: string): SensorParseResult {
   const y = value.y as number;
   if (!getActionRects(action).some(rect => isPointInsideRect(x, y, rect)))
     return failure('coordinates do not match the declared target');
+  const geometry = installationLayout.columns.find(column => column.id === action.columnId)!;
+  if (action.type === 'main' && isPointInsideRect(x, y, geometry.languageBar))
+    return failure('language overlay occludes the main target');
 
   return { ok: true, message: { ...envelope, type: 'input', action, pointerId: value.pointerId, x, y } };
 }

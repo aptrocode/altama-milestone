@@ -12,11 +12,13 @@ pointer hold / native keyboard / operator shortcut / validated sensor input
   -> presentational Vue components
 ```
 
-`KioskStage` owns one wall controller and one socket. `WallColumn` receives configuration, snapshot, and copy; it emits actions/activity. `WallLanguageSwitcher`, `WallCarousel`, and `WallHoldCue` contain reusable UI. Header/footer copy renders only in the active phase.
+`KioskStage` owns one wall controller and one socket. `WallColumn` receives configuration, snapshot, and copy; it emits actions/activity. `WallLanguageSwitcher`, `WallCarousel`, `WallHoldButton`, and `WallHoldCue` contain reusable UI. Header/footer copy renders only in the active phase.
 
 ## State and transitions
 
 Each column has `phase`, `locale`, `subItem`, and `slide`. Columns 2/5 open a submenu; other columns open content directly. Main input opens only idle columns, so repeated sensor input does not close content. Operator digits map an open column to Back.
+
+Language selection is accepted only while idle. The chooser is an absolute sibling of the full-card main button; submenu/carousel retain the selected locale and hide the chooser. Sensor parsing excludes the language overlay rectangle from main input, including gaps between flags.
 
 Sub-item selection is accepted only in its owning column's submenu. Carousel input is accepted only in active content and wraps using the configured slide count. Back from expandable content returns to the submenu; other Back input returns to idle. Manual reset preserves locale immediately.
 
@@ -33,5 +35,7 @@ One `getColumnCopy` resolver chooses localized column/sub-item copy. Labels are 
 ## Geometry and dependency policy
 
 The stage fills the viewport in both dimensions. CSS x/y units scale independently from the logical 2304 × 1344 canvas. Frame spacing and control dimensions come from `shared/installation-layout.json`. Logical sensor coordinates never use browser pixels.
+
+WallHoldButton derives its SVG outline from the same target rectangle, with arcs matching the button corners. A scoped dash-offset animation uses the hold utility's duration; it adds no timers or state. Card panels inherit outer rounding and clip their content.
 
 Nuxt/Vue handle rendering, Pinia stores state, Tailwind styles controls, and Vitest checks behavior. Native pointer events, WebSocket, and timers handle interaction. GSAP, Sharp, legacy milestone state/types/artwork, and fixture generation are removed because the current wall does not use them. Add a dependency only for an active requirement.
