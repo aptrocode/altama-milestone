@@ -1,0 +1,125 @@
+/* ==========================================================================
+   ALTAMA Interactive Wall — Layout (2304 × 1344 Canvas)
+   ========================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--color-bg-wall);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#wall-container {
+  position: relative;
+  width: 2304px;
+  height: 1344px;
+  max-width: 100vw;
+  max-height: 100vh;
+  aspect-ratio: 2304 / 1344;
+  margin: auto;
+  background: var(--color-bg-wall);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.zone {
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.zone-top {
+  flex: 0 0 calc(100% * var(--zone-top-ratio));
+  background: var(--color-bg-zone-top);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.zone-middle {
+  flex: 0 0 calc(100% * var(--zone-middle-ratio));
+  background: var(--color-bg-zone-middle);
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  padding: 0 var(--wall-padding-x);
+  gap: var(--column-gap);
+  position: relative;
+  z-index: 20;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.zone-bottom {
+  flex: 1 1 auto;
+  background: var(--color-bg-zone-bottom);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 24px;
+  position: relative;
+  z-index: 5;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ── Columns (Exact Same Bounding Box for Every State) ── */
+.column {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+  height: 100%;
+}
+
+/* ── 5 Divider Lines Between 6 Columns ── */
+.column-borders {
+  position: absolute;
+  top: 0;
+  left: var(--wall-padding-x);
+  right: var(--wall-padding-x);
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  gap: var(--column-gap);
+  pointer-events: none;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.col-border {
+  flex: 1;
+  position: relative;
+  border: none;
+}
+
+.col-border:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: calc(-1 * var(--column-gap) / 2);
+  width: 0;
+  border-right: 1.5px dashed var(--color-column-border);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.col-hidden {
+  visibility: hidden !important;
+}
