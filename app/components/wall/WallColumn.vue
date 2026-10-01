@@ -37,8 +37,8 @@ const geometry = computed(() => installationLayout.columns.find(item => item.id 
         </div>
       </WallHoldButton>
 
-      <div v-else-if="snapshot.phase === 'submenu'" class="wall-submenu flex-1 flex flex-col min-h-0 px-(--wall-panel-inset-x) py-(--wall-panel-inset-y)">
-        <div class="wall-submenu-heading relative h-(--wall-heading-height-y) flex items-center justify-center px-[calc(52*var(--wall-x))] bg-emerald-800 shrink-0 [border-top-left-radius:calc(12*var(--wall-x))_calc(12*var(--wall-y))] [border-top-right-radius:calc(12*var(--wall-x))_calc(12*var(--wall-y))]">
+      <div v-else-if="snapshot.phase === 'submenu'" class="wall-submenu flex-1 flex flex-col min-h-0">
+        <div class="wall-submenu-heading relative h-(--wall-heading-height-y) flex items-center justify-center px-[calc(52*var(--wall-x))] bg-emerald-800 shrink-0">
           <span class="text-center text-[length:calc(18*var(--wall-x))] font-black text-white uppercase tracking-wide leading-tight wrap-break-word">{{ copy.label }}</span>
           <button
             type="button" class="wall-back absolute top-(--wall-back-padding-y) right-(--wall-back-padding-x) w-(--wall-control-size-x) h-(--wall-control-size-y) flex items-center justify-center rounded-full bg-white/20 text-white text-[length:calc(20*var(--wall-x))] hover:bg-red-500 cursor-pointer"
@@ -50,8 +50,8 @@ const geometry = computed(() => installationLayout.columns.find(item => item.id 
         </div>
         <WallHoldButton
           v-for="(sub, index) in column.subItems" :key="sub.key"
-          class="flex-1 min-h-0 flex flex-col items-center justify-center gap-[calc(12*var(--wall-y))] border-t border-neutral-200 font-bold uppercase text-center px-[calc(24*var(--wall-x))] py-[calc(16*var(--wall-y))] last:[border-bottom-left-radius:calc(12*var(--wall-x))_calc(12*var(--wall-y))] last:[border-bottom-right-radius:calc(12*var(--wall-x))_calc(12*var(--wall-y))]"
-          :outline="geometry.submenu!.items[index]!" :radius="index === column.subItems!.length - 1 ? 12 : 0" bottom-corners-only
+          class="flex-1 min-h-0 flex flex-col items-center justify-center gap-[calc(12*var(--wall-y))] border-t border-neutral-200 font-bold uppercase text-center px-[calc(24*var(--wall-x))] py-[calc(16*var(--wall-y))]"
+          :outline="geometry.submenu!.items[index]!" :radius="index === column.subItems!.length - 1 ? 14 : 0" bottom-corners-only
           :class="snapshot.subItem === sub.key ? 'bg-emerald-50 text-emerald-900 hover:bg-emerald-100' : 'bg-white text-slate-800 hover:bg-emerald-50/80'"
           data-sensor-action="subItem" :data-sub-item="sub.key"
           @activate="$emit('action', { type: 'subItem', columnId: column.id, subItemId: sub.key })"

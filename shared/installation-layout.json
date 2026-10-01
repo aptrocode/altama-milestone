@@ -21,7 +21,7 @@
     "language-padding-block": 8,
     "language-gap": 20,
     "language-bottom": 48,
-    "panel-inset": 2,
+    "panel-inset": 0,
     "heading-height": 52,
     "back-padding": 4,
     "control-size": 44,
@@ -164,32 +164,32 @@
       },
       "submenu": {
         "back": {
-          "x": 722,
-          "y": 476.4,
+          "x": 724,
+          "y": 474.4,
           "width": 44,
           "height": 44
         },
         "items": [
           {
             "key": "tekiro",
-            "x": 424,
-            "y": 524.4,
-            "width": 346,
-            "height": 151.57333333333335
+            "x": 422,
+            "y": 522.4,
+            "width": 350,
+            "height": 152.90666666666667
           },
           {
             "key": "ryu",
-            "x": 424,
-            "y": 675.9733333333334,
-            "width": 346,
-            "height": 151.57333333333335
+            "x": 422,
+            "y": 675.3066666666667,
+            "width": 350,
+            "height": 152.90666666666667
           },
           {
             "key": "rexco",
-            "x": 424,
-            "y": 827.5466666666666,
-            "width": 346,
-            "height": 151.57333333333335
+            "x": 422,
+            "y": 828.2133333333334,
+            "width": 350,
+            "height": 152.90666666666667
           }
         ]
       },
@@ -405,25 +405,25 @@
       },
       "submenu": {
         "back": {
-          "x": 1832,
-          "y": 476.4,
+          "x": 1834,
+          "y": 474.4,
           "width": 44,
           "height": 44
         },
         "items": [
           {
             "key": "our-way",
-            "x": 1534,
-            "y": 524.4,
-            "width": 346,
-            "height": 227.36
+            "x": 1532,
+            "y": 522.4,
+            "width": 350,
+            "height": 229.36
           },
           {
             "key": "brand-activation",
-            "x": 1534,
+            "x": 1532,
             "y": 751.76,
-            "width": 346,
-            "height": 227.36
+            "width": 350,
+            "height": 229.36
           }
         ]
       },
