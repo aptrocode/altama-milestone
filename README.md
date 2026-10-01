@@ -21,8 +21,9 @@ Open the URL printed by Nuxt. Build with `bun run build`, create static output w
 - R/Escape reset content immediately while preserving languages.
 - After 15 seconds without activity, only that column resets to idle/Indonesian.
 - D toggles diagnostics in development.
+- OSC UDP Show Control on port 9000 for Resolume Arena, TouchDesigner, or QLab via `bun run osc:service`. Send test commands with `bun run osc:send /altama/column 1`.
 
-Sensor integration uses **protocol v2 / wall-v2**. It requires a matching external Sensor Service and hardware calibration; see [docs/sensor.md](docs/sensor.md). Sensor input is disabled by default.
+Sensor integration uses **protocol v2 / wall-v2**. It connects to a WebSocket server at port 8787; see [docs/sensor.md](docs/sensor.md). Sensor input is disabled by default (`NUXT_PUBLIC_SENSOR_ENABLED=true` to enable).
 
 ## Project guide
 

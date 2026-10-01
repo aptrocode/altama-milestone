@@ -22,7 +22,9 @@
     "typecheck": "nuxt typecheck",
     "test": "vitest run",
     "test:watch": "vitest",
-    "assets:check": "bun scripts/check-assets.ts"
+    "assets:check": "bun scripts/check-assets.ts",
+    "osc:service": "bun scripts/sensor-osc-service.ts",
+    "osc:send": "bun scripts/send-osc.ts"
   },
   "dependencies": {
     "@nuxt/fonts": "^0.14.0",

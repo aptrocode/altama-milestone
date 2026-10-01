@@ -67,6 +67,39 @@ Valid sub-items: column 2 = `tekiro`, `ryu`, `rexco`; column 5 = `our-way`, `bra
 
 The wall-v2 card is 350 × 510.72 logical px. Languages float inside its lower area only in idle; arrows use the full card's vertical midpoint. The main hit rectangle covers the full card, but its floating languageBar occludes that area: detect a flag there or ignore padding/gaps. Main events inside languageBar are rejected. Hidden language actions in submenu/carousel are also rejected. Submenu/active content fills the card. Refer to each column's `card` and target rectangles in the canonical JSON; do not reuse wall-v1 coordinates.
 
+## OSC Show Control (Resolume Arena & TouchDesigner)
+
+The repository provides a built-in TypeScript OSC & WebSocket service in `scripts/sensor-osc-service.ts` (`bun run osc:service`) with zero external runtime dependencies. It bridges OSC UDP show control messages from software like Resolume Arena, TouchDesigner, QLab, or Bitfocus Companion directly into the protocol v2 WebSocket stream on port `8787`.
+
+### Ports and configuration
+
+- **UDP OSC Input:** port `9000` (`OSC_PORT=9000`)
+- **WebSocket Output:** port `8787` (`WS_PORT=8787`)
+- **Run command:** `bun run osc:service`
+
+### OSC Address Reference
+
+| OSC Address | Arguments | Example | Description |
+| --- | --- | --- | --- |
+| `/altama/column` | `columnId: int` (1–6) | `/altama/column 1` | Toggle main or back on specified column |
+| `/altama/col/<id>` | *(none)* | `/altama/col/2` | Toggle main or back on column from path |
+| `/altama/open` | `columnId: int` (1–6) | `/altama/open 3` | Open idle column directly |
+| `/altama/back` | `[columnId: int]` *(optional)* | `/altama/back 2` | Back in column, or reset all if omitted |
+| `/altama/next` | `columnId: int` (1–6) | `/altama/next 1` | Next slide in active carousel |
+| `/altama/prev` | `columnId: int` (1–6) | `/altama/prev 1` | Previous slide in active carousel |
+| `/altama/subItem` | `col: int`, `key: string` | `/altama/subItem 2 tekiro` | Select sub-item in column 2 or 5 |
+| `/altama/lang` | `[col: int]`, `locale: string` | `/altama/lang en` | Switch language (`id`, `en`, `zh-Hans`) |
+| `/altama/reset` | *(none)* | `/altama/reset` | Reset all open columns to idle standby |
+
+### Testing OSC commands
+
+Send commands from terminal without third-party software:
+```bash
+bun run osc:send /altama/column 1
+bun run osc:send /altama/subItem 2 tekiro
+bun run osc:send /altama/reset
+```
+
 ## Hardware acceptance
 
 Validate mounting/scan plane, all target boundaries, simultaneous users, occlusion, cable removal, service restart, release/dwell timing, and long runs on the event PC/LED. Browser/unit tests do not prove physical coverage.

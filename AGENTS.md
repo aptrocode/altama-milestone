@@ -21,12 +21,13 @@ Read only the document needed:
 - `app/composables/useWallController.ts`: shared action API and per-instance inactivity timers.
 - `app/stores/`: serializable wall and system state only.
 - `app/data/wall-config.ts`: column/sub-item copy; `wall-copy.ts`: interface translations/flags.
-- `shared/wall.ts`: column IDs, languages, snapshots, and actions.
+- `shared/wall.ts`: column IDs, languages, snapshots, and actions; `shared/osc.ts`: OSC Show Control packet parser.
 - `shared/installation-layout.json`: canonical sensor canvas and target geometry.
 - `app/utils/`: strict sensor parsing and hold lifecycle.
 - `app/error.vue`: global recovery UI.
 - `public/flags/`: local SVG flags; `scripts/check-assets.ts`: active asset/config validation.
-- `test/`: state, controller, hold, protocol, and socket regression tests.
+- `scripts/sensor-osc-service.ts`: OSC UDP show control bridge (Resolume/TouchDesigner) to WebSocket protocol v2.
+- `test/`: state, controller, hold, protocol, osc, and socket regression tests.
 
 ## Invariants
 
