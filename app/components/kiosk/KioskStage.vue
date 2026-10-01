@@ -122,7 +122,7 @@ onUnmounted(() => {
 <template>
   <div
     id="wall-container"
-    class="relative w-screen h-[calc(100vw*7/12)] max-w-[calc(100vh*12/7)] max-h-screen m-auto bg-white flex flex-col overflow-hidden select-none"
+    class="relative w-screen h-[calc(100vw*7/12)] max-w-[calc(100vh*12/7)] max-h-screen m-auto bg-white flex flex-col overflow-hidden select-none font-sans"
   >
     <!-- ====== COLUMN BORDERS (FULL HEIGHT OVERLAY) ====== -->
     <div
@@ -275,7 +275,7 @@ onUnmounted(() => {
             :key="sub.key"
             v-hold="() => wall.onSubButtonClick(col.id, sub.key)"
             class="sub-btn"
-            
+
             :data-sub="sub.key"
             :data-col="col.id"
           >
