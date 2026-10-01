@@ -51,9 +51,22 @@ function handleKeyboard(event: KeyboardEvent) {
     showDiagnostics.value = !showDiagnostics.value;
   if (event.key === 'Escape' || event.code === 'KeyR')
     controls.resetAll();
-  const columnId = COLUMN_IDS.find(id => event.code === `Digit${id}`);
-  if (columnId)
+  const columnId = COLUMN_IDS.find(id => event.code === `Digit${id}` || event.code === `Numpad${id}`);
+  if (columnId) {
     controls.dispatch({ type: wall.getColumnState(columnId) === 'idle' ? 'main' : 'back', columnId });
+    return;
+  }
+  if (event.code === 'ArrowLeft' || event.code === 'PageUp') {
+    const activeCol = COLUMN_IDS.find(id => wall.getColumnState(id) === 'active');
+    if (activeCol)
+      controls.dispatch({ type: 'previous', columnId: activeCol });
+    return;
+  }
+  if (event.code === 'ArrowRight' || event.code === 'PageDown') {
+    const activeCol = COLUMN_IDS.find(id => wall.getColumnState(id) === 'active');
+    if (activeCol)
+      controls.dispatch({ type: 'next', columnId: activeCol });
+  }
 }
 
 function dispatch(action: WallAction) {
