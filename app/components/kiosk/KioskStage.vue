@@ -474,7 +474,7 @@ onUnmounted(() => {
 
 .laser-target.holding::after {
   opacity: 1;
-  animation: holdBorderFill 1.5s linear forwards;
+  animation: holdBorderFill 1s linear forwards;
 }
 
 .laser-target.hold-complete {
