@@ -1,6 +1,10 @@
+import type { Server, ServerWebSocket } from 'bun';
+import type { Buffer } from 'node:buffer';
+import type { RemoteInfo } from 'node:dgram';
 import type { ColumnId, ColumnSnapshot, WallAction } from '../shared/wall';
 import dgram from 'node:dgram';
 import process from 'node:process';
+import Bun from 'bun';
 import rawLayout from '../shared/installation-layout.json';
 import { oscToWallActions, parseOscPacket } from '../shared/osc';
 
@@ -99,24 +103,24 @@ if (typeof Bun !== 'undefined') {
   Bun.serve({
     port: WS_PORT,
     websocket: {
-      open(ws) {
+      open(ws: ServerWebSocket<unknown>) {
         const client: ConnectedClient = { send: data => ws.send(data) };
         (ws as unknown as { clientRef: ConnectedClient }).clientRef = client;
         clients.add(client);
         console.log(`[WS] Nuxt kiosk connected (${clients.size} client(s) active)`);
       },
-      message(ws, message) {
+      message(ws: ServerWebSocket<unknown>, message: string | Buffer) {
         const client = (ws as unknown as { clientRef: ConnectedClient }).clientRef;
         handleClientMessage(String(message), client);
       },
-      close(ws) {
+      close(ws: ServerWebSocket<unknown>) {
         const client = (ws as unknown as { clientRef: ConnectedClient }).clientRef;
         if (client)
           clients.delete(client);
         console.log(`[WS] Nuxt kiosk disconnected (${clients.size} client(s) active)`);
       },
     },
-    fetch(req, server) {
+    fetch(req: Request, server: Server<unknown>) {
       if (server.upgrade(req))
         return;
       return new Response('Altama Sensor & OSC Service is running on ws://127.0.0.1:8787');
@@ -143,7 +147,7 @@ setInterval(() => {
 // 3. UDP OSC Listener on port 9000 (Resolume Arena / TouchDesigner)
 const udp = dgram.createSocket('udp4');
 
-udp.on('message', (buffer, rinfo) => {
+udp.on('message', (buffer: Buffer, rinfo: RemoteInfo) => {
   try {
     const oscMessages = parseOscPacket(buffer);
     for (const msg of oscMessages) {
