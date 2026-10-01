@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { parseSensorMessage } from '../app/utils/sensor-message';
 
 function message(overrides: Record<string, unknown> = {}) {

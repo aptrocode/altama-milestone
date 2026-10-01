@@ -20,13 +20,13 @@ All 19 catalog entries remain marked `placeholder`. The three opening stories fo
 
 ## Dependency snapshot
 
-Versions verified on 21 September 2026 and unchanged by the visual update:
+Versions verified on 1 October 2026:
 
 - Nuxt 4.5.2, Vue 3.5.43, and Vue Router 5.3.1
 - Tailwind CSS and Tailwind Vite 4.3.3
 - Pinia 4.0.3 and `@pinia/nuxt` 1.0.2
 - GSAP 3.15.0
-- Vitest 5.0.1, vue-tsc 3.3.11, Sharp 0.35.4, and TypeScript 6.0.3
+- Vitest 5.0.3, vue-tsc 3.3.11, Sharp 0.35.5, and TypeScript 6.0.3
 
 The previous dependency check found TypeScript 7.0.2, but the project retains 6.x for current vue-tsc/typescript-eslint compatibility. Recheck official documentation and peer dependencies before future upgrades; this snapshot is not a perpetual claim of being latest.
 

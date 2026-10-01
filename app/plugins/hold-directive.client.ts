@@ -1,4 +1,4 @@
-﻿export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin((nuxtApp) => {
   const HOLD_DURATION = 1000;
 
   nuxtApp.vueApp.directive('hold', {
@@ -8,7 +8,8 @@
       const startHold = (e: Event) => {
         e.preventDefault();
         e.stopPropagation();
-        if (holdTimer) return;
+        if (holdTimer)
+          return;
 
         el.classList.remove('hold-complete');
         el.classList.add('holding');
@@ -30,7 +31,8 @@
       };
 
       const cancelHold = (e?: Event) => {
-        if (e) e.stopPropagation();
+        if (e)
+          e.stopPropagation();
         if (holdTimer) {
           clearTimeout(holdTimer);
           holdTimer = null;

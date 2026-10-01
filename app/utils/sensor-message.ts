@@ -1,4 +1,4 @@
-﻿import type { Locale, SectionId } from '~/types/milestone';
+import type { Locale, SectionId } from '~/types/milestone';
 import type { SensorMessage, SensorParseResult } from '~/types/sensor';
 import { isPointInsideCanvas } from '~/data/installation-layout';
 import { LOCALES, SECTION_IDS } from '~/types/milestone';
