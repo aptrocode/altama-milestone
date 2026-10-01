@@ -26,6 +26,7 @@
     "assets:fixtures": "bun scripts/generate-fixtures.ts"
   },
   "dependencies": {
+    "@nuxt/fonts": "^0.14.0",
     "@pinia/nuxt": "^1.0.2",
     "@tailwindcss/vite": "^4.3.3",
     "gsap": "^3.15.0",

@@ -23,6 +23,7 @@ All 19 catalog entries remain marked `placeholder`. The three opening stories fo
 Versions verified on 1 October 2026:
 
 - Nuxt 4.5.2, Vue 3.5.43, and Vue Router 5.3.1
+- `@nuxt/fonts` 0.14.0
 - Tailwind CSS and Tailwind Vite 4.3.3
 - Pinia 4.0.3 and `@pinia/nuxt` 1.0.2
 - GSAP 3.15.0
