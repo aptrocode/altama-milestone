@@ -31,11 +31,9 @@ function getFlagSrc(locale: WallLocale): string {
 
 function getHoldCueText(colId: number): string {
   const locale = wall.getColumnLocale(colId);
-  if (locale === 'en')
-    return 'HOLD 3 SECONDS';
   if (locale === 'zh-Hans')
-    return '长按 3 秒';
-  return 'HOLD 3 DETIK';
+    return '长按';
+  return 'HOLD';
 }
 
 function getBackLabel(colId: number): string {

@@ -51,7 +51,7 @@
 
 .laser-target.holding::after {
   opacity: 1;
-  animation: holdBorderFill 3s linear forwards;
+  animation: holdBorderFill 1.5s linear forwards;
 }
 
 .laser-target.hold-complete {
