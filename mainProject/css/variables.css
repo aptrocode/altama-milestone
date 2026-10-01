@@ -7,15 +7,15 @@
   --canvas-width: 2304px;
   --canvas-height: 1344px;
 
-  /* ── Balanced Zone Height Ratios (Compact boxes, NOT elongated upwards) ── */
+  /* ── Balanced Zone Height Ratios ── */
   --zone-top-ratio: 0.35;        /* zona branding / header (~470px) */
   --zone-middle-ratio: 0.38;     /* zona interaktif (~510px) - compact & perfectly sized */
   --zone-bottom-ratio: 0.27;     /* zona bawah (~364px) */
 
-  /* ── Column Spacing for 2304px Screen: (2304 - 264 - 120) / 6 = 320px per box ── */
+  /* ── Column Spacing for 2304px Screen: (2304 - 104 - 100) / 6 = EXACTLY 350px per box ── */
   --column-count: 6;
-  --column-gap: 24px;
-  --wall-padding-x: 132px;
+  --column-gap: 20px;
+  --wall-padding-x: 52px;
   --wall-padding-y: 0px;
 
   --color-bg-wall: #ffffff;
@@ -30,8 +30,8 @@
   
   /* Submenu Colors */
   --color-sub-header: #116343;           /* Merek Kami header */
-  --color-sub-active: #116343;           /* Ryu / Aktivasi Merek active green */
-  --color-sub-inactive: #ffffff;         /* Tekiro / Rexco white */
+  --color-sub-active: #116343;           /* Active green */
+  --color-sub-inactive: #ffffff;         /* Inactive white card */
   --color-sub-text-dark: #1f2937;
   --color-sub-text-light: #ffffff;
 

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ALTAMA Interactive Wall — Active Card & Carousel (Pinned to exact same area, NO X)
+   ALTAMA Interactive Wall — Active Card & Carousel (Image Carousel For All Columns)
    ========================================================================== */
 
 .active-content {
@@ -24,6 +24,31 @@
   padding: 2px 4px 8px 4px;
   flex-shrink: 0;
   width: 100%;
+  position: relative;
+}
+
+.card-back-btn {
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.16);
+  border: none;
+  border-radius: 6px;
+  color: #a7f3d0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+  padding: 0;
+}
+
+.card-back-btn:hover {
+  background: rgba(255, 255, 255, 0.32);
+  transform: translateY(-50%) scale(1.08);
 }
 
 .card-inner-title {
@@ -86,6 +111,7 @@
   font-weight: 800;
   color: #8ca298;
   letter-spacing: 0.08em;
+  text-align: center;
 }
 
 /* ── Carousel Controls (Sensor & Touch Ready) ── */

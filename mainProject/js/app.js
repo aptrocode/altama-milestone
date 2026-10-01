@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     let holdTimer = null;
-    btn.addEventListener('pointerdown', (e) => {
+    btn.addEventListener('pointerdown', () => {
       btn.classList.add('holding');
       holdTimer = setTimeout(() => {
         btn.classList.remove('holding');
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('pointercancel', cancelHold);
   });
 
-  // 4. Submenu Buttons
+  // 4. Submenu Buttons (Choosing opens the Image Carousel!)
   document.querySelectorAll('.sub-btn').forEach(btn => {
     const colId = parseInt(btn.dataset.col);
     const subKey = btn.dataset.sub;
@@ -77,7 +77,16 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('pointercancel', cancelHold);
   });
 
-  // 5. Carousel Controls (Sensor / Touch Ready)
+  // 5. Back Button in Card Header (Returns from Image Card to Submenu Options)
+  document.querySelectorAll('.card-back-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const colId = parseInt(btn.dataset.col);
+      Interactions.returnToSubmenu(colId);
+    });
+  });
+
+  // 6. Carousel Controls (Sensor / Touch Ready)
   document.querySelectorAll('.carousel-prev').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -94,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 6. Reset Column Timer on any user interaction within the column
+  // 7. Reset Column Timer on any user interaction within the column
   document.querySelectorAll('.column').forEach(column => {
     const colId = parseInt(column.dataset.col);
     const activityEvents = ['pointerdown', 'touchstart', 'click'];
@@ -107,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 7. Global Keyboard Navigation (For Testing & Accessibility)
+  // 8. Global Keyboard Navigation (Escape returns all to idle)
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       WALL_CONFIG.columns.forEach(col => {
@@ -116,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 8. Auto-preview mockup if URL has ?preview=mockup or ?mockup=1
+  // 9. Auto-preview mockup if URL has ?preview=mockup or ?mockup=1
   const urlParams = new URLSearchParams(window.location.search);
   const langParam = urlParams.get('lang');
   if (langParam && ['id', 'en', 'zh'].includes(langParam)) {
@@ -124,13 +133,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (window.location.search.includes('preview=mockup') || window.location.search.includes('mockup=1')) {
+    // Show Col 1, 3, 4, 6 in active photo card
     WallState.setColumnState(1, 'active');
-    WallState.setColumnState(2, 'submenu');
-    WallState.setActiveSubItem(2, 'ryu');
-    WallState.setColumnState(3, 'idle');
-    WallState.setColumnState(4, 'idle');
-    WallState.setColumnState(5, 'idle');
+    WallState.setColumnState(3, 'active');
+    WallState.setColumnState(4, 'active');
     WallState.setColumnState(6, 'active');
+
+    // Col 2 and Col 5 in selection state (NO explanation on top yet!)
+    WallState.setColumnState(2, 'submenu');
+    WallState.setActiveSubItem(2, null);
+    WallState.setColumnState(5, 'submenu');
+    WallState.setActiveSubItem(5, null);
 
     WALL_CONFIG.columns.forEach(col => {
       Interactions.updateColumn(col.id);

@@ -93,10 +93,15 @@ const Interactions = {
       const descEl = headerEl.querySelector('p');
 
       if (colData.type === 'expandable') {
-        const subKey = WallState.getActiveSubItem(colId) || colData.defaultSub;
-        const subData = WALL_CONFIG.getSubData(colId, subKey, locale);
-        if (titleEl) titleEl.textContent = (subData && subData.title) || colData.headerTitle;
-        if (descEl) descEl.textContent = (subData && subData.desc) || colData.headerDesc;
+        const subKey = WallState.getActiveSubItem(colId);
+        if (subKey) {
+          const subData = WALL_CONFIG.getSubData(colId, subKey, locale);
+          if (titleEl) titleEl.textContent = (subData && subData.title) || colData.headerTitle;
+          if (descEl) descEl.textContent = (subData && subData.desc) || colData.headerDesc;
+        } else {
+          if (titleEl) titleEl.textContent = colData.headerTitle;
+          if (descEl) descEl.textContent = colData.headerDesc;
+        }
       } else {
         if (titleEl) titleEl.textContent = colData.headerTitle;
         if (descEl) descEl.textContent = colData.headerDesc;
@@ -105,7 +110,17 @@ const Interactions = {
 
     const cardInnerTitle = document.querySelector(`.card-inner-title[data-col="${colId}"]`);
     if (cardInnerTitle) {
-      cardInnerTitle.textContent = colData.headerTitle;
+      if (colData.type === 'expandable') {
+        const subKey = WallState.getActiveSubItem(colId);
+        if (subKey) {
+          const subData = WALL_CONFIG.getSubData(colId, subKey, locale);
+          cardInnerTitle.textContent = (subData && subData.title) || colData.headerTitle;
+        } else {
+          cardInnerTitle.textContent = colData.headerTitle;
+        }
+      } else {
+        cardInnerTitle.textContent = colData.headerTitle;
+      }
     }
 
     const submenuHeaderTitle = document.querySelector(`.submenu-header-title[data-col="${colId}"]`);
@@ -127,8 +142,34 @@ const Interactions = {
     if (bottomEl) {
       const bTitle = bottomEl.querySelector('h4');
       const bDesc = bottomEl.querySelector('p');
-      if (bTitle) bTitle.textContent = colData.bottomTitle;
-      if (bDesc) bDesc.textContent = colData.bottomDesc;
+      if (colData.type === 'expandable') {
+        const subKey = WallState.getActiveSubItem(colId);
+        if (subKey) {
+          const subData = WALL_CONFIG.getSubData(colId, subKey, locale);
+          if (bTitle) bTitle.textContent = (subData && subData.title) || colData.bottomTitle;
+          if (bDesc) bDesc.textContent = (subData && subData.bottomDesc) || colData.bottomDesc;
+        } else {
+          if (bTitle) bTitle.textContent = colData.bottomTitle;
+          if (bDesc) bDesc.textContent = colData.bottomDesc;
+        }
+      } else {
+        if (bTitle) bTitle.textContent = colData.bottomTitle;
+        if (bDesc) bDesc.textContent = colData.bottomDesc;
+      }
+    }
+
+    // Update photo labels in carousel
+    const column = document.querySelector(`.column[data-col="${colId}"]`);
+    if (column) {
+      const currentTitle = (colData.type === 'expandable' && WallState.getActiveSubItem(colId)) 
+        ? (WALL_CONFIG.getSubData(colId, WallState.getActiveSubItem(colId), locale)?.title || colData.headerTitle)
+        : colData.headerTitle;
+      column.querySelectorAll('.carousel-slide').forEach((slide, sIdx) => {
+        const label = slide.querySelector('.photo-label');
+        if (label) {
+          label.textContent = `${currentTitle} — FOTO 0${sIdx + 1}`;
+        }
+      });
     }
   },
 
@@ -136,7 +177,10 @@ const Interactions = {
     const brandingEl = document.getElementById('branding-default');
     const headersEl = document.getElementById('content-headers');
 
-    if (WallState.hasAnyActive()) {
+    // Check if any column is in 'active' state (photo card open)
+    const hasActiveCards = Object.values(WallState.columns).some(s => s === 'active');
+
+    if (hasActiveCards) {
       if (brandingEl) brandingEl.classList.add('hidden');
       if (headersEl) headersEl.classList.remove('hidden');
 
@@ -145,7 +189,9 @@ const Interactions = {
         if (!header) return;
 
         const state = WallState.getColumnState(col.id);
-        if (state === 'active' || state === 'submenu') {
+        // ONLY SHOW EXPLANATION WHEN ACTIVE (PHOTO CARD IS OPEN)!
+        // When in 'submenu' (the choices are shown), DO NOT SHOW EXPLANATION YET!
+        if (state === 'active') {
           header.classList.remove('col-hidden');
           header.classList.add('active');
         } else {
@@ -163,7 +209,9 @@ const Interactions = {
     const bottomDescs = document.getElementById('bottom-descriptions');
     const bottomDefault = document.getElementById('bottom-default');
 
-    if (WallState.hasAnyActive()) {
+    const hasActiveCards = Object.values(WallState.columns).some(s => s === 'active');
+
+    if (hasActiveCards) {
       if (bottomDefault) bottomDefault.classList.add('hidden');
       if (bottomDescs) bottomDescs.classList.remove('hidden');
 
@@ -172,7 +220,8 @@ const Interactions = {
         if (!desc) return;
 
         const state = WallState.getColumnState(col.id);
-        if (state === 'active' || state === 'submenu') {
+        // ONLY SHOW BOTTOM EXPLANATION WHEN ACTIVE!
+        if (state === 'active') {
           desc.classList.remove('col-hidden');
         } else {
           desc.classList.add('col-hidden');
@@ -229,6 +278,12 @@ const Interactions = {
         if (btnGroup) btnGroup.classList.add('hidden');
         if (submenuGroup) submenuGroup.classList.remove('hidden');
         if (activeContent) activeContent.classList.add('hidden');
+        // Clear active sub styling in submenu
+        if (submenuGroup) {
+          submenuGroup.querySelectorAll('.sub-btn').forEach(btn => {
+            btn.classList.remove('active-sub');
+          });
+        }
         break;
 
       case 'active':
@@ -244,7 +299,9 @@ const Interactions = {
     if (!col) return;
 
     if (col.type === 'expandable') {
+      // First open the choices menu without any explanation yet!
       WallState.setColumnState(colId, 'submenu');
+      WallState.setActiveSubItem(colId, null);
     } else {
       WallState.setColumnState(colId, 'active');
     }
@@ -257,15 +314,27 @@ const Interactions = {
 
   selectSubItem(colId, subKey) {
     WallState.setActiveSubItem(colId, subKey);
+    // User selected the item -> IMAGE CAROUSEL CARD OPENS ("image keluar sama seperti yang lain")!
+    WallState.setColumnState(colId, 'active');
 
-    const column = document.querySelector(`.column[data-col="${colId}"]`);
-    if (column) {
-      column.querySelectorAll('.sub-btn').forEach(btn => {
-        btn.classList.toggle('active-sub', btn.dataset.sub === subKey);
-      });
-    }
+    // Reset carousel index to 0
+    Carousel.goTo(colId, 0);
 
+    this.updateColumn(colId);
     this.updateColumnText(colId);
+    this.refreshAll();
+    ColumnTimer.reset(colId);
+  },
+
+  returnToSubmenu(colId) {
+    const col = WALL_CONFIG.columns.find(c => c.id === colId);
+    if (!col || col.type !== 'expandable') return;
+
+    WallState.setColumnState(colId, 'submenu');
+    WallState.setActiveSubItem(colId, null);
+    this.updateColumn(colId);
+    this.updateColumnText(colId);
+    this.refreshAll();
     ColumnTimer.reset(colId);
   },
 

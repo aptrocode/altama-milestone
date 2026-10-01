@@ -5,7 +5,7 @@
 const WallState = {
   columnLocales: { 1: 'id', 2: 'id', 3: 'id', 4: 'id', 5: 'id', 6: 'id' },
   columns: {},         // { 1: 'idle', 2: 'submenu', ... }
-  activeSubItem: {},   // { 2: 'ryu', 5: 'brand-activation' }
+  activeSubItem: {},   // { 2: null, 5: null }
   carouselIndex: {},   // { 1: 0, 2: 0, ... }
 
   init() {
@@ -13,9 +13,7 @@ const WallState = {
       this.columnLocales[col.id] = 'id';
       this.columns[col.id] = 'idle';
       this.carouselIndex[col.id] = 0;
-      if (col.type === 'expandable' && col.defaultSub) {
-        this.activeSubItem[col.id] = col.defaultSub;
-      }
+      this.activeSubItem[col.id] = null;
     });
   },
 
@@ -60,19 +58,14 @@ const WallState = {
   resetColumn(colId) {
     this.columns[colId] = 'idle';
     this.carouselIndex[colId] = 0;
-    const col = WALL_CONFIG.columns.find(c => c.id === colId);
-    if (col && col.defaultSub) {
-      this.activeSubItem[colId] = col.defaultSub;
-    }
+    this.activeSubItem[colId] = null;
   },
 
   resetAll() {
     WALL_CONFIG.columns.forEach(col => {
       this.columns[col.id] = 'idle';
       this.carouselIndex[col.id] = 0;
-      if (col.defaultSub) {
-        this.activeSubItem[col.id] = col.defaultSub;
-      }
+      this.activeSubItem[col.id] = null;
     });
   },
 };
