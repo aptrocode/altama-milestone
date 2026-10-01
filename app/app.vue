@@ -1,5 +1,5 @@
-<template>
-  <main class="h-dvh w-dvw overflow-clip bg-[#fffef9]">
+﻿<template>
+  <main class="h-dvh w-dvw overflow-clip bg-white">
     <NuxtPage />
   </main>
 </template>

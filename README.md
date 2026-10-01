@@ -1,53 +1,65 @@
-# Altama Interactive Milestone
+﻿# Altama Interactive Wall & Milestone
 
-![Static Badge](https://img.shields.io/badge/license-MIT-brightgreen?label=LICENSE)
+Fullscreen interactive application for the 2304 × 1344 (12:7 aspect ratio) ALTAMA interactive LED wall.
 
-Fullscreen Nuxt 4 SPA for a 2304 × 1344 interactive LED installation. The illustrated interface has three independent sections, 19 year buttons (4 / 8 / 7), sketch-to-color GSAP reveals, and a WebSocket boundary for a separate Sensor Service.
+## System Overview
 
-All current copy and artwork are development placeholders. Replace them through `shared/milestones.json` and `public/milestones/` only after content approval.
+The application features a 6-column interactive layout:
+1. **ABOUT ALTAMA** — Single button with photo carousel and descriptions
+2. **OUR BRANDS** — Expandable category with sub-menu (TEKIRO, RYU, REXCO) and photo carousels
+3. **INFRASTRUCTURE** — Single button with photo carousel and descriptions
+4. **DIGITAL PARTNERS** — Single button with photo carousel and descriptions
+5. **DISTRIBUTION** — Expandable category with sub-menu (OUR WAY FOR DISTRIBUTION, BRAND ACTIVATION)
+6. **SUMMIT 2026** — Single button with photo carousel and normalized navigation controls
 
-## Local development
+### Key Interactions
 
-Prerequisites:
+- **Hold-to-Activate (1 Second)**: Prevents accidental triggers on touch screens / LIDAR sensor wall.
+  - Multi-layer luminous emerald neon glow (`filter: drop-shadow`).
+  - Animated white-hot laser spark tracer (`@property --hold-angle` conic-gradient).
+  - Subtle guide track and tactile press feedback.
+  - Applied consistently across:
+    - Main Category Buttons
+    - Sub-Menu Buttons (TEKIRO, RYU, REXCO, etc.)
+    - Carousel Navigation Buttons (←, →)
+- **Sensor Service Integration**: Native WebSocket support via `useSensorSocket` for Hokuyo LiDAR touch events.
+- **Keyboard Shortcuts**:
+  - `Escape` or `KeyR`: Reset all columns to idle state.
+  - `1` to `6`: Directly toggle/activate columns 1 to 6.
+  - `KeyD`: Toggle diagnostics overlay (Sensor & WebSocket status).
 
-- Bun
-- Node.js
-- Nuxt
-- Modern Chromium browser
+## Project Structure
 
+```text
+altama-milestone/
+├── app/                  # Nuxt 4 Vue 3 TypeScript Application
+│   ├── assets/css/       # Modular design system & animations
+│   ├── components/kiosk/ # KioskStage (Interactive Wall), KioskStatus
+│   ├── composables/      # useSensorSocket
+│   ├── data/             # wall-config.ts, installation-layout.ts
+│   ├── plugins/          # hold-directive.client.ts (v-hold)
+│   ├── stores/           # wall.ts (Pinia state), system.ts
+│   └── pages/index.vue   # Main interactive wall view
+├── standalone/           # Standalone HTML/CSS/JS version
+│   ├── index.html        # Direct double-click browser preview
+│   ├── css/              # Standalone stylesheets
+│   └── js/               # Standalone vanilla scripts
+├── shared/               # Shared geometry and configuration
+├── test/                 # Vitest test suite
+└── nuxt.config.ts        # Nuxt configuration
+```
+
+## Running the Application
+
+### Option A: Standalone Preview (No Node/Bun required)
+Open `standalone/index.html` directly in any modern Chromium browser (Chrome or Edge).
+
+### Option B: Nuxt 4 Application
 ```bash
-bun install --frozen-lockfile
+bun install
 bun run dev
+# or: npm install && npm run dev
 ```
-
-The initial selection is 1967 / 2007 / 2026. Click an artwork or press `1`, `2`, or `3` to reveal a section. Click any year to load its sketch. Press `R` to reset all sections; `D` toggles diagnostics in development.
-
-## Checks
-
-```bash
-bun run lint
-bun run typecheck
-bun run test
-bun run assets:check
-bun run build
-bun run generate
-```
-
-Static deployment output is written to `.output/public` and must be served over HTTP.
-
-## Documentation
-
-- [Architecture](./docs/architecture.md)
-- [Visual design and client canvas](./docs/design.md)
-- [Assets](./docs/assets.md)
-- [Sensor Service](./docs/sensor.md)
-- [Testing](./docs/testing.md)
-- [Issue and pull-request workflow](./docs/push.md)
-- [Release workflow](./docs/release.md)
-- [Current status](./docs/status.md)
-- [Agent entry point](./AGENTS.md)
-
-The application follows Nuxt 4's standard `app/`, `public/`, `shared/`, and `test/` structure. Contributors should start with the relevant document above instead of duplicating rules in source comments.
 
 ## License
 

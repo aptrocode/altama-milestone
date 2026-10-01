@@ -1,0 +1,72 @@
+/* ============================================
+   Active Content Panel
+   ============================================
+   When active: shows category label on top,
+   then green carousel box below.
+   ============================================ */
+
+.active-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  gap: 0;
+  background: transparent;
+  border: none;
+}
+
+/* Category label ABOVE the green box */
+.active-content > .submenu-parent-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-black);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0 0 var(--spacing-xs) 0;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Green carousel container */
+.active-content > .carousel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-btn);
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Override carousel colors inside active panel */
+.active-content .carousel-indicator {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.active-content .carousel-prev,
+.active-content .carousel-next {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+}
+
+.active-content .carousel-prev:hover,
+.active-content .carousel-next:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+
+.active-content .placeholder-img {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.active-content .placeholder-img .img-icon {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.active-content .placeholder-img span {
+  color: rgba(255, 255, 255, 0.6);
+}

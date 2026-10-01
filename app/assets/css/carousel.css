@@ -1,0 +1,222 @@
+/* ============================================
+   Photo Carousel
+   ============================================ */
+
+.carousel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.carousel-viewport {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.carousel-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+  pointer-events: none;
+}
+
+.carousel-slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Placeholder image style */
+.placeholder-img {
+  width: 85%;
+  height: 75%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-placeholder-bg);
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
+  gap: var(--spacing-sm);
+}
+
+.placeholder-img .img-icon {
+  width: 36px;
+  height: 28px;
+  color: var(--color-placeholder-icon);
+}
+
+.placeholder-img span {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Controls ── */
+.carousel-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-xs) var(--spacing-lg);
+  flex-shrink: 0;
+}
+
+.carousel-prev,
+.carousel-next {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-carousel-control);
+  border: 1px solid var(--color-btn-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-bold);
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+  position: relative;
+  overflow: visible;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.carousel-prev:hover,
+.carousel-next:hover {
+  background: var(--color-btn-hover-bg);
+}
+
+/* ── Guide track & ambient aura (pseudo-element ::before) ── */
+.carousel-prev::before,
+.carousel-next::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: calc(var(--radius-sm) + 2px);
+  border: 2px solid rgba(110, 231, 183, 0.4);
+  background: transparent;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+}
+
+.carousel-prev.holding::before,
+.carousel-next.holding::before {
+  opacity: 1;
+  box-shadow:
+    0 0 12px rgba(110, 231, 183, 0.4),
+    inset 0 0 6px rgba(110, 231, 183, 0.2);
+}
+
+/* ── Neon laser outline tracer (pseudo-element ::after) ── */
+.carousel-prev::after,
+.carousel-next::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: calc(var(--radius-sm) + 2px);
+  background: conic-gradient(
+    from 0deg,
+    rgba(5, 150, 105, 0.3) 0deg,
+    #059669 0deg,
+    #10b981 calc(var(--hold-angle, 0deg) - 20deg),
+    #6ee7b7 calc(var(--hold-angle, 0deg) - 6deg),
+    #ffffff var(--hold-angle, 0deg),
+    transparent var(--hold-angle, 0deg)
+  );
+  padding: 3px;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  filter:
+    drop-shadow(0 0 2px #ffffff)
+    drop-shadow(0 0 6px #34d399)
+    drop-shadow(0 0 12px rgba(110, 231, 183, 0.9));
+}
+
+/* ── Holding state: animate outline & button depression ── */
+.carousel-prev.holding,
+.carousel-next.holding {
+  transform: scale(0.94);
+  box-shadow:
+    0 0 16px rgba(110, 231, 183, 0.5),
+    0 0 30px rgba(16, 185, 129, 0.3);
+}
+
+.carousel-prev.holding::after,
+.carousel-next.holding::after {
+  opacity: 1;
+  animation: holdBorderFill 1s linear forwards;
+}
+
+/* ── Completed hold burst / flash ── */
+.carousel-prev.hold-complete,
+.carousel-next.hold-complete {
+  animation: carouselBtnSuccessBurst 0.35s ease-out;
+}
+
+.carousel-prev.hold-complete::after,
+.carousel-next.hold-complete::after {
+  opacity: 1;
+  --hold-angle: 360deg;
+  background: conic-gradient(
+    from 0deg,
+    #10b981 0deg,
+    #34d399 180deg,
+    #ffffff 360deg
+  );
+  filter:
+    drop-shadow(0 0 4px #ffffff)
+    drop-shadow(0 0 12px #34d399)
+    drop-shadow(0 0 20px rgba(110, 231, 183, 1));
+}
+
+@keyframes carouselBtnSuccessBurst {
+  0% {
+    transform: scale(0.92);
+    box-shadow:
+      0 0 20px rgba(110, 231, 183, 0.9),
+      0 0 40px rgba(16, 185, 129, 0.7);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow:
+      0 0 30px rgba(255, 255, 255, 1),
+      0 0 60px rgba(110, 231, 183, 0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.carousel-indicator {
+  text-align: center;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  padding: var(--spacing-xs) 0;
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+}

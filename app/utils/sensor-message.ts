@@ -1,7 +1,6 @@
-import type { Locale, SectionId } from '~/types/milestone';
+﻿import type { Locale, SectionId } from '~/types/milestone';
 import type { SensorMessage, SensorParseResult } from '~/types/sensor';
 import { isPointInsideCanvas } from '~/data/installation-layout';
-import { getMilestoneForSection } from '~/data/milestones';
 import { LOCALES, SECTION_IDS } from '~/types/milestone';
 import { SENSOR_PROTOCOL_VERSION } from '~/types/sensor';
 
@@ -95,9 +94,6 @@ export function parseSensorMessage(raw: string): SensorParseResult {
     return failure('coordinates are outside the logical canvas');
 
   if (value.type === 'touchStart') {
-    if (value.target !== 'artwork')
-      return failure('touchStart target must be artwork');
-
     return {
       ok: true,
       message: {
@@ -113,8 +109,8 @@ export function parseSensorMessage(raw: string): SensorParseResult {
   }
 
   if (value.type === 'selectMilestone') {
-    if (!isShortString(value.milestoneId) || !getMilestoneForSection(value.section, value.milestoneId))
-      return failure('milestone does not belong to section');
+    if (!isShortString(value.milestoneId))
+      return failure('invalid milestoneId');
 
     return {
       ok: true,
