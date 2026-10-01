@@ -172,10 +172,10 @@ onUnmounted(() => {
             'flex opacity-100': wall.getColumnState(col.id) === 'active',
           }"
         >
-          <h2 class="text-base md:text-lg lg:text-xl font-black text-neutral-800 uppercase mb-1.5 tracking-wide leading-tight">
+          <h2 class="text-base md:text-lg lg:text-xl font-black text-emerald-800 uppercase mb-1.5 tracking-wide leading-tight">
             {{ wall.getHeaderTitle(col.id) }}
           </h2>
-          <p class="text-[11px] md:text-xs text-neutral-700 leading-relaxed max-w-prose">
+          <p class="text-[11px] md:text-xs text-neutral-600 font-medium leading-relaxed max-w-prose">
             {{ wall.getHeaderDesc(col.id) }}
           </p>
         </div>
@@ -213,22 +213,22 @@ onUnmounted(() => {
         <div class="flex-1 flex flex-col" :class="{ hidden: wall.getColumnState(col.id) !== 'idle' }">
           <button
             v-hold="() => wall.onMainButtonClick(col.id)"
-            class="laser-target idle-breathe flex-1 flex flex-col items-center justify-center gap-1.5 bg-[#d5d5d5] hover:bg-[#c8c8c8] active:bg-[#bababa] border border-[#c0c0c0] hover:border-emerald-500/50 rounded-[10px] text-neutral-800 font-bold uppercase tracking-wider text-center p-3 cursor-pointer select-none relative transition-all duration-150"
+            class="laser-target idle-breathe flex-1 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-b from-white via-slate-50 to-neutral-100 hover:from-white hover:to-emerald-50/50 active:from-neutral-100 active:to-neutral-200 border border-neutral-300/80 hover:border-emerald-500/60 rounded-xl text-neutral-900 font-extrabold uppercase tracking-wider text-center p-3 cursor-pointer select-none relative transition-all duration-150 shadow-xs hover:shadow-md"
             :data-category="col.key"
             :data-col="col.id"
           >
             <!-- Column Number Badge -->
-            <div class="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/40 text-emerald-600 flex items-center justify-center mb-1 shrink-0 transition-transform duration-200">
-              <span class="text-sm font-extrabold leading-none">{{ col.id }}</span>
+            <div class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center mb-1 shrink-0 shadow-xs ring-2 ring-emerald-600/20 transition-transform duration-200">
+              <span class="text-sm font-black leading-none">{{ col.id }}</span>
             </div>
 
             <!-- Button Label (Reactively localized) -->
-            <span class="text-sm md:text-base font-bold leading-tight" v-html="wall.getColumnLabelHtml(col.id)" />
+            <span class="text-sm md:text-base font-black leading-tight text-neutral-900 tracking-wide" v-html="wall.getColumnLabelHtml(col.id)" />
 
             <!-- Interactive Hold Indicator with Hand Icon -->
-            <div class="inline-flex items-center justify-center gap-1.5 mt-2 px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/30 rounded-full pointer-events-none">
+            <div class="inline-flex items-center justify-center gap-1.5 mt-2 px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-full pointer-events-none transition-colors">
               <svg
-                class="w-4 h-4 text-emerald-600 shrink-0 animate-hand-press"
+                class="w-3.5 h-3.5 text-emerald-700 shrink-0 animate-hand-press"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -242,7 +242,7 @@ onUnmounted(() => {
                 <path d="M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8" />
                 <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
               </svg>
-              <span class="text-[10px] md:text-[11px] font-extrabold tracking-wider text-neutral-800 uppercase">{{ getHoldCueText(col.id) }}</span>
+              <span class="text-[10px] md:text-[11px] font-black tracking-widest text-emerald-800 uppercase">{{ getHoldCueText(col.id) }}</span>
             </div>
           </button>
         </div>
@@ -250,18 +250,18 @@ onUnmounted(() => {
         <!-- Submenu Group (Expandable columns in Submenu State) -->
         <div
           v-if="col.type === 'expandable'"
-          class="flex-1 flex flex-col relative bg-[#d5d5d5] border border-emerald-500/40 rounded-[10px] overflow-hidden transition-all duration-200"
+          class="flex-1 flex flex-col relative bg-white border-2 border-emerald-600/30 rounded-xl overflow-hidden shadow-xs transition-all duration-200"
           :class="{
             hidden: wall.getColumnState(col.id) !== 'submenu',
             flex: wall.getColumnState(col.id) === 'submenu',
           }"
           :data-col="col.id"
         >
-          <div class="flex items-center justify-between px-3 py-1.5 bg-black/10 border-b border-black/5 shrink-0">
-            <span class="text-xs font-black text-emerald-700 uppercase tracking-wider select-none">{{ wall.getColumnLabel(col.id) }}</span>
+          <div class="flex items-center justify-between px-3 py-1.5 bg-emerald-800 border-b border-emerald-900/30 shrink-0">
+            <span class="text-xs font-black text-white uppercase tracking-wider select-none">{{ wall.getColumnLabel(col.id) }}</span>
             <button
               type="button"
-              class="w-6 h-6 rounded-full bg-black/10 hover:bg-red-500/20 hover:border-red-500/40 border border-black/15 text-neutral-600 hover:text-red-600 text-xs font-bold flex items-center justify-center cursor-pointer transition-all duration-150"
+              class="w-6 h-6 rounded-full bg-white/20 hover:bg-red-500 hover:text-white border border-white/25 text-white text-xs font-bold flex items-center justify-center cursor-pointer transition-all duration-150"
               :title="getBackLabel(col.id)"
               :aria-label="getBackLabel(col.id)"
               @click.stop="wall.setColumnState(col.id, 'idle')"
@@ -273,15 +273,19 @@ onUnmounted(() => {
             v-for="sub in col.subItems"
             :key="sub.key"
             v-hold="() => wall.onSubButtonClick(col.id, sub.key)"
-            class="laser-target flex-1 flex flex-col items-center justify-center gap-1 bg-transparent hover:bg-emerald-500/15 active:bg-emerald-500/25 border-t border-black/10 text-neutral-800 text-xs font-bold uppercase tracking-wider text-center p-2 cursor-pointer select-none relative transition-all duration-150 first:border-t-0"
-            :class="{ '!bg-emerald-500/20 !text-emerald-800 font-extrabold': wall.getActiveSubItem(col.id) === sub.key }"
+            class="laser-target flex-1 flex flex-col items-center justify-center gap-1 bg-white hover:bg-emerald-50/80 active:bg-emerald-100/70 border-t border-neutral-200 text-neutral-900 text-xs font-bold uppercase tracking-wider text-center p-2.5 cursor-pointer select-none relative transition-all duration-150 first:border-t-0"
+            :class="{ '!bg-emerald-700 !text-white font-black': wall.getActiveSubItem(col.id) === sub.key }"
             :data-sub="sub.key"
             :data-col="col.id"
           >
-            <span class="text-xs font-bold leading-tight" v-html="wall.getSubItemLabelHtml(col.id, sub.key)" />
-            <div class="inline-flex items-center justify-center gap-1 mt-0.5 opacity-70">
+            <span class="text-xs font-black leading-tight" v-html="wall.getSubItemLabelHtml(col.id, sub.key)" />
+            <div
+              class="inline-flex items-center justify-center gap-1 mt-0.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 transition-colors"
+              :class="{ '!bg-emerald-800 !border-emerald-600 !text-emerald-100': wall.getActiveSubItem(col.id) === sub.key }"
+            >
               <svg
-                class="w-3 h-3 text-emerald-600 shrink-0"
+                class="w-3 h-3 shrink-0"
+                :class="wall.getActiveSubItem(col.id) === sub.key ? 'text-white' : 'text-emerald-700'"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -295,7 +299,7 @@ onUnmounted(() => {
                 <path d="M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8" />
                 <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
               </svg>
-              <span class="text-[9px] font-bold tracking-wider text-neutral-700 uppercase">{{ getHoldCueText(col.id) }}</span>
+              <span class="text-[9px] font-black tracking-wider uppercase">{{ getHoldCueText(col.id) }}</span>
             </div>
           </button>
         </div>
@@ -310,10 +314,10 @@ onUnmounted(() => {
           :data-col="col.id"
         >
           <div class="flex items-center justify-between px-1 pb-1 shrink-0">
-            <span class="text-xs font-black text-neutral-800 uppercase tracking-wider text-left">{{ wall.getActiveSubItemLabel(col.id) }}</span>
+            <span class="text-xs font-black text-emerald-900 uppercase tracking-wider text-left">{{ wall.getActiveSubItemLabel(col.id) }}</span>
             <button
               type="button"
-              class="w-6 h-6 rounded-full bg-black/10 hover:bg-red-500/20 hover:border-red-500/40 border border-black/15 text-neutral-600 hover:text-red-600 text-xs font-bold flex items-center justify-center cursor-pointer transition-all duration-150"
+              class="w-6 h-6 rounded-full bg-neutral-200 hover:bg-red-500 hover:text-white border border-neutral-300 text-neutral-700 text-xs font-bold flex items-center justify-center cursor-pointer transition-all duration-150"
               :title="getBackLabel(col.id)"
               :aria-label="getBackLabel(col.id)"
               @click.stop="col.type === 'expandable' ? wall.setColumnState(col.id, 'submenu') : wall.setColumnState(col.id, 'idle')"
@@ -321,7 +325,7 @@ onUnmounted(() => {
               ✕
             </button>
           </div>
-          <div class="flex-1 flex flex-col bg-[#2d6a4f] rounded-[10px] overflow-hidden min-h-0 relative" :data-col="col.id">
+          <div class="flex-1 flex flex-col bg-gradient-to-b from-[#1b4d3e] to-[#12362b] border border-emerald-700/60 rounded-xl overflow-hidden min-h-0 relative shadow-sm" :data-col="col.id">
             <div class="flex-1 relative overflow-hidden min-h-0">
               <div
                 v-for="slideIdx in col.slides"
@@ -329,17 +333,17 @@ onUnmounted(() => {
                 class="absolute inset-0 flex items-center justify-center transition-opacity duration-300 pointer-events-none opacity-0"
                 :class="{ '!opacity-100 !pointer-events-auto': wall.getCarouselIndex(col.id) === slideIdx - 1 }"
               >
-                <div class="w-[85%] h-[75%] flex flex-col items-center justify-center bg-white/10 border-2 border-dashed border-white/25 rounded-lg gap-2 text-white/80">
+                <div class="w-[85%] h-[75%] flex flex-col items-center justify-center bg-black/25 border-2 border-dashed border-white/25 rounded-lg gap-2 text-white/90 shadow-inner">
                   <svg viewBox="0 0 100 80" class="w-9 h-7 text-white/50">
                     <polygon points="50,15 85,65 15,65" fill="currentColor" />
                   </svg>
-                  <span class="text-xs uppercase tracking-wider text-white/85 font-bold">{{ getSlidePlaceholderText(col.id, slideIdx) }}</span>
+                  <span class="text-xs uppercase tracking-wider text-white/90 font-bold">{{ getSlidePlaceholderText(col.id, slideIdx) }}</span>
                 </div>
               </div>
             </div>
             <div class="flex flex-row items-center justify-between px-4 py-2 shrink-0">
               <button
-                class="w-9 h-9 flex items-center justify-center p-0 leading-none shrink-0 bg-white/15 hover:bg-white/25 border border-white/30 rounded-md text-white cursor-pointer select-none transition-all duration-150 active:scale-95"
+                class="w-9 h-9 flex items-center justify-center p-0 leading-none shrink-0 bg-white/20 hover:bg-white/30 border border-white/40 rounded-lg text-white cursor-pointer select-none transition-all duration-150 active:scale-95 shadow-xs"
                 :aria-label="getPrevLabel(col.id)"
                 @click.stop="wall.navigateCarousel(col.id, -1, col.slides)"
               >
@@ -356,11 +360,11 @@ onUnmounted(() => {
                   <polyline points="15 18 9 12 15 6" />
                 </svg>
               </button>
-              <div class="text-white/85 text-xs font-bold tracking-widest select-none">
+              <div class="text-white text-xs font-black tracking-widest select-none bg-black/20 px-2.5 py-1 rounded-full border border-white/10">
                 {{ String(wall.getCarouselIndex(col.id) + 1).padStart(2, '0') }} / {{ String(col.slides).padStart(2, '0') }}
               </div>
               <button
-                class="w-9 h-9 flex items-center justify-center p-0 leading-none shrink-0 bg-white/15 hover:bg-white/25 border border-white/30 rounded-md text-white cursor-pointer select-none transition-all duration-150 active:scale-95"
+                class="w-9 h-9 flex items-center justify-center p-0 leading-none shrink-0 bg-white/20 hover:bg-white/30 border border-white/40 rounded-lg text-white cursor-pointer select-none transition-all duration-150 active:scale-95 shadow-xs"
                 :aria-label="getNextLabel(col.id)"
                 @click.stop="wall.navigateCarousel(col.id, 1, col.slides)"
               >
@@ -400,10 +404,10 @@ onUnmounted(() => {
             'flex opacity-100': wall.getColumnState(col.id) === 'active',
           }"
         >
-          <h4 class="text-xs font-bold uppercase mb-1 tracking-wide text-neutral-800" :data-col="col.id">
+          <h4 class="text-xs font-black uppercase mb-1 tracking-wide text-emerald-800" :data-col="col.id">
             {{ wall.getBottomTitle(col.id) }}
           </h4>
-          <p class="text-xs text-neutral-500 leading-normal">
+          <p class="text-xs text-neutral-600 leading-normal font-normal">
             {{ wall.getBottomDesc(col.id) }}
           </p>
         </div>
