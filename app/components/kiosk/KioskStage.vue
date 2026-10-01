@@ -47,6 +47,34 @@ function getBackLabel(colId: number): string {
   return 'KEMBALI';
 }
 
+function getSlidePlaceholderText(colId: number, slideIdx: number): string {
+  const locale = wall.getColumnLocale(colId);
+  const num = String(slideIdx).padStart(2, '0');
+  if (locale === 'en')
+    return `PHOTO ${num}`;
+  if (locale === 'zh-Hans')
+    return `图片 ${num}`;
+  return `FOTO ${num}`;
+}
+
+function getPrevLabel(colId: number): string {
+  const locale = wall.getColumnLocale(colId);
+  if (locale === 'en')
+    return 'Previous';
+  if (locale === 'zh-Hans')
+    return '上一张';
+  return 'Sebelumnya';
+}
+
+function getNextLabel(colId: number): string {
+  const locale = wall.getColumnLocale(colId);
+  if (locale === 'en')
+    return 'Next';
+  if (locale === 'zh-Hans')
+    return '下一张';
+  return 'Berikutnya';
+}
+
 // ── Sensor Socket handler ──
 function handleSensorMessage(message: SensorMessage) {
   if (message.type === 'touchStart') {
@@ -279,22 +307,22 @@ onUnmounted(() => {
                   <svg viewBox="0 0 100 80" class="img-icon">
                     <polygon points="50,15 85,65 15,65" fill="currentColor" />
                   </svg>
-                  <span>PLACEHOLDER FOTO {{ String(slideIdx).padStart(2, '0') }}</span>
+                  <span>{{ getSlidePlaceholderText(col.id, slideIdx) }}</span>
                 </div>
               </div>
             </div>
             <div class="carousel-controls">
               <button
-                v-hold="() => wall.navigateCarousel(col.id, -1, col.slides)"
                 class="carousel-prev"
-                aria-label="Previous"
+                :aria-label="getPrevLabel(col.id)"
+                @click.stop="wall.navigateCarousel(col.id, -1, col.slides)"
               >
                 ←
               </button>
               <button
-                v-hold="() => wall.navigateCarousel(col.id, 1, col.slides)"
                 class="carousel-next"
-                aria-label="Next"
+                :aria-label="getNextLabel(col.id)"
+                @click.stop="wall.navigateCarousel(col.id, 1, col.slides)"
               >
                 →
               </button>

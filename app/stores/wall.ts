@@ -118,6 +118,9 @@ export const useWallStore = defineStore('wall', {
         const subContent = WALL_CONFIG.subItemContent[subKey]?.[locale];
         if (subContent?.title)
           return subContent.title;
+        const sub = col.subItems?.find(s => s.key === subKey);
+        if (sub?.i18n?.[locale]?.title)
+          return sub.i18n[locale].title;
       }
       return col.i18n?.[locale]?.bottomTitle || col.bottomTitle;
     },
@@ -127,6 +130,16 @@ export const useWallStore = defineStore('wall', {
       if (!col)
         return '';
       const locale = state.columnLocales[colId] || 'id';
+
+      if (col.type === 'expandable') {
+        const subKey = state.activeSubItem[colId] || col.defaultSub || '';
+        const subContent = WALL_CONFIG.subItemContent[subKey]?.[locale];
+        if (subContent?.desc)
+          return subContent.desc;
+        const sub = col.subItems?.find(s => s.key === subKey);
+        if (sub?.i18n?.[locale]?.desc)
+          return sub.i18n[locale].desc;
+      }
       return col.i18n?.[locale]?.bottomDesc || col.bottomDesc;
     },
 
