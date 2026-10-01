@@ -55,25 +55,25 @@ export const WALL_CONFIG: {
   subItemContent: Record<string, Record<WallLocale, SubItemContent>>;
 } = {
   columns: [
-    // ── KOLOM 1: ABOUT ALTAMA ──
+    // ── KOLOM 1: TENTANG ALTAMA ──
     {
       id: 1,
       key: 'about-altama',
-      label: 'ABOUT ALTAMA',
-      labelHtml: 'ABOUT<br/>ALTAMA',
+      label: 'TENTANG ALTAMA',
+      labelHtml: 'TENTANG<br/>ALTAMA',
       type: 'single',
-      headerTitle: 'ABOUT ALTAMA',
+      headerTitle: 'TENTANG ALTAMA',
       headerDesc: 'Membangun ekosistem kemitraan yang kuat, tangguh, dan berkelanjutan untuk memberdayakan industri dan profesional di seluruh Indonesia.',
-      bottomTitle: 'ABOUT ALTAMA',
+      bottomTitle: 'TENTANG ALTAMA',
       bottomDesc: 'Fondasi keunggulan dan kemitraan terpercaya sejak 1967.',
       slides: 3,
       i18n: {
         'id': {
-          label: 'ABOUT ALTAMA',
-          labelHtml: 'ABOUT<br/>ALTAMA',
-          headerTitle: 'ABOUT ALTAMA',
+          label: 'TENTANG ALTAMA',
+          labelHtml: 'TENTANG<br/>ALTAMA',
+          headerTitle: 'TENTANG ALTAMA',
           headerDesc: 'Membangun ekosistem kemitraan yang kuat, tangguh, dan berkelanjutan untuk memberdayakan industri dan profesional di seluruh Indonesia.',
-          bottomTitle: 'ABOUT ALTAMA',
+          bottomTitle: 'TENTANG ALTAMA',
           bottomDesc: 'Fondasi keunggulan dan kemitraan terpercaya sejak 1967.',
         },
         'en': {
@@ -95,14 +95,14 @@ export const WALL_CONFIG: {
       },
     },
 
-    // ── KOLOM 2: OUR BRANDS (TEKIRO, RYU, REXCO) ──
+    // ── KOLOM 2: MEREK KAMI (TEKIRO, RYU, REXCO) ──
     {
       id: 2,
       key: 'our-brands',
-      label: 'OUR BRANDS',
-      labelHtml: 'OUR<br/>BRANDS',
+      label: 'MEREK KAMI',
+      labelHtml: 'MEREK<br/>KAMI',
       type: 'expandable',
-      parentLabel: 'OUR BRANDS',
+      parentLabel: 'MEREK KAMI',
       defaultSub: 'tekiro',
       headerTitle: 'TEKIRO',
       headerDesc: 'Hand tools berkualitas tinggi dan presisi standar industri Jepang untuk para mekanik dan profesional otomotif terdepan.',
@@ -188,11 +188,11 @@ export const WALL_CONFIG: {
       ],
       i18n: {
         'id': {
-          label: 'OUR BRANDS',
-          labelHtml: 'OUR<br/>BRANDS',
-          headerTitle: 'OUR BRANDS',
+          label: 'MEREK KAMI',
+          labelHtml: 'MEREK<br/>KAMI',
+          headerTitle: 'MEREK KAMI',
           headerDesc: 'Portofolio merek unggulan ALTAMA yang dipercaya jutaan pengguna di seluruh sektor industri dan otomotif.',
-          bottomTitle: 'OUR BRANDS',
+          bottomTitle: 'MEREK KAMI',
           bottomDesc: 'Kualitas, presisi, dan inovasi pada setiap produk.',
         },
         'en': {
@@ -214,25 +214,25 @@ export const WALL_CONFIG: {
       },
     },
 
-    // ── KOLOM 3: INFRASTRUCTURE ──
+    // ── KOLOM 3: INFRASTRUKTUR ──
     {
       id: 3,
       key: 'infrastructure',
-      label: 'INFRASTRUCTURE',
-      labelHtml: 'INFRA-<br/>STRUCTURE',
+      label: 'INFRASTRUKTUR',
+      labelHtml: 'INFRA-<br/>STRUKTUR',
       type: 'single',
-      headerTitle: 'INFRASTRUCTURE',
+      headerTitle: 'INFRASTRUKTUR',
       headerDesc: 'Fasilitas gudang modern, pusat distribusi terintegrasi, dan jaringan rantai pasok cerdas di berbagai pulau strategis.',
-      bottomTitle: 'INFRASTRUCTURE',
+      bottomTitle: 'INFRASTRUKTUR',
       bottomDesc: 'Infrastruktur logistik terpadu untuk kecepatan pengiriman ke seluruh nusantara.',
       slides: 3,
       i18n: {
         'id': {
-          label: 'INFRASTRUCTURE',
-          labelHtml: 'INFRA-<br/>STRUCTURE',
-          headerTitle: 'INFRASTRUCTURE',
+          label: 'INFRASTRUKTUR',
+          labelHtml: 'INFRA-<br/>STRUKTUR',
+          headerTitle: 'INFRASTRUKTUR',
           headerDesc: 'Fasilitas gudang modern, pusat distribusi terintegrasi, dan jaringan rantai pasok cerdas di berbagai pulau strategis.',
-          bottomTitle: 'INFRASTRUCTURE',
+          bottomTitle: 'INFRASTRUKTUR',
           bottomDesc: 'Infrastruktur logistik terpadu untuk kecepatan pengiriman ke seluruh nusantara.',
         },
         'en': {
@@ -254,25 +254,25 @@ export const WALL_CONFIG: {
       },
     },
 
-    // ── KOLOM 4: DIGITAL PARTNERS ──
+    // ── KOLOM 4: MITRA DIGITAL ──
     {
       id: 4,
       key: 'digital-partners',
-      label: 'DIGITAL PARTNERS',
-      labelHtml: 'DIGITAL<br/>PARTNERS',
+      label: 'MITRA DIGITAL',
+      labelHtml: 'MITRA<br/>DIGITAL',
       type: 'single',
-      headerTitle: 'DIGITAL PARTNERS',
+      headerTitle: 'MITRA DIGITAL',
       headerDesc: 'Kolaborasi dengan platform teknologi terdepan, marketplace, dan ekosistem B2B modern untuk transformasi digital tanpa batas.',
-      bottomTitle: 'DIGITAL PARTNERS',
+      bottomTitle: 'MITRA DIGITAL',
       bottomDesc: 'Konektivitas digital untuk kemudahan akses dan transaksi mitra usaha.',
       slides: 3,
       i18n: {
         'id': {
-          label: 'DIGITAL PARTNERS',
-          labelHtml: 'DIGITAL<br/>PARTNERS',
-          headerTitle: 'DIGITAL PARTNERS',
+          label: 'MITRA DIGITAL',
+          labelHtml: 'MITRA<br/>DIGITAL',
+          headerTitle: 'MITRA DIGITAL',
           headerDesc: 'Kolaborasi dengan platform teknologi terdepan, marketplace, dan ekosistem B2B modern untuk transformasi digital tanpa batas.',
-          bottomTitle: 'DIGITAL PARTNERS',
+          bottomTitle: 'MITRA DIGITAL',
           bottomDesc: 'Konektivitas digital untuk kemudahan akses dan transaksi mitra usaha.',
         },
         'en': {
@@ -294,30 +294,30 @@ export const WALL_CONFIG: {
       },
     },
 
-    // ── KOLOM 5: DISTRIBUTION ──
+    // ── KOLOM 5: DISTRIBUSI ──
     {
       id: 5,
       key: 'distribution',
-      label: 'DISTRIBUTION',
-      labelHtml: 'DISTRI-<br/>BUTION',
+      label: 'DISTRIBUSI',
+      labelHtml: 'DISTRI-<br/>BUSI',
       type: 'expandable',
-      parentLabel: 'DISTRIBUTION',
+      parentLabel: 'DISTRIBUSI',
       defaultSub: 'brand-activation',
-      headerTitle: 'BRAND ACTIVATION',
+      headerTitle: 'AKTIVASI MEREK',
       headerDesc: 'Aktivasi merek terpadu melalui pameran otomotif nasional, workshop mekanik, roadshow edukasi, dan komunitas industri.',
-      bottomTitle: 'BRAND ACTIVATION',
+      bottomTitle: 'AKTIVASI MEREK',
       bottomDesc: 'Mendekatkan produk berkualitas langsung ke tangan pengguna akhir.',
       slides: 3,
       subItems: [
         {
           key: 'our-way',
-          label: 'OUR WAY FOR DISTRIBUTION',
-          labelHtml: 'OUR WAY FOR<br/>DISTRIBUTION',
+          label: 'JALUR DISTRIBUSI',
+          labelHtml: 'JALUR<br/>DISTRIBUSI',
           i18n: {
             'id': {
-              label: 'OUR WAY FOR DISTRIBUTION',
-              labelHtml: 'OUR WAY FOR<br/>DISTRIBUTION',
-              title: 'OUR WAY FOR DISTRIBUTION',
+              label: 'JALUR DISTRIBUSI',
+              labelHtml: 'JALUR<br/>DISTRIBUSI',
+              title: 'JALUR DISTRIBUSI KAMI',
               desc: 'Jaringan distribusi menyeluruh ke lebih dari puluhan ribu mitra toko retail dan distributor resmi di seluruh Indonesia.',
             },
             'en': {
@@ -336,13 +336,13 @@ export const WALL_CONFIG: {
         },
         {
           key: 'brand-activation',
-          label: 'BRAND ACTIVATION',
-          labelHtml: 'BRAND<br/>ACTIVATION',
+          label: 'AKTIVASI MEREK',
+          labelHtml: 'AKTIVASI<br/>MEREK',
           i18n: {
             'id': {
-              label: 'BRAND ACTIVATION',
-              labelHtml: 'BRAND<br/>ACTIVATION',
-              title: 'BRAND ACTIVATION',
+              label: 'AKTIVASI MEREK',
+              labelHtml: 'AKTIVASI<br/>MEREK',
+              title: 'AKTIVASI MEREK',
               desc: 'Aktivasi merek terpadu melalui pameran otomotif nasional, workshop mekanik, roadshow edukasi, dan komunitas industri.',
             },
             'en': {
@@ -362,11 +362,11 @@ export const WALL_CONFIG: {
       ],
       i18n: {
         'id': {
-          label: 'DISTRIBUTION',
-          labelHtml: 'DISTRI-<br/>BUTION',
-          headerTitle: 'DISTRIBUTION',
+          label: 'DISTRIBUSI',
+          labelHtml: 'DISTRI-<br/>BUSI',
+          headerTitle: 'DISTRIBUSI',
           headerDesc: 'Jalur distribusi handal dan program aktivasi terdepan untuk menghadirkan nilai tambah bagi mitra dan pelanggan.',
-          bottomTitle: 'DISTRIBUTION',
+          bottomTitle: 'DISTRIBUSI',
           bottomDesc: 'Kemitraan kokoh dari Sabang sampai Merauke.',
         },
         'en': {
@@ -395,10 +395,10 @@ export const WALL_CONFIG: {
       label: 'SUMMIT 2026',
       labelHtml: 'SUMMIT<br/>2026',
       type: 'single',
-      headerTitle: 'SUMMIT 2026',
+      headerTitle: 'ALTAMA SUMMIT 2026',
       headerDesc: 'Pertemuan akbar mitra dan distributor se-Asia Tenggara untuk merayakan pencapaian, sinergi masa depan, dan inovasi berkelanjutan.',
-      bottomTitle: 'SUMMIT 2026',
-      bottomDesc: 'Bigger Alliance, A Brighter Tomorrow.',
+      bottomTitle: 'ALTAMA SUMMIT 2026',
+      bottomDesc: 'Kemitraan Lebih Kuat, Masa Depan Lebih Cerah.',
       slides: 3,
       i18n: {
         'id': {
@@ -406,8 +406,8 @@ export const WALL_CONFIG: {
           labelHtml: 'SUMMIT<br/>2026',
           headerTitle: 'ALTAMA SUMMIT 2026',
           headerDesc: 'Pertemuan akbar mitra dan distributor se-Asia Tenggara untuk merayakan pencapaian, sinergi masa depan, dan inovasi berkelanjutan.',
-          bottomTitle: 'SUMMIT 2026',
-          bottomDesc: 'Bigger Alliance, A Brighter Tomorrow.',
+          bottomTitle: 'ALTAMA SUMMIT 2026',
+          bottomDesc: 'Kemitraan Lebih Kuat, Masa Depan Lebih Cerah.',
         },
         'en': {
           label: 'SUMMIT 2026',
@@ -474,7 +474,7 @@ export const WALL_CONFIG: {
     },
     'our-way': {
       'id': {
-        title: 'OUR WAY FOR DISTRIBUTION',
+        title: 'JALUR DISTRIBUSI KAMI',
         desc: 'Jaringan distribusi menyeluruh ke lebih dari puluhan ribu mitra toko retail dan distributor resmi di seluruh Indonesia.',
       },
       'en': {
@@ -488,7 +488,7 @@ export const WALL_CONFIG: {
     },
     'brand-activation': {
       'id': {
-        title: 'BRAND ACTIVATION',
+        title: 'AKTIVASI MEREK',
         desc: 'Aktivasi merek terpadu melalui pameran otomotif nasional, workshop mekanik, roadshow edukasi, dan komunitas industri.',
       },
       'en': {
