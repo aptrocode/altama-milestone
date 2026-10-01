@@ -61,7 +61,7 @@ export const useWallStore = defineStore('wall', {
 
       switch (action.type) {
         case 'language':
-          if (!WALL_LOCALES.includes(action.locale))
+          if (column.phase !== 'idle' || !WALL_LOCALES.includes(action.locale))
             return false;
           column.locale = action.locale;
           break;

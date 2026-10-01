@@ -15,11 +15,12 @@ describe('wall state and actions', () => {
     expect(JSON.parse(JSON.stringify(wall.$state))).toEqual(wall.$state);
   });
 
-  it('switches one language without changing content phase, slide, or neighboring languages', () => {
+  it('chooses one idle language and retains it through content without changing neighboring languages', () => {
     const wall = store();
+    wall.dispatch({ type: 'language', columnId: 1, locale: 'zh-Hans' });
     wall.dispatch({ type: 'main', columnId: 1 });
     wall.dispatch({ type: 'next', columnId: 1 });
-    wall.dispatch({ type: 'language', columnId: 1, locale: 'zh-Hans' });
+    expect(wall.dispatch({ type: 'language', columnId: 1, locale: 'en' })).toBe(false);
     expect(wall.columns[1]).toMatchObject({ phase: 'active', slide: 1, locale: 'zh-Hans' });
     expect(wall.getColumnLocale(2)).toBe('id');
     wall.dispatch({ type: 'language', columnId: 6, locale: 'en' });
@@ -27,16 +28,20 @@ describe('wall state and actions', () => {
     expect(wall.getHeaderTitle(6)).toBe('ALTAMA SUMMIT 2026');
   });
 
-  it('defers sub-item content until selection and keeps that selection while changing language', () => {
+  it('uses the language chosen before opening a submenu, then allows a new choice after returning to idle', () => {
     const wall = store();
+    wall.dispatch({ type: 'language', columnId: 2, locale: 'zh-Hans' });
     wall.dispatch({ type: 'main', columnId: 2 });
     expect(wall.getColumnState(2)).toBe('submenu');
     wall.dispatch({ type: 'subItem', columnId: 2, subItemId: 'ryu' });
-    wall.dispatch({ type: 'language', columnId: 2, locale: 'zh-Hans' });
     expect(wall.getHeaderTitle(2)).toBe('RYU 电动工具');
     expect(wall.getBottomDesc(2)).toContain('现代建筑和木工需求');
     expect(wall.getColumnState(2)).toBe('active');
+    wall.dispatch({ type: 'back', columnId: 2 });
+    wall.dispatch({ type: 'back', columnId: 2 });
     wall.dispatch({ type: 'language', columnId: 2, locale: 'en' });
+    wall.dispatch({ type: 'main', columnId: 2 });
+    wall.dispatch({ type: 'subItem', columnId: 2, subItemId: 'ryu' });
     expect(wall.getHeaderTitle(2)).toBe('RYU POWER TOOLS');
   });
 
@@ -67,9 +72,9 @@ describe('wall state and actions', () => {
 
   it('back returns expandable content to its menu and preserves the current language', () => {
     const wall = store();
+    wall.dispatch({ type: 'language', columnId: 2, locale: 'en' });
     wall.dispatch({ type: 'main', columnId: 2 });
     wall.dispatch({ type: 'subItem', columnId: 2, subItemId: 'rexco' });
-    wall.dispatch({ type: 'language', columnId: 2, locale: 'en' });
     wall.dispatch({ type: 'next', columnId: 2 });
     wall.dispatch({ type: 'back', columnId: 2 });
     expect(wall.columns[2]).toMatchObject({ phase: 'submenu', subItem: 'rexco', slide: 0, locale: 'en' });
@@ -85,5 +90,14 @@ describe('wall state and actions', () => {
     expect(wall.columns[1]).toMatchObject({ phase: 'idle', locale: 'en' });
     wall.resetColumn(1);
     expect(wall.getColumnLocale(1)).toBe('id');
+  });
+
+  it.each([1, 2] as const)('rejects a hidden language action after column %i leaves idle', (columnId) => {
+    const wall = store();
+    wall.dispatch({ type: 'language', columnId, locale: 'en' });
+    wall.dispatch({ type: 'main', columnId });
+    const snapshot = { ...wall.columns[columnId] };
+    expect(wall.dispatch({ type: 'language', columnId, locale: 'zh-Hans' })).toBe(false);
+    expect(wall.columns[columnId]).toEqual(snapshot);
   });
 });

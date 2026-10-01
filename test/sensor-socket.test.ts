@@ -115,7 +115,7 @@ describe('sensor socket lifecycle', () => {
     socket.receive(sensorInput({ type: 'main', columnId: 6 }, { seq: 2 }));
     socket.receive(sensorInput({ type: 'main', columnId: 6 }, { seq: 3, sessionId: 'stale-session' }));
     expect(onMessage.mock.calls.filter(([message]) => message.type === 'input')).toHaveLength(1);
-    socket.receive(frame('status', { seq: 3, layoutVersion: 'layout-v4' }));
+    socket.receive(frame('status', { seq: 3, layoutVersion: 'wall-v1' }));
     expect(system.socketStatus).toBe('error');
     expect(system.calibrationReady).toBe(false);
   });
@@ -137,5 +137,15 @@ describe('sensor socket lifecycle', () => {
     const { client } = setup(false);
     client.reconnect();
     expect(Socket.instances).toHaveLength(0);
+  });
+
+  it.each(['wall-v1', 'layout-v4'])('rejects %s input even when coordinates match a current target', (layoutVersion) => {
+    const { onMessage, system, socket } = setup();
+    socket.open();
+    socket.receive(frame('hello'));
+    socket.receive(sensorInput({ type: 'main', columnId: 4 }, { seq: 2, layoutVersion }));
+    expect(onMessage.mock.calls.filter(([message]) => message.type === 'input')).toHaveLength(0);
+    expect(system.socketStatus).toBe('error');
+    expect(system.calibrationReady).toBe(false);
   });
 });

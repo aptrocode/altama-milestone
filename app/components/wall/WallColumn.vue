@@ -1,61 +1,62 @@
 <script setup lang="ts">
 import type { ColumnId, ColumnSnapshot, WallAction } from '../../../shared/wall';
 import type { ColumnConfig } from '~/data/wall-config';
+import { computed } from 'vue';
 import WallCarousel from '~/components/wall/WallCarousel.vue';
+import WallHoldButton from '~/components/wall/WallHoldButton.vue';
 import WallHoldCue from '~/components/wall/WallHoldCue.vue';
 import WallLanguageSwitcher from '~/components/wall/WallLanguageSwitcher.vue';
+import { installationLayout } from '~/data/installation-layout';
 import { WALL_COPY } from '~/data/wall-copy';
 
-defineProps<{ column: ColumnConfig; snapshot: ColumnSnapshot; copy: { label: string; activeLabel: string } }>();
+const props = defineProps<{ column: ColumnConfig; snapshot: ColumnSnapshot; copy: { label: string; activeLabel: string } }>();
 defineEmits<{ action: [action: WallAction]; activity: [id: ColumnId] }>();
+const geometry = computed(() => installationLayout.columns.find(item => item.id === props.column.id)!);
 </script>
 
 <template>
   <section
-    class="wall-column flex-1 flex flex-col relative min-w-0 min-h-0" :data-col="column.id"
-    :data-phase="snapshot.phase" :lang="snapshot.locale" :aria-label="copy.label"
+    class="wall-column relative isolate flex flex-col min-w-0 min-h-0 [border-radius:calc(14*var(--wall-x))/calc(14*var(--wall-y))] overflow-hidden shadow-md ring-1 ring-neutral-300/70"
+    :class="snapshot.phase === 'idle' ? 'bg-kiosk-bg' : snapshot.phase === 'submenu' ? 'bg-white' : 'bg-[#153d31]'"
+    :data-col="column.id" :data-phase="snapshot.phase" :lang="snapshot.locale" :aria-label="copy.label"
     @pointerdown.capture="$emit('activity', column.id)" @keydown.capture="$emit('activity', column.id)"
   >
-    <WallLanguageSwitcher
-      :column-id="column.id" :locale="snapshot.locale"
-      @select="$emit('action', { type: 'language', columnId: column.id, locale: $event })"
-    />
-    <div class="wall-panel flex-1 flex flex-col min-h-0">
-      <button
-        v-if="snapshot.phase === 'idle'" v-hold="() => $emit('action', { type: 'main', columnId: column.id })"
-        type="button" class="laser-target idle-breathe flex-1 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-b from-white via-slate-50 to-neutral-100 hover:to-emerald-50/50 border border-neutral-300/80 hover:border-emerald-500/60 rounded-xl text-neutral-900 font-extrabold uppercase text-center px-3 py-3 cursor-pointer relative shadow-xs"
+    <div class="wall-panel h-full flex flex-col min-h-0 rounded-[inherit] overflow-hidden">
+      <WallHoldButton
+        v-if="snapshot.phase === 'idle'"
+        class="flex-1 flex flex-col items-center justify-center gap-[calc(20*var(--wall-y))] rounded-[inherit] hover:bg-kiosk-hover text-slate-800 font-extrabold uppercase text-center px-[calc(24*var(--wall-x))] py-[calc(24*var(--wall-y))]"
+        :outline="geometry.main" :radius="14"
         data-sensor-action="main"
+        @activate="$emit('action', { type: 'main', columnId: column.id })"
       >
-        <span class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center mb-1 shrink-0 shadow-xs ring-2 ring-emerald-600/20" aria-hidden="true">
-          {{ column.id }}
-        </span>
-        <span class="w-full whitespace-nowrap overflow-hidden text-ellipsis text-[clamp(10px,1.1vw,18px)] font-black tracking-wide" :title="copy.label">{{ copy.label }}</span>
+        <span class="w-full whitespace-pre-line text-[length:calc(32*var(--wall-x))] font-black leading-tight text-balance wrap-break-word">{{ copy.label.replaceAll(' ', '\n') }}</span>
         <WallHoldCue :locale="snapshot.locale" />
-      </button>
+      </WallHoldButton>
 
-      <div v-else-if="snapshot.phase === 'submenu'" class="wall-submenu flex-1 flex flex-col min-h-0 bg-white rounded-xl overflow-hidden shadow-xs animate-kiosk-enter">
-        <div class="wall-submenu-heading flex items-center justify-between bg-emerald-800 shrink-0">
-          <span class="text-xs font-black text-white uppercase tracking-wide truncate">{{ copy.label }}</span>
+      <div v-else-if="snapshot.phase === 'submenu'" class="wall-submenu flex-1 flex flex-col min-h-0 px-(--wall-panel-inset-x) py-(--wall-panel-inset-y)">
+        <div class="wall-submenu-heading relative h-(--wall-heading-height-y) flex items-center justify-center px-[calc(52*var(--wall-x))] bg-emerald-800 shrink-0 [border-top-left-radius:calc(12*var(--wall-x))_calc(12*var(--wall-y))] [border-top-right-radius:calc(12*var(--wall-x))_calc(12*var(--wall-y))]">
+          <span class="text-center text-[length:calc(18*var(--wall-x))] font-black text-white uppercase tracking-wide leading-tight wrap-break-word">{{ copy.label }}</span>
           <button
-            type="button" class="wall-back rounded-full bg-white/20 text-white hover:bg-red-500 cursor-pointer shrink-0"
+            type="button" class="wall-back absolute top-(--wall-back-padding-y) right-(--wall-back-padding-x) w-(--wall-control-size-x) h-(--wall-control-size-y) flex items-center justify-center rounded-full bg-white/20 text-white text-[length:calc(20*var(--wall-x))] hover:bg-red-500 cursor-pointer"
             :aria-label="WALL_COPY[snapshot.locale].back" data-sensor-action="back"
             @click="$emit('action', { type: 'back', columnId: column.id })"
           >
             <span aria-hidden="true">✕</span>
           </button>
         </div>
-        <button
-          v-for="sub in column.subItems" :key="sub.key"
-          v-hold="() => $emit('action', { type: 'subItem', columnId: column.id, subItemId: sub.key })"
-          type="button" class="laser-target flex-1 min-h-0 flex flex-col items-center justify-center bg-white hover:bg-emerald-50/80 border-t border-neutral-200 font-bold uppercase text-center p-2.5 cursor-pointer relative"
-          :class="{ '!bg-emerald-700 text-white': snapshot.subItem === sub.key }"
+        <WallHoldButton
+          v-for="(sub, index) in column.subItems" :key="sub.key"
+          class="flex-1 min-h-0 flex flex-col items-center justify-center gap-[calc(12*var(--wall-y))] border-t border-neutral-200 font-bold uppercase text-center px-[calc(24*var(--wall-x))] py-[calc(16*var(--wall-y))] last:[border-bottom-left-radius:calc(12*var(--wall-x))_calc(12*var(--wall-y))] last:[border-bottom-right-radius:calc(12*var(--wall-x))_calc(12*var(--wall-y))]"
+          :outline="geometry.submenu!.items[index]!" :radius="index === column.subItems!.length - 1 ? 12 : 0" bottom-corners-only
+          :class="snapshot.subItem === sub.key ? 'bg-emerald-50 text-emerald-900 hover:bg-emerald-100' : 'bg-white text-slate-800 hover:bg-emerald-50/80'"
           data-sensor-action="subItem" :data-sub-item="sub.key"
+          @activate="$emit('action', { type: 'subItem', columnId: column.id, subItemId: sub.key })"
         >
-          <span class="w-full whitespace-nowrap overflow-hidden text-ellipsis text-[clamp(9px,0.9vw,14px)] font-black">
+          <span class="w-full text-[length:calc(24*var(--wall-x))] font-black leading-tight text-balance wrap-break-word">
             {{ sub.i18n?.[snapshot.locale]?.label || sub.label }}
           </span>
-          <WallHoldCue :locale="snapshot.locale" :selected="snapshot.subItem === sub.key" />
-        </button>
+          <WallHoldCue :locale="snapshot.locale" />
+        </WallHoldButton>
       </div>
 
       <WallCarousel
@@ -63,5 +64,11 @@ defineEmits<{ action: [action: WallAction]; activity: [id: ColumnId] }>();
         @action="$emit('action', $event)"
       />
     </div>
+    <WallLanguageSwitcher
+      v-if="snapshot.phase === 'idle'"
+      class="absolute z-20 bottom-(--wall-language-bottom-y) left-1/2 -translate-x-1/2"
+      :column-id="column.id" :locale="snapshot.locale"
+      @select="$emit('action', { type: 'language', columnId: column.id, locale: $event })"
+    />
   </section>
 </template>

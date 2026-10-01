@@ -36,13 +36,18 @@ for (const column of WALL_CONFIG.columns) {
     errors.push(`Column ${column.id}: submenu geometry differs from config`);
 
   const targets = geometry
-    ? [geometry.main, ...geometry.languages, ...Object.values(geometry.active), ...(geometry.submenu ? [geometry.submenu.back, ...geometry.submenu.items] : [])]
+    ? [geometry.card, geometry.main, geometry.languageBar, ...geometry.languages, ...Object.values(geometry.active), ...(geometry.submenu ? [geometry.submenu.back, ...geometry.submenu.items] : [])]
     : [];
   for (const target of targets) {
     if (![target.x, target.y, target.width, target.height].every(Number.isFinite)
       || target.width <= 0 || target.height <= 0 || !isPointInsideCanvas(target.x, target.y)
       || target.x + target.width > installationLayout.canvas.width || target.y + target.height > installationLayout.canvas.height) {
       errors.push(`Column ${column.id}: target is outside the canvas`);
+    }
+    if (geometry && (target.x < geometry.card.x || target.y < geometry.card.y
+      || target.x + target.width > geometry.card.x + geometry.card.width + 0.0001
+      || target.y + target.height > geometry.card.y + geometry.card.height + 0.0001)) {
+      errors.push(`Column ${column.id}: target is outside its card`);
     }
   }
 }

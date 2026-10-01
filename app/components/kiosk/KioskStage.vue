@@ -21,9 +21,12 @@ const layout = installationLayout;
 const stageStyle = {
   '--wall-x': `calc(100vw / ${layout.canvas.width})`,
   '--wall-y': `calc(100dvh / ${layout.canvas.height})`,
-  '--wall-inset': layout.frame.inset,
-  '--wall-gap': layout.frame.gap,
-  ...Object.fromEntries(Object.entries(layout.controls).map(([key, value]) => [`--wall-${key}`, value])),
+  '--wall-inset-x': `calc(${layout.frame.inset} * var(--wall-x))`,
+  '--wall-gap-x': `calc(${layout.frame.gap} * var(--wall-x))`,
+  ...Object.fromEntries(Object.entries(layout.controls).flatMap(([key, value]) => [
+    [`--wall-${key}-x`, `calc(${value} * var(--wall-x))`],
+    [`--wall-${key}-y`, `calc(${value} * var(--wall-y))`],
+  ])),
 };
 
 function handleSensorMessage(message: SensorMessage) {
@@ -73,32 +76,32 @@ onUnmounted(() => {
     :style="stageStyle"
   >
     <div
-      id="column-borders" class="absolute inset-0 wall-row flex pointer-events-none z-10 transition-opacity"
+      id="column-borders" class="absolute inset-0 grid grid-cols-6 px-(--wall-inset-x) gap-(--wall-gap-x) pointer-events-none z-10 transition-opacity"
       :class="wall.hasAnyActive ? 'opacity-100' : 'opacity-0'" aria-hidden="true"
     >
-      <div v-for="column in WALL_CONFIG.columns" :key="column.id" class="flex-1 border-r border-dashed border-red-500/25 first:border-l" />
+      <div v-for="column in WALL_CONFIG.columns" :key="column.id" class="min-w-0 border-r border-dashed border-neutral-200/70 first:border-l" />
     </div>
 
     <div id="zone-top" class="relative w-full shrink-0 overflow-hidden" :style="{ height: `${layout.zones.header * 100}%` }">
       <div v-if="!wall.hasAnyActive" id="branding-default" class="absolute inset-0 flex flex-col items-center justify-center text-center">
-        <h1 class="text-3xl lg:text-4xl italic tracking-[0.14em] text-neutral-800 font-normal">
+        <h1 class="text-[length:calc(64*var(--wall-x))] italic tracking-[0.14em] text-neutral-800 font-normal">
           ALTAMA
         </h1>
-        <p class="text-xs md:text-sm tracking-[0.08em] text-neutral-500 italic mt-1">
+        <p class="text-[length:calc(18*var(--wall-x))] tracking-[0.08em] text-neutral-500 italic mt-[calc(12*var(--wall-y))]">
           SURPASSING HORIZONS, ELEVATING EXCELLENCE
         </p>
       </div>
-      <div id="content-headers" class="absolute inset-0 wall-row flex">
+      <div id="content-headers" class="absolute inset-0 grid grid-cols-6 px-(--wall-inset-x) gap-(--wall-gap-x)">
         <div
-          v-for="column in WALL_CONFIG.columns" :key="column.id" class="flex-1 min-w-0 flex items-center justify-center text-center p-2"
+          v-for="column in WALL_CONFIG.columns" :key="column.id" class="min-w-0 flex items-center justify-center text-center px-[calc(28*var(--wall-x))] py-[calc(24*var(--wall-y))]"
           :lang="wall.getColumnLocale(column.id)" :data-col="column.id"
           @pointerdown="controls.touchColumn(column.id)" @keydown="controls.touchColumn(column.id)"
         >
-          <div v-if="wall.getColumnState(column.id) === 'active'" class="animate-kiosk-enter">
-            <h2 class="text-[clamp(13px,1.2vw,22px)] font-black text-emerald-800 uppercase mb-1.5 tracking-wide leading-tight">
+          <div v-if="wall.getColumnState(column.id) === 'active'" class="w-full grid gap-[calc(16*var(--wall-y))]">
+            <h2 class="min-h-[calc(70*var(--wall-y))] flex items-center justify-center text-[length:calc(28*var(--wall-x))] font-black text-emerald-800 uppercase tracking-wide leading-tight wrap-break-word">
               {{ wall.getHeaderTitle(column.id) }}
             </h2>
-            <p class="text-[11px] md:text-xs text-neutral-600 font-medium leading-relaxed">
+            <p class="min-h-[calc(160*var(--wall-y))] text-[length:calc(18*var(--wall-x))] text-neutral-600 font-medium leading-relaxed text-balance wrap-break-word">
               {{ wall.getHeaderDesc(column.id) }}
             </p>
           </div>
@@ -106,7 +109,7 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <div id="zone-middle" class="w-full wall-row flex shrink-0" :style="{ height: `${layout.zones.interactive * 100}%` }">
+    <div id="zone-middle" class="w-full grid grid-cols-6 px-(--wall-inset-x) gap-(--wall-gap-x) shrink-0" :style="{ height: `${layout.zones.interactive * 100}%` }">
       <WallColumn
         v-for="column in WALL_CONFIG.columns" :key="column.id"
         :column="column" :snapshot="wall.columns[column.id]" :copy="wall.getColumnCopy(column.id)"
@@ -114,18 +117,18 @@ onUnmounted(() => {
       />
     </div>
 
-    <div id="zone-bottom" class="w-full flex-1 flex items-end overflow-hidden pb-3">
-      <div id="bottom-descriptions" class="w-full wall-row flex">
+    <div id="zone-bottom" class="w-full flex-1 min-h-0 flex items-center overflow-hidden">
+      <div id="bottom-descriptions" class="w-full grid grid-cols-6 px-(--wall-inset-x) gap-(--wall-gap-x)">
         <div
-          v-for="column in WALL_CONFIG.columns" :key="column.id" class="flex-1 min-w-0 p-2"
+          v-for="column in WALL_CONFIG.columns" :key="column.id" class="min-w-0 text-center px-[calc(28*var(--wall-x))] py-[calc(24*var(--wall-y))]"
           :lang="wall.getColumnLocale(column.id)" :data-col="column.id"
           @pointerdown="controls.touchColumn(column.id)"
         >
-          <div v-if="wall.getColumnState(column.id) === 'active'" class="animate-kiosk-enter">
-            <h3 class="text-xs font-black uppercase mb-1 tracking-wide text-emerald-800">
+          <div v-if="wall.getColumnState(column.id) === 'active'" class="grid gap-[calc(12*var(--wall-y))]">
+            <h3 class="min-h-[calc(48*var(--wall-y))] flex items-center justify-center text-[length:calc(20*var(--wall-x))] font-black uppercase tracking-wide text-emerald-800 leading-tight wrap-break-word">
               {{ wall.getBottomTitle(column.id) }}
             </h3>
-            <p class="text-xs text-neutral-600 leading-normal">
+            <p class="min-h-[calc(96*var(--wall-y))] text-[length:calc(17*var(--wall-x))] text-neutral-600 leading-relaxed text-balance wrap-break-word">
               {{ wall.getBottomDesc(column.id) }}
             </p>
           </div>

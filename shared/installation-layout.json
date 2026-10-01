@@ -1,432 +1,507 @@
 {
-  "layoutVersion": "wall-v1",
+  "layoutVersion": "wall-v2",
   "protocolVersion": 2,
   "canvas": {
     "width": 2304,
     "height": 1344
   },
   "frame": {
-    "inset": 20,
-    "gap": 10
+    "inset": 52,
+    "gap": 20
   },
   "zones": {
     "header": 0.35,
-    "interactive": 0.4,
-    "footer": 0.25
+    "interactive": 0.38,
+    "footer": 0.27
   },
   "controls": {
-    "flag-size": 44,
-    "language-padding": 5,
-    "language-gap": 8,
-    "panel-gap": 8,
+    "flag-width": 56,
+    "flag-height": 44,
+    "language-padding-inline": 12,
+    "language-padding-block": 8,
+    "language-gap": 20,
+    "language-bottom": 48,
     "panel-inset": 2,
     "heading-height": 52,
     "back-padding": 4,
-    "carousel-footer": 60,
-    "carousel-padding": 16
+    "control-size": 44,
+    "arrow-inset": 20,
+    "counter-height": 34
   },
   "columns": [
     {
       "id": 1,
       "section": {
-        "x": 20,
+        "x": 52,
         "y": 0,
-        "width": 369,
+        "width": 350,
         "height": 1344
       },
+      "card": {
+        "x": 52,
+        "y": 470.4,
+        "width": 350,
+        "height": 510.72
+      },
       "main": {
-        "x": 20,
-        "y": 532.4,
-        "width": 369,
-        "height": 475.6
+        "x": 52,
+        "y": 470.4,
+        "width": 350,
+        "height": 510.72
       },
       "languages": [
         {
           "locale": "id",
-          "x": 130.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 123,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         },
         {
           "locale": "en",
-          "x": 182.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 199,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         },
         {
           "locale": "zh-Hans",
-          "x": 234.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 275,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         }
       ],
       "active": {
         "back": {
-          "x": 341,
-          "y": 536.4,
+          "x": 354,
+          "y": 474.4,
           "width": 44,
           "height": 44
         },
         "previous": {
-          "x": 36,
-          "y": 956,
+          "x": 72,
+          "y": 703.76,
           "width": 44,
           "height": 44
         },
         "next": {
-          "x": 329,
-          "y": 956,
+          "x": 338,
+          "y": 703.76,
           "width": 44,
           "height": 44
         }
+      },
+      "languageBar": {
+        "x": 111,
+        "y": 873.12,
+        "width": 232,
+        "height": 60
       }
     },
     {
       "id": 2,
       "section": {
-        "x": 399,
+        "x": 422,
         "y": 0,
-        "width": 369,
+        "width": 350,
         "height": 1344
       },
+      "card": {
+        "x": 422,
+        "y": 470.4,
+        "width": 350,
+        "height": 510.72
+      },
       "main": {
-        "x": 399,
-        "y": 532.4,
-        "width": 369,
-        "height": 475.6
+        "x": 422,
+        "y": 470.4,
+        "width": 350,
+        "height": 510.72
       },
       "languages": [
         {
           "locale": "id",
-          "x": 509.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 493,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         },
         {
           "locale": "en",
-          "x": 561.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 569,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         },
         {
           "locale": "zh-Hans",
-          "x": 613.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 645,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         }
       ],
       "active": {
         "back": {
-          "x": 720,
-          "y": 536.4,
+          "x": 724,
+          "y": 474.4,
           "width": 44,
           "height": 44
         },
         "previous": {
-          "x": 415,
-          "y": 956,
+          "x": 442,
+          "y": 703.76,
           "width": 44,
           "height": 44
         },
         "next": {
           "x": 708,
-          "y": 956,
+          "y": 703.76,
           "width": 44,
           "height": 44
         }
       },
       "submenu": {
         "back": {
-          "x": 718,
-          "y": 538.4,
+          "x": 722,
+          "y": 476.4,
           "width": 44,
           "height": 44
         },
         "items": [
           {
             "key": "tekiro",
-            "x": 401,
-            "y": 586.4,
-            "width": 365,
-            "height": 139.86666666666667
+            "x": 424,
+            "y": 524.4,
+            "width": 346,
+            "height": 151.57333333333335
           },
           {
             "key": "ryu",
-            "x": 401,
-            "y": 726.2666666666667,
-            "width": 365,
-            "height": 139.86666666666667
+            "x": 424,
+            "y": 675.9733333333334,
+            "width": 346,
+            "height": 151.57333333333335
           },
           {
             "key": "rexco",
-            "x": 401,
-            "y": 866.1333333333333,
-            "width": 365,
-            "height": 139.86666666666667
+            "x": 424,
+            "y": 827.5466666666666,
+            "width": 346,
+            "height": 151.57333333333335
           }
         ]
+      },
+      "languageBar": {
+        "x": 481,
+        "y": 873.12,
+        "width": 232,
+        "height": 60
       }
     },
     {
       "id": 3,
       "section": {
-        "x": 778,
+        "x": 792,
         "y": 0,
-        "width": 369,
+        "width": 350,
         "height": 1344
       },
+      "card": {
+        "x": 792,
+        "y": 470.4,
+        "width": 350,
+        "height": 510.72
+      },
       "main": {
-        "x": 778,
-        "y": 532.4,
-        "width": 369,
-        "height": 475.6
+        "x": 792,
+        "y": 470.4,
+        "width": 350,
+        "height": 510.72
       },
       "languages": [
         {
           "locale": "id",
-          "x": 888.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 863,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         },
         {
           "locale": "en",
-          "x": 940.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 939,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         },
         {
           "locale": "zh-Hans",
-          "x": 992.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 1015,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         }
       ],
       "active": {
         "back": {
-          "x": 1099,
-          "y": 536.4,
+          "x": 1094,
+          "y": 474.4,
           "width": 44,
           "height": 44
         },
         "previous": {
-          "x": 794,
-          "y": 956,
+          "x": 812,
+          "y": 703.76,
           "width": 44,
           "height": 44
         },
         "next": {
-          "x": 1087,
-          "y": 956,
+          "x": 1078,
+          "y": 703.76,
           "width": 44,
           "height": 44
         }
+      },
+      "languageBar": {
+        "x": 851,
+        "y": 873.12,
+        "width": 232,
+        "height": 60
       }
     },
     {
       "id": 4,
       "section": {
-        "x": 1157,
+        "x": 1162,
         "y": 0,
-        "width": 369,
+        "width": 350,
         "height": 1344
       },
+      "card": {
+        "x": 1162,
+        "y": 470.4,
+        "width": 350,
+        "height": 510.72
+      },
       "main": {
-        "x": 1157,
-        "y": 532.4,
-        "width": 369,
-        "height": 475.6
+        "x": 1162,
+        "y": 470.4,
+        "width": 350,
+        "height": 510.72
       },
       "languages": [
         {
           "locale": "id",
-          "x": 1267.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 1233,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         },
         {
           "locale": "en",
-          "x": 1319.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 1309,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         },
         {
           "locale": "zh-Hans",
-          "x": 1371.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 1385,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         }
       ],
       "active": {
         "back": {
-          "x": 1478,
-          "y": 536.4,
+          "x": 1464,
+          "y": 474.4,
           "width": 44,
           "height": 44
         },
         "previous": {
-          "x": 1173,
-          "y": 956,
+          "x": 1182,
+          "y": 703.76,
           "width": 44,
           "height": 44
         },
         "next": {
-          "x": 1466,
-          "y": 956,
+          "x": 1448,
+          "y": 703.76,
           "width": 44,
           "height": 44
         }
+      },
+      "languageBar": {
+        "x": 1221,
+        "y": 873.12,
+        "width": 232,
+        "height": 60
       }
     },
     {
       "id": 5,
       "section": {
-        "x": 1536,
+        "x": 1532,
         "y": 0,
-        "width": 369,
+        "width": 350,
         "height": 1344
       },
+      "card": {
+        "x": 1532,
+        "y": 470.4,
+        "width": 350,
+        "height": 510.72
+      },
       "main": {
-        "x": 1536,
-        "y": 532.4,
-        "width": 369,
-        "height": 475.6
+        "x": 1532,
+        "y": 470.4,
+        "width": 350,
+        "height": 510.72
       },
       "languages": [
         {
           "locale": "id",
-          "x": 1646.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 1603,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         },
         {
           "locale": "en",
-          "x": 1698.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 1679,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         },
         {
           "locale": "zh-Hans",
-          "x": 1750.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 1755,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         }
       ],
       "active": {
         "back": {
-          "x": 1857,
-          "y": 536.4,
+          "x": 1834,
+          "y": 474.4,
           "width": 44,
           "height": 44
         },
         "previous": {
           "x": 1552,
-          "y": 956,
+          "y": 703.76,
           "width": 44,
           "height": 44
         },
         "next": {
-          "x": 1845,
-          "y": 956,
+          "x": 1818,
+          "y": 703.76,
           "width": 44,
           "height": 44
         }
       },
       "submenu": {
         "back": {
-          "x": 1855,
-          "y": 538.4,
+          "x": 1832,
+          "y": 476.4,
           "width": 44,
           "height": 44
         },
         "items": [
           {
             "key": "our-way",
-            "x": 1538,
-            "y": 586.4,
-            "width": 365,
-            "height": 209.8
+            "x": 1534,
+            "y": 524.4,
+            "width": 346,
+            "height": 227.36
           },
           {
             "key": "brand-activation",
-            "x": 1538,
-            "y": 796.2,
-            "width": 365,
-            "height": 209.8
+            "x": 1534,
+            "y": 751.76,
+            "width": 346,
+            "height": 227.36
           }
         ]
+      },
+      "languageBar": {
+        "x": 1591,
+        "y": 873.12,
+        "width": 232,
+        "height": 60
       }
     },
     {
       "id": 6,
       "section": {
-        "x": 1915,
+        "x": 1902,
         "y": 0,
-        "width": 369,
+        "width": 350,
         "height": 1344
       },
+      "card": {
+        "x": 1902,
+        "y": 470.4,
+        "width": 350,
+        "height": 510.72
+      },
       "main": {
-        "x": 1915,
-        "y": 532.4,
-        "width": 369,
-        "height": 475.6
+        "x": 1902,
+        "y": 470.4,
+        "width": 350,
+        "height": 510.72
       },
       "languages": [
         {
           "locale": "id",
-          "x": 2025.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 1973,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         },
         {
           "locale": "en",
-          "x": 2077.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 2049,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         },
         {
           "locale": "zh-Hans",
-          "x": 2129.5,
-          "y": 475.4,
-          "width": 44,
+          "x": 2125,
+          "y": 881.12,
+          "width": 56,
           "height": 44
         }
       ],
       "active": {
         "back": {
-          "x": 2236,
-          "y": 536.4,
+          "x": 2204,
+          "y": 474.4,
           "width": 44,
           "height": 44
         },
         "previous": {
-          "x": 1931,
-          "y": 956,
+          "x": 1922,
+          "y": 703.76,
           "width": 44,
           "height": 44
         },
         "next": {
-          "x": 2224,
-          "y": 956,
+          "x": 2188,
+          "y": 703.76,
           "width": 44,
           "height": 44
         }
+      },
+      "languageBar": {
+        "x": 1961,
+        "y": 873.12,
+        "width": 232,
+        "height": 60
       }
     }
   ]
