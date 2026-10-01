@@ -168,8 +168,8 @@ onUnmounted(() => {
           class="flex-1 flex flex-col justify-center items-center text-center px-2 py-3 min-w-0 overflow-hidden transition-all duration-300"
           :data-col="col.id"
           :class="{
-            'hidden opacity-0': wall.getColumnState(col.id) !== 'active',
-            'flex opacity-100': wall.getColumnState(col.id) === 'active',
+            'invisible opacity-0 pointer-events-none': wall.getColumnState(col.id) !== 'active',
+            'opacity-100': wall.getColumnState(col.id) === 'active',
           }"
         >
           <h2 class="text-base md:text-lg lg:text-xl font-black text-emerald-800 uppercase mb-1.5 tracking-wide leading-tight">
@@ -397,11 +397,11 @@ onUnmounted(() => {
         <div
           v-for="col in WALL_CONFIG.columns"
           :key="`bottom-${col.id}`"
-          class="flex-1 flex flex-col justify-start p-2 min-w-0 overflow-hidden"
+          class="flex-1 flex flex-col justify-start p-2 min-w-0 overflow-hidden transition-all duration-300"
           :data-col="col.id"
           :class="{
-            'hidden opacity-0': wall.getColumnState(col.id) !== 'active',
-            'flex opacity-100': wall.getColumnState(col.id) === 'active',
+            'invisible opacity-0 pointer-events-none': wall.getColumnState(col.id) !== 'active',
+            'opacity-100': wall.getColumnState(col.id) === 'active',
           }"
         >
           <h4 class="text-xs font-black uppercase mb-1 tracking-wide text-emerald-800" :data-col="col.id">
