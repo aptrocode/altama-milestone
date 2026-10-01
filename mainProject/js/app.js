@@ -140,20 +140,96 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 6. Carousel Controls (Sensor / Touch Ready)
+  // 6. Carousel Controls STRICT HOLD (Hold to change image)
   document.querySelectorAll('.carousel-prev').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    let arrowHoldTimer = null;
+    let arrowCompleted = false;
+
+    const startArrowHold = (e) => {
+      if (e.button !== undefined && e.button !== 0) return;
       e.stopPropagation();
-      const colId = parseInt(btn.closest('.carousel').dataset.col);
-      Carousel.prev(colId);
+
+      arrowCompleted = false;
+      btn.classList.add('holding');
+
+      const holdDuration = (typeof WALL_CONFIG !== 'undefined' && WALL_CONFIG.settings && WALL_CONFIG.settings.arrowHoldDuration)
+        ? WALL_CONFIG.settings.arrowHoldDuration
+        : 650;
+
+      arrowHoldTimer = setTimeout(() => {
+        arrowCompleted = true;
+        btn.classList.remove('holding');
+        const colId = parseInt(btn.closest('.carousel').dataset.col);
+        Carousel.prev(colId);
+      }, holdDuration);
+    };
+
+    const cancelArrowHold = (e) => {
+      e.stopPropagation();
+      if (!arrowCompleted) {
+        btn.classList.remove('holding');
+        if (arrowHoldTimer) {
+          clearTimeout(arrowHoldTimer);
+          arrowHoldTimer = null;
+        }
+      }
+    };
+
+    btn.addEventListener('pointerdown', startArrowHold);
+    btn.addEventListener('pointerup', cancelArrowHold);
+    btn.addEventListener('pointerleave', cancelArrowHold);
+    btn.addEventListener('pointercancel', cancelArrowHold);
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // Regular click does NOTHING. Must hold to switch slide!
     });
   });
 
   document.querySelectorAll('.carousel-next').forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    let arrowHoldTimer = null;
+    let arrowCompleted = false;
+
+    const startArrowHold = (e) => {
+      if (e.button !== undefined && e.button !== 0) return;
       e.stopPropagation();
-      const colId = parseInt(btn.closest('.carousel').dataset.col);
-      Carousel.next(colId);
+
+      arrowCompleted = false;
+      btn.classList.add('holding');
+
+      const holdDuration = (typeof WALL_CONFIG !== 'undefined' && WALL_CONFIG.settings && WALL_CONFIG.settings.arrowHoldDuration)
+        ? WALL_CONFIG.settings.arrowHoldDuration
+        : 650;
+
+      arrowHoldTimer = setTimeout(() => {
+        arrowCompleted = true;
+        btn.classList.remove('holding');
+        const colId = parseInt(btn.closest('.carousel').dataset.col);
+        Carousel.next(colId);
+      }, holdDuration);
+    };
+
+    const cancelArrowHold = (e) => {
+      e.stopPropagation();
+      if (!arrowCompleted) {
+        btn.classList.remove('holding');
+        if (arrowHoldTimer) {
+          clearTimeout(arrowHoldTimer);
+          arrowHoldTimer = null;
+        }
+      }
+    };
+
+    btn.addEventListener('pointerdown', startArrowHold);
+    btn.addEventListener('pointerup', cancelArrowHold);
+    btn.addEventListener('pointerleave', cancelArrowHold);
+    btn.addEventListener('pointercancel', cancelArrowHold);
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // Regular click does NOTHING. Must hold to switch slide!
     });
   });
 
@@ -211,7 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  console.log('✅ ALTAMA Interactive Wall initialized with kinetic typography animations.');
+  console.log('✅ ALTAMA Interactive Wall initialized with kinetic typography and hold-to-change carousel arrows.');
   console.log('🌐 Language switcher active: ID (🇮🇩), EN (🇬🇧), ZH (🇨🇳)');
   console.log('⏱️ 15-second inactivity timer enabled per column.');
 });

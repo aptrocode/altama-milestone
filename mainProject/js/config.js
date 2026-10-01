@@ -8,7 +8,8 @@ const WALL_CONFIG = {
   locales: ['id', 'en', 'zh'],
 
   settings: {
-    holdDuration: 1000,       // 1 second hold-to-activate
+    holdDuration: 1000,       // 1 second hold-to-activate for main and sub cards
+    arrowHoldDuration: 650,   // 650ms hold-to-activate for carousel image arrows
     autoResetSeconds: 15,     // 15 seconds auto-return to idle button
   },
 
