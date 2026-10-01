@@ -1,8 +1,10 @@
-import type { ColumnConfig, WallLocale } from '~/data/wall-config';
-import { defineStore } from 'pinia';
+﻿import { defineStore } from 'pinia';
 import { WALL_CONFIG } from '~/data/wall-config';
 
 export type ColumnState = 'idle' | 'submenu' | 'active';
+
+const AUTO_RESET_DELAY_MS = 15000;
+const columnTimers: Record<number, any> = {};
 
 export const useWallStore = defineStore('wall', {
   state: () => ({
@@ -176,6 +178,45 @@ export const useWallStore = defineStore('wall', {
   },
 
   actions: {
+    startColumnTimer(colId: number) {
+      this.clearColumnTimer(colId);
+      if (this.columnStates[colId] === 'idle') return;
+
+      columnTimers[colId] = setTimeout(() => {
+        this.resetColumn(colId);
+      }, AUTO_RESET_DELAY_MS);
+    },
+
+    resetColumnTimer(colId: number) {
+      if (this.columnStates[colId] !== 'idle') {
+        this.startColumnTimer(colId);
+      }
+    },
+
+    clearColumnTimer(colId: number) {
+      if (columnTimers[colId]) {
+        clearTimeout(columnTimers[colId]);
+        delete columnTimers[colId];
+      }
+    },
+
+    clearAllColumnTimers() {
+      Object.keys(columnTimers).forEach(id => {
+        clearTimeout(columnTimers[Number(id)]);
+        delete columnTimers[Number(id)];
+      });
+    },
+
+    resetColumn(colId: number) {
+      this.clearColumnTimer(colId);
+      this.columnStates[colId] = 'idle';
+      this.carouselIndex[colId] = 0;
+      const colConfig = WALL_CONFIG.columns.find(c => c.id === colId);
+      if (colConfig?.defaultSub) {
+        this.activeSubItem[colId] = colConfig.defaultSub;
+      }
+    },
+
     setColumnState(colId: number, state: ColumnState) {
       this.columnStates[colId] = state;
     },
@@ -200,9 +241,11 @@ export const useWallStore = defineStore('wall', {
       if (current < 0)
         current = totalSlides - 1;
       this.carouselIndex[colId] = current;
+      this.resetColumnTimer(colId);
     },
 
     resetAll() {
+      this.clearAllColumnTimers();
       WALL_CONFIG.columns.forEach((col) => {
         this.columnStates[col.id] = 'idle';
         this.carouselIndex[col.id] = 0;
@@ -221,21 +264,26 @@ export const useWallStore = defineStore('wall', {
       if (colConfig.type === 'expandable') {
         if (current === 'idle') {
           this.columnStates[colId] = 'submenu';
+          this.startColumnTimer(colId);
         }
         else if (current === 'submenu') {
           this.columnStates[colId] = 'idle';
+          this.clearColumnTimer(colId);
         }
         else if (current === 'active') {
           this.columnStates[colId] = 'submenu';
+          this.startColumnTimer(colId);
         }
       }
       else {
         if (current === 'idle') {
           this.columnStates[colId] = 'active';
+          this.startColumnTimer(colId);
         }
         else {
           this.columnStates[colId] = 'idle';
           this.carouselIndex[colId] = 0;
+          this.clearColumnTimer(colId);
         }
       }
     },
@@ -244,6 +292,7 @@ export const useWallStore = defineStore('wall', {
       this.activeSubItem[colId] = subKey;
       this.columnStates[colId] = 'active';
       this.carouselIndex[colId] = 0;
+      this.startColumnTimer(colId);
     },
   },
 });

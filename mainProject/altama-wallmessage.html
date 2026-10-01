@@ -1,0 +1,285 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ALTAMA Interactive Wall - Digital Experience" />
+  <title>ALTAMA Interactive Wall</title>
+  <script>
+    // Bersihkan URL agar selalu http://localhost:8080/ tanpa suffix .html
+    if (window.location.protocol.startsWith('http') && window.location.pathname.endsWith('.html')) {
+      window.history.replaceState(null, '', window.location.origin + '/');
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/zones.css" />
+  <link rel="stylesheet" href="css/buttons.css" />
+  <link rel="stylesheet" href="css/submenu.css" />
+  <link rel="stylesheet" href="css/content-panel.css" />
+  <link rel="stylesheet" href="css/carousel.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+<body>
+  <div id="wall-container">
+
+    <!-- ====== ROW 1: ZONA ATAS (BRANDING / CONTENT HEADERS) ====== -->
+    <div id="zone-top" class="zone zone-top">
+      <!-- Default branding overlay (shown on idle, spans all columns) -->
+      <div id="branding-default" class="branding-default">
+        <div class="branding-logo">
+          <h1>ZONA BRANDING</h1>
+          <p class="branding-tagline">Logo, Visual, dan Judul</p>
+        </div>
+      </div>
+
+      <!-- Per-column content headers (shown when item is active) -->
+      <div id="content-headers" class="content-headers hidden">
+        <div class="content-header" data-col="1">
+          <h2>ABOUT ALTAMA</h2>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+        <div class="content-header" data-col="2">
+          <h2 class="content-header-title" data-col="2">TEKIRO</h2>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+        <div class="content-header" data-col="3">
+          <h2>INFRASTRUCTURE</h2>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+        <div class="content-header" data-col="4">
+          <h2>DIGITAL PARTNERS</h2>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+        <div class="content-header" data-col="5">
+          <h2 class="content-header-title" data-col="5">BRAND ACTIVATION</h2>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+        <div class="content-header" data-col="6">
+          <h2>SUMMIT 2026</h2>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== ROW 2: ZONA TENGAH (INTERACTIVE BUTTONS) ====== -->
+    <div id="zone-middle" class="zone zone-middle">
+
+      <!-- Column 1: About Altama -->
+      <div class="column" data-col="1">
+        <div class="btn-group">
+          <button class="main-btn single-btn" data-category="about-altama" data-col="1">
+            <span class="btn-label">ABOUT<br/>ALTAMA</span>
+          </button>
+        </div>
+        <div class="active-content hidden" data-col="1">
+          <span class="submenu-parent-label">ABOUT ALTAMA</span>
+          <div class="carousel" data-col="1">
+            <div class="carousel-viewport">
+              <div class="carousel-slide active"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 01</span></div></div>
+              <div class="carousel-slide"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 02</span></div></div>
+              <div class="carousel-slide"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 03</span></div></div>
+            </div>
+            <div class="carousel-controls">
+              <button class="carousel-prev" aria-label="Previous">&larr;</button>
+              <button class="carousel-next" aria-label="Next">&rarr;</button>
+            </div>
+            <div class="carousel-indicator">01 / 03</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 2: Our Brands -->
+      <div class="column has-submenu" data-col="2">
+        <div class="btn-group">
+          <button class="main-btn expandable-btn" data-category="our-brands" data-col="2">
+            <span class="btn-label">OUR<br/>BRANDS</span>
+          </button>
+        </div>
+        <div class="submenu-group hidden" data-col="2">
+          <span class="submenu-parent-label">OUR BRANDS</span>
+          <button class="sub-btn" data-sub="tekiro" data-col="2"><span class="btn-label">TEKIRO</span></button>
+          <button class="sub-btn" data-sub="ryu" data-col="2"><span class="btn-label">RYU</span></button>
+          <button class="sub-btn" data-sub="rexco" data-col="2"><span class="btn-label">REXCO</span></button>
+        </div>
+        <div class="active-content hidden" data-col="2">
+          <span class="submenu-parent-label">OUR BRANDS</span>
+          <div class="carousel" data-col="2">
+            <div class="carousel-viewport">
+              <div class="carousel-slide active"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 01</span></div></div>
+              <div class="carousel-slide"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 02</span></div></div>
+              <div class="carousel-slide"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 03</span></div></div>
+            </div>
+            <div class="carousel-controls">
+              <button class="carousel-prev" aria-label="Previous">&larr;</button>
+              <button class="carousel-next" aria-label="Next">&rarr;</button>
+            </div>
+            <div class="carousel-indicator">01 / 03</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 3: Infrastructure -->
+      <div class="column" data-col="3">
+        <div class="btn-group">
+          <button class="main-btn single-btn" data-category="infrastructure" data-col="3">
+            <span class="btn-label">INFRA-<br/>STRUCTURE</span>
+          </button>
+        </div>
+        <div class="active-content hidden" data-col="3">
+          <span class="submenu-parent-label">INFRASTRUCTURE</span>
+          <div class="carousel" data-col="3">
+            <div class="carousel-viewport">
+              <div class="carousel-slide active"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 01</span></div></div>
+              <div class="carousel-slide"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 02</span></div></div>
+              <div class="carousel-slide"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 03</span></div></div>
+            </div>
+            <div class="carousel-controls">
+              <button class="carousel-prev" aria-label="Previous">&larr;</button>
+              <button class="carousel-next" aria-label="Next">&rarr;</button>
+            </div>
+            <div class="carousel-indicator">01 / 03</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 4: Digital Partners -->
+      <div class="column" data-col="4">
+        <div class="btn-group">
+          <button class="main-btn single-btn" data-category="digital-partners" data-col="4">
+            <span class="btn-label">DIGITAL<br/>PARTNERS</span>
+          </button>
+        </div>
+        <div class="active-content hidden" data-col="4">
+          <span class="submenu-parent-label">DIGITAL PARTNERS</span>
+          <div class="carousel" data-col="4">
+            <div class="carousel-viewport">
+              <div class="carousel-slide active"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 01</span></div></div>
+              <div class="carousel-slide"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 02</span></div></div>
+              <div class="carousel-slide"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 03</span></div></div>
+            </div>
+            <div class="carousel-controls">
+              <button class="carousel-prev" aria-label="Previous">&larr;</button>
+              <button class="carousel-next" aria-label="Next">&rarr;</button>
+            </div>
+            <div class="carousel-indicator">01 / 03</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 5: Distribution -->
+      <div class="column has-submenu" data-col="5">
+        <div class="btn-group">
+          <button class="main-btn expandable-btn" data-category="distribution" data-col="5">
+            <span class="btn-label">DISTRI-<br/>BUTION</span>
+          </button>
+        </div>
+        <div class="submenu-group hidden" data-col="5">
+          <span class="submenu-parent-label">DISTRIBUTION</span>
+          <button class="sub-btn" data-sub="our-way" data-col="5"><span class="btn-label">OUR WAY FOR<br/>DISTRIBUTION</span></button>
+          <button class="sub-btn" data-sub="brand-activation" data-col="5"><span class="btn-label">BRAND<br/>ACTIVATION</span></button>
+        </div>
+        <div class="active-content hidden" data-col="5">
+          <span class="submenu-parent-label">DISTRIBUTION</span>
+          <div class="carousel" data-col="5">
+            <div class="carousel-viewport">
+              <div class="carousel-slide active"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 01</span></div></div>
+              <div class="carousel-slide"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 02</span></div></div>
+              <div class="carousel-slide"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 03</span></div></div>
+            </div>
+            <div class="carousel-controls">
+              <button class="carousel-prev" aria-label="Previous">&larr;</button>
+              <button class="carousel-next" aria-label="Next">&rarr;</button>
+            </div>
+            <div class="carousel-indicator">01 / 03</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 6: Summit 2026 -->
+      <div class="column" data-col="6">
+        <div class="btn-group">
+          <button class="main-btn single-btn" data-category="summit-2026" data-col="6">
+            <span class="btn-label">SUMMIT<br/>2026</span>
+          </button>
+        </div>
+        <div class="active-content hidden" data-col="6">
+          <span class="submenu-parent-label">SUMMIT 2026</span>
+          <div class="carousel" data-col="6">
+            <div class="carousel-viewport">
+              <div class="carousel-slide active"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 01</span></div></div>
+              <div class="carousel-slide"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 02</span></div></div>
+              <div class="carousel-slide"><div class="placeholder-img"><svg viewBox="0 0 100 80" class="img-icon"><polygon points="50,15 85,65 15,65" fill="currentColor"/></svg><span>PLACEHOLDER FOTO 03</span></div></div>
+            </div>
+            <div class="carousel-controls">
+              <button class="carousel-prev" aria-label="Previous">&larr;</button>
+              <button class="carousel-next" aria-label="Next">&rarr;</button>
+            </div>
+            <div class="carousel-indicator">01 / 03</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ====== ROW 3: ZONA BAWAH ====== -->
+    <div id="zone-bottom" class="zone zone-bottom">
+      <!-- Per-column footer descriptions -->
+      <div id="bottom-descriptions" class="bottom-descriptions hidden">
+        <div class="bottom-desc" data-col="1">
+          <h4>ABOUT ALTAMA</h4>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+        <div class="bottom-desc" data-col="2">
+          <h4 class="bottom-desc-title" data-col="2">TEKIRO</h4>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+        <div class="bottom-desc" data-col="3">
+          <h4>INFRASTRUCTURE</h4>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+        <div class="bottom-desc" data-col="4">
+          <h4>DIGITAL PARTNERS</h4>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+        <div class="bottom-desc" data-col="5">
+          <h4 class="bottom-desc-title" data-col="5">BRAND ACTIVATION</h4>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+        <div class="bottom-desc" data-col="6">
+          <h4>SUMMIT 2026</h4>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        </div>
+      </div>
+      <!-- Always visible label -->
+      <div id="bottom-default" class="bottom-default">
+        <span class="zone-label">ZONA NON INTERAKTIF/DEKORATIF</span>
+      </div>
+    </div>
+
+    <!-- ====== COLUMN BORDER OVERLAYS ====== -->
+    <div id="column-borders" class="column-borders hidden">
+      <div class="col-border" data-col-border="1"></div>
+      <div class="col-border" data-col-border="2"></div>
+      <div class="col-border" data-col-border="3"></div>
+      <div class="col-border" data-col-border="4"></div>
+      <div class="col-border" data-col-border="5"></div>
+      <div class="col-border" data-col-border="6"></div>
+    </div>
+
+  </div>
+
+  <!-- ====== JAVASCRIPT MODULES ====== -->
+  <script src="js/config.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/carousel.js"></script>
+  <script src="js/interactions.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+
