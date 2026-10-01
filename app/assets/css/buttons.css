@@ -140,60 +140,49 @@
   transform: scale(1.08);
 }
 
-/* ── Interactive Tap Cue Beacon ── */
-.tap-cue {
+/* ── Interactive Hold Indicator (Icon Tangan & Hold 3 Detik) ── */
+.hold-cue {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   margin-top: 12px;
-  padding: 4px 10px;
+  padding: 5px 12px;
   background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  border-radius: 12px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 14px;
   transition: all 0.3s ease;
   pointer-events: none;
 }
 
-.tap-cue-beacon {
-  position: relative;
-  width: 8px;
-  height: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.hand-icon {
+  width: 16px;
+  height: 16px;
+  color: #10b981;
+  animation: handHoldHint 2s ease-in-out infinite;
+  flex-shrink: 0;
 }
 
-.tap-cue-dot {
-  width: 6px;
-  height: 6px;
-  background: #10b981;
-  border-radius: 50%;
-  box-shadow: 0 0 6px #10b981;
-}
-
-.tap-cue-ping {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 1.5px solid #10b981;
-  animation: tapBeaconPing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
-  opacity: 0.75;
-}
-
-.tap-cue-text {
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.85);
+.hold-cue-text {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.9);
   text-transform: uppercase;
 }
 
-.main-btn:hover .tap-cue {
-  background: rgba(16, 185, 129, 0.2);
-  border-color: rgba(16, 185, 129, 0.6);
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+.main-btn:hover .hold-cue {
+  background: rgba(16, 185, 129, 0.22);
+  border-color: rgba(16, 185, 129, 0.65);
+}
+
+@keyframes handHoldHint {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.08);
+  }
 }
 
 /* ── Guide track & ambient aura (pseudo-element ::before) ── */
@@ -206,14 +195,11 @@
   background: transparent;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+  transition: opacity 0.15s ease;
 }
 
 .main-btn.holding::before {
   opacity: 1;
-  box-shadow:
-    0 0 14px rgba(16, 185, 129, 0.25),
-    inset 0 0 8px rgba(16, 185, 129, 0.1);
 }
 
 /* ── Neon laser outline tracer (pseudo-element ::after) ── */
@@ -249,19 +235,17 @@
     drop-shadow(0 0 14px rgba(16, 185, 129, 0.8));
 }
 
-/* ── Holding state: animate outline & button depression ── */
+/* ── Holding state: animate outline & button depression for 3 seconds ── */
 .main-btn.holding {
   animation: none;
   transform: scale(0.985);
-  border-color: rgba(16, 185, 129, 0.6);
-  box-shadow:
-    0 0 20px rgba(16, 185, 129, 0.4),
-    0 0 40px rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.8);
+  box-shadow: none;
 }
 
 .main-btn.holding::after {
   opacity: 1;
-  animation: holdBorderFill 0.8s linear forwards;
+  animation: holdBorderFill 3s linear forwards;
 }
 
 /* ── Completed hold burst / instant tap burst ── */

@@ -107,23 +107,31 @@
   transform: scale(0.98);
 }
 
-.sub-tap-cue {
-  display: flex;
+.sub-hold-cue {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.6;
+  gap: 4px;
+  margin-top: 4px;
+  opacity: 0.65;
   transition: opacity 0.2s ease;
 }
 
-.sub-tap-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 5px #10b981;
+.sub-hand-icon {
+  width: 12px;
+  height: 12px;
+  color: #10b981;
 }
 
-.sub-btn:hover .sub-tap-cue {
+.sub-hold-text {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+}
+
+.sub-btn:hover .sub-hold-cue {
   opacity: 1;
 }
 
@@ -137,14 +145,11 @@
   background: transparent;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+  transition: opacity 0.15s ease;
 }
 
 .sub-btn.holding::before {
   opacity: 1;
-  box-shadow:
-    0 0 12px rgba(16, 185, 129, 0.22),
-    inset 0 0 6px rgba(16, 185, 129, 0.08);
 }
 
 /* ── Neon laser outline tracer (pseudo-element ::after) ── */
@@ -180,16 +185,17 @@
     drop-shadow(0 0 10px rgba(16, 185, 129, 0.75));
 }
 
-/* ── Holding state: animate outline & button feedback ── */
+/* ── Holding state: animate outline & button feedback for 3 seconds ── */
 .sub-btn.holding {
   transform: scale(0.98);
   background: rgba(16, 185, 129, 0.14);
   color: #ffffff;
+  box-shadow: none;
 }
 
 .sub-btn.holding::after {
   opacity: 1;
-  animation: holdBorderFill 0.8s linear forwards;
+  animation: holdBorderFill 3s linear forwards;
 }
 
 /* ── Completed hold burst / instant tap burst ── */
@@ -220,7 +226,6 @@
   50% {
     transform: scale(1.02);
     background: rgba(16, 185, 129, 0.45);
-    box-shadow: 0 0 24px rgba(16, 185, 129, 0.7);
   }
   100% {
     transform: scale(1);
