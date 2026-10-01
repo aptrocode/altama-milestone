@@ -23,7 +23,7 @@
   border: 1px solid var(--color-btn-border);
   border-radius: var(--radius-card);
   color: var(--color-btn-text);
-  padding: 16px 14px 14px 14px;
+  padding: 24px 16px 20px 16px;
   box-shadow: var(--shadow-btn);
   cursor: pointer;
   position: relative;
@@ -38,7 +38,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding-top: 20px;
+  padding-top: 10px;
 }
 
 .main-btn .btn-label {
@@ -52,36 +52,25 @@
   pointer-events: none;
 }
 
-/* White box container at bottom of idle card (Translate inside) */
-.main-btn-bottom-bar {
-  width: 100%;
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 12px 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  flex-shrink: 0;
-  box-sizing: border-box;
-}
-
+/* ── Enlarged Sensor-Ready Language Pill (No white box, directly on idle card) ── */
 .lang-pill {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 16px;
   background: #1c2622;
-  padding: 6px 14px;
+  padding: 8px 18px;
   border-radius: 9999px;
-  border: 1.5px solid rgba(255, 255, 255, 0.22);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+  border: 2px solid rgba(255, 255, 255, 0.24);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+  margin-bottom: 4px;
 }
 
 .lang-btn {
   background: transparent;
-  border: 2px solid transparent;
-  border-radius: 6px;
-  padding: 3px;
+  border: 2.5px solid transparent;
+  border-radius: 8px;
+  padding: 4px 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,21 +81,21 @@
 }
 
 .lang-btn:hover {
-  transform: scale(1.12);
+  transform: scale(1.1);
 }
 
 .lang-btn.active {
   background: #10b981;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.7);
-  border-radius: 6px;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.85);
+  border-radius: 8px;
 }
 
 .lang-btn::after {
   content: '';
   position: absolute;
-  inset: -3px;
-  border-radius: 8px;
-  border: 2px solid transparent;
+  inset: -4px;
+  border-radius: 10px;
+  border: 2.5px solid transparent;
   pointer-events: none;
 }
 
@@ -117,15 +106,16 @@
 
 @keyframes langHoldRing {
   0% { transform: scale(0.95); opacity: 0.4; }
-  50% { transform: scale(1.08); opacity: 0.8; box-shadow: 0 0 8px #10b981; }
-  100% { transform: scale(1.18); opacity: 1; box-shadow: 0 0 14px #10b981; }
+  50% { transform: scale(1.08); opacity: 0.8; box-shadow: 0 0 10px #10b981; }
+  100% { transform: scale(1.18); opacity: 1; box-shadow: 0 0 18px #10b981; }
 }
 
+/* Enlarged flags for touchscreen sensor */
 .flag-svg {
-  width: 28px;
-  height: 18px;
-  border-radius: 2px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  width: 44px;
+  height: 28px;
+  border-radius: 3px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
   display: block;
   pointer-events: none;
 }
