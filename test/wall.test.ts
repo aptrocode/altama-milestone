@@ -1,297 +1,89 @@
-import { createPinia, setActivePinia } from 'pinia';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { WALL_CONFIG } from '../app/data/wall-config';
+import { createPinia } from 'pinia';
+import { describe, expect, it } from 'vitest';
 import { useWallStore } from '../app/stores/wall';
+import { COLUMN_IDS } from '../shared/wall';
 
-describe('wALL_CONFIG', () => {
-  it('contains exactly 6 columns', () => {
-    expect(WALL_CONFIG.columns).toHaveLength(6);
-  });
+function store() {
+  return useWallStore(createPinia());
+}
 
-  it('has our-brands (col 2) with 3 sub-items: tekiro, ryu, and rexco', () => {
-    const col2 = WALL_CONFIG.columns.find(c => c.id === 2);
-    expect(col2).toBeDefined();
-    expect(col2?.type).toBe('expandable');
-    expect(col2?.subItems?.map(s => s.key)).toEqual(['tekiro', 'ryu', 'rexco']);
-  });
-
-  it('has distribution (col 5) with 2 sub-items: our-way and brand-activation', () => {
-    const col5 = WALL_CONFIG.columns.find(c => c.id === 5);
-    expect(col5).toBeDefined();
-    expect(col5?.type).toBe('expandable');
-    expect(col5?.subItems?.map(s => s.key)).toEqual(['our-way', 'brand-activation']);
-  });
-
-  it('has summit 2026 as column 6', () => {
-    const col6 = WALL_CONFIG.columns.find(c => c.id === 6);
-    expect(col6).toBeDefined();
-    expect(col6?.key).toBe('summit-2026');
-  });
-
-  it('has multilingual content in id, en, and zh-Hans for all 6 columns', () => {
-    WALL_CONFIG.columns.forEach((col) => {
-      expect(col.i18n).toBeDefined();
-      expect(col.i18n?.id).toBeDefined();
-      expect(col.i18n?.en).toBeDefined();
-      expect(col.i18n?.['zh-Hans']).toBeDefined();
-    });
-  });
-
-  it('formats all labelHtml without <br> line breaks for single-line presentation', () => {
-    const locales = ['id', 'en', 'zh-Hans'] as const;
-    WALL_CONFIG.columns.forEach((col) => {
-      expect(col.labelHtml).not.toContain('<br');
-      expect(col.labelHtml).not.toContain('\n');
-      locales.forEach((loc) => {
-        if (col.i18n?.[loc]?.labelHtml) {
-          expect(col.i18n[loc].labelHtml).not.toContain('<br');
-          expect(col.i18n[loc].labelHtml).not.toContain('\n');
-        }
-      });
-      col.subItems?.forEach((sub) => {
-        expect(sub.labelHtml).not.toContain('<br');
-        expect(sub.labelHtml).not.toContain('\n');
-        locales.forEach((loc) => {
-          if (sub.i18n?.[loc]?.labelHtml) {
-            expect(sub.i18n[loc].labelHtml).not.toContain('<br');
-            expect(sub.i18n[loc].labelHtml).not.toContain('\n');
-          }
-        });
-      });
-    });
-  });
-});
-
-describe('useWallStore', () => {
-  beforeEach(() => {
-    setActivePinia(createPinia());
-  });
-
-  it('initializes in idle state with id locale for all columns', () => {
-    const wall = useWallStore();
+describe('wall state and actions', () => {
+  it('starts all six columns idle in Indonesian with serializable state', () => {
+    const wall = store();
     expect(wall.hasAnyActive).toBe(false);
-    for (let i = 1; i <= 6; i++) {
-      expect(wall.getColumnState(i)).toBe('idle');
-      expect(wall.getColumnLocale(i)).toBe('id');
-    }
+    COLUMN_IDS.forEach(id => expect(wall.columns[id]).toMatchObject({ phase: 'idle', locale: 'id', slide: 0 }));
+    expect(JSON.parse(JSON.stringify(wall.$state))).toEqual(wall.$state);
   });
 
-  it('maintains independent language selection per column', () => {
-    const wall = useWallStore();
-
-    // Default: col 1 and col 2 are Indonesian
-    expect(wall.getColumnLocale(1)).toBe('id');
+  it('switches one language without changing content phase, slide, or neighboring languages', () => {
+    const wall = store();
+    wall.dispatch({ type: 'main', columnId: 1 });
+    wall.dispatch({ type: 'next', columnId: 1 });
+    wall.dispatch({ type: 'language', columnId: 1, locale: 'zh-Hans' });
+    expect(wall.columns[1]).toMatchObject({ phase: 'active', slide: 1, locale: 'zh-Hans' });
     expect(wall.getColumnLocale(2)).toBe('id');
-
-    // Switch col 1 to English
-    wall.setColumnLocale(1, 'en');
-    expect(wall.getColumnLocale(1)).toBe('en');
-    expect(wall.getColumnLocale(2)).toBe('id'); // col 2 remains unaffected
-
-    // Switch col 2 to Simplified Chinese
-    wall.setColumnLocale(2, 'zh-Hans');
-    expect(wall.getColumnLocale(1)).toBe('en'); // col 1 remains English
-    expect(wall.getColumnLocale(2)).toBe('zh-Hans');
-
-    // Check localized titles reflect per-column language
-    expect(wall.getHeaderTitle(1)).toBe('ABOUT ALTAMA');
-    expect(wall.getHeaderTitle(2)).toBe('TEKIRO'); // default subitem in zh-Hans
-    expect(wall.getColumnLabel(2)).toBe('旗下品牌');
-
-    // Switch col 1 back to Indonesian
-    wall.setColumnLocale(1, 'id');
-    expect(wall.getHeaderTitle(1)).toBe('TENTANG ALTAMA');
-    expect(wall.getColumnLabel(1)).toBe('TENTANG ALTAMA');
+    wall.dispatch({ type: 'language', columnId: 6, locale: 'en' });
+    expect(wall.getColumnLocale(1)).toBe('zh-Hans');
+    expect(wall.getHeaderTitle(6)).toBe('ALTAMA SUMMIT 2026');
   });
 
-  it('transitions expandable column 2 (our-brands) to submenu then active', () => {
-    const wall = useWallStore();
-    wall.onMainButtonClick(2);
+  it('defers sub-item content until selection and keeps that selection while changing language', () => {
+    const wall = store();
+    wall.dispatch({ type: 'main', columnId: 2 });
     expect(wall.getColumnState(2)).toBe('submenu');
-
-    wall.onSubButtonClick(2, 'ryu');
-    expect(wall.getColumnState(2)).toBe('active');
-    expect(wall.getActiveSubItem(2)).toBe('ryu');
-    expect(wall.hasAnyActive).toBe(true);
-  });
-
-  it('transitions expandable column 5 (distribution) to submenu then active', () => {
-    const wall = useWallStore();
-    wall.onMainButtonClick(5);
-    expect(wall.getColumnState(5)).toBe('submenu');
-
-    wall.onSubButtonClick(5, 'our-way');
-    expect(wall.getColumnState(5)).toBe('active');
-    expect(wall.getActiveSubItem(5)).toBe('our-way');
-    expect(wall.hasAnyActive).toBe(true);
-  });
-
-  it('navigates carousel', () => {
-    const wall = useWallStore();
-    expect(wall.getCarouselIndex(1)).toBe(0);
-    wall.navigateCarousel(1, 1, 3);
-    expect(wall.getCarouselIndex(1)).toBe(1);
-    wall.navigateCarousel(1, 1, 3);
-    expect(wall.getCarouselIndex(1)).toBe(2);
-    wall.navigateCarousel(1, 1, 3);
-    expect(wall.getCarouselIndex(1)).toBe(0); // wraps around
-  });
-
-  it('fully translates header title, header desc, bottom title, and bottom desc for all 6 columns', () => {
-    const wall = useWallStore();
-    const locales = ['id', 'en', 'zh-Hans'] as const;
-
-    locales.forEach((locale) => {
-      for (let colId = 1; colId <= 6; colId++) {
-        wall.setColumnLocale(colId, locale);
-
-        const label = wall.getColumnLabel(colId);
-        const headerTitle = wall.getHeaderTitle(colId);
-        const headerDesc = wall.getHeaderDesc(colId);
-        const bottomTitle = wall.getBottomTitle(colId);
-        const bottomDesc = wall.getBottomDesc(colId);
-
-        expect(label).toBeTruthy();
-        expect(headerTitle).toBeTruthy();
-        expect(headerDesc).toBeTruthy();
-        expect(bottomTitle).toBeTruthy();
-        expect(bottomDesc).toBeTruthy();
-      }
-    });
-  });
-
-  it('updates sub-item headers and bottom descriptions reactively per language for Col 2 and Col 5', () => {
-    const wall = useWallStore();
-
-    // Col 2: Ryu in Chinese
-    wall.setColumnLocale(2, 'zh-Hans');
-    wall.setActiveSubItem(2, 'ryu');
+    wall.dispatch({ type: 'subItem', columnId: 2, subItemId: 'ryu' });
+    wall.dispatch({ type: 'language', columnId: 2, locale: 'zh-Hans' });
     expect(wall.getHeaderTitle(2)).toBe('RYU 电动工具');
-    expect(wall.getHeaderDesc(2)).toContain('强劲耐用的电动工具');
-    expect(wall.getBottomTitle(2)).toBe('RYU 电动工具');
     expect(wall.getBottomDesc(2)).toContain('现代建筑和木工需求');
-    expect(wall.getActiveSubItemLabel(2)).toBe('RYU');
-
-    // Switch Col 2 to English
-    wall.setColumnLocale(2, 'en');
+    expect(wall.getColumnState(2)).toBe('active');
+    wall.dispatch({ type: 'language', columnId: 2, locale: 'en' });
     expect(wall.getHeaderTitle(2)).toBe('RYU POWER TOOLS');
-    expect(wall.getHeaderDesc(2)).toContain('High-powered, durable power tools');
-    expect(wall.getBottomTitle(2)).toBe('RYU POWER TOOLS');
-    expect(wall.getBottomDesc(2)).toContain('construction and woodworking');
-
-    // Col 5: Brand Activation in Chinese
-    wall.setColumnLocale(5, 'zh-Hans');
-    wall.setActiveSubItem(5, 'brand-activation');
-    expect(wall.getHeaderTitle(5)).toBe('品牌推广活动');
-    expect(wall.getHeaderDesc(5)).toContain('汽车展会');
-    expect(wall.getBottomTitle(5)).toBe('品牌推广活动');
-    expect(wall.getBottomDesc(5)).toContain('行业社群');
-    expect(wall.getActiveSubItemLabel(5)).toBe('品牌推广');
-
-    // Switch Col 5 to Indonesian
-    wall.setColumnLocale(5, 'id');
-    expect(wall.getHeaderTitle(5)).toBe('AKTIVASI MEREK');
-    expect(wall.getHeaderDesc(5)).toContain('Aktivasi merek terpadu');
-    expect(wall.getBottomTitle(5)).toBe('AKTIVASI MEREK');
-    expect(wall.getBottomDesc(5)).toContain('komunitas industri');
-    expect(wall.getActiveSubItemLabel(5)).toBe('AKTIVASI MEREK');
   });
 
-  it('resets all columns to idle', () => {
-    const wall = useWallStore();
-    wall.onMainButtonClick(1);
-    expect(wall.hasAnyActive).toBe(true);
+  it('rejects a sub-item from a different column and a hidden submenu action', () => {
+    const wall = store();
+    expect(wall.dispatch({ type: 'subItem', columnId: 2, subItemId: 'ryu' })).toBe(false);
+    wall.dispatch({ type: 'main', columnId: 5 });
+    expect(wall.dispatch({ type: 'subItem', columnId: 5, subItemId: 'ryu' })).toBe(false);
+    expect(wall.getColumnState(5)).toBe('submenu');
+  });
+
+  it('ignores repeated main activations rather than closing an already open column', () => {
+    const wall = store();
+    wall.dispatch({ type: 'main', columnId: 1 });
+    expect(wall.dispatch({ type: 'main', columnId: 1 })).toBe(false);
+    expect(wall.getColumnState(1)).toBe('active');
+  });
+
+  it('wraps the carousel in both directions and rejects navigation while idle', () => {
+    const wall = store();
+    expect(wall.dispatch({ type: 'next', columnId: 1 })).toBe(false);
+    wall.dispatch({ type: 'main', columnId: 1 });
+    wall.dispatch({ type: 'previous', columnId: 1 });
+    expect(wall.getCarouselIndex(1)).toBe(2);
+    wall.dispatch({ type: 'next', columnId: 1 });
+    expect(wall.getCarouselIndex(1)).toBe(0);
+  });
+
+  it('back returns expandable content to its menu and preserves the current language', () => {
+    const wall = store();
+    wall.dispatch({ type: 'main', columnId: 2 });
+    wall.dispatch({ type: 'subItem', columnId: 2, subItemId: 'rexco' });
+    wall.dispatch({ type: 'language', columnId: 2, locale: 'en' });
+    wall.dispatch({ type: 'next', columnId: 2 });
+    wall.dispatch({ type: 'back', columnId: 2 });
+    expect(wall.columns[2]).toMatchObject({ phase: 'submenu', subItem: 'rexco', slide: 0, locale: 'en' });
+    wall.dispatch({ type: 'back', columnId: 2 });
+    expect(wall.columns[2]).toMatchObject({ phase: 'idle', locale: 'en', subItem: 'tekiro' });
+  });
+
+  it('operator reset preserves languages; inactivity reset restores Indonesian', () => {
+    const wall = store();
+    wall.dispatch({ type: 'language', columnId: 1, locale: 'en' });
+    wall.dispatch({ type: 'main', columnId: 1 });
     wall.resetAll();
-    expect(wall.hasAnyActive).toBe(false);
-  });
-
-  describe('15-second per-section auto-reset', () => {
-    beforeEach(() => {
-      vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
-    it('auto-resets active column back to idle after 15 seconds of inactivity', () => {
-      const wall = useWallStore();
-      wall.onMainButtonClick(1);
-      expect(wall.getColumnState(1)).toBe('active');
-
-      vi.advanceTimersByTime(14999);
-      expect(wall.getColumnState(1)).toBe('active');
-
-      vi.advanceTimersByTime(1);
-      expect(wall.getColumnState(1)).toBe('idle');
-      expect(wall.getCarouselIndex(1)).toBe(0);
-      expect(wall.getColumnLocale(1)).toBe('id');
-    });
-
-    it('maintains independent 15s timers per section without affecting other sections', () => {
-      const wall = useWallStore();
-
-      // Open Col 1 at t=0
-      wall.onMainButtonClick(1);
-      expect(wall.getColumnState(1)).toBe('active');
-
-      // 5 seconds later, open Col 2 (submenu)
-      vi.advanceTimersByTime(5000);
-      wall.onMainButtonClick(2);
-      expect(wall.getColumnState(2)).toBe('submenu');
-
-      // Advance 10 more seconds (total 15s for Col 1, 10s for Col 2)
-      vi.advanceTimersByTime(10000);
-      expect(wall.getColumnState(1)).toBe('idle');
-      expect(wall.getColumnState(2)).toBe('submenu');
-
-      // Advance 5 more seconds (total 15s for Col 2)
-      vi.advanceTimersByTime(5000);
-      expect(wall.getColumnState(2)).toBe('idle');
-    });
-
-    it('restarts 15s countdown on user interaction within the active section', () => {
-      const wall = useWallStore();
-      wall.onMainButtonClick(1);
-
-      // Advance 10 seconds
-      vi.advanceTimersByTime(10000);
-      expect(wall.getColumnState(1)).toBe('active');
-
-      // User interacts: navigates carousel
-      wall.navigateCarousel(1, 1);
-      expect(wall.getCarouselIndex(1)).toBe(1);
-
-      // Advance 10 seconds (total 20s, but only 10s since interaction)
-      vi.advanceTimersByTime(10000);
-      expect(wall.getColumnState(1)).toBe('active');
-
-      // Advance 5 more seconds (15s since interaction)
-      vi.advanceTimersByTime(5000);
-      expect(wall.getColumnState(1)).toBe('idle');
-      expect(wall.getCarouselIndex(1)).toBe(0);
-    });
-
-    it('properly resets and cleans up timers on closeSubmenu and closeActiveContent', () => {
-      const wall = useWallStore();
-
-      // Test expandable column closeSubmenu
-      wall.onMainButtonClick(2); // opens submenu
-      expect(wall.getColumnState(2)).toBe('submenu');
-      wall.closeSubmenu(2);
-      expect(wall.getColumnState(2)).toBe('idle');
-
-      // Test expandable column closeActiveContent (returns to submenu)
-      wall.onSubButtonClick(2, 'ryu');
-      expect(wall.getColumnState(2)).toBe('active');
-      wall.closeActiveContent(2);
-      expect(wall.getColumnState(2)).toBe('submenu');
-
-      // Test single column closeActiveContent (returns to idle)
-      wall.onMainButtonClick(1);
-      expect(wall.getColumnState(1)).toBe('active');
-      wall.closeActiveContent(1);
-      expect(wall.getColumnState(1)).toBe('idle');
-    });
+    expect(wall.columns[1]).toMatchObject({ phase: 'idle', locale: 'en' });
+    wall.resetColumn(1);
+    expect(wall.getColumnLocale(1)).toBe('id');
   });
 });

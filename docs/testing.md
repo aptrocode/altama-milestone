@@ -1,8 +1,6 @@
 # Testing
 
-## Required commands
-
-Run relevant checks locally before opening or updating a pull request:
+## Commands
 
 ```bash
 bun run lint
@@ -10,37 +8,37 @@ bun run typecheck
 bun run test
 bun run assets:check
 bun run build
+bun run generate
 ```
 
-Run `bun run generate` after configuration, routing, asset, or deployment changes. Use `bun install --frozen-lockfile` on clean machines and CI. Run Nuxt build, generate, and typecheck sequentially because they share generated project files.
+Run build, generate, and typecheck sequentially because they share Nuxt generated files. Generate is required after configuration, routing, asset, or deployment changes. Clean machines/CI use `bun install --frozen-lockfile`.
+
+## Regression coverage
+
+Behavior tests cover:
+- independent column languages and phase/sub-item/slide preservation;
+- submenu ownership, hidden-action rejection, repeated main input, carousel wrap, and Back/reset;
+- per-column inactivity, R/Escape translated-idle regression, operator-close regression, cross-instance isolation, and scope disposal;
+- one-second pointer hold, cancellation/release/blur, native keyboard activation, updated callbacks, and listener/timer cleanup;
+- protocol v2 parsing, all six input destinations, submenu/carousel/Back routing, old-version rejection, and declared-target coordinates;
+- socket handshake, readiness/calibration gating, replay/sequence/session/layout rejection, outgoing state snapshots, heartbeat failure, stop cleanup, and disabled reconnect.
+
+Do not add tests that merely restate markup. Use controlled timers for behavior and browser measurements for geometry.
 
 ## Browser acceptance
 
-1. Test the official 2304 × 1344 CSS viewport, then the reference's 1600 × 900 size. Verify `innerWidth`/`innerHeight`; OS display scaling can make an automation viewport setting differ from the resulting CSS size.
-2. Confirm the stage fills both dimensions without scrolling, an outer container, maximum width, or letterboxing.
-3. On a fresh load, verify 1967 / 2007 / 2026 are selected and every section starts in IDLE with its sketch ready.
-4. Reveal LEFT, CENTER, and RIGHT with click or keys 1, 2, and 3. Check that the colored composition follows the reference.
-5. Confirm every heading, story, large year, caption, value, and footer stays readable in Indonesian, English, and Simplified Chinese. Check stacking at the illustration/year boundary.
-6. Verify 4 / 8 / 7 timeline buttons are visible, with two separately selectable 2013 entries. Confirm active pill text fits.
-7. Select several years rapidly: only the newest request should commit, with no blank image and no effect on other sections.
-8. Switch LEFT to Chinese and RIGHT to English. CENTER must remain Indonesian; all three years and artwork phases must stay unchanged. Change a year in LEFT and confirm it keeps Chinese. A fresh reload must restore Indonesian in all sections. Verify flag-only controls, selected ring, accessible names, and keyboard focus.
-9. Compare DOM artwork, year-button, and flag-button bounds with the scaled rectangles in `shared/installation-layout.json`. Focus must not scroll the stage.
-10. Press R: all sections return to their initial sketch while keeping their languages. In development, D toggles diagnostics; diagnostics stay hidden by default.
-11. Open an unknown route and use the custom error page's recovery button.
-12. Check application console errors and repeat core interaction checks on the production output.
+1. Verify actual CSS viewports 2304 × 1344 and 1600 × 900. Stage fills both dimensions without scrolling or letterboxing.
+2. Fresh load: six idle columns, all Indonesian, branding visible.
+3. Switch separate columns to English/Chinese; neighboring language, phase, and slide stay unchanged.
+4. Confirm flag-only controls, selected state, focus, language attributes, and full translated headings.
+5. Hold a main/sub-item button for one second; short/cancelled contact does nothing. Enter and Space activate focused buttons. Digits 1–6 open/go back in their own column.
+6. Columns 2/5 show submenu choices before selected content. Back returns correctly.
+7. Carousel arrows wrap; they restart only that column's timer.
+8. At 15 seconds without activity, only the inactive column returns to idle/Indonesian. R/Escape retain languages immediately and their timers still expire.
+9. Compare every visible `data-sensor-action` button with its shared logical rectangle, including both submenu and active Back targets. Scale x/y independently for previews.
+10. Unknown route shows the custom error page; recovery returns to the wall.
+11. Production console has no application errors. D diagnostics stay hidden by default and show actual sensor state in development.
 
-## Automated coverage
+## External production checks
 
-Current tests cover:
-
-- Machine readiness, latest-request-wins during decode, selection during reveal, and failed target preservation.
-- Cache request deduplication and decoded dimension mismatch.
-- Protocol parsing: valid touch/status/language selection, malformed JSON, unsupported version or locale, out-of-canvas coordinates, and wrong-section milestone.
-- Catalog/layout target synchronization, nine language targets, and independently addressable duplicate years.
-- Per-section language isolation, complete translated copy, and mandatory explicit translations for approved stories.
-
-## Remaining production validation
-
-Exercise reset/dispose races, cache eviction/pinning/retry, WebSocket sequence/session/layout mismatches, heartbeat loss/reconnect, prolonged offline use, and performance on the final PC/LED/sensor setup. Existing unit tests do not replace this work.
-
-Avoid tests that merely repeat markup. Add targeted behavior tests for real regressions and use controlled Promises for races.
+Deploy Sensor Service v2/wall-v1, recalibrate against measured targets, and test on hardware. Validate offline font/media availability, extended memory/performance, multi-user occlusion, startup supervision, and rollback. Photos/translations need client approval separately.

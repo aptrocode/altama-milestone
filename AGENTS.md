@@ -1,45 +1,47 @@
 # Agent guide
 
-This is a Nuxt 4 client-rendered kiosk for a 2304 × 1344 fullscreen LED installation. Read only the document needed for the task:
+Nuxt 4 client-rendered kiosk with six independent columns for a **2304 × 1344** fullscreen LED wall.
 
-- `docs/architecture.md`: boundaries, state flow, directory ownership, and invariants.
-- `docs/design.md`: client canvas, reference composition, year controls, and illustration provenance.
-- `docs/language.md`: per-section languages, translation ownership, flag controls, and approval rules.
-- `docs/assets.md`: artwork names, dimensions, validation, and contributor rules.
-- `docs/sensor.md`: WebSocket v1 contract and the Sensor Service boundary.
-- `docs/testing.md`: commands, browser checks, and acceptance criteria.
-- `docs/push.md`: required issue, branch, commit, pull request, merge, and cleanup workflow.
-- `docs/release.md`: version bump, git tag, repository metadata, and release notes style.
-- `docs/status.md`: implemented scope, dependency snapshot, and open production work.
+Read only the document needed:
+- `docs/architecture.md`: state, component boundaries, and resource lifecycles.
+- `docs/design.md`: fullscreen composition, logical geometry, and interaction.
+- `docs/language.md`: per-column translations and flag accessibility.
+- `docs/assets.md`: current assets, placeholders, and naming.
+- `docs/sensor.md`: protocol v2 / wall-v1 and Sensor Service rollout.
+- `docs/testing.md`: commands, regression coverage, and browser acceptance.
+- `docs/push.md`: issue, branch, commit, PR, review, merge, and cleanup.
+- `docs/release.md`: version, tag, metadata, and release notes when release is requested.
+- `docs/status.md`: implemented scope, dependencies, and production gaps.
 
 ## Source map
 
-- `app/components/kiosk/`: fullscreen composition and input routing.
-- `app/components/milestone/`: reusable section UI.
-- `app/composables/`: state orchestration and browser-resource lifecycles.
-- `app/stores/`: serializable Pinia state only.
-- `app/error.vue`: global Nuxt error UI.
-- `shared/`: milestone catalog and logical sensor geometry.
-- `public/milestones/`: runtime sketch/color pairs.
-- `scripts/`: fixture generation and asset validation.
-- `test/`: behavior tests for races, cache, and protocol validation.
+- `app/components/kiosk/`: viewport composition, operator shortcuts, socket, diagnostics.
+- `app/components/wall/`: presentational column, flags, carousel, and hold cue.
+- `app/composables/useWallController.ts`: shared action API and per-instance inactivity timers.
+- `app/stores/`: serializable wall and system state only.
+- `app/data/wall-config.ts`: column/sub-item copy; `wall-copy.ts`: interface translations/flags.
+- `shared/wall.ts`: column IDs, languages, snapshots, and actions.
+- `shared/installation-layout.json`: canonical sensor canvas and target geometry.
+- `app/utils/`: strict sensor parsing and hold lifecycle.
+- `app/error.vue`: global recovery UI.
+- `public/flags/`: local SVG flags; `scripts/check-assets.ts`: active asset/config validation.
+- `test/`: state, controller, hold, protocol, and socket regression tests.
 
-## Non-negotiable rules
+## Invariants
 
-- LEFT, CENTER, and RIGHT animate and fail independently.
-- LEFT, CENTER, and RIGHT choose language independently; Indonesian is the fresh-load default.
-- The newest milestone selection replaces the previous pending selection.
-- Keep the current artwork visible until the replacement pair is decoded and staged.
-- Keep DOM nodes, Images, WebSockets, timers, Promises, and GSAP instances out of Pinia.
-- Browser and sensor input must use the same section API.
-- Raw LiDAR, tracking, calibration, and sensor hit detection belong to Sensor Service.
-- The kiosk fills the viewport; do not add an outer container, `max-width`, or letterboxing.
+- All six columns select language, content, and carousel position independently.
+- Fresh loads start idle in Indonesian. After 15 seconds without interaction, only that column returns to idle/Indonesian.
+- Manual Back and R/Escape preserve languages immediately; non-default idle columns still have an inactivity timer.
+- Mouse/touch hold for one second; native Enter/Space activate directly. Sensor Service applies equivalent dwell to main/sub-item input.
+- Browser, operator, and sensor actions use `useWallController.dispatch`; UI never mutates Pinia directly.
+- Keep DOM, sockets, timers, Promises, and animation instances outside Pinia state. Dispose browser resources with their owning scope.
+- Fill both viewport dimensions. No outer container, maximum width, fixed aspect ratio, or letterboxing.
+- Geometry changes require a new layout version and matching Sensor Service deployment.
+- Raw LiDAR, tracking, calibration, and hit detection belong to Sensor Service.
+- Photos and copy are provisional until client approval. Do not describe placeholders as final assets.
 - Do not recreate atoms/molecules/organisms or add barrel files without a concrete need.
-- Treat every catalog entry marked `placeholder` as unapproved content.
 - The `dika/` directory is an isolated sandbox for Dika's prototypes and mockups. Agents and contributors working in `dika/` must not edit or delete any files outside `dika/`. All production kiosk changes belong exclusively to @adydetra (Dewa).
 
-## Library and change workflow
+## Change workflow
 
-Read `package.json` to inspect the exact versions of dependencies and scripts before changing framework or library usage. Use Context7 before changing a framework/library API: resolve the library ID, then query one concept at a time. If Context7 is unavailable, use only the library's current official documentation and record this in the handoff. Follow `docs/push.md` for repository work.
-
-Run the checks in `docs/testing.md` after relevant changes. Update the matching document whenever an invariant, protocol, asset rule, dependency, or workflow changes.
+Read `package.json` before changing dependencies or framework usage. Use Context7: resolve the library, then query one concept at a time before changing APIs. If unavailable, use current official documentation and record the fallback. Follow `docs/push.md` for repository work, run relevant `docs/testing.md` checks, and update the document whose invariant changed.

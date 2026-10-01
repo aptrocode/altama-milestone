@@ -1,205 +1,433 @@
 {
-  "layoutVersion": "layout-v4",
+  "layoutVersion": "wall-v1",
+  "protocolVersion": 2,
   "canvas": {
     "width": 2304,
     "height": 1344
   },
-  "sections": {
-    "left": {
+  "frame": {
+    "inset": 20,
+    "gap": 10
+  },
+  "zones": {
+    "header": 0.35,
+    "interactive": 0.4,
+    "footer": 0.25
+  },
+  "controls": {
+    "flag-size": 44,
+    "language-padding": 5,
+    "language-gap": 8,
+    "panel-gap": 8,
+    "panel-inset": 2,
+    "heading-height": 52,
+    "back-padding": 4,
+    "carousel-footer": 60,
+    "carousel-padding": 16
+  },
+  "columns": [
+    {
+      "id": 1,
       "section": {
-        "x": 0,
+        "x": 20,
         "y": 0,
-        "width": 768,
+        "width": 369,
         "height": 1344
       },
-      "artwork": {
-        "x": 0,
-        "y": 497.28,
-        "width": 768,
-        "height": 356.16
+      "main": {
+        "x": 20,
+        "y": 532.4,
+        "width": 369,
+        "height": 475.6
       },
-      "timeline": [
+      "languages": [
         {
-          "milestoneId": "left-1967",
-          "x": 69.12,
-          "y": 923.3280000000001,
-          "width": 168.96,
-          "height": 79.29599999999999
+          "locale": "id",
+          "x": 130.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
         },
         {
-          "milestoneId": "left-1996",
-          "x": 238.08,
-          "y": 923.3280000000001,
-          "width": 168.96,
-          "height": 79.29599999999999
+          "locale": "en",
+          "x": 182.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
         },
         {
-          "milestoneId": "left-1999",
-          "x": 407.04,
-          "y": 923.3280000000001,
-          "width": 168.96,
-          "height": 79.29599999999999
-        },
-        {
-          "milestoneId": "left-2006",
-          "x": 576,
-          "y": 923.3280000000001,
-          "width": 168.96,
-          "height": 79.29599999999999
+          "locale": "zh-Hans",
+          "x": 234.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
         }
       ],
-      "languages": [
-        { "locale": "id", "x": 254, "y": 1018.08, "width": 76, "height": 75.264 },
-        { "locale": "en", "x": 346, "y": 1018.08, "width": 76, "height": 75.264 },
-        { "locale": "zh-Hans", "x": 438, "y": 1018.08, "width": 76, "height": 75.264 }
-      ]
+      "active": {
+        "back": {
+          "x": 341,
+          "y": 536.4,
+          "width": 44,
+          "height": 44
+        },
+        "previous": {
+          "x": 36,
+          "y": 956,
+          "width": 44,
+          "height": 44
+        },
+        "next": {
+          "x": 329,
+          "y": 956,
+          "width": 44,
+          "height": 44
+        }
+      }
     },
-    "center": {
+    {
+      "id": 2,
       "section": {
-        "x": 768,
+        "x": 399,
         "y": 0,
-        "width": 768,
+        "width": 369,
         "height": 1344
       },
-      "artwork": {
-        "x": 768,
-        "y": 497.28,
-        "width": 768,
-        "height": 356.16
+      "main": {
+        "x": 399,
+        "y": 532.4,
+        "width": 369,
+        "height": 475.6
       },
-      "timeline": [
+      "languages": [
         {
-          "milestoneId": "center-2007",
-          "x": 837.12,
-          "y": 923.3280000000001,
-          "width": 84.48,
-          "height": 79.29599999999999
+          "locale": "id",
+          "x": 509.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
         },
         {
-          "milestoneId": "center-2008",
-          "x": 921.6,
-          "y": 923.3280000000001,
-          "width": 84.48,
-          "height": 79.29599999999999
+          "locale": "en",
+          "x": 561.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
         },
         {
-          "milestoneId": "center-2013-a",
-          "x": 1006.08,
-          "y": 923.3280000000001,
-          "width": 84.48,
-          "height": 79.29599999999999
-        },
-        {
-          "milestoneId": "center-2013-b",
-          "x": 1090.56,
-          "y": 923.3280000000001,
-          "width": 84.48,
-          "height": 79.29599999999999
-        },
-        {
-          "milestoneId": "center-2015",
-          "x": 1175.04,
-          "y": 923.3280000000001,
-          "width": 84.48,
-          "height": 79.29599999999999
-        },
-        {
-          "milestoneId": "center-2016",
-          "x": 1259.52,
-          "y": 923.3280000000001,
-          "width": 84.48,
-          "height": 79.29599999999999
-        },
-        {
-          "milestoneId": "center-2017",
-          "x": 1344,
-          "y": 923.3280000000001,
-          "width": 84.48,
-          "height": 79.29599999999999
-        },
-        {
-          "milestoneId": "center-2019",
-          "x": 1428.48,
-          "y": 923.3280000000001,
-          "width": 84.48,
-          "height": 79.29599999999999
+          "locale": "zh-Hans",
+          "x": 613.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
         }
       ],
-      "languages": [
-        { "locale": "id", "x": 1022, "y": 1018.08, "width": 76, "height": 75.264 },
-        { "locale": "en", "x": 1114, "y": 1018.08, "width": 76, "height": 75.264 },
-        { "locale": "zh-Hans", "x": 1206, "y": 1018.08, "width": 76, "height": 75.264 }
-      ]
+      "active": {
+        "back": {
+          "x": 720,
+          "y": 536.4,
+          "width": 44,
+          "height": 44
+        },
+        "previous": {
+          "x": 415,
+          "y": 956,
+          "width": 44,
+          "height": 44
+        },
+        "next": {
+          "x": 708,
+          "y": 956,
+          "width": 44,
+          "height": 44
+        }
+      },
+      "submenu": {
+        "back": {
+          "x": 718,
+          "y": 538.4,
+          "width": 44,
+          "height": 44
+        },
+        "items": [
+          {
+            "key": "tekiro",
+            "x": 401,
+            "y": 586.4,
+            "width": 365,
+            "height": 139.86666666666667
+          },
+          {
+            "key": "ryu",
+            "x": 401,
+            "y": 726.2666666666667,
+            "width": 365,
+            "height": 139.86666666666667
+          },
+          {
+            "key": "rexco",
+            "x": 401,
+            "y": 866.1333333333333,
+            "width": 365,
+            "height": 139.86666666666667
+          }
+        ]
+      }
     },
-    "right": {
+    {
+      "id": 3,
+      "section": {
+        "x": 778,
+        "y": 0,
+        "width": 369,
+        "height": 1344
+      },
+      "main": {
+        "x": 778,
+        "y": 532.4,
+        "width": 369,
+        "height": 475.6
+      },
+      "languages": [
+        {
+          "locale": "id",
+          "x": 888.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "locale": "en",
+          "x": 940.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "locale": "zh-Hans",
+          "x": 992.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "active": {
+        "back": {
+          "x": 1099,
+          "y": 536.4,
+          "width": 44,
+          "height": 44
+        },
+        "previous": {
+          "x": 794,
+          "y": 956,
+          "width": 44,
+          "height": 44
+        },
+        "next": {
+          "x": 1087,
+          "y": 956,
+          "width": 44,
+          "height": 44
+        }
+      }
+    },
+    {
+      "id": 4,
+      "section": {
+        "x": 1157,
+        "y": 0,
+        "width": 369,
+        "height": 1344
+      },
+      "main": {
+        "x": 1157,
+        "y": 532.4,
+        "width": 369,
+        "height": 475.6
+      },
+      "languages": [
+        {
+          "locale": "id",
+          "x": 1267.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "locale": "en",
+          "x": 1319.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "locale": "zh-Hans",
+          "x": 1371.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "active": {
+        "back": {
+          "x": 1478,
+          "y": 536.4,
+          "width": 44,
+          "height": 44
+        },
+        "previous": {
+          "x": 1173,
+          "y": 956,
+          "width": 44,
+          "height": 44
+        },
+        "next": {
+          "x": 1466,
+          "y": 956,
+          "width": 44,
+          "height": 44
+        }
+      }
+    },
+    {
+      "id": 5,
       "section": {
         "x": 1536,
         "y": 0,
-        "width": 768,
+        "width": 369,
         "height": 1344
       },
-      "artwork": {
+      "main": {
         "x": 1536,
-        "y": 497.28,
-        "width": 768,
-        "height": 356.16
+        "y": 532.4,
+        "width": 369,
+        "height": 475.6
       },
-      "timeline": [
+      "languages": [
         {
-          "milestoneId": "right-2020",
-          "x": 1605.12,
-          "y": 923.3280000000001,
-          "width": 96.54857142857144,
-          "height": 79.29599999999999
+          "locale": "id",
+          "x": 1646.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
         },
         {
-          "milestoneId": "right-2021",
-          "x": 1701.6685714285713,
-          "y": 923.3280000000001,
-          "width": 96.54857142857144,
-          "height": 79.29599999999999
+          "locale": "en",
+          "x": 1698.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
         },
         {
-          "milestoneId": "right-2022",
-          "x": 1798.2171428571428,
-          "y": 923.3280000000001,
-          "width": 96.54857142857144,
-          "height": 79.29599999999999
-        },
-        {
-          "milestoneId": "right-2023",
-          "x": 1894.7657142857142,
-          "y": 923.3280000000001,
-          "width": 96.54857142857144,
-          "height": 79.29599999999999
-        },
-        {
-          "milestoneId": "right-2024",
-          "x": 1991.3142857142857,
-          "y": 923.3280000000001,
-          "width": 96.54857142857144,
-          "height": 79.29599999999999
-        },
-        {
-          "milestoneId": "right-2025",
-          "x": 2087.862857142857,
-          "y": 923.3280000000001,
-          "width": 96.54857142857144,
-          "height": 79.29599999999999
-        },
-        {
-          "milestoneId": "right-2026",
-          "x": 2184.4114285714286,
-          "y": 923.3280000000001,
-          "width": 96.54857142857144,
-          "height": 79.29599999999999
+          "locale": "zh-Hans",
+          "x": 1750.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
         }
       ],
+      "active": {
+        "back": {
+          "x": 1857,
+          "y": 536.4,
+          "width": 44,
+          "height": 44
+        },
+        "previous": {
+          "x": 1552,
+          "y": 956,
+          "width": 44,
+          "height": 44
+        },
+        "next": {
+          "x": 1845,
+          "y": 956,
+          "width": 44,
+          "height": 44
+        }
+      },
+      "submenu": {
+        "back": {
+          "x": 1855,
+          "y": 538.4,
+          "width": 44,
+          "height": 44
+        },
+        "items": [
+          {
+            "key": "our-way",
+            "x": 1538,
+            "y": 586.4,
+            "width": 365,
+            "height": 209.8
+          },
+          {
+            "key": "brand-activation",
+            "x": 1538,
+            "y": 796.2,
+            "width": 365,
+            "height": 209.8
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "section": {
+        "x": 1915,
+        "y": 0,
+        "width": 369,
+        "height": 1344
+      },
+      "main": {
+        "x": 1915,
+        "y": 532.4,
+        "width": 369,
+        "height": 475.6
+      },
       "languages": [
-        { "locale": "id", "x": 1790, "y": 1018.08, "width": 76, "height": 75.264 },
-        { "locale": "en", "x": 1882, "y": 1018.08, "width": 76, "height": 75.264 },
-        { "locale": "zh-Hans", "x": 1974, "y": 1018.08, "width": 76, "height": 75.264 }
-      ]
+        {
+          "locale": "id",
+          "x": 2025.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "locale": "en",
+          "x": 2077.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "locale": "zh-Hans",
+          "x": 2129.5,
+          "y": 475.4,
+          "width": 44,
+          "height": 44
+        }
+      ],
+      "active": {
+        "back": {
+          "x": 2236,
+          "y": 536.4,
+          "width": 44,
+          "height": 44
+        },
+        "previous": {
+          "x": 1931,
+          "y": 956,
+          "width": 44,
+          "height": 44
+        },
+        "next": {
+          "x": 2224,
+          "y": 956,
+          "width": 44,
+          "height": 44
+        }
+      }
     }
-  }
+  ]
 }

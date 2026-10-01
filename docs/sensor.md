@@ -1,111 +1,70 @@
-# Sensor service
+# Sensor Service
 
-The browser renderer does not read raw Hokuyo scans. A separate local Sensor Service owns the device protocol, coordinate mapping, tracking, debounce, contact lifecycle, hit detection, and recovery. It sends only semantic interaction events over WebSocket.
+Sensor Service owns raw LiDAR scans, calibration, tracking, hit detection, contact release, debounce, and dwell. The Nuxt renderer receives semantic events over native WebSocket.
 
-## Runtime configuration
+## Configuration and rollout
 
 ```dotenv
 NUXT_PUBLIC_SENSOR_ENABLED=true
 NUXT_PUBLIC_SENSOR_WS_URL=ws://127.0.0.1:8787
 ```
 
-Public runtime values are bundled into the static output, so rebuild when the endpoint changes. Keep the renderer usable through its development simulator when the Sensor Service is disabled.
+Static output embeds public runtime values; rebuild when these change. Mouse/keyboard operation works while sensor input is disabled.
 
-## Protocol v1
+**Breaking migration:** current protocol is **v2**, geometry is **wall-v1**. Protocol v1 / layout-v4 describes the retired three-section UI and is rejected. Deploy the new renderer and matching Sensor Service contract/geometry together, recalibrate, then enable the sensor. Keep sensor input disabled until that service is ready.
 
-Every message includes:
+## Envelope and health
+
+Every service message includes `version: 2`, nonempty `sessionId`, increasing integer `seq`, `layoutVersion: "wall-v1"`, and `type`.
+
+`hello` is required once per connection and contains boolean `sensorReady`/`calibrated`. `status` updates those booleans with optional short `detail`. `heartbeat` establishes liveness. Expect heartbeat every 2 seconds; after more than 6 seconds without valid traffic the socket closes and reconnects with jittered backoff up to 10 seconds.
+
+Input is forwarded only after handshake while device and calibration are ready. Invalid JSON, oversized frames, old protocol/layout, wrong session, replayed handshake, duplicate/out-of-order sequence, unknown actions, wrong-column sub-items, and mismatched target coordinates are rejected.
+
+## Renderer messages and visible targets
+
+On connection, the renderer sends:
+```json
+{ "version": 2, "type": "clientHello", "layoutVersion": "wall-v1", "columns": { "1": { "phase": "idle", "locale": "id", "subItem": "", "slide": 0 } } }
+```
+The actual `columns` payload always includes IDs 1–6. Changes send the same snapshot with `type: "clientState"`.
+
+Sensor Service combines that snapshot with `shared/installation-layout.json`:
+- language targets are always visible;
+- `main` is visible only in idle;
+- `submenu.items`/`submenu.back` only in submenu;
+- `active.back`/`active.previous`/`active.next` only in active.
+
+Do not detect against hidden target groups. Main and sub-item targets require one second of deliberate contact before sending one input. Immediate language/Back/carousel input should be debounced to one action per deliberate contact. Contact release is internal to Sensor Service; do not send legacy touchStart/touchEnd events.
+
+## Input
 
 ```json
 {
-  "version": 1,
+  "version": 2,
   "sessionId": "service-boot-id",
   "seq": 42,
-  "layoutVersion": "layout-v4",
-  "type": "touchStart"
-}
-```
-
-- `sessionId` changes whenever the service starts a new session.
-- `seq` increases for every message in one session.
-- `layoutVersion` must equal `shared/installation-layout.json`. The current layout-v4 has 19 timeline targets (4 / 8 / 7) and 9 language targets (3 per section); update the Sensor Service geometry and calibration together with the renderer.
-- Unknown, duplicate, out-of-order, oversized, stale-session, and invalid messages are ignored safely.
-
-### Handshake and status
-
-`hello` and `status` include boolean `sensorReady` and `calibrated`. `status` may include a short `detail`. `heartbeat` proves application-level liveness. An open WebSocket alone does not mean the device and calibration are ready.
-
-### Artwork interaction
-
-```json
-{
-  "version": 1,
-  "sessionId": "service-boot-id",
-  "seq": 43,
-  "layoutVersion": "layout-v4",
-  "type": "touchStart",
-  "section": "center",
-  "target": "artwork",
+  "layoutVersion": "wall-v1",
+  "type": "input",
   "pointerId": "lidar-02",
-  "x": 1120,
-  "y": 650
+  "x": 1310,
+  "y": 700,
+  "action": { "type": "main", "columnId": 4 }
 }
 ```
 
-`touchStart` reveals only the named section. Coordinates use the logical 2304 × 1344 canvas.
+Coordinates are logical 2304 × 1344 pixels inside the declared target. All six columns use one `WallAction` contract from `shared/wall.ts`:
 
-### Timeline selection
+| Action type | Additional fields | Behavior |
+| --- | --- | --- |
+| `main` | `columnId` | Open an idle column |
+| `subItem` | `columnId`, `subItemId` | Select an item from its visible submenu |
+| `language` | `columnId`, `locale` | Change only that column's language |
+| `back` | `columnId` | Return to submenu/idle |
+| `previous` / `next` | `columnId` | Navigate active carousel |
 
-```json
-{
-  "version": 1,
-  "sessionId": "service-boot-id",
-  "seq": 44,
-  "layoutVersion": "layout-v4",
-  "type": "selectMilestone",
-  "section": "center",
-  "pointerId": "lidar-02",
-  "milestoneId": "center-2013-b",
-  "x": 1130,
-  "y": 960
-}
-```
+Valid sub-items: column 2 = `tekiro`, `ryu`, `rexco`; column 5 = `our-way`, `brand-activation`. Languages: `id`, `en`, `zh-Hans`. The renderer validates the declared target and current phase; it does not perform raw hit detection.
 
-The milestone must exist in the named section. The renderer applies its normal latest-request-wins rule.
+## Hardware acceptance
 
-### Section language selection
-
-```json
-{
-  "version": 1,
-  "sessionId": "service-boot-id",
-  "seq": 45,
-  "layoutVersion": "layout-v4",
-  "type": "selectLanguage",
-  "section": "center",
-  "pointerId": "lidar-02",
-  "locale": "zh-Hans",
-  "x": 1152,
-  "y": 1050
-}
-```
-
-`locale` must be exactly `id`, `en`, or `zh-Hans`. Coordinates use the same logical canvas. Sensor Service owns hit detection against `sections[section].languages` and sends one selection per deliberate contact; the renderer checks the locale, canvas bounds, and envelope, then updates only that section. Language selection never changes its milestone or reveal phase. The message is a backwards-compatible protocol-v1 type, but the geometry change requires layout-v4 on both sides. Deploy the matching Sensor Service geometry before enabling the sensor connection; a layout mismatch is rejected.
-
-### Contact end
-
-`touchEnd` includes `section` and `pointerId`. It releases service contact state but does not hide the active milestone or reset its language. Lost tracking must eventually emit or infer a release in the service.
-
-## Connection behavior
-
-The renderer owns one socket. Reconnect uses jittered backoff from roughly 0.5 seconds to a 10-second ceiling. Heartbeats are expected every 2 seconds and a 6-second stale timeout marks the service unavailable. Disconnect preserves the current artwork and clears sensor readiness; reconnect starts a new handshake and never replays old input.
-
-## Hardware work before production
-
-1. Confirm PC OS, network path, sensor mounting, and scan plane.
-2. Measure detection at every section, boundary, and with three simultaneous users.
-3. Fit and validate sensor-to-canvas coordinates using distributed calibration points.
-4. Derive hitbox margins, hysteresis, dwell/debounce, tracking, and release timeout from measured error.
-5. Test cable removal, device/service restart, long runs, and calibration restoration.
-6. Choose the implementation language and SDK only after proving continuous scan and packaging on the event PC.
-
-Do not promise full three-user coverage until occlusion tests on the final physical installation pass.
+Validate mounting/scan plane, all target boundaries, simultaneous users, occlusion, cable removal, service restart, release/dwell timing, and long runs on the event PC/LED. Browser/unit tests do not prove physical coverage.
