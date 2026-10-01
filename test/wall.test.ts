@@ -73,6 +73,11 @@ describe('useWallStore', () => {
     expect(wall.getHeaderTitle(1)).toBe('ABOUT ALTAMA');
     expect(wall.getHeaderTitle(2)).toBe('TEKIRO'); // default subitem in zh-Hans
     expect(wall.getColumnLabel(2)).toBe('旗下品牌');
+
+    // Switch col 1 back to Indonesian
+    wall.setColumnLocale(1, 'id');
+    expect(wall.getHeaderTitle(1)).toBe('TENTANG ALTAMA');
+    expect(wall.getColumnLabel(1)).toBe('TENTANG ALTAMA');
   });
 
   it('transitions expandable column 2 (our-brands) to submenu then active', () => {
@@ -161,10 +166,11 @@ describe('useWallStore', () => {
 
     // Switch Col 5 to Indonesian
     wall.setColumnLocale(5, 'id');
-    expect(wall.getHeaderTitle(5)).toBe('BRAND ACTIVATION');
+    expect(wall.getHeaderTitle(5)).toBe('AKTIVASI MEREK');
     expect(wall.getHeaderDesc(5)).toContain('Aktivasi merek terpadu');
-    expect(wall.getBottomTitle(5)).toBe('BRAND ACTIVATION');
+    expect(wall.getBottomTitle(5)).toBe('AKTIVASI MEREK');
     expect(wall.getBottomDesc(5)).toContain('komunitas industri');
+    expect(wall.getActiveSubItemLabel(5)).toBe('AKTIVASI MEREK');
   });
 
   it('resets all columns to idle', () => {
