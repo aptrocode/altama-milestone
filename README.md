@@ -1,66 +1,92 @@
-﻿# Altama Interactive Wall & Milestone
+# Altama Interactive Wall & Milestone
 
-Fullscreen interactive application for the 2304 × 1344 (12:7 aspect ratio) ALTAMA interactive LED wall.
+![Static Badge](https://img.shields.io/badge/license-MIT-brightgreen?label=LICENSE)
 
-## System Overview
+Aplikasi kiosk interaktif fullscreen berbasis **Nuxt 4** untuk instalasi LED wall interaktif ALTAMA beresolusi **2304 × 1344** (rasio 12:7). Dilengkapi kontrol sensor LiDAR melalui WebSocket, interaksi *hold-to-activate*, navigasi komprehensif, dan arsitektur modular yang stabil.
 
-The application features a 6-column interactive layout:
-1. **ABOUT ALTAMA** — Single button with photo carousel and descriptions
-2. **OUR BRANDS** — Expandable category with sub-menu (TEKIRO, RYU, REXCO) and photo carousels
-3. **INFRASTRUCTURE** — Single button with photo carousel and descriptions
-4. **DIGITAL PARTNERS** — Single button with photo carousel and descriptions
-5. **DISTRIBUTION** — Expandable category with sub-menu (OUR WAY FOR DISTRIBUTION, BRAND ACTIVATION)
-6. **SUMMIT 2026** — Single button with photo carousel and normalized navigation controls
+---
 
-### Key Interactions
+## 🌟 Fitur Utama
 
-- **Hold-to-Activate (1 Second)**: Prevents accidental triggers on touch screens / LIDAR sensor wall.
-  - Multi-layer luminous emerald neon glow (`filter: drop-shadow`).
-  - Animated white-hot laser spark tracer (`@property --hold-angle` conic-gradient).
-  - Subtle guide track and tactile press feedback.
-  - Applied consistently across:
-    - Main Category Buttons
-    - Sub-Menu Buttons (TEKIRO, RYU, REXCO, etc.)
-    - Carousel Navigation Buttons (←, →)
-- **Sensor Service Integration**: Native WebSocket support via `useSensorSocket` for Hokuyo LiDAR touch events.
-- **Keyboard Shortcuts**:
-  - `Escape` or `KeyR`: Reset all columns to idle state.
-  - `1` to `6`: Directly toggle/activate columns 1 to 6.
-  - `KeyD`: Toggle diagnostics overlay (Sensor & WebSocket status).
+- **Layout 6 Kolom Interaktif**:
+  1. **ABOUT ALTAMA** — Tombol utama dengan galeri foto carousel & deskripsi.
+  2. **OUR BRANDS** — Kategori bertingkat dengan sub-menu (TEKIRO, RYU, REXCO) & galeri foto.
+  3. **INFRASTRUCTURE** — Galeri foto infrastruktur & deskripsi operasional.
+  4. **DIGITAL PARTNERS** — Tampilan mitra digital & kolaborasi.
+  5. **DISTRIBUTION** — Kategori bertingkat (OUR WAY FOR DISTRIBUTION, BRAND ACTIVATION).
+  6. **SUMMIT 2026** — Informasi agenda Summit 2026 & galeri foto.
+- **Interaksi Hold-to-Activate (1 Detik)**: Mencegah sentuhan tidak sengaja pada layar sentuh / sensor LiDAR dengan animasi cincin laser (*laser spark tracer*) dan efek emerald neon glow.
+- **Integrasi Sensor LiDAR**: Koneksi native WebSocket (`useSensorSocket`) untuk menangani event sentuhan sensor Hokuyo secara real-time.
+- **Keyboard Shortcuts (Mode Operator / Testing)**:
+  - `1` – `6`: Membuka atau mengaktifkan kolom 1 sampai 6.
+  - `Escape` / `R`: Mereset seluruh kolom kembali ke status *idle*.
+  - `D`: Menampilkan panel diagnostik status sensor & WebSocket (hanya mode dev).
 
-## Project Structure
+---
+
+## 🚀 Menjalankan Aplikasi
+
+Pastikan Anda telah memasang **[Bun](https://bun.sh/)** (atau Node.js).
+
+### 1. Instalasi Dependensi
+```bash
+bun install
+```
+
+### 2. Jalankan Server Pengembangan
+```bash
+bun run dev
+```
+Buka browser di `http://localhost:3000`.
+
+### 3. Build & Pratinjau Produksi
+```bash
+# Build aplikasi untuk production
+bun run build
+
+# Menghasilkan static site (SSG)
+bun run generate
+
+# Preview hasil build
+bun run preview
+```
+
+---
+
+## 🧪 Validasi & Pengujian
+
+Sebelum melakukan commit atau push, seluruh pemeriksaan kualitas dapat dijalankan dengan:
+
+```bash
+bun run lint          # Cek linting dan formatting ESLint
+bun run typecheck     # Cek tipe data TypeScript Nuxt
+bun run test          # Jalankan unit test Vitest
+bun run assets:check  # Validasi kelengkapan aset & resolusi gambar
+```
+
+---
+
+## 📁 Struktur Direktori
 
 ```text
 altama-milestone/
-├── app/                  # Nuxt 4 Vue 3 TypeScript Application
-│   ├── assets/css/       # Modular design system & animations
-│   ├── components/kiosk/ # KioskStage (Interactive Wall), KioskStatus
-│   ├── composables/      # useSensorSocket
-│   ├── data/             # wall-config.ts, installation-layout.ts
-│   ├── plugins/          # hold-directive.client.ts (v-hold)
-│   ├── stores/           # wall.ts (Pinia state), system.ts
-│   └── pages/index.vue   # Main interactive wall view
-├── standalone/           # Standalone HTML/CSS/JS version
-│   ├── index.html        # Direct double-click browser preview
-│   ├── css/              # Standalone stylesheets
-│   └── js/               # Standalone vanilla scripts
-├── shared/               # Shared geometry and configuration
-├── test/                 # Vitest test suite
-└── nuxt.config.ts        # Nuxt configuration
+├── app/                  # Kode aplikasi Nuxt 4 (Vue 3 + TypeScript)
+│   ├── assets/css/       # Desain sistem modular, variabel, & animasi
+│   ├── components/kiosk/ # Komponen utama dinding interaktif & status
+│   ├── composables/      # useSensorSocket & integrasi WebSocket
+│   ├── data/             # Konfigurasi dinding (wall-config.ts) & layout
+│   ├── plugins/          # Direktif kustom (v-hold)
+│   ├── stores/           # State management Pinia (wall.ts, system.ts)
+│   └── pages/index.vue   # Halaman utama kiosk
+├── public/               # Aset statis publik (bendera, ikon, gambar)
+├── shared/               # Definisi geometri sensor & layout JSON
+├── test/                 # Pengujian otomatis berbasis Vitest
+├── docs/                 # Dokumentasi arsitektur, alur push, & rilis
+└── nuxt.config.ts        # Konfigurasi utama Nuxt
 ```
 
-## Running the Application
+---
 
-### Option A: Standalone Preview (No Node/Bun required)
-Open `standalone/altama-wallmessage.html` directly in any modern Chromium browser (Chrome or Edge).
+## 📄 Lisensi
 
-### Option B: Nuxt 4 Application
-```bash
-bun install
-bun run dev
-# or: npm install && npm run dev
-```
-
-## License
-
-The code is licensed under [MIT](LICENSE).
+Proyek ini dilisensikan di bawah lisensi [MIT](LICENSE).
