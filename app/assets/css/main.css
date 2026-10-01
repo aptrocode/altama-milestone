@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "./kiosk-effects.css";
 
 @theme {
   --font-sans: "Inter", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
