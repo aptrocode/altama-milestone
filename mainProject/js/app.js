@@ -77,14 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('pointercancel', cancelHold);
   });
 
-  // 5. Back Button in Card Header (Returns from Image Card to Submenu Options)
-  document.querySelectorAll('.card-back-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const colId = parseInt(btn.dataset.col);
-      Interactions.returnToSubmenu(colId);
-    });
-  });
+
 
   // 6. Carousel Controls (Sensor / Touch Ready)
   document.querySelectorAll('.carousel-prev').forEach(btn => {
