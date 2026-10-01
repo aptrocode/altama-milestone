@@ -1,4 +1,5 @@
-﻿import { defineStore } from 'pinia';
+import type { ColumnConfig, WallLocale } from '~/data/wall-config';
+import { defineStore } from 'pinia';
 import { WALL_CONFIG } from '~/data/wall-config';
 
 export type ColumnState = 'idle' | 'submenu' | 'active';
@@ -180,7 +181,8 @@ export const useWallStore = defineStore('wall', {
   actions: {
     startColumnTimer(colId: number) {
       this.clearColumnTimer(colId);
-      if (this.columnStates[colId] === 'idle') return;
+      if (this.columnStates[colId] === 'idle')
+        return;
 
       columnTimers[colId] = setTimeout(() => {
         this.resetColumn(colId);
@@ -201,7 +203,7 @@ export const useWallStore = defineStore('wall', {
     },
 
     clearAllColumnTimers() {
-      Object.keys(columnTimers).forEach(id => {
+      Object.keys(columnTimers).forEach((id) => {
         clearTimeout(columnTimers[Number(id)]);
         delete columnTimers[Number(id)];
       });
