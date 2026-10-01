@@ -1,7 +1,10 @@
 # Workspace Dika
 
-Folder ini khusus disediakan untuk Dika menaruh file prototipe, mockup, eksplorasi HTML/CSS/JS, atau aset referensi.
+Folder ini khusus disediakan untuk Dika menaruh file prototipe, mockup, eksplorasi HTML/CSS/JS, atau aset referensi tampilan.
 
-## Catatan
-- Silakan taruh file kerjaan atau eksperimen tampilan di dalam folder ini (`dika/`).
-- Aplikasi pameran LED utama berbasis Nuxt 4 berada di folder `app/`, sehingga file di folder ini tidak akan berbenturan dengan sistem utama.
+## Catatan Penting
+- **Batasan Area Kerja**: Seluruh file kerja atau eksperimen tampilan wajib berada di dalam folder ini (`dika/`).
+- **Jangan Mengubah Kode Luar**: Dilarang mengubah file atau folder di luar `dika/` (seperti `app/`, `docs/`, `package.json`, dll.). Seluruh sistem utama dikelola oleh **Dewa (@adydetra)**.
+- **Panduan Lengkap**:
+  - Untuk AI Agent pendamping: Baca [AGENTS.md](./AGENTS.md).
+  - Untuk panduan kontribusi: Baca [CONTRIBUTING.md](./CONTRIBUTING.md).
