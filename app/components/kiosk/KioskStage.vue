@@ -275,8 +275,8 @@ onUnmounted(() => {
             v-for="sub in col.subItems"
             :key="sub.key"
             v-hold="() => wall.onSubButtonClick(col.id, sub.key)"
-            class="sub-btn"
-
+            class="laser-target flex-1 flex flex-col items-center justify-center gap-1 bg-white hover:bg-emerald-50/80 active:bg-emerald-100/70 border-t border-neutral-200 text-neutral-900 text-xs font-bold uppercase tracking-wider text-center p-2.5 cursor-pointer select-none relative transition-all duration-150 first:border-t-0"
+            :class="{ '!bg-emerald-700 !text-white font-black': wall.getActiveSubItem(col.id) === sub.key }"
             :data-sub="sub.key"
             :data-col="col.id"
           >
