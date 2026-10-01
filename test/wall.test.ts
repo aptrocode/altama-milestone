@@ -8,16 +8,33 @@ describe('wALL_CONFIG', () => {
     expect(WALL_CONFIG.columns).toHaveLength(6);
   });
 
-  it('has summit 2026 as column 6 without carousel swap', () => {
+  it('has our-brands (col 2) with 3 sub-items: tekiro, ryu, and rexco', () => {
+    const col2 = WALL_CONFIG.columns.find(c => c.id === 2);
+    expect(col2).toBeDefined();
+    expect(col2?.type).toBe('expandable');
+    expect(col2?.subItems?.map(s => s.key)).toEqual(['tekiro', 'ryu', 'rexco']);
+  });
+
+  it('has distribution (col 5) with 2 sub-items: our-way and brand-activation', () => {
+    const col5 = WALL_CONFIG.columns.find(c => c.id === 5);
+    expect(col5).toBeDefined();
+    expect(col5?.type).toBe('expandable');
+    expect(col5?.subItems?.map(s => s.key)).toEqual(['our-way', 'brand-activation']);
+  });
+
+  it('has summit 2026 as column 6', () => {
     const col6 = WALL_CONFIG.columns.find(c => c.id === 6);
     expect(col6).toBeDefined();
     expect(col6?.key).toBe('summit-2026');
   });
 
-  it('has our-brands with tekiro, ryu, and rexco', () => {
-    const col2 = WALL_CONFIG.columns.find(c => c.id === 2);
-    expect(col2).toBeDefined();
-    expect(col2?.subItems?.map(s => s.key)).toEqual(['tekiro', 'ryu', 'rexco']);
+  it('has multilingual content in id, en, and zh-Hans for all 6 columns', () => {
+    WALL_CONFIG.columns.forEach((col) => {
+      expect(col.i18n).toBeDefined();
+      expect(col.i18n?.id).toBeDefined();
+      expect(col.i18n?.en).toBeDefined();
+      expect(col.i18n?.['zh-Hans']).toBeDefined();
+    });
   });
 });
 
@@ -26,20 +43,57 @@ describe('useWallStore', () => {
     setActivePinia(createPinia());
   });
 
-  it('initializes in idle state', () => {
+  it('initializes in idle state with id locale for all columns', () => {
     const wall = useWallStore();
     expect(wall.hasAnyActive).toBe(false);
-    expect(wall.getColumnState(1)).toBe('idle');
+    for (let i = 1; i <= 6; i++) {
+      expect(wall.getColumnState(i)).toBe('idle');
+      expect(wall.getColumnLocale(i)).toBe('id');
+    }
   });
 
-  it('transitions expandable column to submenu then active', () => {
+  it('maintains independent language selection per column', () => {
     const wall = useWallStore();
-    wall.onMainButtonClick(2); // our-brands
+
+    // Default: col 1 and col 2 are Indonesian
+    expect(wall.getColumnLocale(1)).toBe('id');
+    expect(wall.getColumnLocale(2)).toBe('id');
+
+    // Switch col 1 to English
+    wall.setColumnLocale(1, 'en');
+    expect(wall.getColumnLocale(1)).toBe('en');
+    expect(wall.getColumnLocale(2)).toBe('id'); // col 2 remains unaffected
+
+    // Switch col 2 to Simplified Chinese
+    wall.setColumnLocale(2, 'zh-Hans');
+    expect(wall.getColumnLocale(1)).toBe('en'); // col 1 remains English
+    expect(wall.getColumnLocale(2)).toBe('zh-Hans');
+
+    // Check localized titles reflect per-column language
+    expect(wall.getHeaderTitle(1)).toBe('ABOUT ALTAMA');
+    expect(wall.getHeaderTitle(2)).toBe('TEKIRO'); // default subitem in zh-Hans
+    expect(wall.getColumnLabel(2)).toBe('旗下品牌');
+  });
+
+  it('transitions expandable column 2 (our-brands) to submenu then active', () => {
+    const wall = useWallStore();
+    wall.onMainButtonClick(2);
     expect(wall.getColumnState(2)).toBe('submenu');
 
-    wall.onSubButtonClick(2, 'tekiro');
+    wall.onSubButtonClick(2, 'ryu');
     expect(wall.getColumnState(2)).toBe('active');
-    expect(wall.getActiveSubItem(2)).toBe('tekiro');
+    expect(wall.getActiveSubItem(2)).toBe('ryu');
+    expect(wall.hasAnyActive).toBe(true);
+  });
+
+  it('transitions expandable column 5 (distribution) to submenu then active', () => {
+    const wall = useWallStore();
+    wall.onMainButtonClick(5);
+    expect(wall.getColumnState(5)).toBe('submenu');
+
+    wall.onSubButtonClick(5, 'our-way');
+    expect(wall.getColumnState(5)).toBe('active');
+    expect(wall.getActiveSubItem(5)).toBe('our-way');
     expect(wall.hasAnyActive).toBe(true);
   });
 

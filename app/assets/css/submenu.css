@@ -4,10 +4,8 @@
    Shown inside the same card-shaped container
    when an expandable category is clicked.
 
-   Hold-to-activate: User must press and hold
-   for 1 second. A luminous green neon outline
-   fills smoothly around each sub-button as
-   a visual timer with multi-layered glow.
+   Supports instant tap & hold-to-activate with
+   neon laser timer and success burst.
    ============================================ */
 
 .submenu-group {
@@ -16,29 +14,62 @@
   flex-direction: column;
   position: relative;
   background: var(--color-btn-bg);
-  border: 1px solid var(--color-btn-border);
+  border: 1.5px solid rgba(16, 185, 129, 0.4);
   border-radius: var(--radius-btn);
   overflow: hidden;
-  box-shadow: var(--shadow-btn);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(16, 185, 129, 0.2);
+}
+
+.submenu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md) 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .submenu-parent-label {
   display: block;
   font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-black);
+  color: #10b981;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: var(--spacing-sm) var(--spacing-sm) 0;
-  text-align: center;
+  letter-spacing: 0.08em;
   user-select: none;
+}
+
+.submenu-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.submenu-close-btn:hover {
+  background: rgba(239, 68, 68, 0.35);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #ffffff;
+  transform: scale(1.1);
 }
 
 .sub-btn {
   flex: 1;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   background: transparent;
   border: none;
   border-top: 1px solid var(--color-btn-border);
@@ -49,11 +80,12 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   text-align: center;
-  padding: var(--spacing-xs) var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-sm);
   transition:
     background var(--transition-fast),
     transform var(--transition-fast),
-    color var(--transition-fast);
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
   cursor: pointer;
   user-select: none;
   position: relative;
@@ -62,15 +94,37 @@
 }
 
 .sub-btn:first-of-type {
-  border-top: 1px solid var(--color-btn-border);
+  border-top: none;
 }
 
 .sub-btn:hover {
-  background: rgba(16, 185, 129, 0.06);
+  background: rgba(16, 185, 129, 0.12);
+  color: #ffffff;
 }
 
 .sub-btn:active {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(16, 185, 129, 0.18);
+  transform: scale(0.98);
+}
+
+.sub-tap-cue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.sub-tap-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 5px #10b981;
+}
+
+.sub-btn:hover .sub-tap-cue {
+  opacity: 1;
 }
 
 /* ── Guide track & ambient aura (pseudo-element ::before) ── */
@@ -128,17 +182,17 @@
 
 /* ── Holding state: animate outline & button feedback ── */
 .sub-btn.holding {
-  transform: scale(0.975);
-  background: rgba(16, 185, 129, 0.08);
-  color: #065f46;
+  transform: scale(0.98);
+  background: rgba(16, 185, 129, 0.14);
+  color: #ffffff;
 }
 
 .sub-btn.holding::after {
   opacity: 1;
-  animation: holdBorderFill 1s linear forwards;
+  animation: holdBorderFill 0.8s linear forwards;
 }
 
-/* ── Completed hold burst / flash ── */
+/* ── Completed hold burst / instant tap burst ── */
 .sub-btn.hold-complete {
   animation: subBtnSuccessBurst 0.35s ease-out;
 }
@@ -165,8 +219,8 @@
   }
   50% {
     transform: scale(1.02);
-    background: rgba(16, 185, 129, 0.4);
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+    background: rgba(16, 185, 129, 0.45);
+    box-shadow: 0 0 24px rgba(16, 185, 129, 0.7);
   }
   100% {
     transform: scale(1);
@@ -175,6 +229,7 @@
 }
 
 .sub-btn.active {
-  background: rgba(16, 185, 129, 0.12);
-  color: #065f46;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  font-weight: 800;
 }
