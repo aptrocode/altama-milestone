@@ -24,13 +24,17 @@ const geometry = computed(() => installationLayout.columns.find(item => item.id 
     <div class="wall-panel h-full flex flex-col min-h-0 rounded-[inherit] overflow-hidden">
       <WallHoldButton
         v-if="snapshot.phase === 'idle'"
-        class="flex-1 flex flex-col items-center justify-center gap-[calc(20*var(--wall-y))] rounded-[inherit] hover:bg-kiosk-hover text-slate-800 font-extrabold uppercase text-center px-[calc(24*var(--wall-x))] py-[calc(24*var(--wall-y))]"
+        class="flex-1 flex flex-col items-center justify-start rounded-[inherit] hover:bg-kiosk-hover text-slate-800 font-extrabold uppercase text-center px-[calc(16*var(--wall-x))] pt-[calc(135*var(--wall-y))] pb-[calc(110*var(--wall-y))]"
         :outline="geometry.main" :radius="14"
         data-sensor-action="main"
         @activate="$emit('action', { type: 'main', columnId: column.id })"
       >
-        <span class="w-full whitespace-pre-line text-[length:calc(32*var(--wall-x))] font-black leading-tight text-balance wrap-break-word">{{ copy.label.replaceAll(' ', '\n') }}</span>
-        <WallHoldCue :locale="snapshot.locale" />
+        <div class="w-full h-[calc(60*var(--wall-y))] flex items-center justify-center">
+          <span class="w-full text-[length:calc(26*var(--wall-x))] font-black tracking-normal leading-none whitespace-nowrap overflow-hidden text-ellipsis">{{ copy.label }}</span>
+        </div>
+        <div class="h-[calc(40*var(--wall-y))] mt-[calc(20*var(--wall-y))] flex items-center justify-center">
+          <WallHoldCue :locale="snapshot.locale" />
+        </div>
       </WallHoldButton>
 
       <div v-else-if="snapshot.phase === 'submenu'" class="wall-submenu flex-1 flex flex-col min-h-0 px-(--wall-panel-inset-x) py-(--wall-panel-inset-y)">
