@@ -1,5 +1,5 @@
 export default defineNuxtPlugin((nuxtApp) => {
-  const HOLD_DURATION = 1500; // 1.5 seconds hold requirement
+  const HOLD_DURATION = 1000; // 1 second hold requirement
 
   nuxtApp.vueApp.directive('hold', {
     mounted(el: HTMLElement, binding) {
