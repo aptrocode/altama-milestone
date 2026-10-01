@@ -22,3 +22,8 @@ logs
 .env
 .env.*
 !.env.example
+
+# Deprecated standalone prototypes
+mainProject/
+start-localhost.bat
+
