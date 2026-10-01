@@ -1,10 +1,10 @@
 @echo off
-title ALTAMA Interactive Wall - Unified Server (HTTP 8080 ^& TUIO UDP 3333)
+title ALTAMA Interactive Wall - Universal Sensor Server (HTTP 8080 ^& TUIO 3333 ^& Augmenta 12000)
 color 0A
 
 echo =====================================================================
 echo           ALTAMA INTERACTIVE DIGITAL WALL (2304 x 1344)
-echo     UNIFIED SERVER: HTTP (8080) + RAW TUIO UDP RECEIVER (3333)
+echo   UNIVERSAL SENSOR SERVER: TUIO (3333) + AUGMENTA (12000) + HTTP (8080)
 echo =====================================================================
 echo.
 echo Direktori: %~dp0
@@ -15,10 +15,11 @@ cd /d "%~dp0"
 :: Cek ketersediaan Python
 where python >nul 2>nul
 if %ERRORLEVEL% EQU 0 (
-    echo [OK] Python terdeteksi. Memulai Unified Server...
+    echo [OK] Python terdeteksi. Memulai Universal Server...
     echo.
     echo [*] Web Application: http://localhost:8080/
-    echo [*] Raw TUIO UDP:    Port 3333 (LiDAR / Touch Tracker)
+    echo [*] TUIO 1.1 / 2.0:   UDP Port 3333
+    echo [*] Augmenta Sensor:  UDP Port 12000 (Augmenta Simulator Default)
     echo [*] WebSocket Bridge: ws://localhost:3334
     echo.
     echo Tekan Ctrl + C di jendela ini untuk mematikan server.
@@ -41,7 +42,6 @@ if %ERRORLEVEL% EQU 0 (
     goto end
 )
 
-:: Jika tidak ada Python maupun Node.js
 echo [PERINGATAN] Python atau Node.js tidak ditemukan di PATH sistem.
 echo Membuka file langsung di browser default...
 start "" "%~dp0index.html"
