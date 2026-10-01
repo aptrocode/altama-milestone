@@ -341,21 +341,43 @@ onUnmounted(() => {
             </div>
             <div class="flex flex-row items-center justify-between px-4 py-2 shrink-0">
               <button
-                class="w-9 h-9 flex items-center justify-center bg-white/15 hover:bg-white/25 border border-white/30 rounded-md text-white text-base font-bold cursor-pointer select-none transition-all duration-150 active:scale-95"
+                class="w-9 h-9 flex items-center justify-center p-0 leading-none shrink-0 bg-white/15 hover:bg-white/25 border border-white/30 rounded-md text-white cursor-pointer select-none transition-all duration-150 active:scale-95"
                 :aria-label="getPrevLabel(col.id)"
                 @click.stop="wall.navigateCarousel(col.id, -1, col.slides)"
               >
-                ←
+                <svg
+                  class="w-5 h-5 text-white shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
               </button>
-              <div class="text-white/85 text-xs font-bold tracking-widest">
+              <div class="text-white/85 text-xs font-bold tracking-widest select-none">
                 {{ String(wall.getCarouselIndex(col.id) + 1).padStart(2, '0') }} / {{ String(col.slides).padStart(2, '0') }}
               </div>
               <button
-                class="w-9 h-9 flex items-center justify-center bg-white/15 hover:bg-white/25 border border-white/30 rounded-md text-white text-base font-bold cursor-pointer select-none transition-all duration-150 active:scale-95"
+                class="w-9 h-9 flex items-center justify-center p-0 leading-none shrink-0 bg-white/15 hover:bg-white/25 border border-white/30 rounded-md text-white cursor-pointer select-none transition-all duration-150 active:scale-95"
                 :aria-label="getNextLabel(col.id)"
                 @click.stop="wall.navigateCarousel(col.id, 1, col.slides)"
               >
-                →
+                <svg
+                  class="w-5 h-5 text-white shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
               </button>
             </div>
           </div>
