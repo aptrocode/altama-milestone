@@ -1,40 +1,67 @@
-﻿/* ==========================================================================
+/* ============================================
    ALTAMA Interactive Wall — Carousel Controller
-   ========================================================================== */
+   ============================================ */
 
 const CarouselController = {
   /**
-   * Navigate to next (+1) or previous (-1) slide in a column's carousel.
+   * Navigate to a specific slide index within a column's carousel.
+   * @param {number} colId - Column ID (1-6)
+   * @param {number} direction - +1 for next, -1 for previous
    */
   navigate(colId, direction) {
-    const slides = WallState.getActiveSlides(colId);
+    const carousel = document.querySelector(`.active-content[data-col="${colId}"] .carousel`);
+    if (!carousel) return;
+
+    const slides = carousel.querySelectorAll('.carousel-slide');
     const totalSlides = slides.length;
     if (totalSlides === 0) return;
 
-    let currentIndex = WallState.getCarouselIndex(colId);
+    // Update index
+    let currentIndex = WallState.carouselIndex[colId] || 0;
     currentIndex += direction;
 
     // Wrap around
     if (currentIndex >= totalSlides) currentIndex = 0;
     if (currentIndex < 0) currentIndex = totalSlides - 1;
 
-    WallState.setCarouselIndex(colId, currentIndex);
-    WallRenderer.setActiveSlide(colId, currentIndex);
-    WallRenderer.updateIndicator(colId, currentIndex, totalSlides);
+    WallState.carouselIndex[colId] = currentIndex;
+
+    // Update slides
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === currentIndex);
+    });
+
+    // Update indicator
+    const indicator = carousel.querySelector('.carousel-indicator');
+    if (indicator) {
+      indicator.textContent = `${String(currentIndex + 1).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+    }
+
+    // Reset 15s timer on slide change (interaction)
+    if (window.ColumnTimer) {
+      window.ColumnTimer.reset(colId);
+    }
   },
 
-  /**
-   * Reset carousel for a column (e.g. when opening a new category or sub-menu).
-   */
+  /** Reset carousel to first slide */
   reset(colId) {
-    const slides = WallState.getActiveSlides(colId);
-    WallState.setCarouselIndex(colId, 0);
-    WallRenderer.renderColumnCarousel(colId, slides, 0);
+    WallState.carouselIndex[colId] = 0;
+    const carousel = document.querySelector(`.active-content[data-col="${colId}"] .carousel`);
+    if (!carousel) return;
+
+    const slides = carousel.querySelectorAll('.carousel-slide');
+    slides.forEach((slide, i) => {
+      slide.classList.toggle('active', i === 0);
+    });
+
+    const indicator = carousel.querySelector('.carousel-indicator');
+    if (indicator) {
+      const totalSlides = slides.length;
+      indicator.textContent = `01 / ${String(totalSlides).padStart(2, '0')}`;
+    }
   },
 
-  /**
-   * Bind 1-second hold-to-activate events on navigation arrows.
-   */
+  /** Bind events for a specific carousel */
   bindEvents(colId) {
     const container = document.querySelector(`.active-content[data-col="${colId}"]`);
     if (!container) return;

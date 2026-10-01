@@ -144,6 +144,7 @@ onUnmounted(() => {
         class="column"
         :class="{ 'has-submenu': col.type === 'expandable' }"
         :data-col="col.id"
+        @pointerdown.capture="wall.resetColumnTimer(col.id)"
       >
         <!-- Main Button (Idle State) -->
         <div class="btn-group" :class="{ hidden: wall.getColumnState(col.id) !== 'idle' }">
@@ -174,7 +175,7 @@ onUnmounted(() => {
             :key="sub.key"
             v-hold="() => wall.onSubButtonClick(col.id, sub.key)"
             class="sub-btn"
-            :class="{ active: wall.getActiveSubItem(col.id) === sub.key }"
+            
             :data-sub="sub.key"
             :data-col="col.id"
           >

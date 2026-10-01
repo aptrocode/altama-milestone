@@ -1,30 +1,103 @@
-﻿/* ==========================================================================
-   ALTAMA Interactive Wall — Interaction Handler
-   ========================================================================== */
+/* ============================================
+   ALTAMA Interactive Wall â€” Interaction Handler
+   ============================================
+   Handles all click events, state transitions,
+   and DOM updates for the interactive wall.
+
+   IMPORTANT: For column-aligned elements (content
+   headers, bottom descriptions), we use 'col-hidden'
+   (visibility:hidden) instead of 'hidden' (display:none)
+   so that inactive columns still occupy their flex
+   space and content stays aligned to its column.
+   ============================================ */
+
+/* ============================================
+   Column Auto-Reset Timer (15 Seconds per Column)
+   ============================================
+   Setiap kolom yang dibuka (submenu / active)
+   mempunyai timer countdown mandiri selama 15 detik.
+   Bila tidak ada interaksi selama 15 detik, kolom
+   akan otomatis kembali ke button awal ('idle').
+   Setiap ada interaksi (ganti foto, klik sub, touch area),
+   timer kolom bersangkutan di-reset kembali ke 15 detik.
+   ============================================ */
+const ColumnTimer = {
+  timers: {},
+
+  getDuration() {
+    if (typeof WALL_CONFIG !== 'undefined' && WALL_CONFIG.settings && WALL_CONFIG.settings.autoResetSeconds) {
+      return WALL_CONFIG.settings.autoResetSeconds * 1000;
+    }
+    if (typeof APP_SETTINGS !== 'undefined' && APP_SETTINGS.autoResetSeconds) {
+      return APP_SETTINGS.autoResetSeconds * 1000;
+    }
+    return 15000; // 15 detik default
+  },
+
+  /** Start / restart 15s timer for a specific column */
+  start(colId) {
+    this.clear(colId);
+
+    const currentState = WallState.getColumnState(colId);
+    if (currentState === 'idle') return;
+
+    const delay = this.getDuration();
+    this.timers[colId] = setTimeout(() => {
+      console.log(`⏱️ Kolom ${colId} mencapai batas waktu tidak aktif (15 detik). Kembali ke button awal.`);
+      Interactions.resetColumnToIdle(colId);
+    }, delay);
+  },
+
+  /** Reset timer back to 15s when interaction occurs in column area */
+  reset(colId) {
+    const currentState = WallState.getColumnState(colId);
+    if (currentState !== 'idle') {
+      this.start(colId);
+    }
+  },
+
+  /** Clear active timer for a specific column */
+  clear(colId) {
+    if (this.timers[colId]) {
+      clearTimeout(this.timers[colId]);
+      delete this.timers[colId];
+    }
+  },
+
+  /** Clear all active column timers */
+  clearAll() {
+    Object.keys(this.timers).forEach(id => {
+      clearTimeout(this.timers[id]);
+    });
+    this.timers = {};
+  }
+};
+window.ColumnTimer = ColumnTimer;
 
 const Interactions = {
-  _idleTimer: null,
 
   /** Show/hide branding vs content headers in zone-top */
   updateZoneTop() {
     const brandingEl = document.getElementById('branding-default');
     const headersEl = document.getElementById('content-headers');
-    if (!brandingEl || !headersEl) return;
 
     if (WallState.hasAnyActive()) {
       brandingEl.classList.add('hidden');
       headersEl.classList.remove('hidden');
 
-      COLUMNS_DATA.forEach(col => {
+      // Use col-hidden (visibility) to keep column alignment
+      WALL_CONFIG.columns.forEach(col => {
         const header = headersEl.querySelector(`.content-header[data-col="${col.id}"]`);
         if (!header) return;
 
         if (WallState.getColumnState(col.id) === 'active') {
           header.classList.remove('col-hidden');
-          header.classList.add('active', 'anim-slide-down');
+          header.classList.add('active');
+          header.classList.add('anim-slide-down');
         } else {
           header.classList.add('col-hidden');
-          header.classList.remove('active', 'anim-slide-down');
+          header.classList.remove('active');
+          header.classList.remove('anim-slide-down');
         }
       });
     } else {
@@ -36,12 +109,14 @@ const Interactions = {
   /** Show/hide bottom descriptions */
   updateZoneBottom() {
     const bottomDescs = document.getElementById('bottom-descriptions');
-    if (!bottomDescs) return;
+    const bottomDefault = document.getElementById('bottom-default');
 
     if (WallState.hasAnyActive()) {
+      if (bottomDefault) bottomDefault.classList.add('hidden');
       bottomDescs.classList.remove('hidden');
 
-      COLUMNS_DATA.forEach(col => {
+      // Use col-hidden (visibility) to keep column alignment
+      WALL_CONFIG.columns.forEach(col => {
         const desc = bottomDescs.querySelector(`.bottom-desc[data-col="${col.id}"]`);
         if (!desc) return;
 
@@ -52,6 +127,7 @@ const Interactions = {
         }
       });
     } else {
+      if (bottomDefault) bottomDefault.classList.remove('hidden');
       bottomDescs.classList.add('hidden');
     }
   },
@@ -83,6 +159,7 @@ const Interactions = {
         if (btnGroup) btnGroup.classList.remove('hidden');
         if (submenuGroup) submenuGroup.classList.add('hidden');
         if (activeContent) activeContent.classList.add('hidden');
+        this.clearSubButtonHighlights(colId);
         break;
 
       case 'submenu':
@@ -92,6 +169,7 @@ const Interactions = {
           submenuGroup.classList.add('anim-fade-in');
         }
         if (activeContent) activeContent.classList.add('hidden');
+        this.clearSubButtonHighlights(colId);
         break;
 
       case 'active':
@@ -102,6 +180,7 @@ const Interactions = {
           activeContent.classList.add('anim-scale-in');
         }
         CarouselController.reset(colId);
+        this.clearSubButtonHighlights(colId);
         break;
     }
   },
@@ -111,30 +190,44 @@ const Interactions = {
     this.updateZoneTop();
     this.updateZoneBottom();
     this.updateColumnBorders();
-    this.resetIdleTimer();
   },
 
-  /** Handle main button click/hold */
+  /** Reset single column back to its initial idle button */
+  resetColumnToIdle(colId) {
+    ColumnTimer.clear(colId);
+    WallState.resetColumn(colId);
+    this.updateColumn(colId);
+    this.updateHeaderContent(colId);
+    this.updateBottomContent(colId);
+    this.refreshAll();
+  },
+
+  /** Handle main button click */
   onMainButtonClick(colId) {
-    const col = COLUMNS_DATA.find(c => c.id === colId);
-    if (!col) return;
+    const colConfig = WALL_CONFIG.columns.find(c => c.id === colId);
+    if (!colConfig) return;
 
     const currentState = WallState.getColumnState(colId);
 
-    if (col.type === 'expandable') {
+    if (colConfig.type === 'expandable') {
       if (currentState === 'idle') {
         WallState.setColumnState(colId, 'submenu');
+        ColumnTimer.start(colId);
       } else if (currentState === 'submenu') {
         WallState.setColumnState(colId, 'idle');
+        ColumnTimer.clear(colId);
       } else if (currentState === 'active') {
         WallState.setColumnState(colId, 'submenu');
+        ColumnTimer.start(colId);
       }
     } else {
       if (currentState === 'idle') {
         WallState.setColumnState(colId, 'active');
+        ColumnTimer.start(colId);
       } else {
         WallState.setColumnState(colId, 'idle');
-        WallState.setCarouselIndex(colId, 0);
+        WallState.carouselIndex[colId] = 0;
+        ColumnTimer.clear(colId);
       }
     }
 
@@ -144,10 +237,11 @@ const Interactions = {
     this.refreshAll();
   },
 
-  /** Handle sub-menu button click/hold */
+  /** Handle sub-menu button click */
   onSubButtonClick(colId, subKey) {
     WallState.setActiveSubItem(colId, subKey);
     WallState.setColumnState(colId, 'active');
+    ColumnTimer.start(colId);
 
     this.updateHeaderContent(colId);
     this.updateBottomContent(colId);
@@ -155,69 +249,57 @@ const Interactions = {
     this.refreshAll();
   },
 
-  /** Update header title and desc dynamically */
+  /** Update the header content title/text for a column based on active sub-item */
   updateHeaderContent(colId) {
-    const col = COLUMNS_DATA.find(c => c.id === colId);
-    if (!col) return;
+    const colConfig = WALL_CONFIG.columns.find(c => c.id === colId);
+    if (!colConfig) return;
 
-    let title = col.headerTitle;
-    let desc = col.headerDesc;
+    const headerTitle = document.querySelector(`.content-header-title[data-col="${colId}"]`);
+    const headerEl = document.querySelector(`.content-header[data-col="${colId}"]`);
 
-    if (col.type === 'expandable') {
-      const activeKey = WallState.getActiveSubItem(colId);
-      const sub = col.subItems?.find(s => s.key === activeKey);
-      if (sub) {
-        title = sub.headerTitle;
-        desc = sub.headerDesc;
+    if (colConfig.type === 'expandable') {
+      const subKey = WallState.getActiveSubItem(colId);
+      const subContent = WALL_CONFIG.subItemContent[subKey];
+      if (subContent && headerTitle) {
+        headerTitle.textContent = subContent.title;
+      }
+      if (subContent && headerEl) {
+        const p = headerEl.querySelector('p');
+        if (p) p.textContent = subContent.desc;
       }
     }
-
-    WallRenderer.updateHeader(colId, title, desc);
   },
 
-  /** Update bottom description title and desc dynamically */
+  /** Update the bottom description for a column */
   updateBottomContent(colId) {
-    const col = COLUMNS_DATA.find(c => c.id === colId);
-    if (!col) return;
+    const colConfig = WALL_CONFIG.columns.find(c => c.id === colId);
+    if (!colConfig) return;
 
-    let title = col.bottomTitle;
-    let desc = col.bottomDesc;
+    const bottomTitle = document.querySelector(`.bottom-desc-title[data-col="${colId}"]`);
 
-    if (col.type === 'expandable') {
-      const activeKey = WallState.getActiveSubItem(colId);
-      const sub = col.subItems?.find(s => s.key === activeKey);
-      if (sub) {
-        title = sub.bottomTitle;
-        desc = sub.bottomDesc;
+    if (colConfig.type === 'expandable') {
+      const subKey = WallState.getActiveSubItem(colId);
+      const subContent = WALL_CONFIG.subItemContent[subKey];
+      if (subContent && bottomTitle) {
+        bottomTitle.textContent = subContent.title;
       }
     }
-
-    WallRenderer.updateBottomDesc(colId, title, desc);
   },
 
-  /** Mark clicked sub-button as active */
-  highlightSubButton(colId, subKey) {
+  /** Remove all active/holding/highlight states from sub-buttons so they remain completely plain */
+  clearSubButtonHighlights(colId) {
     const submenuGroup = document.querySelector(`.submenu-group[data-col="${colId}"]`);
     if (!submenuGroup) return;
 
     submenuGroup.querySelectorAll('.sub-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.sub === subKey);
+      btn.classList.remove('active', 'holding', 'hold-complete');
+      if (typeof btn.blur === 'function') btn.blur();
     });
   },
 
-  /** Auto-reset timer for public kiosks */
-  resetIdleTimer() {
-    if (!APP_SETTINGS.autoResetIdleTime || APP_SETTINGS.autoResetIdleTime <= 0) return;
-
-    if (this._idleTimer) clearTimeout(this._idleTimer);
-    this._idleTimer = setTimeout(() => {
-      console.log('⏰ Auto-reset: Kiosk idle timeout reached, resetting to standby.');
-      WallState.resetAll();
-      COLUMNS_DATA.forEach(col => {
-        this.updateColumn(col.id);
-      });
-      this.refreshAll();
-    }, APP_SETTINGS.autoResetIdleTime);
+  /** Keep sub-buttons completely plain as requested (no lingering green highlights) */
+  highlightSubButton(colId, subKey) {
+    this.clearSubButtonHighlights(colId);
   },
 };
 

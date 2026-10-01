@@ -66,11 +66,17 @@
 }
 
 .sub-btn:hover {
-  background: rgba(16, 185, 129, 0.06);
+  background: rgba(0, 0, 0, 0.03);
 }
 
 .sub-btn:active {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.sub-btn:focus,
+.sub-btn:focus-visible {
+  outline: none;
+  background: transparent;
 }
 
 /* ── Guide track & ambient aura (pseudo-element ::before) ── */
@@ -174,7 +180,8 @@
   }
 }
 
+/* Sub-buttons always remain plain gray (polos, no persistent green outline or background) */
 .sub-btn.active {
-  background: rgba(16, 185, 129, 0.12);
-  color: #065f46;
+  background: transparent;
+  color: var(--color-sub-btn-text);
 }

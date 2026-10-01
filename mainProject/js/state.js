@@ -1,106 +1,86 @@
-﻿/* ==========================================================================
-   ALTAMA Interactive Wall — Application State Store
-   ========================================================================== */
+/* ============================================
+   ALTAMA Interactive Wall — State Manager
+   ============================================
+   Manages the current state of each column
+   and the overall wall display mode.
+   ============================================ */
 
 const WallState = {
-  // Status masing-masing kolom ('idle' | 'submenu' | 'active')
-  columnStates: {},
+  /*
+   * Possible column states:
+   *   'idle'      → showing main button
+   *   'submenu'   → showing sub-menu buttons (for expandable columns)
+   *   'active'    → showing carousel + content
+   */
+  columns: {},  // { 1: 'idle', 2: 'submenu', ... }
 
-  // Sub-item aktif untuk kolom tipe expandable (contoh: col 2 -> 'tekiro')
-  activeSubItem: {},
+  // Track which sub-item is active for expandable columns
+  activeSubItem: {},  // { 2: 'tekiro', 5: 'brand-activation' }
 
-  // Index slide carousel aktif per kolom
-  carouselIndex: {},
+  // Track carousel positions
+  carouselIndex: {},  // { 1: 0, 2: 0, ... }
 
-  // Event listeners
-  _listeners: [],
-
-  /** Initialize state from COLUMNS_DATA */
   init() {
-    COLUMNS_DATA.forEach(col => {
-      this.columnStates[col.id] = 'idle';
+    WALL_CONFIG.columns.forEach(col => {
+      this.columns[col.id] = 'idle';
       this.carouselIndex[col.id] = 0;
       if (col.type === 'expandable' && col.defaultSub) {
         this.activeSubItem[col.id] = col.defaultSub;
       }
     });
-    this.notify('init');
   },
 
-  /** Get state of a specific column ('idle' | 'submenu' | 'active') */
-  getColumnState(colId) {
-    return this.columnStates[colId] || 'idle';
-  },
-
-  /** Set state of a specific column */
   setColumnState(colId, state) {
-    this.columnStates[colId] = state;
-    this.notify('columnStateChange', { colId, state });
+    this.columns[colId] = state;
   },
 
-  /** Get active sub-item key for an expandable column */
-  getActiveSubItem(colId) {
-    return this.activeSubItem[colId] || '';
+  getColumnState(colId) {
+    return this.columns[colId] || 'idle';
   },
 
-  /** Set active sub-item key for an expandable column */
   setActiveSubItem(colId, subKey) {
     this.activeSubItem[colId] = subKey;
-    this.carouselIndex[colId] = 0; // reset carousel saat sub-menu berganti
-    this.notify('subItemChange', { colId, subKey });
   },
 
-  /** Get active slides array for a column or its active sub-item */
-  getActiveSlides(colId) {
-    const col = COLUMNS_DATA.find(c => c.id === colId);
-    if (!col) return [];
-
-    if (col.type === 'expandable') {
-      const activeKey = this.getActiveSubItem(colId);
-      const sub = col.subItems?.find(s => s.key === activeKey);
-      if (sub && sub.slides) return sub.slides;
-    }
-
-    return col.slides || [];
+  getActiveSubItem(colId) {
+    return this.activeSubItem[colId] || null;
   },
 
-  /** Get carousel index for a column */
-  getCarouselIndex(colId) {
-    return this.carouselIndex[colId] || 0;
-  },
-
-  /** Set carousel index for a column */
-  setCarouselIndex(colId, index) {
-    this.carouselIndex[colId] = index;
-    this.notify('carouselChange', { colId, index });
-  },
-
-  /** Check if any column is currently in active state */
+  /** Check if any column is in 'active' state */
   hasAnyActive() {
-    return Object.values(this.columnStates).some(s => s === 'active');
+    return Object.values(this.columns).some(s => s === 'active');
   },
 
-  /** Reset all columns to idle state */
+  /** Check if all columns are in 'active' state */
+  allActive() {
+    return Object.values(this.columns).every(s => s === 'active');
+  },
+
+  /** Count how many columns are active */
+  activeCount() {
+    return Object.values(this.columns).filter(s => s === 'active').length;
+  },
+
+  /** Reset a single column to idle */
+  resetColumn(colId) {
+    this.columns[colId] = 'idle';
+    this.carouselIndex[colId] = 0;
+    const colConfig = WALL_CONFIG.columns.find(c => c.id === colId);
+    if (colConfig && colConfig.defaultSub) {
+      this.activeSubItem[colId] = colConfig.defaultSub;
+    }
+  },
+
+  /** Reset all columns to idle */
   resetAll() {
-    COLUMNS_DATA.forEach(col => {
-      this.columnStates[col.id] = 'idle';
-      this.carouselIndex[col.id] = 0;
-      if (col.defaultSub) {
-        this.activeSubItem[col.id] = col.defaultSub;
+    Object.keys(this.columns).forEach(id => {
+      const colId = parseInt(id, 10);
+      this.columns[colId] = 'idle';
+      this.carouselIndex[colId] = 0;
+      const colConfig = WALL_CONFIG.columns.find(c => c.id === colId);
+      if (colConfig && colConfig.defaultSub) {
+        this.activeSubItem[colId] = colConfig.defaultSub;
       }
-    });
-    this.notify('resetAll');
-  },
-
-  /** Subscribe to state changes */
-  subscribe(fn) {
-    this._listeners.push(fn);
-  },
-
-  /** Notify all subscribers */
-  notify(event, data) {
-    this._listeners.forEach(fn => {
-      try { fn(event, data); } catch (e) { console.error(e); }
     });
   },
 };

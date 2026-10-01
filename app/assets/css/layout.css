@@ -88,15 +88,17 @@
 
 .col-border {
   flex: 1;
-  border-left: 1px dashed var(--color-column-border);
-  border-right: 1px dashed var(--color-column-border);
+  position: relative;
+  border: none;
 }
 
-/* First column only has right border, last only left */
-.col-border:first-child {
-  border-left: 1px dashed var(--color-column-border);
-}
-
-.col-border:last-child {
+/* Satu garis pembatas putus-putus tepat di tengah jeda antar kolom */
+.col-border:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: calc(-1 * var(--column-gap) / 2);
+  width: 0;
   border-right: 1px dashed var(--color-column-border);
 }
