@@ -17,7 +17,7 @@
   border: 1.5px solid rgba(16, 185, 129, 0.4);
   border-radius: var(--radius-btn);
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(16, 185, 129, 0.2);
+  box-shadow: none;
 }
 
 .submenu-header {
