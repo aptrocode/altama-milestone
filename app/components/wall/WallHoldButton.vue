@@ -33,9 +33,13 @@ const outlinePath = computed(() => {
 <template>
   <button
     v-hold="() => $emit('activate')" type="button"
-    class="group/hold relative cursor-pointer transition-colors duration-150"
+    class="group/hold relative cursor-pointer transition-colors duration-150 rounded-[inherit]"
     :style="{ '--hold-duration': `${HOLD_DURATION_MS}ms` }"
   >
+    <div
+      class="hold-inset pointer-events-none absolute inset-0 rounded-[inherit] transition-opacity duration-200 opacity-0 group-[.holding]/hold:opacity-100 group-[.hold-complete]/hold:opacity-100"
+      aria-hidden="true"
+    />
     <slot />
     <svg
       class="absolute inset-0 w-full h-full pointer-events-none" :viewBox="`0 0 ${outline.width} ${outline.height}`"
@@ -50,15 +54,39 @@ const outlinePath = computed(() => {
 </template>
 
 <style scoped>
+.hold-inset {
+  box-shadow:
+    inset 0 0 calc(36 * var(--wall-x, 1px)) rgba(16, 185, 129, 0.28),
+    inset 0 0 calc(12 * var(--wall-x, 1px)) rgba(5, 150, 105, 0.3),
+    inset 0 calc(4 * var(--wall-y, 1px)) calc(18 * var(--wall-y, 1px)) rgba(0, 0, 0, 0.1);
+}
+
 /* Vue scopes the keyframe name and this reference together. */
 @media (prefers-reduced-motion: no-preference) {
   .holding .hold-outline {
     animation: hold-border var(--hold-duration) linear forwards;
+  }
+  .holding .hold-inset {
+    animation: hold-inset-anim var(--hold-duration) ease-out forwards;
   }
 }
 
 @keyframes hold-border {
   from { stroke-dashoffset: 1; }
   to { stroke-dashoffset: 0; }
+}
+
+@keyframes hold-inset-anim {
+  0% {
+    box-shadow:
+      inset 0 0 calc(12 * var(--wall-x, 1px)) rgba(16, 185, 129, 0.12),
+      inset 0 calc(2 * var(--wall-y, 1px)) calc(8 * var(--wall-y, 1px)) rgba(0, 0, 0, 0.04);
+  }
+  100% {
+    box-shadow:
+      inset 0 0 calc(36 * var(--wall-x, 1px)) rgba(16, 185, 129, 0.28),
+      inset 0 0 calc(12 * var(--wall-x, 1px)) rgba(5, 150, 105, 0.3),
+      inset 0 calc(4 * var(--wall-y, 1px)) calc(18 * var(--wall-y, 1px)) rgba(0, 0, 0, 0.1);
+  }
 }
 </style>
