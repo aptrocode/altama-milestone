@@ -120,65 +120,60 @@
   pointer-events: none;
 }
 
-@property --hold-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-.main-btn::before,
-.sub-btn::before {
-  content: '';
+/* ── High-Visibility SVG Hold Progress Border (Bold & Satisfying) ── */
+.hold-progress-svg {
   position: absolute;
-  inset: -3px;
-  border-radius: calc(var(--radius-card) + 3px);
-  border: 2px solid rgba(16, 185, 129, 0.25);
-  opacity: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
-  transition: opacity 0.15s;
-}
-
-.main-btn.holding::before,
-.sub-btn.holding::before {
-  opacity: 1;
-  box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
-}
-
-.main-btn::after,
-.sub-btn::after {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: calc(var(--radius-card) + 3px);
-  background: conic-gradient(
-    from 0deg,
-    rgba(5, 150, 105, 0.3) 0deg,
-    #059669 0deg,
-    #10b981 calc(var(--hold-angle, 0deg) - 20deg),
-    #ffffff var(--hold-angle, 0deg),
-    transparent var(--hold-angle, 0deg)
-  );
-  padding: 3.5px;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
+  z-index: 25;
+  overflow: visible;
   opacity: 0;
-  pointer-events: none;
+  transition: opacity 0.15s ease;
 }
 
-.main-btn.holding::after,
-.sub-btn.holding::after {
+.hold-track {
+  fill: none;
+  stroke: rgba(16, 185, 129, 0.25);
+  stroke-width: 8px;
+}
+
+.hold-bar {
+  fill: none;
+  stroke: #10b981;
+  stroke-width: 8px;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  filter: drop-shadow(0 0 10px #10b981) drop-shadow(0 0 22px #34d399);
+}
+
+.main-btn.holding .hold-progress-svg,
+.sub-btn.holding .hold-progress-svg {
   opacity: 1;
-  animation: holdBorderFill 1s linear forwards;
 }
 
-@keyframes holdBorderFill {
-  from { --hold-angle: 0deg; }
-  to { --hold-angle: 360deg; }
+.main-btn.holding .hold-bar,
+.sub-btn.holding .hold-bar {
+  animation: holdStrokeProgress 1s linear forwards;
 }
 
-.main-btn.holding,
+@keyframes holdStrokeProgress {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.main-btn.holding {
+  box-shadow: 0 0 35px rgba(16, 185, 129, 0.5), inset 0 0 20px rgba(16, 185, 129, 0.2), var(--shadow-btn) !important;
+  transform: scale(0.985);
+}
+
 .sub-btn.holding {
+  box-shadow: inset 0 0 25px rgba(16, 185, 129, 0.25) !important;
   transform: scale(0.985);
 }
