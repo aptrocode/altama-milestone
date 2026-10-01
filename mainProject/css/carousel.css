@@ -1,4 +1,4 @@
-/* ============================================
+﻿/* ============================================
    Photo Carousel
    ============================================ */
 
@@ -35,6 +35,16 @@
   pointer-events: auto;
 }
 
+/* Real photo styling */
+.carousel-slide .slide-img {
+  width: 85%;
+  height: 75%;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
 /* Placeholder image style */
 .placeholder-img {
   width: 85%;
@@ -62,7 +72,7 @@
   letter-spacing: 0.06em;
 }
 
-/* ── Controls ── */
+/* â”€â”€ Controls â”€â”€ */
 .carousel-controls {
   display: flex;
   flex-direction: row;
@@ -101,7 +111,7 @@
   background: var(--color-btn-hover-bg);
 }
 
-/* ── Guide track & ambient aura (pseudo-element ::before) ── */
+/* â”€â”€ Guide track & ambient aura (pseudo-element ::before) â”€â”€ */
 .carousel-prev::before,
 .carousel-next::before {
   content: '';
@@ -123,7 +133,7 @@
     inset 0 0 6px rgba(110, 231, 183, 0.2);
 }
 
-/* ── Neon laser outline tracer (pseudo-element ::after) ── */
+/* â”€â”€ Neon laser outline tracer (pseudo-element ::after) â”€â”€ */
 .carousel-prev::after,
 .carousel-next::after {
   content: '';
@@ -157,7 +167,7 @@
     drop-shadow(0 0 12px rgba(110, 231, 183, 0.9));
 }
 
-/* ── Holding state: animate outline & button depression ── */
+/* â”€â”€ Holding state: animate outline & button depression â”€â”€ */
 .carousel-prev.holding,
 .carousel-next.holding {
   transform: scale(0.94);
@@ -172,7 +182,7 @@
   animation: holdBorderFill 1s linear forwards;
 }
 
-/* ── Completed hold burst / flash ── */
+/* â”€â”€ Completed hold burst / flash â”€â”€ */
 .carousel-prev.hold-complete,
 .carousel-next.hold-complete {
   animation: carouselBtnSuccessBurst 0.35s ease-out;
@@ -220,3 +230,4 @@
   font-weight: var(--font-weight-bold);
   flex-shrink: 0;
 }
+

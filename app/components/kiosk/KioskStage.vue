@@ -266,3 +266,4 @@ onUnmounted(() => {
 <style scoped>
 /* Scoped overrides if needed; all global design tokens reside in main.css */
 </style>
+

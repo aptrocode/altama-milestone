@@ -1,4 +1,4 @@
-# Altama Interactive Wall & Milestone
+﻿# Altama Interactive Wall & Milestone
 
 ![Static Badge](https://img.shields.io/badge/license-MIT-brightgreen?label=LICENSE)
 
@@ -6,7 +6,7 @@ Aplikasi kiosk interaktif fullscreen berbasis **Nuxt 4** untuk instalasi LED wal
 
 ---
 
-## 🌟 Fitur Utama
+## 🚀 Fitur Utama
 
 - **Layout 6 Kolom Interaktif**:
   1. **ABOUT ALTAMA** — Tombol utama dengan galeri foto carousel & deskripsi.
@@ -18,55 +18,39 @@ Aplikasi kiosk interaktif fullscreen berbasis **Nuxt 4** untuk instalasi LED wal
 - **Interaksi Hold-to-Activate (1 Detik)**: Mencegah sentuhan tidak sengaja pada layar sentuh / sensor LiDAR dengan animasi cincin laser (*laser spark tracer*) dan efek emerald neon glow.
 - **Integrasi Sensor LiDAR**: Koneksi native WebSocket (`useSensorSocket`) untuk menangani event sentuhan sensor Hokuyo secara real-time.
 - **Keyboard Shortcuts (Mode Operator / Testing)**:
-  - `1` – `6`: Membuka atau mengaktifkan kolom 1 sampai 6.
+  - `1` — `6`: Membuka atau mengaktifkan kolom 1 sampai 6.
   - `Escape` / `R`: Mereset seluruh kolom kembali ke status *idle*.
   - `D`: Menampilkan panel diagnostik status sensor & WebSocket (hanya mode dev).
 
 ---
 
-## 🚀 Menjalankan Aplikasi
+## 💻 Menjalankan Aplikasi
 
+### Opsi A: Standalone Preview Langsung (Tanpa Node / Bun)
+Buka file berikut langsung di Google Chrome atau Microsoft Edge:
+```text
+mainProject/altama-wallmessage.html
+```
+
+### Opsi B: Aplikasi Nuxt 4 (Mode Dev / Kiosk)
 Pastikan Anda telah memasang **[Bun](https://bun.sh/)** (atau Node.js).
 
-### 1. Instalasi Dependensi
 ```bash
+# 1. Instalasi dependensi
 bun install
-```
 
-### 2. Jalankan Server Pengembangan
-```bash
+# 2. Jalankan server pengembangan
 bun run dev
-```
-Buka browser di `http://localhost:3000`.
 
-### 3. Build & Pratinjau Produksi
-```bash
-# Build aplikasi untuk production
+# 3. Build untuk production
 bun run build
-
-# Menghasilkan static site (SSG)
 bun run generate
-
-# Preview hasil build
 bun run preview
 ```
 
 ---
 
-## 🧪 Validasi & Pengujian
-
-Sebelum melakukan commit atau push, seluruh pemeriksaan kualitas dapat dijalankan dengan:
-
-```bash
-bun run lint          # Cek linting dan formatting ESLint
-bun run typecheck     # Cek tipe data TypeScript Nuxt
-bun run test          # Jalankan unit test Vitest
-bun run assets:check  # Validasi kelengkapan aset & resolusi gambar
-```
-
----
-
-## 📁 Struktur Direktori
+## 📂 Struktur Direktori
 
 ```text
 altama-milestone/
@@ -78,7 +62,12 @@ altama-milestone/
 │   ├── plugins/          # Direktif kustom (v-hold)
 │   ├── stores/           # State management Pinia (wall.ts, system.ts)
 │   └── pages/index.vue   # Halaman utama kiosk
-├── public/               # Aset statis publik (bendera, ikon, gambar)
+├── mainProject/          # Versi standalone HTML/CSS/JS (langsung di browser)
+│   ├── altama-wallmessage.html # Halaman utama standalone
+│   ├── css/              # Stylesheet modular
+│   ├── js/               # Master config.js, renderer.js, state.js, dll.
+│   └── assets/images/    # Folder foto / gambar carousel
+├── public/               # Aset statis publik
 ├── shared/               # Definisi geometri sensor & layout JSON
 ├── test/                 # Pengujian otomatis berbasis Vitest
 ├── docs/                 # Dokumentasi arsitektur, alur push, & rilis
@@ -87,6 +76,6 @@ altama-milestone/
 
 ---
 
-## 📄 Lisensi
+## 📜 Lisensi
 
 Proyek ini dilisensikan di bawah lisensi [MIT](LICENSE).

@@ -1,26 +1,18 @@
-/* ============================================
-   ALTAMA Interactive Wall — App Entry Point
-   ============================================
-   Initializes state and binds all event listeners.
-
-   Buttons use HOLD-TO-ACTIVATE (1 second):
-   - Main buttons: press & hold 1s with neon outline
-   - Sub-menu buttons (TEKIRO, RYU, REXCO, etc.):
-     press & hold 1s with neon outline
-   - Carousel navigation buttons (←, →):
-     press & hold 1s with neon outline
-   - Release early = cancel
-   ============================================ */
-
-const HOLD_DURATION = 1000; // 1 second
+﻿/* ==========================================================================
+   ALTAMA Interactive Wall — Application Entry Point
+   ========================================================================== */
 
 /**
  * Global helper: Attach 1-second hold-to-activate behavior to any button.
- * Shows glowing outline animation while holding.
- * If released before 1s, it cancels.
+ * - Shows glowing outline animation while holding.
+ * - If released before duration expires, it cancels safely.
+ * - Supports both Touch Screen & Mouse inputs.
  */
 window.attachHoldToActivate = function attachHoldToActivate(button, onComplete) {
   let holdTimer = null;
+  const duration = (typeof APP_SETTINGS !== 'undefined' && APP_SETTINGS.holdDuration)
+    ? APP_SETTINGS.holdDuration
+    : 1000;
 
   const startHold = (e) => {
     e.preventDefault();
@@ -41,7 +33,7 @@ window.attachHoldToActivate = function attachHoldToActivate(button, onComplete) 
       }, 350);
 
       holdTimer = null;
-    }, HOLD_DURATION);
+    }, duration);
   };
 
   const cancelHold = (e) => {
@@ -59,7 +51,7 @@ window.attachHoldToActivate = function attachHoldToActivate(button, onComplete) 
   button.addEventListener('mouseup', cancelHold);
   button.addEventListener('mouseleave', cancelHold);
 
-  // Touch events (for touch / sensor screens)
+  // Touch events (for touch screens / sensor walls)
   button.addEventListener('touchstart', startHold, { passive: false });
   button.addEventListener('touchend', cancelHold);
   button.addEventListener('touchcancel', cancelHold);
@@ -72,10 +64,13 @@ window.attachHoldToActivate = function attachHoldToActivate(button, onComplete) 
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize state
+  // 1. Initialize application state
   WallState.init();
 
-  // ── Hold-to-Activate for Main Buttons ──
+  // 2. Initialize dynamic carousel slides & indicators
+  WallRenderer.initAllCarousels();
+
+  // 3. Bind Hold-to-Activate on Main Buttons (1-6)
   document.querySelectorAll('.main-btn').forEach(btn => {
     window.attachHoldToActivate(btn, () => {
       const colId = parseInt(btn.dataset.col, 10);
@@ -83,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ── Hold-to-Activate for Sub-Menu Buttons (TEKIRO, RYU, REXCO, etc.) ──
+  // 4. Bind Hold-to-Activate on Sub-Menu Buttons (TEKIRO, RYU, REXCO, etc.)
   document.querySelectorAll('.sub-btn').forEach(btn => {
     window.attachHoldToActivate(btn, () => {
       const colId = parseInt(btn.dataset.col, 10);
@@ -93,23 +88,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ── Bind Carousel Controls (also with Hold-to-Activate) ──
-  WALL_CONFIG.columns.forEach(col => {
+  // 5. Bind Carousel Navigation Controls (← and →)
+  COLUMNS_DATA.forEach(col => {
     CarouselController.bindEvents(col.id);
   });
 
-  // ── Keyboard shortcut: Escape to reset all ──
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      WallState.resetAll();
-      WALL_CONFIG.columns.forEach(col => {
-        Interactions.updateColumn(col.id);
-      });
-      Interactions.refreshAll();
-    }
+  // 6. Keyboard shortcuts (Escape/R = reset, 1-6 = toggle column)
+  if (APP_SETTINGS.enableKeyboardShortcuts) {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' || e.code === 'KeyR') {
+        WallState.resetAll();
+        COLUMNS_DATA.forEach(col => {
+          Interactions.updateColumn(col.id);
+        });
+        Interactions.refreshAll();
+      }
+
+      if (!e.repeat && ['Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6'].includes(e.code)) {
+        const colId = parseInt(e.code.replace('Digit', ''), 10);
+        Interactions.onMainButtonClick(colId);
+      }
+    });
+  }
+
+  // 7. Track global user activity to restart idle timer
+  ['mousedown', 'touchstart', 'keydown'].forEach(evt => {
+    window.addEventListener(evt, () => Interactions.resetIdleTimer(), { passive: true });
   });
 
   console.log('✅ ALTAMA Interactive Wall initialized.');
-  console.log('💡 Hold buttons for 1 second to activate (Main, Submenu, Carousel buttons).');
-  console.log('💡 Press ESC to reset all columns to idle state.');
+  console.log('💡 Edit content easily in: js/config.js');
+  console.log(`⏱️ Hold duration: ${APP_SETTINGS.holdDuration}ms.`);
+  console.log('⌨️ Shortcuts: Press 1-6 to toggle columns, ESC to reset all.');
 });
