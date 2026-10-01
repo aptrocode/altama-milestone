@@ -16,7 +16,16 @@ export default defineNuxtConfig({
       title: 'Altama Interactive Milestone',
     },
   },
-  modules: ['@pinia/nuxt'],
+  modules: [
+    '@pinia/nuxt',
+    '@nuxt/fonts',
+  ],
+
+  fonts: {
+    families: [
+      { name: 'Inter', provider: 'google', global: true },
+    ],
+  },
 
   css: ['~/assets/css/main.css'],
 
