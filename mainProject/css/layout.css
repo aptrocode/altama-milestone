@@ -1,29 +1,42 @@
-/* ============================================
-   Wall Container & Zone Layout
-   ============================================
-   Uses CSS Grid: 6 columns × 3 rows.
-   Column borders span full height to keep
-   each column's content within its boundary.
-   ============================================ */
+/* ==========================================================================
+   ALTAMA Interactive Wall — Layout (2304 × 1344 Canvas)
+   ========================================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--color-bg-wall);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
 
 #wall-container {
   position: relative;
-  width: 100vw;
-  height: calc(100vw * var(--wall-aspect-h) / var(--wall-aspect-w));
+  width: 2304px;
+  height: 1344px;
+  max-width: 100vw;
   max-height: 100vh;
-  max-width: calc(100vh * var(--wall-aspect-w) / var(--wall-aspect-h));
+  aspect-ratio: 2304 / 1344;
   margin: auto;
   background: var(--color-bg-wall);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
-/* ── Zone Base ── */
 .zone {
   width: 100%;
   position: relative;
-  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .zone-top {
@@ -33,6 +46,7 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  overflow: hidden;
 }
 
 .zone-middle {
@@ -43,6 +57,10 @@
   align-items: stretch;
   padding: 0 var(--wall-padding-x);
   gap: var(--column-gap);
+  position: relative;
+  z-index: 20;
+  overflow: visible;
+  box-sizing: border-box;
 }
 
 .zone-bottom {
@@ -52,27 +70,22 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  padding-bottom: var(--spacing-md);
+  padding-bottom: 24px;
+  position: relative;
+  z-index: 5;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
-/* ── Columns ── */
+/* ── Columns (Exact Same Bounding Box for Every State) ── */
 .column {
   flex: 1;
-  display: flex;
-  flex-direction: column;
   position: relative;
   min-width: 0;
+  height: 100%;
 }
 
-/* ============================================
-   Column Border Overlays
-   ============================================
-   Full-height vertical dashed lines that
-   visually separate each column's content
-   boundary across all 3 zones. Only shown
-   when any column is active.
-   ============================================ */
-
+/* ── 5 Divider Lines Between 6 Columns ── */
 .column-borders {
   position: absolute;
   top: 0;
@@ -84,6 +97,7 @@
   gap: var(--column-gap);
   pointer-events: none;
   z-index: 10;
+  box-sizing: border-box;
 }
 
 .col-border {
@@ -92,7 +106,6 @@
   border: none;
 }
 
-/* Satu garis pembatas putus-putus tepat di tengah jeda antar kolom */
 .col-border:not(:last-child)::after {
   content: '';
   position: absolute;
@@ -100,5 +113,13 @@
   bottom: 0;
   right: calc(-1 * var(--column-gap) / 2);
   width: 0;
-  border-right: 1px dashed var(--color-column-border);
+  border-right: 1.5px dashed var(--color-column-border);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.col-hidden {
+  visibility: hidden !important;
 }

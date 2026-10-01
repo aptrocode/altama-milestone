@@ -1,33 +1,40 @@
-/* ============================================
-   ALTAMA Interactive Wall — State Manager
-   ============================================
-   Manages the current state of each column
-   and the overall wall display mode.
-   ============================================ */
+/* ==========================================================================
+   ALTAMA Interactive Wall — State Manager (Independent Per-Column Translation)
+   ========================================================================== */
 
 const WallState = {
-  /*
-   * Possible column states:
-   *   'idle'      → showing main button
-   *   'submenu'   → showing sub-menu buttons (for expandable columns)
-   *   'active'    → showing carousel + content
-   */
-  columns: {},  // { 1: 'idle', 2: 'submenu', ... }
-
-  // Track which sub-item is active for expandable columns
-  activeSubItem: {},  // { 2: 'tekiro', 5: 'brand-activation' }
-
-  // Track carousel positions
-  carouselIndex: {},  // { 1: 0, 2: 0, ... }
+  columnLocales: { 1: 'id', 2: 'id', 3: 'id', 4: 'id', 5: 'id', 6: 'id' },
+  columns: {},         // { 1: 'idle', 2: 'submenu', ... }
+  activeSubItem: {},   // { 2: 'ryu', 5: 'brand-activation' }
+  carouselIndex: {},   // { 1: 0, 2: 0, ... }
 
   init() {
     WALL_CONFIG.columns.forEach(col => {
+      this.columnLocales[col.id] = 'id';
       this.columns[col.id] = 'idle';
       this.carouselIndex[col.id] = 0;
       if (col.type === 'expandable' && col.defaultSub) {
         this.activeSubItem[col.id] = col.defaultSub;
       }
     });
+  },
+
+  setColumnLocale(colId, loc) {
+    if (WALL_CONFIG.locales.includes(loc)) {
+      this.columnLocales[colId] = loc;
+    }
+  },
+
+  getColumnLocale(colId) {
+    return this.columnLocales[colId] || 'id';
+  },
+
+  setLocale(loc) {
+    if (WALL_CONFIG.locales.includes(loc)) {
+      WALL_CONFIG.columns.forEach(col => {
+        this.columnLocales[col.id] = loc;
+      });
+    }
   },
 
   setColumnState(colId, state) {
@@ -46,40 +53,25 @@ const WallState = {
     return this.activeSubItem[colId] || null;
   },
 
-  /** Check if any column is in 'active' state */
   hasAnyActive() {
-    return Object.values(this.columns).some(s => s === 'active');
+    return Object.values(this.columns).some(s => s === 'active' || s === 'submenu');
   },
 
-  /** Check if all columns are in 'active' state */
-  allActive() {
-    return Object.values(this.columns).every(s => s === 'active');
-  },
-
-  /** Count how many columns are active */
-  activeCount() {
-    return Object.values(this.columns).filter(s => s === 'active').length;
-  },
-
-  /** Reset a single column to idle */
   resetColumn(colId) {
     this.columns[colId] = 'idle';
     this.carouselIndex[colId] = 0;
-    const colConfig = WALL_CONFIG.columns.find(c => c.id === colId);
-    if (colConfig && colConfig.defaultSub) {
-      this.activeSubItem[colId] = colConfig.defaultSub;
+    const col = WALL_CONFIG.columns.find(c => c.id === colId);
+    if (col && col.defaultSub) {
+      this.activeSubItem[colId] = col.defaultSub;
     }
   },
 
-  /** Reset all columns to idle */
   resetAll() {
-    Object.keys(this.columns).forEach(id => {
-      const colId = parseInt(id, 10);
-      this.columns[colId] = 'idle';
-      this.carouselIndex[colId] = 0;
-      const colConfig = WALL_CONFIG.columns.find(c => c.id === colId);
-      if (colConfig && colConfig.defaultSub) {
-        this.activeSubItem[colId] = colConfig.defaultSub;
+    WALL_CONFIG.columns.forEach(col => {
+      this.columns[col.id] = 'idle';
+      this.carouselIndex[col.id] = 0;
+      if (col.defaultSub) {
+        this.activeSubItem[col.id] = col.defaultSub;
       }
     });
   },

@@ -1,156 +1,145 @@
-/* ============================================
-   ALTAMA Interactive Wall — App Entry Point
-   ============================================
-   Initializes state and binds all event listeners.
-
-   Buttons use HOLD-TO-ACTIVATE (1 second):
-   - Main buttons: press & hold 1s with neon outline
-   - Sub-menu buttons (TEKIRO, RYU, REXCO, etc.):
-     press & hold 1s with neon outline
-   - Carousel navigation buttons (←, →):
-     press & hold 1s with neon outline
-   - Release early = cancel
-   ============================================ */
-
-const HOLD_DURATION = 1000; // 1 second
-
-/**
- * Global helper: Attach 1-second hold-to-activate behavior to any button.
- * Shows glowing outline animation while holding.
- * If released before 1s, it cancels.
- */
-window.attachHoldToActivate = function attachHoldToActivate(button, onComplete) {
-  let holdTimer = null;
-
-  const startHold = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (holdTimer) return;
-
-    // Reset 15s inactivity timer for this column on interaction
-    const colEl = button.closest('.column') || (button.dataset.col ? document.querySelector(`.column[data-col="${button.dataset.col}"]`) : null);
-    if (colEl && window.ColumnTimer) {
-      const cId = parseInt(colEl.dataset.col, 10);
-      if (cId) window.ColumnTimer.reset(cId);
-    }
-
-    button.classList.remove('hold-complete');
-    button.classList.add('holding');
-
-    holdTimer = setTimeout(() => {
-      button.classList.remove('holding');
-      button.classList.add('hold-complete');
-
-      onComplete();
-
-      setTimeout(() => {
-        button.classList.remove('hold-complete');
-      }, 350);
-
-      holdTimer = null;
-    }, HOLD_DURATION);
-  };
-
-  const cancelHold = (e) => {
-    if (e) e.stopPropagation();
-    if (holdTimer) {
-      clearTimeout(holdTimer);
-      holdTimer = null;
-    }
-    button.classList.remove('holding');
-    button.classList.remove('hold-complete');
-  };
-
-  // Mouse events
-  button.addEventListener('mousedown', startHold);
-  button.addEventListener('mouseup', cancelHold);
-  button.addEventListener('mouseleave', cancelHold);
-
-  // Touch events (for touch / sensor screens)
-  button.addEventListener('touchstart', startHold, { passive: false });
-  button.addEventListener('touchend', cancelHold);
-  button.addEventListener('touchcancel', cancelHold);
-
-  // Prevent default click
-  button.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  });
-};
+/* ==========================================================================
+   ALTAMA Interactive Wall — Application Bootstrap & Event Handlers
+   ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize state
+  // 1. Initialize State
   WallState.init();
 
-  // ── Hold-to-Activate for Main Buttons ──
+  // 2. Set Up Individual Language Switchers (Independent per Column)
+  document.querySelectorAll('.lang-pill').forEach(pill => {
+    const colId = parseInt(pill.dataset.col);
+    pill.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const lang = btn.dataset.lang;
+        Interactions.setColumnLanguage(colId, lang);
+      });
+    });
+  });
+
+  // 3. Main Idle Buttons Click / Hold
   document.querySelectorAll('.main-btn').forEach(btn => {
-    window.attachHoldToActivate(btn, () => {
-      const colId = parseInt(btn.dataset.col, 10);
-      Interactions.onMainButtonClick(colId);
+    const colId = parseInt(btn.dataset.col);
+
+    btn.addEventListener('click', () => {
+      Interactions.openCard(colId);
     });
+
+    let holdTimer = null;
+    btn.addEventListener('pointerdown', (e) => {
+      btn.classList.add('holding');
+      holdTimer = setTimeout(() => {
+        btn.classList.remove('holding');
+        Interactions.openCard(colId);
+      }, WALL_CONFIG.settings.holdDuration);
+    });
+
+    const cancelHold = () => {
+      btn.classList.remove('holding');
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+        holdTimer = null;
+      }
+    };
+    btn.addEventListener('pointerup', cancelHold);
+    btn.addEventListener('pointerleave', cancelHold);
+    btn.addEventListener('pointercancel', cancelHold);
   });
 
-  // ── Hold-to-Activate for Sub-Menu Buttons (TEKIRO, RYU, REXCO, etc.) ──
+  // 4. Submenu Buttons
   document.querySelectorAll('.sub-btn').forEach(btn => {
-    window.attachHoldToActivate(btn, () => {
-      const colId = parseInt(btn.dataset.col, 10);
-      const subKey = btn.dataset.sub;
-      Interactions.highlightSubButton(colId, subKey);
-      Interactions.onSubButtonClick(colId, subKey);
+    const colId = parseInt(btn.dataset.col);
+    const subKey = btn.dataset.sub;
+
+    btn.addEventListener('click', () => {
+      Interactions.selectSubItem(colId, subKey);
+    });
+
+    let holdTimer = null;
+    btn.addEventListener('pointerdown', () => {
+      btn.classList.add('holding');
+      holdTimer = setTimeout(() => {
+        btn.classList.remove('holding');
+        Interactions.selectSubItem(colId, subKey);
+      }, WALL_CONFIG.settings.holdDuration);
+    });
+
+    const cancelHold = () => {
+      btn.classList.remove('holding');
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+        holdTimer = null;
+      }
+    };
+    btn.addEventListener('pointerup', cancelHold);
+    btn.addEventListener('pointerleave', cancelHold);
+    btn.addEventListener('pointercancel', cancelHold);
+  });
+
+  // 5. Carousel Controls (Sensor / Touch Ready)
+  document.querySelectorAll('.carousel-prev').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const colId = parseInt(btn.closest('.carousel').dataset.col);
+      Carousel.prev(colId);
     });
   });
 
-  // ── Bind Carousel Controls (also with Hold-to-Activate) ──
-  WALL_CONFIG.columns.forEach(col => {
-    CarouselController.bindEvents(col.id);
+  document.querySelectorAll('.carousel-next').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const colId = parseInt(btn.closest('.carousel').dataset.col);
+      Carousel.next(colId);
+    });
   });
 
-  // ── Per-Column Area Interaction Listeners (Reset 15s Timer back to 15s) ──
-  document.querySelectorAll('.column').forEach(colEl => {
-    const colId = parseInt(colEl.dataset.col, 10);
-    ['pointerdown', 'touchstart', 'mousedown'].forEach(evtType => {
-      colEl.addEventListener(evtType, () => {
+  // 6. Reset Column Timer on any user interaction within the column
+  document.querySelectorAll('.column').forEach(column => {
+    const colId = parseInt(column.dataset.col);
+    const activityEvents = ['pointerdown', 'touchstart', 'click'];
+    activityEvents.forEach(eventType => {
+      column.addEventListener(eventType, () => {
         if (window.ColumnTimer) {
           window.ColumnTimer.reset(colId);
         }
-      }, { capture: true, passive: true });
+      }, { passive: true });
     });
   });
 
-  // Also bind to header and footer of each column
-  WALL_CONFIG.columns.forEach(col => {
-    const header = document.querySelector(`.content-header[data-col="${col.id}"]`);
-    if (header) {
-      ['pointerdown', 'touchstart', 'mousedown'].forEach(evtType => {
-        header.addEventListener(evtType, () => {
-          if (window.ColumnTimer) window.ColumnTimer.reset(col.id);
-        }, { capture: true, passive: true });
-      });
-    }
-    const footer = document.querySelector(`.bottom-desc[data-col="${col.id}"]`);
-    if (footer) {
-      ['pointerdown', 'touchstart', 'mousedown'].forEach(evtType => {
-        footer.addEventListener(evtType, () => {
-          if (window.ColumnTimer) window.ColumnTimer.reset(col.id);
-        }, { capture: true, passive: true });
+  // 7. Global Keyboard Navigation (For Testing & Accessibility)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      WALL_CONFIG.columns.forEach(col => {
+        Interactions.resetColumnToIdle(col.id);
       });
     }
   });
 
-  // ── Keyboard shortcut: Escape to reset all ──
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' || e.code === 'KeyR') {
-      if (window.ColumnTimer) window.ColumnTimer.clearAll();
-      WallState.resetAll();
-      WALL_CONFIG.columns.forEach(col => {
-        Interactions.updateColumn(col.id);
-      });
-      Interactions.refreshAll();
-    }
-  });
+  // 8. Auto-preview mockup if URL has ?preview=mockup or ?mockup=1
+  const urlParams = new URLSearchParams(window.location.search);
+  const langParam = urlParams.get('lang');
+  if (langParam && ['id', 'en', 'zh'].includes(langParam)) {
+    Interactions.setLanguage(langParam);
+  }
+
+  if (window.location.search.includes('preview=mockup') || window.location.search.includes('mockup=1')) {
+    WallState.setColumnState(1, 'active');
+    WallState.setColumnState(2, 'submenu');
+    WallState.setActiveSubItem(2, 'ryu');
+    WallState.setColumnState(3, 'idle');
+    WallState.setColumnState(4, 'idle');
+    WallState.setColumnState(5, 'idle');
+    WallState.setColumnState(6, 'active');
+
+    WALL_CONFIG.columns.forEach(col => {
+      Interactions.updateColumn(col.id);
+      Interactions.updateColumnText(col.id);
+    });
+    Interactions.refreshAll();
+  }
 
   console.log('✅ ALTAMA Interactive Wall initialized.');
-  console.log('⏱️ Inactivity timer active: 15 seconds per column.');
-  console.log('💡 Hold buttons for 1 second to activate (Main, Submenu, Carousel buttons).');
-  console.log('💡 Press ESC to reset all columns to idle state.');
+  console.log('🌐 Language switcher active: ID (🇮🇩), EN (🇬🇧), ZH (🇨🇳)');
+  console.log('⏱️ 15-second inactivity timer enabled per column.');
 });
