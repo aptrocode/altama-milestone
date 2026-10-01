@@ -52,7 +52,7 @@ altama-milestone/
 ## Running the Application
 
 ### Option A: Standalone Preview (No Node/Bun required)
-Open `standalone/index.html` directly in any modern Chromium browser (Chrome or Edge).
+Open `standalone/altama-wallmessage.html` directly in any modern Chromium browser (Chrome or Edge).
 
 ### Option B: Nuxt 4 Application
 ```bash
