@@ -1,4 +1,4 @@
-﻿import rawLayout from '../../shared/installation-layout.json';
+import rawLayout from '../../shared/installation-layout.json';
 
 export const installationLayout = rawLayout as {
   layoutVersion: string;

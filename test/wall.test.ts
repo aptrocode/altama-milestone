@@ -1,9 +1,9 @@
-﻿import { describe, expect, it, beforeEach } from 'vitest';
-import { setActivePinia, createPinia } from 'pinia';
+import { createPinia, setActivePinia } from 'pinia';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { WALL_CONFIG } from '../app/data/wall-config';
 import { useWallStore } from '../app/stores/wall';
 
-describe('WALL_CONFIG', () => {
+describe('wALL_CONFIG', () => {
   it('contains exactly 6 columns', () => {
     expect(WALL_CONFIG.columns).toHaveLength(6);
   });

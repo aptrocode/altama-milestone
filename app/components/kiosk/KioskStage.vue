@@ -1,12 +1,13 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
+import type { ColumnConfig } from '~/data/wall-config';
+import type { SensorMessage } from '~/types/sensor';
 import { onMounted, onUnmounted, ref } from 'vue';
-import { useSystemStore } from '~/stores/system';
-import { useWallStore } from '~/stores/wall';
-import { WALL_CONFIG, type ColumnConfig } from '~/data/wall-config';
+import KioskStatus from '~/components/kiosk/KioskStatus.vue';
 import { useSensorSocket } from '~/composables/useSensorSocket';
 import { installationLayout } from '~/data/installation-layout';
-import type { SensorMessage } from '~/types/sensor';
-import KioskStatus from '~/components/kiosk/KioskStatus.vue';
+import { WALL_CONFIG } from '~/data/wall-config';
+import { useSystemStore } from '~/stores/system';
+import { useWallStore } from '~/stores/wall';
 
 const wall = useWallStore();
 const system = useSystemStore();
@@ -53,9 +54,12 @@ function getActiveLabel(col: ColumnConfig): string {
 function handleSensorMessage(message: SensorMessage) {
   if (message.type === 'touchStart') {
     // Map touch to column or reset
-    if (message.section === 'left') wall.onMainButtonClick(1);
-    else if (message.section === 'center') wall.onMainButtonClick(2);
-    else if (message.section === 'right') wall.onMainButtonClick(5);
+    if (message.section === 'left')
+      wall.onMainButtonClick(1);
+    else if (message.section === 'center')
+      wall.onMainButtonClick(2);
+    else if (message.section === 'right')
+      wall.onMainButtonClick(5);
   }
 }
 
@@ -97,7 +101,7 @@ onUnmounted(() => {
   <div id="wall-container">
     <!-- ====== COLUMN BORDERS (FULL HEIGHT OVERLAY) ====== -->
     <div id="column-borders" class="column-borders" :class="{ hidden: !wall.hasAnyActive }">
-      <div v-for="col in WALL_CONFIG.columns" :key="'border-' + col.id" class="col-border" :data-col="col.id"></div>
+      <div v-for="col in WALL_CONFIG.columns" :key="`border-${col.id}`" class="col-border" :data-col="col.id" />
     </div>
 
     <!-- ====== ROW 1: ZONA ATAS (BRANDING / HEADER) ====== -->
@@ -106,7 +110,9 @@ onUnmounted(() => {
       <div id="branding-default" class="branding-default" :class="{ hidden: wall.hasAnyActive }">
         <div class="branding-logo">
           <h1>ALTAMA</h1>
-          <p class="branding-tagline">SURPASSING HORIZONS, ELEVATING EXCELLENCE</p>
+          <p class="branding-tagline">
+            SURPASSING HORIZONS, ELEVATING EXCELLENCE
+          </p>
         </div>
       </div>
 
@@ -114,7 +120,7 @@ onUnmounted(() => {
       <div id="content-headers" class="content-headers" :class="{ hidden: !wall.hasAnyActive }">
         <div
           v-for="col in WALL_CONFIG.columns"
-          :key="'header-' + col.id"
+          :key="`header-${col.id}`"
           class="content-header"
           :data-col="col.id"
           :class="{
@@ -122,7 +128,9 @@ onUnmounted(() => {
             'active anim-slide-down': wall.getColumnState(col.id) === 'active',
           }"
         >
-          <h2 class="content-header-title" :data-col="col.id">{{ getHeaderTitle(col) }}</h2>
+          <h2 class="content-header-title" :data-col="col.id">
+            {{ getHeaderTitle(col) }}
+          </h2>
           <p>{{ getHeaderDesc(col) }}</p>
         </div>
       </div>
@@ -132,7 +140,7 @@ onUnmounted(() => {
     <div id="zone-middle" class="zone zone-middle">
       <div
         v-for="col in WALL_CONFIG.columns"
-        :key="'col-' + col.id"
+        :key="`col-${col.id}`"
         class="column"
         :class="{ 'has-submenu': col.type === 'expandable' }"
         :data-col="col.id"
@@ -140,13 +148,13 @@ onUnmounted(() => {
         <!-- Main Button (Idle State) -->
         <div class="btn-group" :class="{ hidden: wall.getColumnState(col.id) !== 'idle' }">
           <button
+            v-hold="() => wall.onMainButtonClick(col.id)"
             class="main-btn"
             :class="{ 'single-btn': col.type === 'single', 'expandable-btn': col.type === 'expandable' }"
             :data-category="col.key"
             :data-col="col.id"
-            v-hold="() => wall.onMainButtonClick(col.id)"
           >
-            <span class="btn-label" v-html="col.labelHtml"></span>
+            <span class="btn-label" v-html="col.labelHtml" />
           </button>
         </div>
 
@@ -155,7 +163,7 @@ onUnmounted(() => {
           v-if="col.type === 'expandable'"
           class="submenu-group"
           :class="{
-            hidden: wall.getColumnState(col.id) !== 'submenu',
+            'hidden': wall.getColumnState(col.id) !== 'submenu',
             'anim-fade-in': wall.getColumnState(col.id) === 'submenu',
           }"
           :data-col="col.id"
@@ -164,13 +172,13 @@ onUnmounted(() => {
           <button
             v-for="sub in col.subItems"
             :key="sub.key"
+            v-hold="() => wall.onSubButtonClick(col.id, sub.key)"
             class="sub-btn"
             :class="{ active: wall.getActiveSubItem(col.id) === sub.key }"
             :data-sub="sub.key"
             :data-col="col.id"
-            v-hold="() => wall.onSubButtonClick(col.id, sub.key)"
           >
-            <span class="btn-label" v-html="sub.labelHtml || sub.label"></span>
+            <span class="btn-label" v-html="sub.labelHtml || sub.label" />
           </button>
         </div>
 
@@ -178,7 +186,7 @@ onUnmounted(() => {
         <div
           class="active-content"
           :class="{
-            hidden: wall.getColumnState(col.id) !== 'active',
+            'hidden': wall.getColumnState(col.id) !== 'active',
             'anim-scale-in': wall.getColumnState(col.id) === 'active',
           }"
           :data-col="col.id"
@@ -188,7 +196,7 @@ onUnmounted(() => {
             <div class="carousel-viewport">
               <div
                 v-for="slideIdx in col.slides"
-                :key="'slide-' + slideIdx"
+                :key="`slide-${slideIdx}`"
                 class="carousel-slide"
                 :class="{ active: wall.getCarouselIndex(col.id) === slideIdx - 1 }"
               >
@@ -202,15 +210,19 @@ onUnmounted(() => {
             </div>
             <div class="carousel-controls">
               <button
+                v-hold="() => wall.navigateCarousel(col.id, -1, col.slides)"
                 class="carousel-prev"
                 aria-label="Previous"
-                v-hold="() => wall.navigateCarousel(col.id, -1, col.slides)"
-              >←</button>
+              >
+                ←
+              </button>
               <button
+                v-hold="() => wall.navigateCarousel(col.id, 1, col.slides)"
                 class="carousel-next"
                 aria-label="Next"
-                v-hold="() => wall.navigateCarousel(col.id, 1, col.slides)"
-              >→</button>
+              >
+                →
+              </button>
             </div>
             <div class="carousel-indicator">
               {{ String(wall.getCarouselIndex(col.id) + 1).padStart(2, '0') }} / {{ String(col.slides).padStart(2, '0') }}
@@ -225,12 +237,14 @@ onUnmounted(() => {
       <div id="bottom-descriptions" class="bottom-descriptions" :class="{ hidden: !wall.hasAnyActive }">
         <div
           v-for="col in WALL_CONFIG.columns"
-          :key="'bottom-' + col.id"
+          :key="`bottom-${col.id}`"
           class="bottom-desc"
           :data-col="col.id"
           :class="{ 'col-hidden': wall.getColumnState(col.id) !== 'active' }"
         >
-          <h4 class="bottom-desc-title" :data-col="col.id">{{ getBottomTitle(col) }}</h4>
+          <h4 class="bottom-desc-title" :data-col="col.id">
+            {{ getBottomTitle(col) }}
+          </h4>
           <p>{{ col.bottomDesc }}</p>
         </div>
       </div>
