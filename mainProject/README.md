@@ -1,31 +1,65 @@
 # ALTAMA Interactive Digital Wall (Canvas 2304 × 1344)
 
-Aplikasi antarmuka dinding interaktif (*Interactive Digital Wall*) berstandar pameran untuk **PT Altama Surya Anugerah**. Dirancang khusus untuk layar resolusi besar **2304 × 1344 piksel** (rasio 12:7) dengan dukungan sensor sentuh interaktif (*touchscreen / infrared frame*).
+Aplikasi antarmuka dinding interaktif (*Interactive Digital Wall*) berstandar pameran untuk **PT Altama Surya Anugerah**. Dirancang khusus untuk layar resolusi besar **2304 × 1344 piksel** (rasio 12:7) dengan dukungan **Input Raw TUIO 1.1 (UDP Port 3333)**, sensor sentuh interaktif (*infrared multi-touch frame*), maupun radar sensor (*LiDAR / Laser Tracker*).
 
 ---
 
 ## 🚀 Cara Menjalankan Aplikasi
 
-### Cara 1: Menggunakan File Batch (Paling Praktis)
+### Cara 1: Menggunakan File Batch (Sangat Disarankan)
 1. Buka folder `mainProject/`.
 2. Klik ganda file **`start-server.bat`**.
-3. Terminal server akan aktif di port `8080` dan browser default Anda akan otomatis membuka:
+3. Sistem akan otomatis menyalakan:
+   - 🌐 **Web Server HTTP:** `http://localhost:8080/`
+   - 📡 **TUIO UDP Receiver:** Port `3333` (Siap menerima sinyal raw TUIO dari sensor)
+   - 🔌 **WebSocket Bridge:** Port `3334` (`ws://localhost:3334`)
+4. Browser default akan otomatis membuka:
    ```
    http://localhost:8080/
    ```
 
-### Cara 2: Menjalankan via Terminal / PowerShell
-Buka terminal di dalam folder `mainProject/` dan jalankan salah satu perintah berikut:
+### Cara 2: Menjalankan Server via Terminal
+Buka terminal / PowerShell di folder `mainProject/` dan jalankan:
+```powershell
+python server.py 8080
+```
 
-- **Menggunakan Python:**
-  ```powershell
-  python -m http.server 8080
-  ```
-- **Menggunakan Node.js / npx:**
-  ```powershell
-  npx serve -p 8080 .
-  ```
-Buka browser di alamat: [http://localhost:8080/](http://localhost:8080/)
+---
+
+## 📡 Integrasi Sensor Raw TUIO 1.1 (Port 3333)
+
+Sistem ALTAMA Interactive Wall telah dilengkapi dengan **Server Raw TUIO 1.1 terintegrasi** tanpa memerlukan instalasi library pihak ketiga (*zero dependencies*).
+
+### Spesifikasi Protokol TUIO:
+- **Protokol Jaringan:** UDP (User Datagram Protocol)
+- **Port Input:** `3333` (Standar Industri TUIO)
+- **Tipe Pesan:** OSC (Open Sound Control) Profil `/tuio/2Dcur`
+- **Pesan yang Didukung:**
+  - `/tuio/2Dcur alive [id1, id2, ...]` (Status kursor aktif / multitouch)
+  - `/tuio/2Dcur set s_id x y X Y m` (Koordinat ternormalisasi $0.0 - 1.0$)
+  - `/tuio/2Dcur fseq [frame_id]` (Penanda akhir paket frame)
+- **Kompatibilitas Perangkat:**
+  - Multi-touch LiDAR Scanner (Hokuyo, Slamtec RPLIDAR, dll.)
+  - Laser Touch Tracker / TuioPad / Touch2Tuio
+  - Optical Frame & Multi-touch Infrared Overlays
+
+### Cara Menguji Input TUIO (Diagnostic Simulator):
+Untuk memastikan penerimaan TUIO pada port 3333 berfungsi dengan baik, jalankan simulator sentuhan sintetis yang disertakan:
+
+```powershell
+# Format: python send_tuio_test.py <posisi_x_0_ke_1> <posisi_y_0_ke_1> <durasi_hold_detik>
+
+# Contoh 1: Tekan & tahan Kolom 1 (TENTANG ALTAMA) selama 1.2 detik (Hold to activate)
+python send_tuio_test.py 0.1 0.5 1.2
+
+# Contoh 2: Tekan & tahan Kolom 2 (MEREK KAMI)
+python send_tuio_test.py 0.25 0.5 1.2
+```
+
+Saat paket TUIO masuk, Anda akan melihat:
+1. Status badge di pojok kanan bawah browser: **`TUIO UDP:3333 Connected`** (hijau neon).
+2. Lingkaran neon pulsing bersinar di posisi koordinat sentuhan di layar.
+3. Tombol secara akurat merespons interaksi *Strict Hold*, membuka kartu, dan menggeser carousel foto.
 
 ---
 
@@ -36,13 +70,14 @@ Buka browser di alamat: [http://localhost:8080/](http://localhost:8080/)
 - **Dimensi Kolom:** Masing-masing kolom berukuran presisi **350px × 510px**.
 - **Margin & Jarak:** Padding samping kiri-kanan **52px** dan jarak antar kolom (*gap*) **20px**.
 - Perhitungan integer pixel-perfect:
-  $$\text{Total Lebar} = 2 \times 52\text{px} + 5 \times 20\text{px} + 6 \times 350\text{px} = 2304\text{px}$$
+  $$	ext{Total Lebar} = 2 	imes 52	ext{px} + 5 	imes 20	ext{px} + 6 	imes 350	ext{px} = 2304	ext{px}$$
 - Tidak ada ruang kosong berlebih di pinggir kiri dan kanan (*full-bleed balanced distribution*).
 
 ### 2. Sistem Sentuh Ketat (*Strict Hold-to-Activate*)
 - **Proteksi Salah Sentuh:** Klik cepat atau sentuhan sekilas (*tap*) **tidak akan membuka kartu**.
 - **Durasi Hold Penuh:** Pengunjung wajib menahan tombol selama **1 detik (1000ms)** hingga animasi border melingkar selesai 100%.
 - **Batal Jika Dilepas Dini:** Apabila jari/sensor diangkat di tengah jalan (misal baru 300ms–500ms), timer langsung dibatalkan, animasi di-reset, dan layar **tidak akan berpindah sama sekali**.
+- **Kompatibel Penuh Sensor TUIO:** Pointer TUIO diterjemahkan menjadi PointerEvent native sehingga mekanisme strict hold berjalan 100% mulus dengan sensor LiDAR/TUIO.
 
 ### 3. Pemilihan Bahasa di Kartu Awal (*Sensor-Ready Translate*)
 - **3 Bahasa Independen Per Kolom:**
@@ -59,8 +94,9 @@ Buka browser di alamat: [http://localhost:8080/](http://localhost:8080/)
 - **Tanpa Penjelasan Prematur:** Sebelum salah satu sub-item dipilih, zona atas dan bawah tetap bersih tanpa teks penjelasan.
 - **Buka Kartu Foto Carousel:** Saat salah satu sub-item ditekan, kartu foto langsung keluar sama seperti kolom lainnya, dan teks penjelasannya baru tampil di zona atas dan bawah.
 
-### 5. Navigasi Slider Foto Bergaya *Glassmorphism*
+### 5. Navigasi Slider Foto Bergaya *Glassmorphism* dengan Hold
 - **Posisi Arrow:** Tombol navigasi panah kiri (`<`) dan kanan (`>`) berada tepat di **tengah sisi kiri dan kanan gambar** (*vertical center*).
+- **Strict Hold 650ms:** Panah foto dilengkapi cincin neon melingkar yang mengisi saat ditahan selama 650ms sebelum berpindah gambar.
 - **Efek Frosted Glass:** Desain tombol melingkar transparan dengan efek blur halus (`backdrop-filter: blur(14px)`), border berkilau, dan bayangan kedalaman.
 - **Indikator Nomor Foto:** Indikator posisi slide (misal `01 / 03`) berada di tengah bawah gambar dalam bentuk pill *glassmorphism*.
 
@@ -88,7 +124,9 @@ Buka browser di alamat: [http://localhost:8080/](http://localhost:8080/)
 mainProject/
 ├── index.html                   # Entry point aplikasi utama
 ├── altama-wallmessage.html      # Salinan kompatibilitas halaman utama
-├── start-server.bat             # Script 1-klik untuk menjalankan server port 8080
+├── server.py                    # Unified Server (HTTP 8080 + TUIO UDP 3333 + WS 3334)
+├── start-server.bat             # Script 1-klik untuk menjalankan server terpadu
+├── send_tuio_test.py            # Diagnostic tool simulator TUIO 1.1
 ├── README.md                    # Dokumentasi panduan dalam Bahasa Indonesia
 ├── css/
 │   ├── variables.css            # Token desain, warna, rasio zona, dan kanvas 2304x1344
@@ -96,13 +134,15 @@ mainProject/
 │   ├── zones.css                # Gaya teks dan tata letak zona atas & zona bawah
 │   ├── buttons.css              # Gaya kartu awal (idle), tombol hold, dan kapsul bendera
 │   ├── submenu.css              # Gaya kartu daftar pilihan merek & distribusi
-│   └── carousel.css             # Gaya kartu aktif, frame foto, & arrow glassmorphism
+│   ├── carousel.css             # Gaya kartu aktif, frame foto, & arrow glassmorphism
+│   └── animations.css           # Animasi kinetic, ripple, border sweep, & text entrance
 └── js/
     ├── config.js                # Konfigurasi master konten, teks 3 bahasa, dan durasi hold
     ├── state.js                 # Pengelola state reaktif setiap kolom & bahasa
     ├── carousel.js              # Mesin transisi slide foto (prev, next, goTo)
     ├── interactions.js          # Pengontrol alur buka-tutup kartu dan zona teks
-    └── app.js                   # Bootstrap aplikasi, event hold sensor, & auto-reset
+    ├── app.js                   # Bootstrap aplikasi, event hold sensor, & auto-reset
+    └── tuio-client.js           # Client bridge penerima paket TUIO UDP 3333 via WS
 ```
 
 ---
