@@ -36,6 +36,7 @@ This is a Nuxt 4 client-rendered kiosk for a 2304 × 1344 fullscreen LED install
 - The kiosk fills the viewport; do not add an outer container, `max-width`, or letterboxing.
 - Do not recreate atoms/molecules/organisms or add barrel files without a concrete need.
 - Treat every catalog entry marked `placeholder` as unapproved content.
+- The `dika/` directory is an isolated sandbox for Dika's prototypes and mockups. Agents and contributors working in `dika/` must not edit or delete any files outside `dika/`. All production kiosk changes belong exclusively to @adydetra (Dewa).
 
 ## Library and change workflow
 

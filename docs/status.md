@@ -63,3 +63,14 @@ The Nuxt preview query returned no Context7 matches. Preview tooling was checked
 - Browser checks at the exact 2304 × 1344 CSS viewport and 1600 × 900 preview found no page scrolling or clipped stories in the three languages. The nine flag bounds matched layout-v4 at the official size.
 - In the generated production output, LEFT switched to Chinese while RIGHT switched to English and CENTER stayed Indonesian. The production console had no errors. Year changes preserved a section's language; reload restored all three defaults. Custom 404 recovery worked.
 - Physical LED readability, Chinese font availability on the event PC, translation approval, and Sensor Service layout-v4 calibration remain open.
+
+## Validation & Release on 1 October 2026 (v0.3.0)
+
+- Version 0.3.0 released.
+- Lint, typecheck, 23 tests, asset validation (19 milestone pairs), and production build passed with zero errors.
+- Implemented independent 15-second auto-reset per section on inactivity.
+- Configured `@nuxt/fonts` with Inter weights (400-900) and verified Tailwind CSS v4 integration.
+- Standardized UI to single-line responsive column titles, localized column titles/labels per active section language.
+- Replaced carousel text arrows with centered modern SVG icons and adjusted hold loop animation to scale-only pulse.
+- Removed legacy `mainProject/` directory, prototype branch, and obsolete standalone CSS files in favor of Tailwind CSS v4 utility classes and scoped styles.
+

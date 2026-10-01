@@ -1,7 +1,7 @@
 {
   "name": "altama-interactive-milestone",
   "type": "module",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Interactive three-section company milestone renderer for a 2304 x 1344 LED installation.",
   "author": "Adityawarman Dewa Putra",
   "license": "MIT",
