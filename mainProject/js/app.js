@@ -262,7 +262,26 @@ document.addEventListener('DOMContentLoaded', () => {
     Interactions.setLanguage(langParam);
   }
 
-  if (window.location.search.includes('preview=mockup') || window.location.search.includes('mockup=1')) {
+  if (window.location.search.includes('preview=all') || window.location.search.includes('preview=user')) {
+    WallState.setColumnState(1, 'active');
+    WallState.setColumnState(2, 'active');
+    WallState.setActiveSubItem(2, 'tekiro');
+    WallState.setColumnState(3, 'active');
+    WallState.setColumnState(4, 'active');
+    WallState.setColumnState(5, 'active');
+    WallState.setActiveSubItem(5, 'our-way');
+    WallState.setColumnState(6, 'active');
+
+    WALL_CONFIG.columns.forEach(col => {
+      Interactions.updateColumn(col.id);
+      Interactions.updateColumnText(col.id);
+    });
+    Interactions.refreshAll();
+
+    [1, 2, 3, 4, 5, 6].forEach(colId => {
+      Interactions.triggerTextEntrance(colId);
+    });
+  } else if (window.location.search.includes('preview=mockup') || window.location.search.includes('mockup=1')) {
     // Show Col 1, 3, 4, 6 in active photo card
     WallState.setColumnState(1, 'active');
     WallState.setColumnState(3, 'active');

@@ -70,13 +70,12 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   text-align: center;
-  padding: 12px 6px;
+  padding: 30px 8px 12px 8px;
   min-width: 0;
   overflow: hidden;
-  word-break: break-word;
   box-sizing: border-box;
   opacity: 0;
   visibility: hidden;
@@ -95,13 +94,24 @@
 }
 
 .content-header-title {
-  font-size: 36px;
+  height: 76px;
+  min-height: 76px;
+  max-height: 76px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  box-sizing: border-box;
+  margin: 0;
+  font-size: 31px;
   font-weight: 900;
   text-transform: uppercase;
-  margin: 0 0 8px 0;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
   text-align: center;
-  line-height: 1.25;
+  line-height: 1.2;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  hyphens: none;
   background: linear-gradient(
     120deg, 
     #0f593c 0%, 
@@ -118,21 +128,28 @@
   will-change: transform, opacity, filter, background-position;
 }
 
+.content-header[data-col="3"] .content-header-title {
+  font-size: 28px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
 .title-accent-bar {
   width: 58px;
   height: 3.5px;
   border-radius: 9999px;
   background: linear-gradient(90deg, rgba(16, 185, 129, 0) 0%, #10b981 50%, rgba(16, 185, 129, 0) 100%);
-  margin: 0 auto 12px auto;
+  margin: 12px auto 14px auto;
   box-shadow: 0 0 12px rgba(16, 185, 129, 0.8);
+  flex-shrink: 0;
   will-change: transform, opacity;
 }
 
 .content-header p {
-  font-size: 21px;
+  font-size: 20px;
   font-weight: 500;
   color: var(--color-text-primary);
-  line-height: 1.55;
+  line-height: 1.5;
   margin: 0 auto;
   text-align: center;
   max-width: 98%;
@@ -157,7 +174,6 @@
     opacity: 0;
     transform: translateY(28px) scale(0.92);
     filter: blur(10px);
-    letter-spacing: 0.08em;
     background-position: 100% 0;
   }
   50% {
@@ -167,7 +183,6 @@
     opacity: 1;
     transform: translateY(0) scale(1);
     filter: blur(0px);
-    letter-spacing: 0.03em;
     background-position: 0% 0;
   }
 }
