@@ -1,0 +1,119 @@
+/* ==========================================================================
+   ALTAMA Interactive Kiosk — Custom Hardware & Laser FX
+   Specialized styles not covered by standard Tailwind utility classes:
+   - Conic-gradient mask laser border fill (@property --hold-angle)
+   - Micro-animations for idle breathing and hold gesture
+   ========================================================================== */
+
+@property --hold-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ── Neon laser outline tracer on hold ── */
+.laser-target::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 12px;
+  background: conic-gradient(
+    from 0deg,
+    rgba(5, 150, 105, 0.3) 0deg,
+    #059669 0deg,
+    #10b981 calc(var(--hold-angle, 0deg) - 20deg),
+    #6ee7b7 calc(var(--hold-angle, 0deg) - 6deg),
+    #ffffff var(--hold-angle, 0deg),
+    transparent var(--hold-angle, 0deg)
+  );
+  padding: 3.5px;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+  filter:
+    drop-shadow(0 0 2px #ffffff)
+    drop-shadow(0 0 6px #10b981)
+    drop-shadow(0 0 14px rgba(16, 185, 129, 0.8));
+}
+
+.laser-target.holding {
+  border-color: rgba(16, 185, 129, 0.8);
+  transform: scale(0.985);
+}
+
+.laser-target.holding::after {
+  opacity: 1;
+  animation: holdBorderFill 3s linear forwards;
+}
+
+.laser-target.hold-complete {
+  animation: holdSuccessBurst 0.35s ease-out;
+}
+
+.laser-target.hold-complete::after {
+  opacity: 1;
+  --hold-angle: 360deg;
+  background: conic-gradient(
+    from 0deg,
+    #10b981 0deg,
+    #34d399 180deg,
+    #ffffff 360deg
+  );
+  filter:
+    drop-shadow(0 0 4px #ffffff)
+    drop-shadow(0 0 12px #34d399)
+    drop-shadow(0 0 24px rgba(16, 185, 129, 0.9));
+}
+
+@keyframes holdBorderFill {
+  from { --hold-angle: 0deg; }
+  to   { --hold-angle: 360deg; }
+}
+
+@keyframes holdSuccessBurst {
+  0% {
+    transform: scale(0.975);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ── Subtle Idle Breathing Border ── */
+.idle-breathe {
+  animation: idleBreathe 3.5s ease-in-out infinite alternate;
+}
+
+@keyframes idleBreathe {
+  0% {
+    border-color: rgba(192, 192, 192, 0.8);
+  }
+  100% {
+    border-color: rgba(16, 185, 129, 0.6);
+  }
+}
+
+/* ── Hand hold gesture animation ── */
+.animate-hand-press {
+  animation: handHoldHint 2s ease-in-out infinite;
+}
+
+@keyframes handHoldHint {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.08);
+  }
+}
