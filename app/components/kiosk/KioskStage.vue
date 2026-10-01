@@ -172,7 +172,7 @@ onUnmounted(() => {
             'opacity-100 translate-y-0': wall.getColumnState(col.id) === 'active',
           }"
         >
-          <h2 class="text-base md:text-lg lg:text-xl font-black text-emerald-800 uppercase mb-1.5 tracking-wide leading-tight">
+          <h2 class="text-[clamp(13px,1.2vw,22px)] font-black text-emerald-800 uppercase mb-1.5 tracking-wide leading-tight whitespace-nowrap overflow-hidden text-ellipsis max-w-full px-2">
             {{ wall.getHeaderTitle(col.id) }}
           </h2>
           <p class="text-[11px] md:text-xs text-neutral-600 font-medium leading-relaxed max-w-prose">
@@ -214,7 +214,7 @@ onUnmounted(() => {
         <div class="flex-1 flex flex-col animate-kiosk-enter" :class="{ hidden: wall.getColumnState(col.id) !== 'idle' }">
           <button
             v-hold="() => wall.onMainButtonClick(col.id)"
-            class="laser-target idle-breathe flex-1 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-b from-white via-slate-50 to-neutral-100 hover:from-white hover:to-emerald-50/50 active:from-neutral-100 active:to-neutral-200 border border-neutral-300/80 hover:border-emerald-500/60 rounded-xl text-neutral-900 font-extrabold uppercase tracking-wider text-center p-3 cursor-pointer select-none relative transition-all duration-150 shadow-xs hover:shadow-md"
+            class="laser-target idle-breathe flex-1 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-b from-white via-slate-50 to-neutral-100 hover:from-white hover:to-emerald-50/50 active:from-neutral-100 active:to-neutral-200 border border-neutral-300/80 hover:border-emerald-500/60 rounded-xl text-neutral-900 font-extrabold uppercase tracking-wider text-center px-1.5 py-3 md:px-2.5 lg:px-3 cursor-pointer select-none relative transition-all duration-150 shadow-xs hover:shadow-md"
             :data-category="col.key"
             :data-col="col.id"
           >
@@ -223,8 +223,8 @@ onUnmounted(() => {
               <span class="text-sm font-black leading-none">{{ col.id }}</span>
             </div>
 
-            <!-- Button Label (Reactively localized) -->
-            <span class="text-sm md:text-base font-black leading-tight text-neutral-900 tracking-wide" v-html="wall.getColumnLabelHtml(col.id)" />
+            <!-- Button Label (Reactively localized, single-line responsive) -->
+            <span class="w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-1 font-black text-[clamp(10px,1.1vw,18px)] leading-tight text-neutral-900 tracking-wide uppercase" v-html="wall.getColumnLabelHtml(col.id)" />
 
             <!-- Interactive Hold Indicator with Hand Icon -->
             <div class="inline-flex items-center justify-center gap-1.5 mt-2 px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-full pointer-events-none transition-colors">
@@ -279,7 +279,7 @@ onUnmounted(() => {
             :data-sub="sub.key"
             :data-col="col.id"
           >
-            <span class="text-xs font-black leading-tight" v-html="wall.getSubItemLabelHtml(col.id, sub.key)" />
+            <span class="w-full text-center whitespace-nowrap overflow-hidden text-ellipsis px-1 text-[clamp(9px,0.9vw,14px)] font-black leading-tight uppercase" v-html="wall.getSubItemLabelHtml(col.id, sub.key)" />
             <div
               class="inline-flex items-center justify-center gap-1 mt-0.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 transition-colors"
               :class="{ '!bg-emerald-800 !border-emerald-600 !text-emerald-100': wall.getActiveSubItem(col.id) === sub.key }"
@@ -405,7 +405,7 @@ onUnmounted(() => {
             'opacity-100 translate-y-0': wall.getColumnState(col.id) === 'active',
           }"
         >
-          <h4 class="text-xs font-black uppercase mb-1 tracking-wide text-emerald-800" :data-col="col.id">
+          <h4 class="text-xs font-black uppercase mb-1 tracking-wide text-emerald-800 whitespace-nowrap overflow-hidden text-ellipsis max-w-full" :data-col="col.id">
             {{ wall.getBottomTitle(col.id) }}
           </h4>
           <p class="text-xs text-neutral-600 leading-normal font-normal">
