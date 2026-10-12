@@ -20,7 +20,7 @@ Previous GSAP milestone reveal/cache, 19 sketch/color pairs, fixture generation,
 
 ## Dependencies
 
-Installed project versions: Nuxt 4.5.2, Vue 3.5.43, Vue Router 5.3.1, Pinia 4.0.3, @pinia/nuxt 1.0.2, @nuxt/fonts 0.14.0, Tailwind/Vite plugin 4.3.3. Tooling: Vitest 5.0.3, vue-tsc 3.3.11, TypeScript 6.0.3, ESLint 10.11.0, @antfu/eslint-config 9.5.1.
+Installed project versions: Nuxt 4.6.1, Vue 3.5.43, Vue Router 5.4.0, Pinia 4.0.3, @pinia/nuxt 1.0.2, @nuxt/fonts 1.0.1, Tailwind/Vite plugin 4.3.3. Tooling: Vitest 5.0.3, vue-tsc 3.3.13, TypeScript 6.0.3, ESLint 10.12.0, @antfu/eslint-config 9.5.1.
 
 GSAP and direct Sharp dependencies were removed in the preceding repair. This revision adds no dependencies or version upgrades. Use package.json/bun.lock as the source of truth rather than assuming this snapshot is perpetually latest.
 
