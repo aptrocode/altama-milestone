@@ -1,5 +1,6 @@
 # Nuxt dev/build outputs
 .output
+.data
 .nuxt
 .nitro
 .cache
@@ -12,9 +13,22 @@ node_modules
 # Logs
 logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Misc
+# Testing & browser automation artifacts
+.playwright-mcp
+test-results
+playwright-report
+blob-report
+
+# Misc & OS
 .DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
 .fleet
 .idea
 
@@ -25,5 +39,4 @@ logs
 
 # Deprecated standalone prototypes
 start-localhost.bat
-
 mainProject/
