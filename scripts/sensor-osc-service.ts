@@ -29,15 +29,17 @@ function getTargetRect(action: WallAction): TargetRect {
 
   switch (action.type) {
     case 'main':
-      return column.main;
+      return column.main || column.card;
     case 'back':
       return column.active.back;
     case 'previous':
       return column.active.previous;
     case 'next':
       return column.active.next;
+    case 'page':
+      return column.active.pages.find(item => item.page === action.page) || column.active.card;
     case 'subItem': {
-      const item = column.submenu?.items.find(i => i.key === action.subItemId);
+      const item = column.subItems?.find(i => i.key === action.subItemId);
       return item || column.card;
     }
     case 'language': {
@@ -47,14 +49,18 @@ function getTargetRect(action: WallAction): TargetRect {
   }
 }
 
-let currentColumns: Record<ColumnId, ColumnSnapshot> = {
-  1: { phase: 'idle', locale: 'id', subItem: '', slide: 0 },
-  2: { phase: 'idle', locale: 'id', subItem: '', slide: 0 },
-  3: { phase: 'idle', locale: 'id', subItem: '', slide: 0 },
-  4: { phase: 'idle', locale: 'id', subItem: '', slide: 0 },
-  5: { phase: 'idle', locale: 'id', subItem: '', slide: 0 },
-  6: { phase: 'idle', locale: 'id', subItem: '', slide: 0 },
-};
+/** Brand/distribution columns have no main target; OSC "open" selects their first tile instead. */
+function toTargetAction(action: WallAction): WallAction {
+  const column = rawLayout.columns.find(col => col.id === action.columnId);
+  if (action.type === 'main' && !column?.main && column?.subItems?.[0])
+    return { type: 'subItem', columnId: action.columnId, subItemId: column.subItems[0].key };
+  return action;
+}
+
+let currentColumns = Object.fromEntries(rawLayout.columns.map(column => [
+  column.id,
+  { phase: 'idle', locale: 'id', subItem: '', photo: 0, page: 0 },
+])) as Record<ColumnId, ColumnSnapshot>;
 
 interface ConnectedClient {
   send: (data: string) => void;
@@ -155,7 +161,7 @@ udp.on('message', (buffer: Buffer, rinfo: RemoteInfo) => {
     for (const msg of oscMessages) {
       console.log(`[OSC] Received ${msg.address} ${JSON.stringify(msg.args)} from ${rinfo.address}:${rinfo.port}`);
       const actions = oscToWallActions(msg, currentColumns);
-      for (const action of actions) {
+      for (const action of actions.map(toTargetAction)) {
         const rect = getTargetRect(action);
         const inputFrame = {
           version: 2,
@@ -185,8 +191,9 @@ udp.on('listening', () => {
   console.log('   - /altama/column <1-6>         (Toggle main/back on column)');
   console.log('   - /altama/open <1-6>           (Open column directly)');
   console.log('   - /altama/back [1-6]           (Back in column, or all if omitted)');
-  console.log('   - /altama/next <1-6>           (Next slide in carousel)');
-  console.log('   - /altama/prev <1-6>           (Previous slide in carousel)');
+  console.log('   - /altama/next <1-6>           (Next photo in slider)  ');
+  console.log('   - /altama/prev <1-6>           (Previous photo in slider)');
+  console.log('   - /altama/page <col> <page>    (Show text page, e.g. 2 2)');
   console.log('   - /altama/subItem <col> <key>  (Select subItem, e.g. 2 tekiro)');
   console.log('   - /altama/lang [col] <locale>  (Set locale: id, en, zh-Hans)');
   console.log('   - /altama/reset                (Reset all open columns to idle)');
