@@ -20,14 +20,22 @@ interface ColumnLayout {
 interface VisualLayout {
   logo: { idle: { y: number; height: number }; compact: { y: number; height: number } };
   idlePill: Rect;
+  /** Open pill of expandable columns, leaving room for the sub-item name above the card. */
   activePill: Rect;
+  /** Open pill of single columns, 20 px above the card (no sub-item name). */
+  activePillSingle: Rect;
   subtitle: Rect;
   artwork: Rect;
   photo: Rect;
   textTop: { tabs: number; photo: number; plain: number };
   rail: { y: number; height: number };
   /** Window into one column for the stacked (mobile/tablet) layout, in logical units. */
-  stacked: { padX: number; idle: { y: number; height: number }; open: { y: number; height: number } };
+  stacked: {
+    padX: number;
+    idle: { y: number; height: number };
+    open: { y: number; height: number };
+    openSingle: { y: number; height: number };
+  };
 }
 
 interface InstallationLayout {
