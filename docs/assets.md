@@ -10,7 +10,7 @@ All current Summit artwork and photos are **provisional crops from the two clien
 | `public/illustrations/distribution/{distribusi,pemasaran}.webp` | Column 5 tiles | Mockup 1 crops without the baked-in captions |
 | `public/brands/{tekiro,ryu,rexco}.webp` | Column 2 tiles (RYU/Rexco also above their open card) | Mockup 1 crops |
 | `public/brands/tekiro-wordmark.webp` | Tekiro logo above the open card | Mockup 2 crop, background keyed out |
-| `public/photos/{column-key}[/{sub-item}]/photo-1.webp` | First slider photo | Mockup 2 photo frames (226 × 124 px) with the baked-in arrows painted over |
+| `public/photos/{column-key}[/{sub-item}]/photo-1.webp` | First photo of the first page | Mockup 2 photo frames (226 × 124 px) with the baked-in arrows painted over |
 | `public/flags/{indonesia,english,china}.svg` | Language controls | Local SVGs |
 
 The photo crops are small and will look soft on the LED. Brand logos (Tekiro, RYU, Rexco, ODP, ALTAMA) are trademarks; replace the crops with official files from the client's brand kit.
@@ -18,8 +18,8 @@ The photo crops are small and will look soft on the LED. Brand logos (Tekiro, RY
 ## Replacing assets
 
 1. Put the final file at the same path, or add a new kebab-case path and point the entry to it.
-2. Set `approved: true` for that entry in `app/data/wall-config.ts` (artwork, tiles, photos) or `app/data/wall-media.ts` (background, logo, skyline).
-3. Each content's `photos` array is the slider; replace a `null` slot (numbered placeholder) with a photo or add more entries. Text pages are separate; paged content needs a tab label in every language and at most two pages (the wall-v4 tab targets).
+2. Set `approved: true` for that entry in its column file under `app/data/columns/` (artwork, tiles, photos) or `app/data/wall-media.ts` (background, logo, skyline). See [content](./content.md).
+3. Each page's `photos` array is its slider; replace a `PHOTO_PLACEHOLDER` slot with a photo or add more slots. Paged content needs a tab label in every language and at most two pages (the wall-v4 tab targets).
 4. Run `bun run assets:check` and check both viewports.
 
 Background media: set `STAGE_MEDIA.background` to `{ kind: 'video', src, poster, approved }` or `{ kind: 'image', src, approved }`. Preferred video: 2304 × 1344, H.264 MP4 or VP9 WebM, muted seamless loop, local file. Convert image sequences to video unless alpha is required. The current background image already contains the skyline, so `skyline` is `null`; set a separate skyline only if the final video lacks one. If the video contains the logo, set `logo` to `null`. Set `waveSweeps` to `false` whenever the background changes, because its animated light paths are traced from the current image.

@@ -27,18 +27,18 @@ On connection, the renderer sends:
 ```json
 { "version": 2, "type": "clientHello", "layoutVersion": "wall-v4", "columns": { "1": { "phase": "idle", "locale": "id", "subItem": "", "photo": 0, "page": 0, "photoCount": 2, "pageCount": 2 } } }
 ```
-The actual `columns` payload always includes IDs 1–6. `phase` is `idle` or `active`; `photoCount`/`pageCount` describe the content currently selected for that column. Changes send the same snapshot with `type: "clientState"`.
+The actual `columns` payload always includes IDs 1–6. `phase` is `idle` or `active`; `photoCount` is the number of photo slots on the page currently shown and `pageCount` the number of pages of the selected content. Changes send the same snapshot with `type: "clientState"`.
 
 Sensor Service combines that snapshot with `shared/installation-layout.json`:
 - language targets are visible only in idle;
 - `main` (single columns) and `subItems` tiles (columns 2/5) are visible only in idle; columns 2/5 have no `main` target;
 - `active.back` only in active;
-- `active.previous`/`active.next` only in active with `photoCount > 1`;
+- `active.previous`/`active.next` only in active with `photoCount > 1` (it changes when the page changes);
 - `active.pages[n]` only in active with `pageCount > 1` and `n < pageCount`.
 
 Each column is independent: target visibility depends only on that column's snapshot.
 
-Do not detect against hidden target groups. Main and sub-item tile targets require one second of deliberate contact before sending one input. Immediate language/Back/arrow/page input should be debounced to one action per deliberate contact. Contact release is internal to Sensor Service; do not send legacy touchStart/touchEnd events.
+Do not detect against hidden target groups. Main, sub-item tile, photo-arrow (`previous`/`next`), and page-tab targets require one second of deliberate contact before sending one input. Immediate language/Back input should be debounced to one action per deliberate contact. Contact release is internal to Sensor Service; do not send legacy touchStart/touchEnd events.
 
 ## Input
 
@@ -64,8 +64,8 @@ Coordinates are logical 2304 × 1344 pixels inside the declared target. All six 
 | `subItem` | `columnId`, `subItemId` | Open that sub-item from its idle tile |
 | `language` | `columnId`, `locale` | Change only that column's language |
 | `back` | `columnId` | Return to idle |
-| `previous` / `next` | `columnId` | Move the open photo slider |
-| `page` | `columnId`, `page` (0-based) | Show that text page |
+| `previous` / `next` | `columnId` | Move the current page's photo slider (hold target) |
+| `page` | `columnId`, `page` (0-based) | Show that page, its photos and text (hold target) |
 
 Valid sub-items: column 2 = `tekiro`, `ryu`, `rexco`; column 5 = `distribusi`, `pemasaran`. Languages: `id`, `en`, `zh-Hans`. The renderer validates the declared target and current phase; it does not perform raw hit detection.
 

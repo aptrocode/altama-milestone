@@ -7,7 +7,7 @@ A fresh load starts every column in Indonesian. Manual Back and R/Escape preserv
 ## Ownership
 
 - `shared/wall.ts`: supported languages and typed language action.
-- `app/data/wall-config.ts`: translated column/sub-item labels and page copy (paragraphs, bullets, numbered lists, tab labels).
+- `app/data/columns/*.ts`: translated column/sub-item labels and page copy (paragraphs, bullets, numbered lists, tab labels), one file per column.
 - `app/data/wall-copy.ts`: interface phrases, language names, local flag paths.
 - `app/stores/wall.ts`: serializable locale per column.
 - `useWallController`: language action and inactivity lifecycle.

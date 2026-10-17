@@ -12,7 +12,7 @@ pointer hold / native keyboard / operator shortcut / validated sensor input
   -> presentational Vue components
 ```
 
-`KioskStage` owns one wall controller, one socket, and the shared logo. `KioskBackground` renders the stage media. Each `WallColumn` is absolutely positioned on its logical section and renders its own idle frame or open layout, so a column never moves its neighbours. It receives configuration, snapshot, and copy; it emits actions/activity. `WallColumnPill`, `WallLanguageSwitcher`, `WallCarousel`, `WallSlideContent`, and `WallHoldButton` contain reusable UI. Positions come from `rectStyle(rect, origin)` over the canonical layout JSON.
+`KioskStage` owns one wall controller, one socket, the shared logo, and the layout choice (`useStackedLayout`). `KioskBackground` renders the stage media. Each `WallColumn` is positioned on its logical section (wall layout) or inside its own uniformly scaled box (stacked layout, via the `origin` prop) and renders either `WallIdleFrame` or the open layout (`WallColumnPill`, sub-item name, `WallOpenCard`, Back), so a column never moves its neighbours. `WallOpenCard` renders the current page's photo slider, hold arrows, hold page tabs, and `WallPageCopy`. Positions come from `rectStyle(rect, origin)` over the canonical layout JSON. Content lives in `app/data/columns/` (one file per column, see [content](./content.md)).
 
 ## State and transitions
 
@@ -20,15 +20,15 @@ Each column has `phase` (`idle`/`active`), `locale`, `subItem`, `photo`, and `pa
 
 Language selection is accepted only while idle. The chooser is an absolute sibling of the hold targets inside the idle frame; open content retains the selected locale and hides the chooser. Sensor parsing excludes the language overlay rectangle from main input, including gaps between flags.
 
-Open content (`getColumnContent`) has an image slider and independent text pages. `previous`/`next` move `photo` only when there are at least two photos and wrap; `page` selects a text page only when there are at least two pages. Back always returns to idle. Manual reset preserves locale immediately. `publishedColumns` adds `photoCount`/`pageCount` to each snapshot for Sensor Service.
+Open content is a list of pages (`getColumnPages`); each page owns a photo slider and text. `previous`/`next` move `photo` within the current page only when it has at least two photo slots and wrap; `page` selects another page only when there are at least two, and resets `photo` to 0. Back always returns to idle. Manual reset preserves locale immediately. `publishedColumns` adds the current page's `photoCount` and the `pageCount` to each snapshot for Sensor Service.
 
-One `getColumnCopy` resolver chooses the localized column label and open sub-item label. Slide copy is typed data (paragraphs, bullets with bold leads, numbered lists) rendered as plain text; no HTML interpolation or localization dependency is used. Media entries are `{ src, approved }` in `wall-config.ts` and `wall-media.ts`.
+One `getColumnCopy` resolver chooses the localized column label and open sub-item label. Page copy is typed data (paragraphs, bullets with bold leads, numbered lists) rendered as plain text; no HTML interpolation or localization dependency is used. Media entries are `{ src, approved }` in the column files and `wall-media.ts`.
 
 ## Resource lifecycle
 
 `useWallController` owns a private timer map per instance. Accepted actions and activity restart only that column's 30-second timer. Idle Indonesian columns need no timer; idle English/Chinese columns do. Timeout restores the default sub-item, photo/page zero, idle phase, and Indonesian. R/Escape reschedules any remaining language timer. Scope disposal clears every timer.
 
-`bindHold` owns pointer listeners and progress/completion timers. Leaving, cancellation, pointer release, blur, or unmount cancels incomplete contact. The directive updates its callback when Vue updates it. Native keyboard/assistive clicks activate immediately.
+`bindHold` owns pointer listeners and progress/completion timers. Leaving, cancellation (including a scroll gesture in the stacked layout), pointer release, blur, or unmount cancels incomplete contact. The directive updates its callback when Vue updates it. Native keyboard/assistive clicks activate immediately. `useStackedLayout` owns one `matchMedia` listener and removes it when its scope is disposed.
 
 `KioskBackground` owns its optional `<video>`: it pauses and releases the source on unmount and falls back to the coded gradient when media fails to load.
 
