@@ -1,10 +1,15 @@
 import type { ColumnId, ColumnSnapshot, PublishedColumn, WallAction } from '../../shared/wall';
 import { defineStore } from 'pinia';
-import { getColumnConfig, getColumnContent, WALL_CONFIG } from '~/data/wall-config';
+import { getColumnConfig, getColumnPages, WALL_CONFIG } from '~/data/wall-config';
 import { COLUMN_IDS, WALL_LOCALES } from '../../shared/wall';
 
 function initialColumn(columnId: ColumnId): ColumnSnapshot {
   return { phase: 'idle', locale: 'id', subItem: getColumnConfig(columnId).defaultSub || '', photo: 0, page: 0 };
+}
+
+/** Photo count of the page currently shown in a column (0 when the page has no slider). */
+function photoCount(columnId: ColumnId, snapshot: ColumnSnapshot): number {
+  return getColumnPages(getColumnConfig(columnId), snapshot.subItem)[snapshot.page]?.photos.length || 0;
 }
 
 function columnCopy(columnId: ColumnId, snapshot: ColumnSnapshot) {
@@ -30,8 +35,9 @@ export const useWallStore = defineStore('wall', {
     getColumnCopy: state => (id: ColumnId) => columnCopy(id, state.columns[id]),
     /** Snapshots plus visible arrow/tab counts for Sensor Service target selection. */
     publishedColumns: state => Object.fromEntries(COLUMN_IDS.map((id) => {
-      const content = getColumnContent(getColumnConfig(id), state.columns[id].subItem);
-      return [id, { ...state.columns[id], photoCount: content.photos.length, pageCount: content.pages.length }];
+      const snapshot = state.columns[id];
+      const pageCount = getColumnPages(getColumnConfig(id), snapshot.subItem).length;
+      return [id, { ...snapshot, photoCount: photoCount(id, snapshot), pageCount }];
     })) as Record<ColumnId, PublishedColumn>,
   },
   actions: {
@@ -49,7 +55,7 @@ export const useWallStore = defineStore('wall', {
       if (!config)
         return false;
       const column = this.columns[action.columnId];
-      const content = getColumnContent(config, column.subItem);
+      const pages = getColumnPages(config, column.subItem);
 
       switch (action.type) {
         case 'language':
@@ -80,19 +86,21 @@ export const useWallStore = defineStore('wall', {
           break;
         case 'previous':
         case 'next': {
-          // Arrows exist only for sliders with several photos.
-          const count = content.photos.length;
+          // Arrows exist only when the current page's slider has several photos.
+          const count = photoCount(action.columnId, column);
           if (column.phase !== 'active' || count < 2)
             return false;
           column.photo = (column.photo + (action.type === 'next' ? 1 : -1) + count) % count;
           break;
         }
         case 'page':
-          if (column.phase !== 'active' || content.pages.length < 2 || !Number.isSafeInteger(action.page)
-            || action.page < 0 || action.page >= content.pages.length) {
+          if (column.phase !== 'active' || pages.length < 2 || !Number.isSafeInteger(action.page)
+            || action.page < 0 || action.page >= pages.length) {
             return false;
           }
+          // Each page owns its photos, so switching pages restarts its slider.
           column.page = action.page;
+          column.photo = 0;
           break;
         default:
           return false;

@@ -1,33 +1,36 @@
 <script setup lang="ts">
 import type { ColumnId, ColumnSnapshot, WallAction } from '../../../shared/wall';
-import type { ColumnConfig } from '~/data/wall-config';
+import type { ColumnConfig } from '~/types/wall-content';
 import { computed } from 'vue';
-import WallCarousel from '~/components/wall/WallCarousel.vue';
 import WallColumnPill from '~/components/wall/WallColumnPill.vue';
-import WallHoldButton from '~/components/wall/WallHoldButton.vue';
-import WallLanguageSwitcher from '~/components/wall/WallLanguageSwitcher.vue';
+import WallIdleFrame from '~/components/wall/WallIdleFrame.vue';
+import WallOpenCard from '~/components/wall/WallOpenCard.vue';
 import { getColumnLayout, installationLayout, rectStyle } from '~/data/installation-layout';
-import { getColumnContent } from '~/data/wall-config';
+import { getColumnPages } from '~/data/wall-config';
 import { WALL_COPY } from '~/data/wall-copy';
 
-const props = defineProps<{ column: ColumnConfig; snapshot: ColumnSnapshot; copy: { label: string; activeLabel: string } }>();
+/**
+ * One column in logical canvas units. Idle shows WallIdleFrame (mockup 1); open shows the raised
+ * pill, sub-item name, WallOpenCard, and Back (mockup 2). `origin` shifts the section for the
+ * stacked mobile layout; on the LED wall it stays at the canvas origin.
+ */
+const props = withDefaults(defineProps<{
+  column: ColumnConfig;
+  snapshot: ColumnSnapshot;
+  copy: { label: string; activeLabel: string };
+  origin?: { x: number; y: number };
+}>(), { origin: () => ({ x: 0, y: 0 }) });
 const emit = defineEmits<{ action: [action: WallAction]; activity: [id: ColumnId] }>();
 
 const geometry = computed(() => getColumnLayout(props.column.id));
 const visual = installationLayout.visual;
 const idle = computed(() => props.snapshot.phase === 'idle');
-const content = computed(() => getColumnContent(props.column, props.snapshot.subItem));
-const tiles = computed(() => (geometry.value.subItems || []).map(tile => ({
-  tile,
-  sub: props.column.subItems!.find(sub => sub.key === tile.key)!,
-})));
+const pages = computed(() => getColumnPages(props.column, props.snapshot.subItem));
 const openSubItem = computed(() => props.column.type === 'expandable' && !idle.value
   ? props.column.subItems?.find(sub => sub.key === props.snapshot.subItem)
   : undefined);
 // Each column moves only its own title: inside the idle frame, or above the open card.
 const pillStyle = computed(() => rectStyle(idle.value ? visual.idlePill : visual.activePill));
-const card = computed(() => geometry.value.card);
-const artworkStyle = computed(() => rectStyle(visual.artwork, { x: 0, y: card.value.y }));
 
 function act(action: WallAction) {
   emit('action', action);
@@ -36,7 +39,7 @@ function act(action: WallAction) {
 
 <template>
   <section
-    class="wall-column absolute text-wall-ink" :style="rectStyle(geometry.section)"
+    class="wall-column absolute text-wall-ink transition-[top] duration-500 ease-out motion-reduce:transition-none" :style="rectStyle(geometry.section, origin)"
     :data-col="column.id" :data-phase="snapshot.phase" :lang="snapshot.locale" :aria-label="copy.label"
     @pointerdown.capture="$emit('activity', column.id)" @keydown.capture="$emit('activity', column.id)"
   >
@@ -57,42 +60,10 @@ function act(action: WallAction) {
       enter-active-class="transition duration-300 ease-out delay-150" enter-from-class="opacity-0" enter-to-class="opacity-100"
       leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0"
     >
-      <div
-        v-if="idle" class="wall-frame absolute [border-radius:calc(14*var(--wall-x))/calc(14*var(--wall-y))] bg-[#0a1a80]/35 ring-2 ring-wall-glow/80 shadow-[0_0_calc(20*var(--wall-x))_rgba(80,190,255,0.6),inset_0_0_calc(24*var(--wall-x))_rgba(80,190,255,0.25)]"
-        :style="rectStyle(card, geometry.section)"
-      >
-        <WallHoldButton
-          v-if="geometry.main" class="absolute inset-0 [border-radius:inherit] hover:bg-white/5"
-          :outline="geometry.main" :radius="14" :aria-label="copy.label" data-sensor-action="main"
-          @activate="act({ type: 'main', columnId: column.id })"
-        >
-          <img
-            v-if="column.illustration" :src="column.illustration.src" alt=""
-            class="absolute object-contain pointer-events-none" :style="artworkStyle"
-          >
-        </WallHoldButton>
-        <WallHoldButton
-          v-for="{ tile, sub } in tiles" :key="tile.key"
-          class="absolute overflow-hidden [border-radius:calc(10*var(--wall-x))/calc(10*var(--wall-y))] ring-1 ring-white/30 shadow-[0_0_calc(10*var(--wall-x))_rgba(80,190,255,0.35)]"
-          :class="column.captionTiles ? 'bg-[#1530b8]/70' : ''"
-          :style="rectStyle(tile, card)" :outline="tile" :radius="10" :aria-label="sub.i18n[snapshot.locale].label"
-          data-sensor-action="subItem" :data-sub-item="tile.key"
-          @activate="act({ type: 'subItem', columnId: column.id, subItemId: tile.key })"
-        >
-          <span v-if="column.captionTiles" class="absolute inset-x-0 top-[calc(8*var(--wall-y))] z-10 text-[length:calc(30*var(--wall-x))] font-extrabold uppercase tracking-wide text-white text-center leading-none drop-shadow-[0_0_calc(8*var(--wall-x))_rgba(0,0,60,0.8)]">
-            {{ sub.i18n[snapshot.locale].label }}
-          </span>
-          <img
-            :src="sub.image.src" alt="" class="absolute inset-x-0 bottom-0 w-full object-cover pointer-events-none"
-            :class="column.captionTiles ? 'h-[78%]' : 'h-full'"
-          >
-        </WallHoldButton>
-        <WallLanguageSwitcher
-          class="absolute z-20" :style="rectStyle(geometry.languageBar, card)"
-          :column-id="column.id" :locale="snapshot.locale" :bar="geometry.languageBar" :targets="geometry.languages"
-          @select="act({ type: 'language', columnId: column.id, locale: $event })"
-        />
-      </div>
+      <WallIdleFrame
+        v-if="idle" class="absolute" :style="rectStyle(geometry.card, geometry.section)"
+        :column="column" :locale="snapshot.locale" :label="copy.label" @action="act"
+      />
     </Transition>
 
     <WallColumnPill
@@ -119,9 +90,9 @@ function act(action: WallAction) {
       enter-active-class="transition duration-300 ease-out delay-150" enter-from-class="opacity-0 translate-y-3" enter-to-class="opacity-100 translate-y-0"
       leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0"
     >
-      <WallCarousel
+      <WallOpenCard
         v-if="!idle" class="absolute" :style="rectStyle(geometry.active.card, geometry.section)"
-        :column-id="column.id" :content="content" :locale="snapshot.locale" :photo="snapshot.photo" :page="snapshot.page"
+        :column-id="column.id" :pages="pages" :locale="snapshot.locale" :photo="snapshot.photo" :page="snapshot.page"
         :geometry="geometry.active" @action="act"
       />
     </Transition>

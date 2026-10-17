@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ColumnIcon } from '~/data/wall-config';
+import type { ColumnIcon } from '~/types/wall-content';
 import WallColumnIcon from '~/components/wall/WallColumnIcon.vue';
 
 defineProps<{ icon: ColumnIcon; label: string }>();

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { WallLocale } from '../../../shared/wall';
-import type { PageCopy } from '~/data/wall-config';
+import type { PageCopy } from '~/types/wall-content';
 
 defineProps<{ copy: PageCopy; locale: WallLocale }>();
 </script>
