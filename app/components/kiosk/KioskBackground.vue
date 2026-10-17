@@ -31,9 +31,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="pointer-events-none absolute inset-0 overflow-hidden bg-wall-night" aria-hidden="true">
+  <div class="pointer-events-none fixed inset-0 overflow-hidden bg-wall-night" aria-hidden="true">
     <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_8%,#2347d8_0%,#11248f_32%,#081460_62%,#040a3a_100%)]" />
-    <svg class="absolute inset-0 size-full" viewBox="0 0 2304 1344" preserveAspectRatio="none">
+    <svg class="absolute inset-0 size-full" viewBox="0 0 2304 1344" preserveAspectRatio="xMidYMid slice">
       <defs>
         <filter id="wall-wave-glow" x="-10%" y="-10%" width="120%" height="120%">
           <feGaussianBlur stdDeviation="6" />
@@ -74,7 +74,7 @@ onBeforeUnmount(() => {
 
     <svg
       v-if="STAGE_MEDIA.waveSweeps && background.kind === 'image' && !failed"
-      class="wall-waves absolute inset-0 size-full mix-blend-screen" viewBox="0 0 2304 1344" preserveAspectRatio="none"
+      class="wall-waves absolute inset-0 size-full mix-blend-screen" viewBox="0 0 2304 1344" preserveAspectRatio="xMidYMid slice"
     >
       <defs>
         <filter id="wall-sweep-blur" x="-20%" y="-20%" width="140%" height="140%">

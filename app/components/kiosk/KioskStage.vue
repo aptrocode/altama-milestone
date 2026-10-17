@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import type { WallAction } from '../../../shared/wall';
+import type { ColumnId, WallAction } from '../../../shared/wall';
 import type { SensorMessage } from '~/types/sensor';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import KioskBackground from '~/components/kiosk/KioskBackground.vue';
 import KioskStatus from '~/components/kiosk/KioskStatus.vue';
 import WallColumn from '~/components/wall/WallColumn.vue';
 import { useSensorSocket } from '~/composables/useSensorSocket';
+import { useStackedLayout } from '~/composables/useStackedLayout';
 import { useWallController } from '~/composables/useWallController';
-import { installationLayout } from '~/data/installation-layout';
+import { getColumnLayout, installationLayout } from '~/data/installation-layout';
 import { WALL_CONFIG } from '~/data/wall-config';
 import { STAGE_MEDIA } from '~/data/wall-media';
 import { useSystemStore } from '~/stores/system';
@@ -20,10 +21,29 @@ const system = useSystemStore();
 const runtimeConfig = useRuntimeConfig();
 const showDiagnostics = ref(false);
 const layout = installationLayout;
-const stageStyle = {
+// LED wall: one logical pixel per axis, scaled independently to fill the viewport.
+const wallStyle = {
   '--wall-x': `calc(100vw / ${layout.canvas.width})`,
   '--wall-y': `calc(100dvh / ${layout.canvas.height})`,
 };
+const stacked = useStackedLayout();
+const stackedView = layout.visual.stacked;
+
+// Phones/tablets: each column is drawn in its own box with a uniform scale (container width),
+// showing only the logical rows its idle frame or open layout uses.
+function stackedBox(id: ColumnId) {
+  const view = wall.getColumnState(id) === 'idle' ? stackedView.idle : stackedView.open;
+  return {
+    '--wall-x': `calc(100cqw / ${layout.frame.columnWidth + stackedView.padX * 2})`,
+    '--wall-y': 'var(--wall-x)',
+    'height': `calc(${view.height} * var(--wall-x))`,
+  };
+}
+
+function stackedOrigin(id: ColumnId) {
+  const view = wall.getColumnState(id) === 'idle' ? stackedView.idle : stackedView.open;
+  return { x: getColumnLayout(id).section.x - stackedView.padX, y: view.y };
+}
 // The large idle logo overlaps the raised titles of columns 3/4, so it shrinks only while one of them is open.
 const compactLogo = computed(() => wall.getColumnState(3) !== 'idle' || wall.getColumnState(4) !== 'idle');
 const logoBox = computed(() => compactLogo.value ? layout.visual.logo.compact : layout.visual.logo.idle);
@@ -84,22 +104,41 @@ onUnmounted(() => {
 
 <template>
   <main
-    id="wall-container" class="relative isolate w-screen h-dvh overflow-hidden bg-wall-night text-wall-ink select-none font-sans"
-    :style="stageStyle"
+    id="wall-container" class="relative isolate w-screen h-dvh bg-wall-night text-wall-ink select-none font-sans"
+    :class="stacked ? 'overflow-y-auto overscroll-contain touch-pan-y' : 'overflow-hidden touch-none'"
+    :style="stacked ? undefined : wallStyle" :data-layout="stacked ? 'stacked' : 'wall'"
   >
     <KioskBackground class="-z-10" />
 
-    <img
-      v-if="STAGE_MEDIA.logo" :src="STAGE_MEDIA.logo.src" alt="ALTAMA Summit 2026: Powering Partnership"
-      class="absolute left-1/2 -translate-x-1/2 w-auto max-w-none object-contain pointer-events-none transition-[top,height] duration-500 ease-out motion-reduce:transition-none"
-      :style="{ top: `calc(${logoBox.y} * var(--wall-y))`, height: `calc(${logoBox.height} * var(--wall-y))` }"
-    >
+    <template v-if="!stacked">
+      <img
+        v-if="STAGE_MEDIA.logo" :src="STAGE_MEDIA.logo.src" alt="ALTAMA Summit 2026: Powering Partnership"
+        class="absolute left-1/2 -translate-x-1/2 w-auto max-w-none object-contain pointer-events-none transition-[top,height] duration-500 ease-out motion-reduce:transition-none"
+        :style="{ top: `calc(${logoBox.y} * var(--wall-y))`, height: `calc(${logoBox.height} * var(--wall-y))` }"
+      >
+      <WallColumn
+        v-for="column in WALL_CONFIG.columns" :key="column.id"
+        :column="column" :snapshot="wall.columns[column.id]" :copy="wall.getColumnCopy(column.id)"
+        @action="dispatch" @activity="controls.touchColumn"
+      />
+    </template>
 
-    <WallColumn
-      v-for="column in WALL_CONFIG.columns" :key="column.id"
-      :column="column" :snapshot="wall.columns[column.id]" :copy="wall.getColumnCopy(column.id)"
-      @action="dispatch" @activity="controls.touchColumn"
-    />
+    <div v-else class="mx-auto w-full max-w-5xl px-4 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(2.5rem,env(safe-area-inset-bottom))]">
+      <img
+        v-if="STAGE_MEDIA.logo" :src="STAGE_MEDIA.logo.src" alt="ALTAMA Summit 2026: Powering Partnership"
+        class="mx-auto w-[min(88%,30rem)] h-auto pointer-events-none"
+      >
+      <div class="mt-4 grid grid-cols-1 gap-x-4 sm:grid-cols-2">
+        <div v-for="column in WALL_CONFIG.columns" :key="column.id" class="@container min-w-0">
+          <div class="relative overflow-hidden transition-[height] duration-500 ease-out motion-reduce:transition-none" :style="stackedBox(column.id)">
+            <WallColumn
+              :column="column" :snapshot="wall.columns[column.id]" :copy="wall.getColumnCopy(column.id)" :origin="stackedOrigin(column.id)"
+              @action="dispatch" @activity="controls.touchColumn"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
 
     <KioskStatus
       v-if="showDiagnostics" :socket-status="system.socketStatus" :sensor-ready="system.sensorReady"

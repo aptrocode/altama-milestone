@@ -23,7 +23,7 @@
   }
 
   body {
-    @apply select-none antialiased touch-none;
+    @apply select-none antialiased;
   }
 
   button {
