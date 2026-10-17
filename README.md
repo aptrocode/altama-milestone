@@ -60,7 +60,7 @@ bun run osc:send /altama/next 2
 bun run osc:send /altama/reset
 ```
 
-Sensor LiDAR integration uses **protocol v2 / wall-v4** via WebSocket at port 8787; see [docs/sensor.md](docs/sensor.md). Sensor input is disabled by default (`NUXT_PUBLIC_SENSOR_ENABLED=true` to enable).
+Sensor LiDAR integration uses **protocol v2 / wall-v5** via WebSocket at port 8787; see [docs/sensor.md](docs/sensor.md). Sensor input is disabled by default (`NUXT_PUBLIC_SENSOR_ENABLED=true` to enable).
 
 ## Project guide
 

@@ -10,18 +10,18 @@ Keep class names complete and statically discoverable by Tailwind. Prefer a smal
 
 ## Canvas and spacing
 
-KioskStage defines `--wall-x`/`--wall-y` (one logical pixel horizontally/vertically). Components position geometry with `rectStyle(rect, origin)` from `app/data/installation-layout.ts`, which emits `calc(N * var(--wall-x/y))` lengths straight from the canonical JSON, and use `calc(N*var(--wall-x/y))` utilities for internal presentation sizes. Horizontal dimensions and font sizes scale with canvas width; vertical spacing scales with canvas height.
+KioskStage defines `--wall-x`/`--wall-y` (one logical pixel horizontally/vertically). Components position geometry with `rectStyle(rect, origin)` from `app/data/installation-layout.ts`, which emits `calc(N * var(--wall-x/y))` lengths straight from the canonical JSON, and use `calc(N*var(--wall-x/y))` utilities for internal presentation sizes. Horizontal dimensions scale with canvas width and vertical spacing with canvas height. Font sizes use `--wall-u` (`min(--wall-x, --wall-y)`), so text never outgrows its box on screens whose aspect ratio differs from the LED (e.g. 1920 × 1080).
 
-- Columns: 360 px wide, 32 px insets, 16 px gaps. Idle frame 360 × 642 at y 394 with 14 px corners; open card 330 × 524 at y 480 with 46 px corners.
-- Title pills: 336 × 98 with an 84 px icon ring and 31 px Oswald label; idle at y 410, open at y 258 (top transition).
-- Flags: 64 × 48 hit areas with 48 × 32 artwork in a 262 × 62 bar at y 954 (20 px below the last tile, 20 px above the frame edge).
+- Columns: 360 px wide, 32 px insets, 16 px gaps. Idle frame 360 × 642 at y 426 with 14 px corners; open card 330 × 524 at y 512 with 46 px corners.
+- Title pills: 336 × 98 with an 84 px icon ring and 31 px Oswald label; idle at y 442; open at y 290 (columns 2/5, room for the sub-item name) or y 394 (columns 1/3/4/6, 20 px above the card); top transition.
+- Flags: 64 × 48 hit areas with 48 × 32 artwork in a 262 × 62 bar at y 986 (20 px below the last tile, 20 px above the frame edge).
 - Open card: photo frame 262 × 144 at card offset (34, 35); 44 px round arrow hold targets with 34 px white circles; 112 × 40 page-tab hold targets at y 675; body text 14.5 px bold (14 px for long stories) from card offset 254 (with tabs), 196 (photo only), or 44 (text only).
 - Never use `border` on a frame, card, bar, or other element that contains or is a sensor target: borders shift absolutely positioned children. Use `ring-*` or inset box-shadows.
 - Hold outlines are inset 2 px with a 4 px stroke, normalized with pathLength, and animated alongside a blue inset box-shadow overlay using HOLD_DURATION_MS from the hold utility. They are visual overlays without their own input/timers.
 
-Stacked layout (phones/tablets): KioskStage redefines `--wall-x`/`--wall-y` per column box as `calc(100cqw / 384)` inside a Tailwind `@container`, so the same `calc(N * var(--wall-x/y))` utilities scale uniformly. Use Tailwind responsive utilities (`sm:`) only for the list grid and page chrome around the boxes, never inside wall components. `touch-none` applies only to the wall layout; the stacked list uses `touch-pan-y`.
+Stacked layout (phones/tablets): KioskStage redefines `--wall-x`/`--wall-y`/`--wall-u` per column box as `calc(100cqw / 384)` inside a Tailwind `@container`, so the same `calc(N * var(--wall-x/y))` utilities scale uniformly. Use Tailwind responsive utilities (`sm:`) only for the list grid and page chrome around the boxes, never inside wall components. `touch-none` applies only to the wall layout; the stacked list uses `touch-pan-y`.
 
-The current revision uses wall-v4 geometry. Internal typography/padding may change without moving hit areas. If any interactive target changes position or size, update the canonical JSON, bump the layout version, and coordinate Sensor Service. Verify target geometry, wrapping, and column independence at both documented viewports after changes.
+The current revision uses wall-v5 geometry. Internal typography/padding may change without moving hit areas. If any interactive target changes position or size, update the canonical JSON, bump the layout version, and coordinate Sensor Service. Verify target geometry, wrapping, and column independence at both documented viewports after changes.
 
 References checked through Context7: [Tailwind arbitrary values](https://tailwindcss.com/docs/adding-custom-styles), [Tailwind variants](https://tailwindcss.com/docs/hover-focus-and-other-states), and [Vue scoped CSS](https://vuejs.org/api/sfc-css-features).
 

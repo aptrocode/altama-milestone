@@ -14,7 +14,7 @@ Updated 17 October 2026. Package version remains 0.3.0; the Summit revision (bra
 - Floating flag-only Indonesian (default), English, and Simplified Chinese controls inside idle frames; open content keeps the chosen locale.
 - Geometry-derived SVG hold borders on main, tile, arrow, and page-tab targets with one-second perimeter progress, cancellation cleanup, and a static reduced-motion outline. Native keyboard activation and operator shortcuts remain available.
 - Serializable Pinia snapshots (`phase`, `locale`, `subItem`, `photo`, `page`) and a scope-owned 30-second inactivity controller.
-- Native WebSocket protocol v2 / wall-v4, semantic actions (including `page`), UI-state publication with photo/page counts, readiness/session/sequence/layout validation, and reconnect/heartbeat handling. OSC bridge supports `/altama/page`.
+- Native WebSocket protocol v2 / wall-v5, semantic actions (including `page`), UI-state publication with photo/page counts, readiness/session/sequence/layout validation, and reconnect/heartbeat handling. OSC bridge supports `/altama/page`.
 - Main input rejects contacts inside the language overlay; hidden actions and legacy layout input are rejected.
 - Custom recovery/loading UI and development-only diagnostics.
 - Validation of flags, translated labels/pages, tab labels and tab-target limits, sub-item tile ownership, idle/open target bounds, and every referenced media file.
@@ -32,7 +32,7 @@ Nuxt, Vue, Pinia, Bun, and Tailwind documentation was fetched through Context7 o
 ## Validation
 
 - Summit revision 2 (per-page photos, hold arrows/tabs, stacked layout): lint, typecheck, 55 tests across seven files, asset/config validation (17 provisional media files), production build, and static generation passed.
-- Headless Edge at 2304 × 1344 and 1600 × 900: every visible target (main, 18 flags, 5 tiles, Back, arrows, page tabs) matches wall-v4 within 0.06 logical px after transitions settle.
+- Headless Edge at 2304 × 1344, 1920 × 1080, and 1600 × 900: every visible target (main, 18 flags, 5 tiles, Back, arrows, page tabs) matches wall-v5 within 0.06 logical px after transitions settle, and every open page fits its card (fonts scale with the smaller axis). Single-column pills sit 20 px above their card; rails keep one height on every column.
 - Every open page fits its card without overflow in Indonesian, English, and Simplified Chinese; title pills wrap to at most two lines without clipping.
 - Opening one column, choosing tiles directly, moving photos, and switching pages (photos and text together) were checked visually against the reference mockups. Phone (390 × 844) and tablet (820 × 1180) stacked layouts scroll without horizontal overflow and keep text inside cards.
 - Normal browser interactions emitted no application console errors (only WebSocket connection failures when the sensor is enabled locally without a running service). The custom 404/recovery page still uses an older palette.
@@ -42,7 +42,7 @@ Nuxt, Vue, Pinia, Bun, and Tailwind documentation was fetched through Context7 o
 
 - Final assets from the design team: background video/sequence, official logos, illustrations, and full-resolution photos. Current files are mockup crops (photos 226 × 124 px, one per slider; other slots are numbered placeholders) and need client approval. Column 1's 1996 page and Tekiro PAGE 2 are placeholders, and RYU, Rexco, and Pemasaran have no reference content yet.
 - Client approval of company claims and the drafted English/Chinese translations.
-- Sensor Service implementation/deployment for protocol v2/wall-v4 and physical recalibration. Old services are intentionally rejected; deploy matching renderer/service geometry together before enabling input.
+- Sensor Service implementation/deployment for protocol v2/wall-v5 and physical recalibration. Old services are intentionally rejected; deploy matching renderer/service geometry together before enabling input.
 - Final PC/LED/Hokuyo hardware, multi-user coverage, occlusion, and long-duration performance validation.
 - Offline Chinese fonts/media, browser startup/supervision, endpoint configuration, rollout, and rollback.
 

@@ -8,10 +8,10 @@ Fill the viewport without fixed aspect ratio, maximum width, letterboxing, or sc
 
 Six columns are 360 logical px wide with 32 px outer insets and 16 px gaps (pitch 376).
 
-- **Idle (mockup 1):** a 360 × 642 glowing frame at y 394 holds the title pill (icon + label) at the top, the artwork (or the brand/distribution tiles), and the flag bar at y 954, kept 20 px clear of the last tile.
-- **Open (mockup 2):** the frame fades out, faint glow rails mark the column edges, the same pill slides up to y 258, expandable columns show the chosen sub-item (Tekiro logo, RYU/Rexco tile, or "DISTRIBUSI"/"PEMASARAN" text) under it, and a 330 × 524 rounded content card appears at y 480.
+- **Idle (mockup 1):** a 360 × 642 glowing frame at y 426 holds the title pill (icon + label) at the top, the artwork (or the brand/distribution tiles), and the flag bar at y 986, kept 20 px clear of the last tile.
+- **Open (mockup 2):** the frame fades out, faint glow rails (same height on every column, y 268–1058) mark the column edges, and the same pill rises. Expandable columns (2/5) raise it to y 290 and show the chosen sub-item (Tekiro logo, RYU/Rexco tile, or "DISTRIBUSI"/"PEMASARAN" text) under it; single columns (1/3/4/6) have no sub-item name, so their pill stops at y 394, 20 px above the card. A 330 × 524 rounded content card appears at y 512 on every column, keeping arrows and page tabs at the same comfortable height.
 
-The Summit logo is shared. It stays at its large idle size and shrinks to the mockup-2 size only while column 3 or 4 is open, because their raised pills would otherwise overlap it.
+The Summit logo is shared. Idle it is 278 px tall at y 70, narrow enough to stay between columns 3 and 4. It shrinks to 206 px at y 18 only while column 3 or 4 is open, because their open rails and pills would otherwise touch it.
 
 ## Stage background
 
@@ -36,7 +36,7 @@ Inside the card: the photo frame (262 × 144 at card offset 34, 35) with arrows 
 
 ## Controls and geometry
 
-`shared/installation-layout.json` (**wall-v4**) owns every target: `main` (single columns only), `languageBar` + 18 `languages` (64 × 48), `subItems` tiles for columns 2/5, and `active.back`, `active.previous`/`next`, `active.pages`. Its `visual` block holds non-target placement (logo, pills, subtitle, artwork, photo frame, text start, rails). Changing any target requires a new layout version and matching Sensor Service deployment.
+`shared/installation-layout.json` (**wall-v5**) owns every target: `main` (single columns only), `languageBar` + 18 `languages` (64 × 48), `subItems` tiles for columns 2/5, and `active.back`, `active.previous`/`next`, `active.pages`. Its `visual` block holds non-target placement (logo, pills, subtitle, artwork, photo frame, text start, rails). Changing any target requires a new layout version and matching Sensor Service deployment.
 
 Pointer users hold main, tile, photo-arrow, and page-tab buttons for one second. Enter/Space activate a focused button immediately. Language and Back activate on a normal press. Operator keys 1–6 open a column (columns 2/5 open their default sub-item) or close it; R/Escape reset all content while retaining languages until their inactivity timeout. Arrow keys and PageUp/PageDown move the leftmost open photo slider. D toggles diagnostics only in development. Each column returns to idle/Indonesian after **30 seconds** without interaction.
 
@@ -44,7 +44,7 @@ Hold feedback traces a 4 px sky stroke around the button and animates a blue ins
 
 ## Responsive (stacked) layout
 
-Screens narrower than 1024 px or taller than wide (`useStackedLayout`, query `(max-width: 1023px), (max-aspect-ratio: 1/1)`) show the logo on top and the six columns as a vertical list: one column per row on phones, two from 640 px. Each column renders the same `WallColumn` inside a box whose width defines a uniform logical scale (`100cqw / 384`, i.e. the 360 px column plus 12 px side margins), so pills, frames, cards, and text keep their wall proportions. The box shows only the rows a column uses (`visual.stacked` in the layout JSON: idle y 380–1050, open y 244–1018) and animates its height when the column opens. The page scrolls vertically (`touch-pan-y`); a scroll gesture cancels an in-progress hold. The LED wall and any wide landscape screen keep the fixed wall layout.
+Screens narrower than 1024 px or taller than wide (`useStackedLayout`, query `(max-width: 1023px), (max-aspect-ratio: 1/1)`) show the logo on top and the six columns as a vertical list: one column per row on phones, two from 640 px. Each column renders the same `WallColumn` inside a box whose width defines a uniform logical scale (`100cqw / 384`, i.e. the 360 px column plus 12 px side margins), so pills, frames, cards, and text keep their wall proportions. The box shows only the rows a column uses (`visual.stacked` in the layout JSON: idle y 412–1082, open y 276–1050, open single column y 380–1050) and animates its height when the column opens. The page scrolls vertically (`touch-pan-y`); a scroll gesture cancels an in-progress hold. The LED wall and any wide landscape screen keep the fixed wall layout.
 
 ## Typography
 

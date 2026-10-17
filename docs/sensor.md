@@ -11,11 +11,11 @@ NUXT_PUBLIC_SENSOR_WS_URL=ws://127.0.0.1:8787
 
 Static output embeds public runtime values; rebuild when these change. Mouse/keyboard operation works while sensor input is disabled.
 
-**Breaking migration:** current protocol is **v2**, geometry is **wall-v4**. wall-v4 follows the Summit reference mockups: per-column idle frames, sub-item tiles chosen directly from idle (no submenu), and open-card Back, photo arrows, and page tabs. Protocol v1 / layout-v4 (three-section UI), wall-v1, wall-v2, and wall-v3 are all rejected. Deploy the new renderer and matching Sensor Service contract/geometry together, recalibrate, then enable the sensor. Keep sensor input disabled until that service is ready.
+**Breaking migration:** current protocol is **v2**, geometry is **wall-v5**. It follows the Summit reference mockups: per-column idle frames, sub-item tiles chosen directly from idle (no submenu), and open-card Back, photo arrows, and page tabs. wall-v5 moves every target 32 px lower than wall-v4. Protocol v1 / layout-v4 (three-section UI), wall-v1, wall-v2, wall-v3, and wall-v4 are all rejected. Deploy the new renderer and matching Sensor Service contract/geometry together, recalibrate, then enable the sensor. Keep sensor input disabled until that service is ready.
 
 ## Envelope and health
 
-Every service message includes `version: 2`, nonempty `sessionId`, increasing integer `seq`, `layoutVersion: "wall-v4"`, and `type`.
+Every service message includes `version: 2`, nonempty `sessionId`, increasing integer `seq`, `layoutVersion: "wall-v5"`, and `type`.
 
 `hello` is required once per connection and contains boolean `sensorReady`/`calibrated`. `status` updates those booleans with optional short `detail`. `heartbeat` establishes liveness. Expect heartbeat every 2 seconds; after more than 6 seconds without valid traffic the socket closes and reconnects with jittered backoff up to 10 seconds.
 
@@ -25,7 +25,7 @@ Input is forwarded only after handshake while device and calibration are ready. 
 
 On connection, the renderer sends:
 ```json
-{ "version": 2, "type": "clientHello", "layoutVersion": "wall-v4", "columns": { "1": { "phase": "idle", "locale": "id", "subItem": "", "photo": 0, "page": 0, "photoCount": 2, "pageCount": 2 } } }
+{ "version": 2, "type": "clientHello", "layoutVersion": "wall-v5", "columns": { "1": { "phase": "idle", "locale": "id", "subItem": "", "photo": 0, "page": 0, "photoCount": 2, "pageCount": 2 } } }
 ```
 The actual `columns` payload always includes IDs 1–6. `phase` is `idle` or `active`; `photoCount` is the number of photo slots on the page currently shown and `pageCount` the number of pages of the selected content. Changes send the same snapshot with `type: "clientState"`.
 
@@ -47,7 +47,7 @@ Do not detect against hidden target groups. Main, sub-item tile, photo-arrow (`p
   "version": 2,
   "sessionId": "service-boot-id",
   "seq": 42,
-  "layoutVersion": "wall-v4",
+  "layoutVersion": "wall-v5",
   "type": "input",
   "pointerId": "lidar-02",
   "x": 1310,
@@ -69,7 +69,7 @@ Coordinates are logical 2304 × 1344 pixels inside the declared target. All six 
 
 Valid sub-items: column 2 = `tekiro`, `ryu`, `rexco`; column 5 = `distribusi`, `pemasaran`. Languages: `id`, `en`, `zh-Hans`. The renderer validates the declared target and current phase; it does not perform raw hit detection.
 
-The wall-v4 idle frame is 360 × 642 logical px at y 394; the open card is 330 × 524 at y 480. The main hit rectangle of single columns covers the whole idle frame, but its languageBar occludes that area: detect a flag there or ignore padding/gaps. Main events inside languageBar are rejected. Hidden language actions while open are also rejected. Refer to each column's `card` and target rectangles in the canonical JSON; do not reuse wall-v1/wall-v2 coordinates. The bundled OSC service reads the same JSON, so it follows layout changes automatically.
+The wall-v5 idle frame is 360 × 642 logical px at y 426; the open card is 330 × 524 at y 512. The main hit rectangle of single columns covers the whole idle frame, but its languageBar occludes that area: detect a flag there or ignore padding/gaps. Main events inside languageBar are rejected. Hidden language actions while open are also rejected. Refer to each column's `card` and target rectangles in the canonical JSON; do not reuse wall-v1/wall-v2 coordinates. The bundled OSC service reads the same JSON, so it follows layout changes automatically.
 
 ## OSC Show Control (Resolume Arena & TouchDesigner)
 
