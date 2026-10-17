@@ -27,6 +27,10 @@ function parseAction(value: unknown): WallAction | null {
       return WALL_LOCALES.includes(value.locale as WallLocale)
         ? { type: 'language', columnId, locale: value.locale as WallLocale }
         : null;
+    case 'page':
+      return Number.isSafeInteger(value.page) && (value.page as number) >= 0
+        ? { type: 'page', columnId, page: value.page as number }
+        : null;
     case 'subItem':
       return WALL_CONFIG.columns.find(column => column.id === columnId)?.subItems?.some(sub => sub.key === value.subItemId)
         ? { type: 'subItem', columnId, subItemId: value.subItemId as string }

@@ -1,15 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "League Spartan", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
-  --color-primary: #2d6a4f;
-  --color-primary-hover: #40916c;
-  --color-primary-active: #1b4332;
-  --color-accent: #52b788;
-  --color-kiosk-bg: #d5d5d5;
-  --color-kiosk-hover: #c8c8c8;
-  --color-kiosk-active: #bababa;
-  --color-kiosk-border: #c0c0c0;
+  --font-sans: "Roboto Condensed", "Arial Narrow", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Oswald", "Roboto Condensed", "Microsoft YaHei", ui-sans-serif, sans-serif;
+  --color-wall-night: #040a3a;
+  --color-wall-navy: #0a1872;
+  --color-wall-panel: #0b1a6e;
+  --color-wall-glow: #66ccff;
+  --color-wall-ink: #eaf4ff;
 }
 
 /* Global document rules cannot belong to a component's scoped stylesheet. */
@@ -29,7 +27,7 @@
   }
 
   button {
-    @apply focus-visible:outline-3 focus-visible:outline-emerald-600 focus-visible:outline-offset-3;
+    @apply focus-visible:outline-3 focus-visible:outline-amber-300 focus-visible:outline-offset-3;
   }
 
   img {

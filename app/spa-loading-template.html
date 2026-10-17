@@ -1,10 +1,10 @@
-<div class="installation-loader" role="status" aria-label="Menyiapkan perjalanan Altama">
+<div class="installation-loader" role="status" aria-label="Menyiapkan wall Altama Summit">
   <span></span>
 </div>
 <style>
-  html, body { margin: 0; background: #fff; }
-  .installation-loader { position: fixed; inset: 0; display: grid; place-items: center; background: #fff; }
-  .installation-loader span { width: 40px; height: 40px; border: 3px solid #d8f3ff; border-top-color: #008feb; border-right-color: #f49908; border-bottom-color: #f12b37; border-radius: 50%; animation: spin .8s linear infinite; }
+  html, body { margin: 0; background: #040a3a; }
+  .installation-loader { position: fixed; inset: 0; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 8%, #2347d8 0%, #11248f 32%, #081460 62%, #040a3a 100%); }
+  .installation-loader span { width: 40px; height: 40px; border: 3px solid rgba(102, 204, 255, .25); border-top-color: #66ccff; border-radius: 50%; box-shadow: 0 0 14px rgba(102, 204, 255, .5); animation: spin .8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   @media (prefers-reduced-motion: reduce) { .installation-loader span { animation: none; } }
 </style>

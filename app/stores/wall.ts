@@ -1,30 +1,19 @@
-import type { ColumnId, ColumnSnapshot, WallAction } from '../../shared/wall';
+import type { ColumnId, ColumnSnapshot, PublishedColumn, WallAction } from '../../shared/wall';
 import { defineStore } from 'pinia';
-import { WALL_CONFIG } from '~/data/wall-config';
+import { getColumnConfig, getColumnContent, WALL_CONFIG } from '~/data/wall-config';
 import { COLUMN_IDS, WALL_LOCALES } from '../../shared/wall';
 
-function getConfig(columnId: ColumnId) {
-  return WALL_CONFIG.columns.find(column => column.id === columnId)!;
-}
-
 function initialColumn(columnId: ColumnId): ColumnSnapshot {
-  return { phase: 'idle', locale: 'id', subItem: getConfig(columnId).defaultSub || '', slide: 0 };
+  return { phase: 'idle', locale: 'id', subItem: getColumnConfig(columnId).defaultSub || '', photo: 0, page: 0 };
 }
 
 function columnCopy(columnId: ColumnId, snapshot: ColumnSnapshot) {
-  const config = getConfig(columnId);
-  const copy = config.i18n?.[snapshot.locale];
-  const subCopy = config.type === 'expandable'
-    ? WALL_CONFIG.subItemContent[snapshot.subItem]?.[snapshot.locale]
-    : undefined;
+  const config = getColumnConfig(columnId);
+  const label = config.i18n[snapshot.locale].label;
+  const subLabel = config.subItems?.find(sub => sub.key === snapshot.subItem)?.i18n[snapshot.locale].label;
   return {
-    label: copy?.label || config.label,
-    headerTitle: subCopy?.title || copy?.headerTitle || config.headerTitle,
-    headerDesc: subCopy?.desc || copy?.headerDesc || config.headerDesc,
-    bottomTitle: subCopy?.title || copy?.bottomTitle || config.bottomTitle,
-    bottomDesc: subCopy?.desc || copy?.bottomDesc || config.bottomDesc,
-    activeLabel: config.subItems?.find(sub => sub.key === snapshot.subItem)?.i18n?.[snapshot.locale]?.label
-      || copy?.label || config.label,
+    label,
+    activeLabel: config.type === 'expandable' && subLabel ? subLabel : label,
   };
 }
 
@@ -36,12 +25,14 @@ export const useWallStore = defineStore('wall', {
     hasAnyActive: state => COLUMN_IDS.some(id => state.columns[id].phase !== 'idle'),
     getColumnState: state => (id: ColumnId) => state.columns[id].phase,
     getColumnLocale: state => (id: ColumnId) => state.columns[id].locale,
-    getCarouselIndex: state => (id: ColumnId) => state.columns[id].slide,
+    getPhotoIndex: state => (id: ColumnId) => state.columns[id].photo,
+    getPageIndex: state => (id: ColumnId) => state.columns[id].page,
     getColumnCopy: state => (id: ColumnId) => columnCopy(id, state.columns[id]),
-    getHeaderTitle: state => (id: ColumnId) => columnCopy(id, state.columns[id]).headerTitle,
-    getHeaderDesc: state => (id: ColumnId) => columnCopy(id, state.columns[id]).headerDesc,
-    getBottomTitle: state => (id: ColumnId) => columnCopy(id, state.columns[id]).bottomTitle,
-    getBottomDesc: state => (id: ColumnId) => columnCopy(id, state.columns[id]).bottomDesc,
+    /** Snapshots plus visible arrow/tab counts for Sensor Service target selection. */
+    publishedColumns: state => Object.fromEntries(COLUMN_IDS.map((id) => {
+      const content = getColumnContent(getColumnConfig(id), state.columns[id].subItem);
+      return [id, { ...state.columns[id], photoCount: content.photos.length, pageCount: content.pages.length }];
+    })) as Record<ColumnId, PublishedColumn>,
   },
   actions: {
     resetColumn(id: ColumnId, preserveLocale = false) {
@@ -58,6 +49,7 @@ export const useWallStore = defineStore('wall', {
       if (!config)
         return false;
       const column = this.columns[action.columnId];
+      const content = getColumnContent(config, column.subItem);
 
       switch (action.type) {
         case 'language':
@@ -66,33 +58,41 @@ export const useWallStore = defineStore('wall', {
           column.locale = action.locale;
           break;
         case 'main':
+          // Expandable columns open their current (default) sub-item; visitors pick tiles directly.
           if (column.phase !== 'idle')
             return false;
-          column.phase = config.type === 'expandable' ? 'submenu' : 'active';
+          column.phase = 'active';
+          column.photo = 0;
+          column.page = 0;
           break;
         case 'subItem':
-          if (column.phase !== 'submenu' || !config.subItems?.some(sub => sub.key === action.subItemId))
+          if (column.phase !== 'idle' || !config.subItems?.some(sub => sub.key === action.subItemId))
             return false;
           column.subItem = action.subItemId;
           column.phase = 'active';
-          column.slide = 0;
+          column.photo = 0;
+          column.page = 0;
           break;
         case 'back':
           if (column.phase === 'idle')
             return false;
-          if (column.phase === 'active' && config.type === 'expandable') {
-            column.phase = 'submenu';
-            column.slide = 0;
-          }
-          else {
-            this.resetColumn(action.columnId, true);
-          }
+          this.resetColumn(action.columnId, true);
           break;
         case 'previous':
-        case 'next':
-          if (column.phase !== 'active')
+        case 'next': {
+          // Arrows exist only for sliders with several photos.
+          const count = content.photos.length;
+          if (column.phase !== 'active' || count < 2)
             return false;
-          column.slide = (column.slide + (action.type === 'next' ? 1 : -1) + config.slides) % config.slides;
+          column.photo = (column.photo + (action.type === 'next' ? 1 : -1) + count) % count;
+          break;
+        }
+        case 'page':
+          if (column.phase !== 'active' || content.pages.length < 2 || !Number.isSafeInteger(action.page)
+            || action.page < 0 || action.page >= content.pages.length) {
+            return false;
+          }
+          column.page = action.page;
           break;
         default:
           return false;

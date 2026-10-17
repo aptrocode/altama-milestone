@@ -20,10 +20,10 @@ afterEach(() => {
 });
 
 describe('column inactivity lifecycle', () => {
-  it('resets an active column only after 15 seconds', () => {
+  it('resets an active column only after 30 seconds', () => {
     const { wall, controls } = setup();
     controls.dispatch({ type: 'main', columnId: 1 });
-    vi.advanceTimersByTime(14999);
+    vi.advanceTimersByTime(29999);
     expect(wall.getColumnState(1)).toBe('active');
     vi.advanceTimersByTime(1);
     expect(wall.getColumnState(1)).toBe('idle');
@@ -34,7 +34,7 @@ describe('column inactivity lifecycle', () => {
     controls.dispatch({ type: 'language', columnId: 1, locale: 'en' });
     vi.advanceTimersByTime(10000);
     controls.resetAll();
-    vi.advanceTimersByTime(14999);
+    vi.advanceTimersByTime(29999);
     expect(wall.getColumnLocale(1)).toBe('en');
     vi.advanceTimersByTime(1);
     expect(wall.getColumnLocale(1)).toBe('id');
@@ -46,7 +46,7 @@ describe('column inactivity lifecycle', () => {
     controls.dispatch({ type: 'main', columnId: 2 });
     controls.dispatch({ type: 'back', columnId: 2 });
     expect(wall.getColumnState(2)).toBe('idle');
-    vi.advanceTimersByTime(15000);
+    vi.advanceTimersByTime(30000);
     expect(wall.getColumnLocale(2)).toBe('id');
   });
 
@@ -54,12 +54,12 @@ describe('column inactivity lifecycle', () => {
     const { wall, controls } = setup();
     controls.dispatch({ type: 'main', columnId: 1 });
     controls.dispatch({ type: 'main', columnId: 3 });
-    vi.advanceTimersByTime(10000);
+    vi.advanceTimersByTime(20000);
     controls.touchColumn(1);
-    vi.advanceTimersByTime(5000);
+    vi.advanceTimersByTime(10000);
     expect(wall.getColumnState(3)).toBe('idle');
     expect(wall.getColumnState(1)).toBe('active');
-    vi.advanceTimersByTime(10000);
+    vi.advanceTimersByTime(20000);
     expect(wall.getColumnState(1)).toBe('idle');
   });
 
@@ -67,12 +67,12 @@ describe('column inactivity lifecycle', () => {
     const first = setup();
     const second = setup();
     first.controls.dispatch({ type: 'main', columnId: 1 });
-    vi.advanceTimersByTime(5000);
-    second.controls.dispatch({ type: 'main', columnId: 1 });
     vi.advanceTimersByTime(10000);
+    second.controls.dispatch({ type: 'main', columnId: 1 });
+    vi.advanceTimersByTime(20000);
     expect(first.wall.getColumnState(1)).toBe('idle');
     expect(second.wall.getColumnState(1)).toBe('active');
-    vi.advanceTimersByTime(5000);
+    vi.advanceTimersByTime(10000);
     expect(second.wall.getColumnState(1)).toBe('idle');
   });
 
