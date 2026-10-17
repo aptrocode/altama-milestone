@@ -9,7 +9,7 @@ Read only the document needed:
 - `docs/language.md`: per-column translations and flag accessibility.
 - `docs/content.md`: where each column's text, pages, photos, and tiles live and how to replace them.
 - `docs/assets.md`: current assets, placeholders, and naming.
-- `docs/sensor.md`: protocol v2 / wall-v4 and Sensor Service rollout.
+- `docs/sensor.md`: protocol v2 / wall-v5 and Sensor Service rollout.
 - `docs/testing.md`: commands, regression coverage, and browser acceptance.
 - `docs/push.md`: issue, branch, commit, PR, review, merge, and cleanup.
 - `docs/release.md`: version, tag, metadata, and release notes when release is requested.

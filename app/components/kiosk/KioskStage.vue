@@ -9,7 +9,7 @@ import { useSensorSocket } from '~/composables/useSensorSocket';
 import { useStackedLayout } from '~/composables/useStackedLayout';
 import { useWallController } from '~/composables/useWallController';
 import { getColumnLayout, installationLayout } from '~/data/installation-layout';
-import { WALL_CONFIG } from '~/data/wall-config';
+import { getColumnConfig, WALL_CONFIG } from '~/data/wall-config';
 import { STAGE_MEDIA } from '~/data/wall-media';
 import { useSystemStore } from '~/stores/system';
 import { useWallStore } from '~/stores/wall';
@@ -22,29 +22,38 @@ const runtimeConfig = useRuntimeConfig();
 const showDiagnostics = ref(false);
 const layout = installationLayout;
 // LED wall: one logical pixel per axis, scaled independently to fill the viewport.
+// Font sizes use --wall-u (the smaller axis) so text never outgrows its box on other aspect ratios.
 const wallStyle = {
   '--wall-x': `calc(100vw / ${layout.canvas.width})`,
   '--wall-y': `calc(100dvh / ${layout.canvas.height})`,
+  '--wall-u': 'min(var(--wall-x), var(--wall-y))',
 };
 const stacked = useStackedLayout();
 const stackedView = layout.visual.stacked;
 
 // Phones/tablets: each column is drawn in its own box with a uniform scale (container width),
 // showing only the logical rows its idle frame or open layout uses.
+function stackedWindow(id: ColumnId) {
+  if (wall.getColumnState(id) === 'idle')
+    return stackedView.idle;
+  return getColumnConfig(id).type === 'expandable' ? stackedView.open : stackedView.openSingle;
+}
+
 function stackedBox(id: ColumnId) {
-  const view = wall.getColumnState(id) === 'idle' ? stackedView.idle : stackedView.open;
+  const view = stackedWindow(id);
   return {
     '--wall-x': `calc(100cqw / ${layout.frame.columnWidth + stackedView.padX * 2})`,
     '--wall-y': 'var(--wall-x)',
+    '--wall-u': 'var(--wall-x)',
     'height': `calc(${view.height} * var(--wall-x))`,
   };
 }
 
 function stackedOrigin(id: ColumnId) {
-  const view = wall.getColumnState(id) === 'idle' ? stackedView.idle : stackedView.open;
+  const view = stackedWindow(id);
   return { x: getColumnLayout(id).section.x - stackedView.padX, y: view.y };
 }
-// The large idle logo overlaps the raised titles of columns 3/4, so it shrinks only while one of them is open.
+// The large idle logo overlaps the open titles and rails of columns 3/4, so it shrinks only while one of them is open.
 const compactLogo = computed(() => wall.getColumnState(3) !== 'idle' || wall.getColumnState(4) !== 'idle');
 const logoBox = computed(() => compactLogo.value ? layout.visual.logo.compact : layout.visual.logo.idle);
 

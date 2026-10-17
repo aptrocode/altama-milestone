@@ -19,4 +19,4 @@ Controls use spoken names, `aria-pressed`, selected border/glow, and a separate 
 
 No i18n/icon dependency is needed. Add each translated phrase to the typed copy maps rather than branching language logic throughout components. Asset/config validation checks every column and sub-item in all three languages. Current company claims/translations remain provisional until client review. Indonesian slide copy comes from the Summit mockups; English and Chinese are drafted translations. Column 1's 1996 page and Tekiro PAGE 2 carry explicit placeholder copy until the client supplies it.
 
-Sensor language selection uses protocol v2 `input` with `action: { type: "language", columnId: 1, locale: "zh-Hans" }`. Deploy matching wall-v4 geometry before enabling it; see [sensor](./sensor.md).
+Sensor language selection uses protocol v2 `input` with `action: { type: "language", columnId: 1, locale: "zh-Hans" }`. Deploy matching wall-v5 geometry before enabling it; see [sensor](./sensor.md).

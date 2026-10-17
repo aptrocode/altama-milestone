@@ -29,8 +29,11 @@ const pages = computed(() => getColumnPages(props.column, props.snapshot.subItem
 const openSubItem = computed(() => props.column.type === 'expandable' && !idle.value
   ? props.column.subItems?.find(sub => sub.key === props.snapshot.subItem)
   : undefined);
-// Each column moves only its own title: inside the idle frame, or above the open card.
-const pillStyle = computed(() => rectStyle(idle.value ? visual.idlePill : visual.activePill));
+// Each column moves only its own title: inside the idle frame, or above the open card. Single
+// columns have no sub-item name, so their open pill sits right above the card.
+const pillStyle = computed(() => rectStyle(idle.value
+  ? visual.idlePill
+  : props.column.type === 'expandable' ? visual.activePill : visual.activePillSingle));
 
 function act(action: WallAction) {
   emit('action', action);
@@ -80,7 +83,7 @@ function act(action: WallAction) {
           v-if="openSubItem.wordmark" :src="openSubItem.wordmark.src" :alt="copy.activeLabel"
           class="max-w-[calc(300*var(--wall-x))] h-[calc(62*var(--wall-y))] object-contain [border-radius:calc(8*var(--wall-x))/calc(8*var(--wall-y))]"
         >
-        <span v-else class="text-[length:calc(32*var(--wall-x))] font-extrabold uppercase tracking-wide text-white drop-shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.9)]">
+        <span v-else class="text-[length:calc(32*var(--wall-u))] font-extrabold uppercase tracking-wide text-white drop-shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.9)]">
           {{ copy.activeLabel }}
         </span>
       </div>
@@ -103,7 +106,7 @@ function act(action: WallAction) {
     >
       <button
         v-if="!idle" type="button"
-        class="wall-back absolute z-20 flex items-center justify-center rounded-full bg-[#0b1a78] ring-2 ring-[#bfe8ff] shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.8)] text-white text-[length:calc(20*var(--wall-x))] hover:bg-red-500 cursor-pointer"
+        class="wall-back absolute z-20 flex items-center justify-center rounded-full bg-[#0b1a78] ring-2 ring-[#bfe8ff] shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.8)] text-white text-[length:calc(20*var(--wall-u))] hover:bg-red-500 cursor-pointer"
         :style="rectStyle(geometry.active.back, geometry.section)"
         :aria-label="WALL_COPY[snapshot.locale].back" data-sensor-action="back"
         @click="act({ type: 'back', columnId: column.id })"

@@ -19,7 +19,7 @@ The photo crops are small and will look soft on the LED. Brand logos (Tekiro, RY
 
 1. Put the final file at the same path, or add a new kebab-case path and point the entry to it.
 2. Set `approved: true` for that entry in its column file under `app/data/columns/` (artwork, tiles, photos) or `app/data/wall-media.ts` (background, logo, skyline). See [content](./content.md).
-3. Each page's `photos` array is its slider; replace a `PHOTO_PLACEHOLDER` slot with a photo or add more slots. Paged content needs a tab label in every language and at most two pages (the wall-v4 tab targets).
+3. Each page's `photos` array is its slider; replace a `PHOTO_PLACEHOLDER` slot with a photo or add more slots. Paged content needs a tab label in every language and at most two pages (the wall-v5 tab targets).
 4. Run `bun run assets:check` and check both viewports.
 
 Background media: set `STAGE_MEDIA.background` to `{ kind: 'video', src, poster, approved }` or `{ kind: 'image', src, approved }`. Preferred video: 2304 × 1344, H.264 MP4 or VP9 WebM, muted seamless loop, local file. Convert image sequences to video unless alpha is required. The current background image already contains the skyline, so `skyline` is `null`; set a separate skyline only if the final video lacks one. If the video contains the logo, set `logo` to `null`. Set `waveSweeps` to `false` whenever the background changes, because its animated light paths are traced from the current image.
