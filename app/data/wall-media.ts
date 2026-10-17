@@ -1,4 +1,4 @@
-import type { MediaAsset } from '~/data/wall-config';
+import type { MediaAsset } from '~/types/wall-content';
 
 /**
  * Full-stage background. `none` renders the coded gradient fallback; `image` and `video`

@@ -2,7 +2,7 @@
 
 Fullscreen Nuxt 4 kiosk for ALTAMA's **2304 × 1344** LED installation.
 
-Six independent columns cover Tentang Altama, Our Brand, Infrastruktur, Digital Trust, Distribusi & Pemasaran, and Altama Summit 2026, styled after the ALTAMA Summit 2026 "Powering Partnership" mockups. Each idle card has floating Indonesian (default), English, and Simplified Chinese flag controls. The chosen language stays with that column through its submenu/carousel. Artwork, photos, and company copy are provisional crops/drafts until the client approves final assets; see [docs/assets.md](docs/assets.md) to replace them or add a background video.
+Six independent columns cover Tentang Altama, Our Brand, Infrastruktur, Digital Trust, Distribusi & Pemasaran, and Altama Summit 2026, styled after the ALTAMA Summit 2026 "Powering Partnership" mockups. Each idle card has floating Indonesian (default), English, and Simplified Chinese flag controls. The chosen language stays with that column through its submenu/carousel. Artwork, photos, and company copy are provisional crops/drafts until the client approves final assets; see [docs/content.md](docs/content.md) to edit a column and [docs/assets.md](docs/assets.md) to replace media or add a background video. Phones and tablets get a stacked, scrollable version of the same columns.
 
 ## Run
 
@@ -27,7 +27,7 @@ Dapat dioperasikan langsung menggunakan keyboard fisik, wireless numpad, atau re
 | **`→`** / **`PageDown`** | Keyboard / Clicker | Geser ke foto berikutnya (*Next*) pada kolom aktif paling kiri |
 | **`Enter`** / **`Space`** | Keyboard / Remote | Langsung mengaktifkan tombol yang sedang fokus (tanpa hold) |
 | **`D`** | Keyboard | Menampilkan/menyembunyikan panel diagnostik sensor (mode dev) |
-| **Mouse / Touch Hold (1s)** | Layar Sentuh / Mouse | Tahan 1 detik untuk membuka kolom, atau langsung tile Tekiro/RYU/Rexco/Distribusi/Pemasaran |
+| **Mouse / Touch Hold (1s)** | Layar Sentuh / Mouse | Tahan 1 detik untuk membuka kolom, tile Tekiro/RYU/Rexco/Distribusi/Pemasaran, panah foto, dan tombol halaman (halaman ikut mengganti foto) |
 
 *Inaktivitas*: Setiap kolom yang aktif akan otomatis kembali ke standby setelah **30 detik** tanpa interaksi. Membuka satu kolom tidak mengubah lima kolom lainnya.
 

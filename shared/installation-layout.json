@@ -59,6 +59,17 @@
     "rail": {
       "y": 236,
       "height": 790
+    },
+    "stacked": {
+      "padX": 12,
+      "idle": {
+        "y": 380,
+        "height": 670
+      },
+      "open": {
+        "y": 244,
+        "height": 774
+      }
     }
   },
   "columns": [

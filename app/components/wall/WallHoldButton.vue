@@ -33,7 +33,7 @@ const outlinePath = computed(() => {
 <template>
   <button
     v-hold="() => $emit('activate')" type="button"
-    class="group/hold cursor-pointer transition-colors duration-150 rounded-[inherit]"
+    class="group/hold cursor-pointer transition-colors duration-150"
     :style="{ '--hold-duration': `${HOLD_DURATION_MS}ms` }"
   >
     <div

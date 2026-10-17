@@ -42,7 +42,7 @@ describe('sensor protocol v2 and shared action routing', () => {
         if (parsed.ok && parsed.message.type === 'input')
           expect(controls.dispatch(parsed.message.action)).toBe(true);
       }
-      expect(wall.columns[2]).toMatchObject({ phase: 'active', subItem: 'tekiro', photo: 1, page: 1 });
+      expect(wall.columns[2]).toMatchObject({ phase: 'active', subItem: 'tekiro', photo: 0, page: 1 });
       const back = parseSensorMessage(sensorInput({ type: 'back', columnId: 2 }));
       expect(back.ok && back.message.type === 'input' && controls.dispatch(back.message.action)).toBe(true);
       expect(wall.getColumnState(2)).toBe('idle');

@@ -72,12 +72,14 @@ describe('wall state and actions', () => {
     expect(wall.getPhotoIndex(4)).toBe(0);
   });
 
-  it('switches text pages independently from the photo slider', () => {
+  it('switches the whole page, including its own photo slider', () => {
     const wall = store();
     wall.dispatch({ type: 'subItem', columnId: 2, subItemId: 'tekiro' });
     wall.dispatch({ type: 'next', columnId: 2 });
+    expect(wall.columns[2]).toMatchObject({ photo: 1, page: 0 });
     expect(wall.dispatch({ type: 'page', columnId: 2, page: 1 })).toBe(true);
-    expect(wall.columns[2]).toMatchObject({ photo: 1, page: 1 });
+    expect(wall.columns[2]).toMatchObject({ photo: 0, page: 1 });
+    expect(wall.publishedColumns[2]).toMatchObject({ page: 1, photoCount: 2, pageCount: 2 });
     expect(wall.dispatch({ type: 'page', columnId: 2, page: 2 })).toBe(false);
     expect(wall.dispatch({ type: 'page', columnId: 3, page: 1 })).toBe(false);
   });

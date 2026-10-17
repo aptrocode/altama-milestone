@@ -21,8 +21,8 @@ The Summit logo is shared. It stays at its large idle size and shrinks to the mo
 
 | Column | Title (id) | Idle | Open |
 | --- | --- | --- | --- |
-| 1 | Tentang Altama | Building illustration | Photo slider, 1960 / 1996 page tabs, text |
-| 2 | Our Brand | Tekiro, RYU, Rexco tiles; each tile opens that brand directly | Brand logo above the card, photo slider, text (Tekiro has PAGE 1 / PAGE 2) |
+| 1 | Tentang Altama | Building illustration | 1960 / 1996 pages, each with its own photo slider and text |
+| 2 | Our Brand | Tekiro, RYU, Rexco tiles; each tile opens that brand directly | Brand logo above the card; Tekiro has PAGE 1 / PAGE 2, each with its own photos and text |
 | 3 | Infrastruktur | Warehouse illustration | Photo slider and bullets |
 | 4 | Digital Trust | Phone illustration | Photo slider (ODP) and bullets |
 | 5 | Distribusi & Pemasaran | Captioned Distribusi / Pemasaran tiles; each opens directly | Sub-item name above the card, photo slider, bullets |
@@ -32,15 +32,19 @@ There is no submenu: brand and distribution tiles are hold targets on the idle f
 
 ## Open card
 
-Inside the card: the photo frame (262 × 144 at card offset 34, 35) with arrows centered near its left/right edges (44 px targets, 34 px white circles). Arrows only move photos. Page tabs (112 × 40, under the photo) only switch the text page and render only when content has more than one page. Body text fills the rest of the card in bold Roboto Condensed (14.5 px, 14 px for the long Summit story). Back is a ✕ badge on the card's top-right corner. A photo slot without a file shows a numbered placeholder.
+Inside the card: the photo frame (262 × 144 at card offset 34, 35) with arrows centered near its left/right edges (44 px targets, 34 px white circles). Every page owns its photos: arrows move between the current page's photos, and page tabs (112 × 40, under the photo) switch the whole page, photos and text together, restarting its slider. Tabs render only when content has more than one page; arrows only when the current page has more than one photo slot. Body text fills the rest of the card in bold Roboto Condensed (14.5 px, 14 px for the long Summit story). Back is a ✕ badge on the card's top-right corner. A photo slot without a file shows a numbered placeholder.
 
 ## Controls and geometry
 
 `shared/installation-layout.json` (**wall-v4**) owns every target: `main` (single columns only), `languageBar` + 18 `languages` (64 × 48), `subItems` tiles for columns 2/5, and `active.back`, `active.previous`/`next`, `active.pages`. Its `visual` block holds non-target placement (logo, pills, subtitle, artwork, photo frame, text start, rails). Changing any target requires a new layout version and matching Sensor Service deployment.
 
-Pointer users hold main/tile buttons for one second. Enter/Space activate a focused button immediately. Language, Back, arrows, and page tabs activate on a normal press. Operator keys 1–6 open a column (columns 2/5 open their default sub-item) or close it; R/Escape reset all content while retaining languages until their inactivity timeout. Arrow keys and PageUp/PageDown move the leftmost open photo slider. D toggles diagnostics only in development. Each column returns to idle/Indonesian after **30 seconds** without interaction.
+Pointer users hold main, tile, photo-arrow, and page-tab buttons for one second. Enter/Space activate a focused button immediately. Language and Back activate on a normal press. Operator keys 1–6 open a column (columns 2/5 open their default sub-item) or close it; R/Escape reset all content while retaining languages until their inactivity timeout. Arrow keys and PageUp/PageDown move the leftmost open photo slider. D toggles diagnostics only in development. Each column returns to idle/Indonesian after **30 seconds** without interaction.
 
-Hold feedback traces a 4 px sky stroke around the button and animates a blue inset glow over one second without moving target rectangles. Outline arcs follow the 14 px frame corners or 10 px tile corners. Reduced motion uses a static border and shadow during hold.
+Hold feedback traces a 4 px sky stroke around the button and animates a blue inset glow over one second without moving target rectangles. Outline arcs follow the 14 px frame corners, 10 px tile corners, 7 px tab corners, or the round arrow target. Reduced motion uses a static border and shadow during hold.
+
+## Responsive (stacked) layout
+
+Screens narrower than 1024 px or taller than wide (`useStackedLayout`, query `(max-width: 1023px), (max-aspect-ratio: 1/1)`) show the logo on top and the six columns as a vertical list: one column per row on phones, two from 640 px. Each column renders the same `WallColumn` inside a box whose width defines a uniform logical scale (`100cqw / 384`, i.e. the 360 px column plus 12 px side margins), so pills, frames, cards, and text keep their wall proportions. The box shows only the rows a column uses (`visual.stacked` in the layout JSON: idle y 380–1050, open y 244–1018) and animates its height when the column opens. The page scrolls vertically (`touch-pan-y`); a scroll gesture cancels an in-progress hold. The LED wall and any wide landscape screen keep the fixed wall layout.
 
 ## Typography
 

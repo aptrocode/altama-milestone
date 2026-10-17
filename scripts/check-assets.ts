@@ -1,4 +1,4 @@
-import type { ColumnContent, ContentBlock, MediaAsset } from '../app/data/wall-config';
+import type { ContentBlock, ContentPage, MediaAsset } from '../app/types/wall-content';
 import { access, readFile } from 'node:fs/promises';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -26,27 +26,27 @@ function blockTexts(block: ContentBlock): string[] {
   return block.numbered;
 }
 
-function checkContent(owner: string, content: ColumnContent | undefined) {
-  if (!content?.pages.length) {
-    errors.push(`${owner}: needs at least one text page`);
+function checkPages(owner: string, pages: ContentPage[] | undefined) {
+  if (!pages?.length) {
+    errors.push(`${owner}: needs at least one page`);
     return;
   }
-  content.photos.forEach((photo, index) => {
-    if (photo)
-      media.push({ owner: `${owner} photo ${index + 1}`, asset: photo });
-  });
-  content.pages.forEach((page, index) => {
+  pages.forEach((page, index) => {
+    page.photos.forEach((photo, slot) => {
+      if (photo)
+        media.push({ owner: `${owner} page ${index + 1} photo ${slot + 1}`, asset: photo });
+    });
     for (const locale of WALL_LOCALES) {
       const copy = page.i18n[locale];
       const texts = copy?.blocks.flatMap(blockTexts) || [];
       if (!texts.length || texts.some(text => !text.trim()))
         errors.push(`${owner} page ${index + 1}: incomplete ${locale} copy`);
-      if (content.pages.length > 1 && !copy?.tab?.trim())
+      if (pages.length > 1 && !copy?.tab?.trim())
         errors.push(`${owner} page ${index + 1}: paged content needs a ${locale} tab label`);
     }
   });
-  if (content.pages.length > maxPageTabs)
-    errors.push(`${owner}: ${content.pages.length} pages but only ${maxPageTabs} tab targets`);
+  if (pages.length > maxPageTabs)
+    errors.push(`${owner}: ${pages.length} pages but only ${maxPageTabs} tab targets`);
 }
 
 for (const column of WALL_CONFIG.columns) {
@@ -67,7 +67,7 @@ for (const column of WALL_CONFIG.columns) {
       media.push({ owner: `${owner} illustration`, asset: column.illustration });
     if (!geometry?.main)
       errors.push(`${owner}: single columns need a main target`);
-    checkContent(owner, column.content);
+    checkPages(owner, column.pages);
   }
   else {
     if (!column.subItems?.length || !column.subItems.some(sub => sub.key === column.defaultSub))
@@ -81,7 +81,7 @@ for (const column of WALL_CONFIG.columns) {
       media.push({ owner: `${subOwner} image`, asset: sub.image });
       if (sub.wordmark)
         media.push({ owner: `${subOwner} wordmark`, asset: sub.wordmark });
-      checkContent(subOwner, sub.content);
+      checkPages(subOwner, sub.pages);
     }
   }
 
