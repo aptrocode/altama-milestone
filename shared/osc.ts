@@ -237,6 +237,14 @@ export function oscToWallActions(
       return [{ type: 'previous', columnId: rawId as ColumnId }];
   }
 
+  // /altama/page [1-6] [page, 1-based]
+  if (address === '/altama/page') {
+    const rawId = typeof args[0] === 'number' ? args[0] : Number.parseInt(String(args[0]), 10);
+    const page = (typeof args[1] === 'number' ? args[1] : Number.parseInt(String(args[1]), 10)) - 1;
+    if (COLUMN_IDS.includes(rawId as ColumnId) && Number.isSafeInteger(page) && page >= 0)
+      return [{ type: 'page', columnId: rawId as ColumnId, page }];
+  }
+
   // /altama/subItem [1-6] [subItemId]
   if (address === '/altama/subItem' || address === '/altama/subitem') {
     const rawId = typeof args[0] === 'number' ? args[0] : Number.parseInt(String(args[0]), 10);

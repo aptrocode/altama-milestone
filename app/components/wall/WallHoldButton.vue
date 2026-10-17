@@ -33,7 +33,7 @@ const outlinePath = computed(() => {
 <template>
   <button
     v-hold="() => $emit('activate')" type="button"
-    class="group/hold relative cursor-pointer transition-colors duration-150 rounded-[inherit]"
+    class="group/hold cursor-pointer transition-colors duration-150 rounded-[inherit]"
     :style="{ '--hold-duration': `${HOLD_DURATION_MS}ms` }"
   >
     <div
@@ -47,7 +47,7 @@ const outlinePath = computed(() => {
     >
       <path
         :d="outlinePath" pathLength="1" stroke-width="4" stroke-linecap="round"
-        class="hold-outline fill-none stroke-emerald-400 opacity-0 [stroke-dasharray:1] [stroke-dashoffset:1] group-[.holding]/hold:opacity-100 group-[.hold-complete]/hold:opacity-100 group-[.hold-complete]/hold:[stroke-dashoffset:0] motion-reduce:group-[.holding]/hold:[stroke-dashoffset:0]"
+        class="hold-outline fill-none stroke-sky-300 opacity-0 [stroke-dasharray:1] [stroke-dashoffset:1] group-[.holding]/hold:opacity-100 group-[.hold-complete]/hold:opacity-100 group-[.hold-complete]/hold:[stroke-dashoffset:0] motion-reduce:group-[.holding]/hold:[stroke-dashoffset:0]"
       />
     </svg>
   </button>
@@ -56,9 +56,9 @@ const outlinePath = computed(() => {
 <style scoped>
 .hold-inset {
   box-shadow:
-    inset 0 0 calc(36 * var(--wall-x, 1px)) rgba(16, 185, 129, 0.28),
-    inset 0 0 calc(12 * var(--wall-x, 1px)) rgba(5, 150, 105, 0.3),
-    inset 0 calc(4 * var(--wall-y, 1px)) calc(18 * var(--wall-y, 1px)) rgba(0, 0, 0, 0.1);
+    inset 0 0 calc(36 * var(--wall-x, 1px)) rgba(102, 204, 255, 0.34),
+    inset 0 0 calc(12 * var(--wall-x, 1px)) rgba(56, 160, 255, 0.34),
+    inset 0 calc(4 * var(--wall-y, 1px)) calc(18 * var(--wall-y, 1px)) rgba(0, 0, 40, 0.2);
 }
 
 /* Vue scopes the keyframe name and this reference together. */
@@ -79,14 +79,14 @@ const outlinePath = computed(() => {
 @keyframes hold-inset-anim {
   0% {
     box-shadow:
-      inset 0 0 calc(12 * var(--wall-x, 1px)) rgba(16, 185, 129, 0.12),
-      inset 0 calc(2 * var(--wall-y, 1px)) calc(8 * var(--wall-y, 1px)) rgba(0, 0, 0, 0.04);
+      inset 0 0 calc(12 * var(--wall-x, 1px)) rgba(102, 204, 255, 0.14),
+      inset 0 calc(2 * var(--wall-y, 1px)) calc(8 * var(--wall-y, 1px)) rgba(0, 0, 40, 0.08);
   }
   100% {
     box-shadow:
-      inset 0 0 calc(36 * var(--wall-x, 1px)) rgba(16, 185, 129, 0.28),
-      inset 0 0 calc(12 * var(--wall-x, 1px)) rgba(5, 150, 105, 0.3),
-      inset 0 calc(4 * var(--wall-y, 1px)) calc(18 * var(--wall-y, 1px)) rgba(0, 0, 0, 0.1);
+      inset 0 0 calc(36 * var(--wall-x, 1px)) rgba(102, 204, 255, 0.34),
+      inset 0 0 calc(12 * var(--wall-x, 1px)) rgba(56, 160, 255, 0.34),
+      inset 0 calc(4 * var(--wall-y, 1px)) calc(18 * var(--wall-y, 1px)) rgba(0, 0, 40, 0.2);
   }
 }
 </style>

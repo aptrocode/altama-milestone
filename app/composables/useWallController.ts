@@ -3,7 +3,7 @@ import { onScopeDispose } from 'vue';
 import { useWallStore } from '~/stores/wall';
 import { COLUMN_IDS } from '../../shared/wall';
 
-export const AUTO_RESET_DELAY_MS = 15_000;
+export const AUTO_RESET_DELAY_MS = 30_000;
 
 export function useWallController(wall = useWallStore()) {
   const timers = new Map<ColumnId, ReturnType<typeof setTimeout>>();

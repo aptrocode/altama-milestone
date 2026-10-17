@@ -11,11 +11,11 @@ NUXT_PUBLIC_SENSOR_WS_URL=ws://127.0.0.1:8787
 
 Static output embeds public runtime values; rebuild when these change. Mouse/keyboard operation works while sensor input is disabled.
 
-**Breaking migration:** current protocol is **v2**, geometry is **wall-v2**. Protocol v1 / layout-v4 describes the retired three-section UI. The preceding six-column wall-v1 placed languages above cards and arrows at the bottom. Both old layouts are rejected. Deploy the new renderer and matching Sensor Service contract/geometry together, recalibrate, then enable the sensor. Keep sensor input disabled until that service is ready.
+**Breaking migration:** current protocol is **v2**, geometry is **wall-v4**. wall-v4 follows the Summit reference mockups: per-column idle frames, sub-item tiles chosen directly from idle (no submenu), and open-card Back, photo arrows, and page tabs. Protocol v1 / layout-v4 (three-section UI), wall-v1, wall-v2, and wall-v3 are all rejected. Deploy the new renderer and matching Sensor Service contract/geometry together, recalibrate, then enable the sensor. Keep sensor input disabled until that service is ready.
 
 ## Envelope and health
 
-Every service message includes `version: 2`, nonempty `sessionId`, increasing integer `seq`, `layoutVersion: "wall-v2"`, and `type`.
+Every service message includes `version: 2`, nonempty `sessionId`, increasing integer `seq`, `layoutVersion: "wall-v4"`, and `type`.
 
 `hello` is required once per connection and contains boolean `sensorReady`/`calibrated`. `status` updates those booleans with optional short `detail`. `heartbeat` establishes liveness. Expect heartbeat every 2 seconds; after more than 6 seconds without valid traffic the socket closes and reconnects with jittered backoff up to 10 seconds.
 
@@ -25,17 +25,20 @@ Input is forwarded only after handshake while device and calibration are ready. 
 
 On connection, the renderer sends:
 ```json
-{ "version": 2, "type": "clientHello", "layoutVersion": "wall-v2", "columns": { "1": { "phase": "idle", "locale": "id", "subItem": "", "slide": 0 } } }
+{ "version": 2, "type": "clientHello", "layoutVersion": "wall-v4", "columns": { "1": { "phase": "idle", "locale": "id", "subItem": "", "photo": 0, "page": 0, "photoCount": 2, "pageCount": 2 } } }
 ```
-The actual `columns` payload always includes IDs 1–6. Changes send the same snapshot with `type: "clientState"`.
+The actual `columns` payload always includes IDs 1–6. `phase` is `idle` or `active`; `photoCount`/`pageCount` describe the content currently selected for that column. Changes send the same snapshot with `type: "clientState"`.
 
 Sensor Service combines that snapshot with `shared/installation-layout.json`:
 - language targets are visible only in idle;
-- `main` is visible only in idle;
-- `submenu.items`/`submenu.back` only in submenu;
-- `active.back`/`active.previous`/`active.next` only in active.
+- `main` (single columns) and `subItems` tiles (columns 2/5) are visible only in idle; columns 2/5 have no `main` target;
+- `active.back` only in active;
+- `active.previous`/`active.next` only in active with `photoCount > 1`;
+- `active.pages[n]` only in active with `pageCount > 1` and `n < pageCount`.
 
-Do not detect against hidden target groups. Main and sub-item targets require one second of deliberate contact before sending one input. Immediate language/Back/carousel input should be debounced to one action per deliberate contact. Contact release is internal to Sensor Service; do not send legacy touchStart/touchEnd events.
+Each column is independent: target visibility depends only on that column's snapshot.
+
+Do not detect against hidden target groups. Main and sub-item tile targets require one second of deliberate contact before sending one input. Immediate language/Back/arrow/page input should be debounced to one action per deliberate contact. Contact release is internal to Sensor Service; do not send legacy touchStart/touchEnd events.
 
 ## Input
 
@@ -44,7 +47,7 @@ Do not detect against hidden target groups. Main and sub-item targets require on
   "version": 2,
   "sessionId": "service-boot-id",
   "seq": 42,
-  "layoutVersion": "wall-v2",
+  "layoutVersion": "wall-v4",
   "type": "input",
   "pointerId": "lidar-02",
   "x": 1310,
@@ -57,15 +60,16 @@ Coordinates are logical 2304 × 1344 pixels inside the declared target. All six 
 
 | Action type | Additional fields | Behavior |
 | --- | --- | --- |
-| `main` | `columnId` | Open an idle column |
-| `subItem` | `columnId`, `subItemId` | Select an item from its visible submenu |
+| `main` | `columnId` | Open an idle single column (operator/OSC: opens the default sub-item of columns 2/5) |
+| `subItem` | `columnId`, `subItemId` | Open that sub-item from its idle tile |
 | `language` | `columnId`, `locale` | Change only that column's language |
-| `back` | `columnId` | Return to submenu/idle |
-| `previous` / `next` | `columnId` | Navigate active carousel |
+| `back` | `columnId` | Return to idle |
+| `previous` / `next` | `columnId` | Move the open photo slider |
+| `page` | `columnId`, `page` (0-based) | Show that text page |
 
-Valid sub-items: column 2 = `tekiro`, `ryu`, `rexco`; column 5 = `our-way`, `brand-activation`. Languages: `id`, `en`, `zh-Hans`. The renderer validates the declared target and current phase; it does not perform raw hit detection.
+Valid sub-items: column 2 = `tekiro`, `ryu`, `rexco`; column 5 = `distribusi`, `pemasaran`. Languages: `id`, `en`, `zh-Hans`. The renderer validates the declared target and current phase; it does not perform raw hit detection.
 
-The wall-v2 card is 350 × 510.72 logical px. Languages float inside its lower area only in idle; arrows use the full card's vertical midpoint. The main hit rectangle covers the full card, but its floating languageBar occludes that area: detect a flag there or ignore padding/gaps. Main events inside languageBar are rejected. Hidden language actions in submenu/carousel are also rejected. Submenu/active content fills the card. Refer to each column's `card` and target rectangles in the canonical JSON; do not reuse wall-v1 coordinates.
+The wall-v4 idle frame is 360 × 642 logical px at y 394; the open card is 330 × 524 at y 480. The main hit rectangle of single columns covers the whole idle frame, but its languageBar occludes that area: detect a flag there or ignore padding/gaps. Main events inside languageBar are rejected. Hidden language actions while open are also rejected. Refer to each column's `card` and target rectangles in the canonical JSON; do not reuse wall-v1/wall-v2 coordinates. The bundled OSC service reads the same JSON, so it follows layout changes automatically.
 
 ## OSC Show Control (Resolume Arena & TouchDesigner)
 
@@ -83,11 +87,12 @@ The repository provides a built-in TypeScript OSC & WebSocket service in `script
 | --- | --- | --- | --- |
 | `/altama/column` | `columnId: int` (1–6) | `/altama/column 1` | Toggle main or back on specified column |
 | `/altama/col/<id>` | *(none)* | `/altama/col/2` | Toggle main or back on column from path |
-| `/altama/open` | `columnId: int` (1–6) | `/altama/open 3` | Open idle column directly |
+| `/altama/open` | `columnId: int` (1–6) | `/altama/open 3` | Open idle column directly (columns 2/5: first tile) |
 | `/altama/back` | `[columnId: int]` *(optional)* | `/altama/back 2` | Back in column, or reset all if omitted |
-| `/altama/next` | `columnId: int` (1–6) | `/altama/next 1` | Next slide in active carousel |
-| `/altama/prev` | `columnId: int` (1–6) | `/altama/prev 1` | Previous slide in active carousel |
-| `/altama/subItem` | `col: int`, `key: string` | `/altama/subItem 2 tekiro` | Select sub-item in column 2 or 5 |
+| `/altama/next` | `columnId: int` (1–6) | `/altama/next 1` | Next photo in the open slider |
+| `/altama/prev` | `columnId: int` (1–6) | `/altama/prev 1` | Previous photo in the open slider |
+| `/altama/page` | `col: int`, `page: int` (1-based) | `/altama/page 2 2` | Show text page 2 of column 2 |
+| `/altama/subItem` | `col: int`, `key: string` | `/altama/subItem 2 tekiro` | Open sub-item in idle column 2 or 5 |
 | `/altama/lang` | `[col: int]`, `locale: string` | `/altama/lang en` | Switch language (`id`, `en`, `zh-Hans`) |
 | `/altama/reset` | *(none)* | `/altama/reset` | Reset all open columns to idle standby |
 

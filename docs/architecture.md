@@ -12,23 +12,25 @@ pointer hold / native keyboard / operator shortcut / validated sensor input
   -> presentational Vue components
 ```
 
-`KioskStage` owns one wall controller and one socket. `WallColumn` receives configuration, snapshot, and copy; it emits actions/activity. `WallLanguageSwitcher`, `WallCarousel`, `WallHoldButton`, and `WallHoldCue` contain reusable UI. Header/footer copy renders only in the active phase.
+`KioskStage` owns one wall controller, one socket, and the shared logo. `KioskBackground` renders the stage media. Each `WallColumn` is absolutely positioned on its logical section and renders its own idle frame or open layout, so a column never moves its neighbours. It receives configuration, snapshot, and copy; it emits actions/activity. `WallColumnPill`, `WallLanguageSwitcher`, `WallCarousel`, `WallSlideContent`, and `WallHoldButton` contain reusable UI. Positions come from `rectStyle(rect, origin)` over the canonical layout JSON.
 
 ## State and transitions
 
-Each column has `phase`, `locale`, `subItem`, and `slide`. Columns 2/5 open a submenu; other columns open content directly. Main input opens only idle columns, so repeated sensor input does not close content. Operator digits map an open column to Back.
+Each column has `phase` (`idle`/`active`), `locale`, `subItem`, `photo`, and `page`. Single columns open with `main`; columns 2/5 open directly from idle sub-item tiles (`subItem`), and operator/OSC `main` opens their default sub-item. Main/sub-item input is accepted only while idle, so repeated sensor input does not close content. Operator digits map an open column to Back.
 
-Language selection is accepted only while idle. The chooser is an absolute sibling of the full-card main button; submenu/carousel retain the selected locale and hide the chooser. Sensor parsing excludes the language overlay rectangle from main input, including gaps between flags.
+Language selection is accepted only while idle. The chooser is an absolute sibling of the hold targets inside the idle frame; open content retains the selected locale and hides the chooser. Sensor parsing excludes the language overlay rectangle from main input, including gaps between flags.
 
-Sub-item selection is accepted only in its owning column's submenu. Carousel input is accepted only in active content and wraps using the configured slide count. Back from expandable content returns to the submenu; other Back input returns to idle. Manual reset preserves locale immediately.
+Open content (`getColumnContent`) has an image slider and independent text pages. `previous`/`next` move `photo` only when there are at least two photos and wrap; `page` selects a text page only when there are at least two pages. Back always returns to idle. Manual reset preserves locale immediately. `publishedColumns` adds `photoCount`/`pageCount` to each snapshot for Sensor Service.
 
-One `getColumnCopy` resolver chooses localized column/sub-item copy. Labels are plain text; no HTML interpolation or localization dependency is used.
+One `getColumnCopy` resolver chooses the localized column label and open sub-item label. Slide copy is typed data (paragraphs, bullets with bold leads, numbered lists) rendered as plain text; no HTML interpolation or localization dependency is used. Media entries are `{ src, approved }` in `wall-config.ts` and `wall-media.ts`.
 
 ## Resource lifecycle
 
-`useWallController` owns a private timer map per instance. Accepted actions and activity restart only that column's 15-second timer. Idle Indonesian columns need no timer; idle English/Chinese columns do. Timeout restores the initial sub-item, slide zero, idle phase, and Indonesian. R/Escape reschedules any remaining language timer. Scope disposal clears every timer.
+`useWallController` owns a private timer map per instance. Accepted actions and activity restart only that column's 30-second timer. Idle Indonesian columns need no timer; idle English/Chinese columns do. Timeout restores the default sub-item, photo/page zero, idle phase, and Indonesian. R/Escape reschedules any remaining language timer. Scope disposal clears every timer.
 
 `bindHold` owns pointer listeners and progress/completion timers. Leaving, cancellation, pointer release, blur, or unmount cancels incomplete contact. The directive updates its callback when Vue updates it. Native keyboard/assistive clicks activate immediately.
+
+`KioskBackground` owns its optional `<video>`: it pauses and releases the source on unmount and falls back to the coded gradient when media fails to load.
 
 `useSensorSocket` owns native WebSocket, reconnect, heartbeat, and session state. It publishes serializable UI snapshots so Sensor Service knows which target group is visible. Pinia contains none of those browser resources.
 

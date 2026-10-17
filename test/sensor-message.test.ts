@@ -8,7 +8,7 @@ import { COLUMN_IDS } from '../shared/wall';
 import { sensorInput } from './helpers';
 
 describe('sensor protocol v2 and shared action routing', () => {
-  it.each(COLUMN_IDS)('opens column %i and switches only its language through parsed input', (columnId) => {
+  it.each([1, 3, 4, 6] as const)('opens column %i and switches only its language through parsed input', (columnId) => {
     const scope = effectScope();
     const wall = useWallStore(createPinia());
     const controls = scope.run(() => useWallController(wall))!;
@@ -32,10 +32,9 @@ describe('sensor protocol v2 and shared action routing', () => {
     const controls = scope.run(() => useWallController(wall))!;
     try {
       const actions = [
-        { type: 'main', columnId: 2 },
-        { type: 'subItem', columnId: 2, subItemId: 'ryu' },
+        { type: 'subItem', columnId: 2, subItemId: 'tekiro' },
         { type: 'next', columnId: 2 },
-        { type: 'back', columnId: 2 },
+        { type: 'page', columnId: 2, page: 1 },
       ] as const;
       for (const action of actions) {
         const parsed = parseSensorMessage(sensorInput(action));
@@ -43,9 +42,28 @@ describe('sensor protocol v2 and shared action routing', () => {
         if (parsed.ok && parsed.message.type === 'input')
           expect(controls.dispatch(parsed.message.action)).toBe(true);
       }
-      expect(wall.columns[2]).toMatchObject({ phase: 'submenu', subItem: 'ryu', slide: 0 });
+      expect(wall.columns[2]).toMatchObject({ phase: 'active', subItem: 'tekiro', photo: 1, page: 1 });
+      const back = parseSensorMessage(sensorInput({ type: 'back', columnId: 2 }));
+      expect(back.ok && back.message.type === 'input' && controls.dispatch(back.message.action)).toBe(true);
+      expect(wall.getColumnState(2)).toBe('idle');
     }
     finally { scope.stop(); }
+  });
+
+  it('has no main target for brand/distribution columns, whose tiles are the targets', () => {
+    for (const columnId of [2, 5] as const) {
+      const tile = parseSensorMessage(sensorInput({ type: 'subItem', columnId, subItemId: columnId === 2 ? 'rexco' : 'pemasaran' }));
+      expect(tile.ok).toBe(true);
+      const point = JSON.parse(sensorInput({ type: 'subItem', columnId, subItemId: columnId === 2 ? 'rexco' : 'pemasaran' }));
+      expect(parseSensorMessage(sensorInput({ type: 'main', columnId: 1 }, { action: { type: 'main', columnId }, x: point.x, y: point.y })).ok).toBe(false);
+    }
+  });
+
+  it('rejects page tabs outside the declared tab targets', () => {
+    expect(parseSensorMessage(sensorInput({ type: 'page', columnId: 1, page: 1 })).ok).toBe(true);
+    const tab = JSON.parse(sensorInput({ type: 'page', columnId: 1, page: 0 }));
+    expect(parseSensorMessage(sensorInput({ type: 'page', columnId: 1, page: 1 }, { x: tab.x })).ok).toBe(false);
+    expect(parseSensorMessage(sensorInput({ type: 'page', columnId: 1, page: 0 }, { action: { type: 'page', columnId: 1, page: -1 } })).ok).toBe(false);
   });
 
   it('rejects malformed data, old protocol, unknown columns, and unknown actions', () => {

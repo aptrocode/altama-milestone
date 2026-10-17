@@ -24,9 +24,16 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       {
-        name: 'League Spartan',
+        name: 'Roboto Condensed',
         provider: 'google',
-        weights: [100, 200, 300, 400, 500, 600, 700, 800, 900],
+        weights: [400, 500, 600, 700, 800],
+        styles: ['normal'],
+        global: true,
+      },
+      {
+        name: 'Oswald',
+        provider: 'google',
+        weights: [400, 500, 600, 700],
         styles: ['normal'],
         global: true,
       },

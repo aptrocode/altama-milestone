@@ -29,12 +29,12 @@ describe('osc encoding, parsing, and WallAction translation', () => {
     const actionsActive = oscToWallActions(
       { address: '/altama/column', types: ',i', args: [1] },
       {
-        1: { phase: 'active', locale: 'id', subItem: '', slide: 0 },
-        2: { phase: 'idle', locale: 'id', subItem: '', slide: 0 },
-        3: { phase: 'idle', locale: 'id', subItem: '', slide: 0 },
-        4: { phase: 'idle', locale: 'id', subItem: '', slide: 0 },
-        5: { phase: 'idle', locale: 'id', subItem: '', slide: 0 },
-        6: { phase: 'idle', locale: 'id', subItem: '', slide: 0 },
+        1: { phase: 'active', locale: 'id', subItem: '', photo: 0, page: 0 },
+        2: { phase: 'idle', locale: 'id', subItem: '', photo: 0, page: 0 },
+        3: { phase: 'idle', locale: 'id', subItem: '', photo: 0, page: 0 },
+        4: { phase: 'idle', locale: 'id', subItem: '', photo: 0, page: 0 },
+        5: { phase: 'idle', locale: 'id', subItem: '', photo: 0, page: 0 },
+        6: { phase: 'idle', locale: 'id', subItem: '', photo: 0, page: 0 },
       },
     );
     expect(actionsActive).toEqual([{ type: 'back', columnId: 1 }]);
@@ -54,6 +54,11 @@ describe('osc encoding, parsing, and WallAction translation', () => {
     expect(oscToWallActions({ address: '/altama/prev', types: ',i', args: [4] })).toEqual([{ type: 'previous', columnId: 4 }]);
   });
 
+  it('translates 1-based page tabs', () => {
+    expect(oscToWallActions({ address: '/altama/page', types: ',ii', args: [2, 2] })).toEqual([{ type: 'page', columnId: 2, page: 1 }]);
+    expect(oscToWallActions({ address: '/altama/page', types: ',ii', args: [2, 0] })).toEqual([]);
+  });
+
   it('translates language switcher for single or all columns', () => {
     expect(oscToWallActions({ address: '/altama/lang', types: ',is', args: [2, 'en'] })).toEqual([
       { type: 'language', columnId: 2, locale: 'en' },
@@ -67,12 +72,12 @@ describe('osc encoding, parsing, and WallAction translation', () => {
     const actions = oscToWallActions(
       { address: '/altama/reset', types: '', args: [] },
       {
-        1: { phase: 'idle', locale: 'id', subItem: '', slide: 0 },
-        2: { phase: 'submenu', locale: 'id', subItem: '', slide: 0 },
-        3: { phase: 'idle', locale: 'id', subItem: '', slide: 0 },
-        4: { phase: 'idle', locale: 'id', subItem: '', slide: 0 },
-        5: { phase: 'active', locale: 'id', subItem: '', slide: 1 },
-        6: { phase: 'idle', locale: 'id', subItem: '', slide: 0 },
+        1: { phase: 'idle', locale: 'id', subItem: '', photo: 0, page: 0 },
+        2: { phase: 'active', locale: 'id', subItem: '', photo: 0, page: 0 },
+        3: { phase: 'idle', locale: 'id', subItem: '', photo: 0, page: 0 },
+        4: { phase: 'idle', locale: 'id', subItem: '', photo: 0, page: 0 },
+        5: { phase: 'active', locale: 'id', subItem: '', photo: 1, page: 0 },
+        6: { phase: 'idle', locale: 'id', subItem: '', photo: 0, page: 0 },
       },
     );
     expect(actions).toEqual([
