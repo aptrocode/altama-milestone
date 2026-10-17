@@ -2,32 +2,49 @@
 
 ## Canvas and composition
 
-Official client output: **2304 × 1344 CSS pixels**, approximately 6 × 3.5 m. The current design is a six-column wall. The earlier illustrated three-section milestone poster is historical context and is not the current runtime layout.
+Official client output: **2304 × 1344 CSS pixels**, approximately 6 × 3.5 m. The design follows the two ALTAMA Summit 2026 "Powering Partnership" reference mockups: mockup 1 shows every column idle, mockup 2 shows every column open. Each column switches between those two layouts on its own; opening one column never moves the other five.
 
-Fill the viewport without fixed aspect ratio, maximum width, letterboxing, or scrolling. Preview at 1600 × 900 as well as the official canvas.
+Fill the viewport without fixed aspect ratio, maximum width, letterboxing, or scrolling. Preview at 1600 × 900 as well as the official canvas. All positions are logical canvas units from `shared/installation-layout.json` (`--wall-x`/`--wall-y` scale them independently).
 
-The three vertical zones use 35% / 38% / 27% height:
-- Header: centered ALTAMA branding when idle; each selected column's heading/story when active.
-- Interaction: equal portrait cards containing the main action, submenu, or carousel, plus independent floating flags inside the lower area only while idle.
-- Footer: each active column's supporting title/description, centered horizontally and vertically in its zone.
+Six columns are 360 logical px wide with 32 px outer insets and 16 px gaps (pitch 376).
 
-Six equal columns have 52 logical px outside padding and 20 px gaps; each card is **350 × 510.72 px**, approximately **0.685 : 1**. Idle cards are neutral gray; submenu cards are white; active carousels are dark emerald.
+- **Idle (mockup 1):** a 360 × 642 glowing frame at y 394 holds the title pill (icon + label) at the top, the artwork (or the brand/distribution tiles), and the flag bar at y 954, kept 20 px clear of the last tile.
+- **Open (mockup 2):** the frame fades out, faint glow rails mark the column edges, the same pill slides up to y 258, expandable columns show the chosen sub-item (Tekiro logo, RYU/Rexco tile, or "DISTRIBUSI"/"PEMASARAN" text) under it, and a 330 × 524 rounded content card appears at y 480.
 
-All zones use the same six-column grid. Header/footer text uses 28 px horizontal padding and consistent title/description space. Main labels use 24 px padding and show only the title plus localized hold cue, without numbered badges. Typography and flag artwork scale from logical canvas units; long translated labels wrap. See [style](./style.md) for the Tailwind-first implementation policy.
+The Summit logo is shared. It stays at its large idle size and shrinks to the mockup-2 size only while column 3 or 4 is open, because their raised pills would otherwise overlap it.
+
+## Stage background
+
+`KioskBackground` renders, back to front: a coded radial gradient with SVG neon waves (fallback), the background media from `STAGE_MEDIA.background` (`image` or looping muted `video` with a poster), and an optional separate skyline. The current background is mockup 1 with its cards and logo filled in, so it already contains the skyline. On top of the image, `STAGE_MEDIA.waveSweeps` adds light streaks that travel along the traced neon waves in the top-left and top-right corners, plus a slow corner glow (scoped keyframes, off under reduced motion). The traced paths only match the current image: turn `waveSweeps` off when the background changes. A failed media file falls back to the coded layer. The final background is expected to be a video or image sequence from the design team; convert sequences to a looping video unless alpha is needed.
+
+## Column content
+
+| Column | Title (id) | Idle | Open |
+| --- | --- | --- | --- |
+| 1 | Tentang Altama | Building illustration | Photo slider, 1960 / 1996 page tabs, text |
+| 2 | Our Brand | Tekiro, RYU, Rexco tiles; each tile opens that brand directly | Brand logo above the card, photo slider, text (Tekiro has PAGE 1 / PAGE 2) |
+| 3 | Infrastruktur | Warehouse illustration | Photo slider and bullets |
+| 4 | Digital Trust | Phone illustration | Photo slider (ODP) and bullets |
+| 5 | Distribusi & Pemasaran | Captioned Distribusi / Pemasaran tiles; each opens directly | Sub-item name above the card, photo slider, bullets |
+| 6 | Altama Summit 2026 | Flag ceremony illustration | Text-only Summit message |
+
+There is no submenu: brand and distribution tiles are hold targets on the idle frame. The reference shows no visible "hold" cue, so none is drawn; the hold border animation shows progress.
+
+## Open card
+
+Inside the card: the photo frame (262 × 144 at card offset 34, 35) with arrows centered near its left/right edges (44 px targets, 34 px white circles). Arrows only move photos. Page tabs (112 × 40, under the photo) only switch the text page and render only when content has more than one page. Body text fills the rest of the card in bold Roboto Condensed (14.5 px, 14 px for the long Summit story). Back is a ✕ badge on the card's top-right corner. A photo slot without a file shows a numbered placeholder.
 
 ## Controls and geometry
 
-`shared/installation-layout.json` owns frame/zone/control dimensions and all logical targets. CSS derives horizontal/vertical units from the viewport independently. Changing geometry requires a layout version bump and matching Sensor Service deployment.
+`shared/installation-layout.json` (**wall-v4**) owns every target: `main` (single columns only), `languageBar` + 18 `languages` (64 × 48), `subItems` tiles for columns 2/5, and `active.back`, `active.previous`/`next`, `active.pages`. Its `visual` block holds non-target placement (logo, pills, subtitle, artwork, photo frame, text start, rails). Changing any target requires a new layout version and matching Sensor Service deployment.
 
-Flag targets are 56 × 44 logical px; Back and arrow targets are 44 × 44 px. The 232 × 60 px language bar is centered 48 px above the card's lower edge only in idle. It is an absolute overlay sibling of the full-card hold button, avoiding nested interactive elements and reserved layout space. The group is hidden in submenu/carousel.
+Pointer users hold main/tile buttons for one second. Enter/Space activate a focused button immediately. Language, Back, arrows, and page tabs activate on a normal press. Operator keys 1–6 open a column (columns 2/5 open their default sub-item) or close it; R/Escape reset all content while retaining languages until their inactivity timeout. Arrow keys and PageUp/PageDown move the leftmost open photo slider. D toggles diagnostics only in development. Each column returns to idle/Indonesian after **30 seconds** without interaction.
 
-Carousel arrows sit 20 px from the left/right edges, centered vertically on the full card. Title/Back sit at the top and the counter at the bottom; portrait photo placeholders fill the card behind these controls. Flag buttons show icons only, with accessible names, selected state, and visible focus. Main/sub-item labels remain real text. Headings may wrap so full translated titles remain readable.
+Hold feedback traces a 4 px sky stroke around the button and animates a blue inset glow over one second without moving target rectangles. Outline arcs follow the 14 px frame corners or 10 px tile corners. Reduced motion uses a static border and shadow during hold.
 
-Hold feedback traces a 4 px SVG stroke around the button and animates an emerald inset box-shadow across the card over one second without moving target rectangles. Card corners are 14 logical px; submenu and carousel content fill the card with square internal separators and clipped outer corners. Outline arcs follow those same corners. Photo frames have 12 px corners; card panels inherit and clip to the outer radius. Reduced motion uses a static border and shadow during hold and suppresses the decorative hand animation. Release/cancel clears incomplete progress.
+## Typography
 
-Pointer users hold main/sub-item buttons for one second. Enter/Space activate a focused button immediately. Language, Back, and carousel controls activate normally. Operator keys 1–6 open an idle column or go back in that column; R/Escape reset all content while retaining languages until their inactivity timeout. D toggles diagnostics only in development.
-
-Columns 2/5 show submenu choices before their explanations. Back from a selected sub-item returns to that submenu. Carousel placeholders are development UI, not final approved photos.
+Oswald is the display face (title pills, tabs); Roboto Condensed is the body face. Both load through `@nuxt/fonts` and are bundled into the build. Chinese text falls back to the system CJK font.
 
 ## References
 
