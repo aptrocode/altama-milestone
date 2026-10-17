@@ -59,7 +59,7 @@ const dense = computed(() => props.pages.some(item => JSON.stringify(item.i18n[p
           <svg viewBox="0 0 100 80" class="w-[calc(44*var(--wall-x))] h-[calc(35*var(--wall-y))] text-white/40" aria-hidden="true">
             <polygon points="50,15 85,65 15,65" fill="currentColor" />
           </svg>
-          <span class="font-display text-[length:calc(16*var(--wall-x))] uppercase tracking-wide text-white/60">{{ WALL_COPY[locale].photo }} {{ String(index + 1).padStart(2, '0') }}</span>
+          <span class="font-display text-[length:calc(16*var(--wall-u))] uppercase tracking-wide text-white/60">{{ WALL_COPY[locale].photo }} {{ String(index + 1).padStart(2, '0') }}</span>
         </div>
       </div>
     </div>
@@ -86,7 +86,7 @@ const dense = computed(() => props.pages.some(item => JSON.stringify(item.i18n[p
     <template v-if="hasPages">
       <WallHoldButton
         v-for="target in tabs" :key="target.page"
-        class="wall-page-tab absolute flex items-center justify-center [border-radius:calc(7*var(--wall-x))/calc(7*var(--wall-y))] font-display text-[length:calc(24*var(--wall-x))] font-bold uppercase tracking-wide"
+        class="wall-page-tab absolute flex items-center justify-center [border-radius:calc(7*var(--wall-x))/calc(7*var(--wall-y))] font-display text-[length:calc(24*var(--wall-u))] font-bold uppercase tracking-wide"
         :class="page === target.page ? 'bg-[#0b1a78] text-white ring-2 ring-[#9fdcff] shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.8)]' : 'bg-white text-[#0b1a78] ring-2 ring-white/80 hover:bg-sky-100'"
         :style="rectStyle(target, geometry.card)" :outline="target" :radius="7"
         :aria-pressed="page === target.page" data-sensor-action="page" :data-page="target.page"
@@ -100,7 +100,7 @@ const dense = computed(() => props.pages.some(item => JSON.stringify(item.i18n[p
       <WallPageCopy
         v-for="(item, index) in pages" :key="index"
         class="absolute inset-0 overflow-hidden text-white font-bold leading-[1.18] transition-opacity duration-300 motion-reduce:transition-none"
-        :class="[page === index ? 'opacity-100' : 'opacity-0', dense ? 'text-[length:calc(14*var(--wall-x))]' : 'text-[length:calc(14.5*var(--wall-x))]']"
+        :class="[page === index ? 'opacity-100' : 'opacity-0', dense ? 'text-[length:calc(14*var(--wall-u))]' : 'text-[length:calc(14.5*var(--wall-u))]']"
         :aria-hidden="page !== index" :copy="item.i18n[locale]" :locale="locale"
       />
     </div>
