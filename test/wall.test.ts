@@ -1,10 +1,21 @@
+import type { ColumnId } from '../shared/wall';
 import { createPinia } from 'pinia';
 import { describe, expect, it } from 'vitest';
+import { getColumnConfig, getColumnPages } from '../app/data/wall-config';
 import { useWallStore } from '../app/stores/wall';
 import { COLUMN_IDS } from '../shared/wall';
 
 function store() {
   return useWallStore(createPinia());
+}
+
+// Counts come from the content files, so client edits (more photos, a second page) never break
+// these behaviour tests; the tests only assume the shapes they name (a slider, two pages).
+function pagesOf(columnId: ColumnId, subItem = getColumnConfig(columnId).defaultSub || '') {
+  return getColumnPages(getColumnConfig(columnId), subItem);
+}
+function photoCount(columnId: ColumnId, page = 0, subItem?: string) {
+  return pagesOf(columnId, subItem)[page]?.photos.length ?? 0;
 }
 
 describe('wall state and actions', () => {
@@ -64,10 +75,12 @@ describe('wall state and actions', () => {
 
   it('wraps the photo slider in both directions and rejects navigation while idle', () => {
     const wall = store();
+    const count = photoCount(4);
+    expect(count).toBeGreaterThan(1);
     expect(wall.dispatch({ type: 'next', columnId: 4 })).toBe(false);
     wall.dispatch({ type: 'main', columnId: 4 });
     wall.dispatch({ type: 'previous', columnId: 4 });
-    expect(wall.getPhotoIndex(4)).toBe(1);
+    expect(wall.getPhotoIndex(4)).toBe(count - 1);
     wall.dispatch({ type: 'next', columnId: 4 });
     expect(wall.getPhotoIndex(4)).toBe(0);
   });
@@ -79,23 +92,26 @@ describe('wall state and actions', () => {
     expect(wall.columns[2]).toMatchObject({ photo: 1, page: 0 });
     expect(wall.dispatch({ type: 'page', columnId: 2, page: 1 })).toBe(true);
     expect(wall.columns[2]).toMatchObject({ photo: 0, page: 1 });
-    expect(wall.publishedColumns[2]).toMatchObject({ page: 1, photoCount: 2, pageCount: 2 });
+    expect(wall.publishedColumns[2]).toMatchObject({ page: 1, photoCount: photoCount(2, 1, 'tekiro'), pageCount: 2 });
     expect(wall.dispatch({ type: 'page', columnId: 2, page: 2 })).toBe(false);
     expect(wall.dispatch({ type: 'page', columnId: 3, page: 1 })).toBe(false);
   });
 
   it('rejects arrows and tabs for content without them', () => {
     const wall = store();
+    expect(photoCount(6)).toBeLessThan(2);
     wall.dispatch({ type: 'main', columnId: 6 });
     expect(wall.dispatch({ type: 'next', columnId: 6 })).toBe(false);
+    expect(pagesOf(3)).toHaveLength(1);
     wall.dispatch({ type: 'main', columnId: 3 });
     expect(wall.dispatch({ type: 'page', columnId: 3, page: 0 })).toBe(false);
   });
 
   it('publishes arrow and tab counts with each snapshot', () => {
     const wall = store();
-    expect(wall.publishedColumns[2]).toMatchObject({ subItem: 'tekiro', photoCount: 2, pageCount: 2 });
-    expect(wall.publishedColumns[6]).toMatchObject({ photoCount: 0, pageCount: 1 });
+    for (const id of COLUMN_IDS)
+      expect(wall.publishedColumns[id]).toMatchObject({ photoCount: photoCount(id), pageCount: pagesOf(id).length });
+    expect(wall.publishedColumns[2]).toMatchObject({ subItem: 'tekiro', pageCount: 2 });
   });
 
   it('operator reset preserves languages; inactivity reset restores Indonesian', () => {
