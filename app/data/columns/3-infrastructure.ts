@@ -7,7 +7,7 @@ export const INFRASTRUCTURE: ColumnConfig = {
   key: 'infrastructure',
   type: 'single',
   icon: 'warehouse',
-  illustration: provisional('/illustrations/infrastructure.webp'),
+  illustration: provisional('/illustrations/infrastructure.webm'),
   i18n: {
     'id': { label: 'INFRASTRUKTUR' },
     'en': { label: 'INFRASTRUCTURE' },

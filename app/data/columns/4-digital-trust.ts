@@ -7,7 +7,7 @@ export const DIGITAL_TRUST: ColumnConfig = {
   key: 'digital-partners',
   type: 'single',
   icon: 'person',
-  illustration: provisional('/illustrations/digital-partners.webp'),
+  illustration: provisional('/illustrations/digital-partners.webm'),
   i18n: {
     'id': { label: 'DIGITAL TRUST' },
     'en': { label: 'DIGITAL TRUST' },

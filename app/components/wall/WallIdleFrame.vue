@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { WallAction, WallLocale } from '../../../shared/wall';
 import type { ColumnConfig } from '~/types/wall-content';
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, ref } from 'vue';
 import WallHoldButton from '~/components/wall/WallHoldButton.vue';
 import WallLanguageSwitcher from '~/components/wall/WallLanguageSwitcher.vue';
-import { getColumnLayout, installationLayout, rectStyle } from '~/data/installation-layout';
+import { getColumnLayout, rectStyle } from '~/data/installation-layout';
 
 /**
  * Idle frame (reference mockup 1): one full-frame hold target with artwork for single columns,
@@ -15,26 +15,45 @@ const emit = defineEmits<{ action: [action: WallAction] }>();
 
 const geometry = computed(() => getColumnLayout(props.column.id));
 const card = computed(() => geometry.value.card);
-const artworkStyle = computed(() => rectStyle(installationLayout.visual.artwork, { x: 0, y: card.value.y }));
 const tiles = computed(() => (geometry.value.subItems || []).map(tile => ({
   tile,
   sub: props.column.subItems!.find(sub => sub.key === tile.key)!,
 })));
+
+const videoElement = ref<HTMLVideoElement | null>(null);
+
+onBeforeUnmount(() => {
+  const element = videoElement.value;
+  if (!element)
+    return;
+  element.pause();
+  element.removeAttribute('src');
+  element.load();
+});
 </script>
 
 <template>
   <div
-    class="wall-frame [border-radius:calc(14*var(--wall-x))/calc(14*var(--wall-y))] bg-[#0a1a80]/35 ring-2 ring-wall-glow/80 shadow-[0_0_calc(20*var(--wall-x))_rgba(80,190,255,0.6),inset_0_0_calc(24*var(--wall-x))_rgba(80,190,255,0.25)]"
+    class="wall-frame [border-radius:calc(14*var(--wall-x))/calc(14*var(--wall-y))]"
+    :class="!geometry.main ? 'bg-[#0a1a80]/35 border-[calc(2.5*var(--wall-x))] border-cyan-300 shadow-[0_0_calc(14*var(--wall-x))_rgba(56,189,248,0.85),inset_0_0_calc(18*var(--wall-x))_rgba(56,189,248,0.3)]' : ''"
   >
     <WallHoldButton
       v-if="geometry.main" class="absolute inset-0 [border-radius:inherit] hover:bg-white/5"
       :outline="geometry.main" group="card" :radius="14" :aria-label="label" data-sensor-action="main"
       @activate="emit('action', { type: 'main', columnId: column.id })"
     >
-      <img
-        v-if="column.illustration" :src="column.illustration.src" alt=""
-        class="absolute object-contain pointer-events-none" :style="artworkStyle"
-      >
+      <div class="pointer-events-none absolute -inset-[calc(9*var(--wall-x))]">
+        <video
+          v-if="column.illustration?.src.endsWith('.webm') || column.illustration?.src.endsWith('.mp4')"
+          ref="videoElement" :src="column.illustration.src"
+          autoplay loop muted playsinline preload="auto" disablepictureinpicture
+          class="size-full object-fill"
+        />
+        <img
+          v-else-if="column.illustration" :src="column.illustration.src" alt=""
+          class="size-full object-fill"
+        >
+      </div>
     </WallHoldButton>
     <WallHoldButton
       v-for="{ tile, sub } in tiles" :key="tile.key"

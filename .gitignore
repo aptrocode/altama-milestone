@@ -45,3 +45,7 @@ mainProject/
 # Sensor Service state on the event PC
 sensor-config.json
 sensor-background.json
+
+# Raw asset sequences / master imports (not deployed)
+public/new-assets/
+

@@ -7,7 +7,7 @@ export const ABOUT_ALTAMA: ColumnConfig = {
   key: 'about-altama',
   type: 'single',
   icon: 'building',
-  illustration: provisional('/illustrations/about-altama.webp'),
+  illustration: provisional('/illustrations/about-altama.webm'),
   i18n: {
     'id': { label: 'TENTANG ALTAMA' },
     'en': { label: 'ABOUT ALTAMA' },

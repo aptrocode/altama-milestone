@@ -20,9 +20,9 @@ export interface StageMedia {
 }
 
 export const STAGE_MEDIA: StageMedia = {
-  // Mockup 1 with its cards and logo filled in; it already contains the skyline.
-  background: { kind: 'image', src: '/summit/background.webp', approved: false },
+  // Looping background video (2304 × 1344); it already contains the skyline and wave animations.
+  background: { kind: 'video', src: '/summit/background.mp4', approved: false },
   logo: { src: '/summit/logo-powering-partnership.webp', approved: false },
   skyline: null,
-  waveSweeps: true,
+  waveSweeps: false,
 };

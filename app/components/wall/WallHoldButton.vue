@@ -17,7 +17,7 @@ const hold = computed(() => ({
 
 // Keep the stroke inside the button and its arcs aligned with the CSS corners.
 const outlinePath = computed(() => {
-  const edge = 2;
+  const edge = 2.5;
   const right = props.outline.width - edge;
   const bottom = props.outline.height - edge;
   const lowerRadius = Math.max(0, (props.radius || 0) - edge);
@@ -37,32 +37,50 @@ const outlinePath = computed(() => {
     'Z',
   ].join(' ');
 });
+
+const perimeter = computed(() => {
+  const edge = 2.5;
+  const w = Math.max(0, props.outline.width - edge * 2);
+  const h = Math.max(0, props.outline.height - edge * 2);
+  const r = Math.max(0, (props.radius || 0) - edge);
+  const arcCount = props.bottomCornersOnly ? 2 : 4;
+  const straightW = props.bottomCornersOnly ? w : Math.max(0, w - 2 * r);
+  const straightH = Math.max(0, h - (props.bottomCornersOnly ? r : 2 * r));
+  const arcLen = (arcCount * 0.5 * Math.PI * r);
+  return Math.ceil(2 * straightW + 2 * straightH + arcLen);
+});
 </script>
 
 <template>
   <button
     v-hold="hold" type="button"
     class="group/hold cursor-pointer transition-colors duration-150"
-    :style="{ '--hold-duration': `${hold.durationMs}ms` }" :data-hold-group="group" :data-hold="rule.enabled ? 'on' : 'off'"
+    :style="{ '--hold-duration': `${hold.durationMs}ms`, '--path-length': `${perimeter}px` }" :data-hold-group="group" :data-hold="rule.enabled ? 'on' : 'off'"
   >
+    <slot />
     <div
-      class="hold-inset pointer-events-none absolute inset-0 rounded-[inherit] transition-opacity duration-200 opacity-0 group-[.holding]/hold:opacity-100 group-[.hold-complete]/hold:opacity-100"
+      class="hold-inset pointer-events-none absolute inset-0 rounded-[inherit] transition-opacity duration-200 opacity-0 group-[.holding]/hold:opacity-100 group-[.hold-complete]/hold:opacity-100 z-10"
       aria-hidden="true"
     />
-    <slot />
     <svg
-      class="absolute inset-0 w-full h-full pointer-events-none" :viewBox="`0 0 ${outline.width} ${outline.height}`"
+      class="absolute inset-0 w-full h-full pointer-events-none z-10 overflow-visible" :viewBox="`0 0 ${outline.width} ${outline.height}`"
       preserveAspectRatio="none" aria-hidden="true" focusable="false"
     >
       <path
-        :d="outlinePath" pathLength="1" stroke-width="4" stroke-linecap="round"
-        class="hold-outline fill-none stroke-sky-300 opacity-0 [stroke-dasharray:1] [stroke-dashoffset:1] group-[.holding]/hold:opacity-100 group-[.hold-complete]/hold:opacity-100 group-[.hold-complete]/hold:[stroke-dashoffset:0] motion-reduce:group-[.holding]/hold:[stroke-dashoffset:0]"
+        :d="outlinePath" stroke-width="5" stroke-linecap="round"
+        class="hold-outline fill-none stroke-cyan-300 opacity-0 group-[.holding]/hold:opacity-100 group-[.hold-complete]/hold:opacity-100 group-[.hold-complete]/hold:[stroke-dashoffset:0] motion-reduce:group-[.holding]/hold:[stroke-dashoffset:0]"
+        :style="{ strokeDasharray: `${perimeter}px`, strokeDashoffset: `${perimeter}px` }"
       />
     </svg>
   </button>
 </template>
 
 <style scoped>
+.hold-outline {
+  filter: drop-shadow(0 0 calc(6 * var(--wall-x, 1px)) rgba(56, 189, 248, 0.95))
+    drop-shadow(0 0 calc(14 * var(--wall-x, 1px)) rgba(6, 182, 212, 0.75));
+}
+
 .hold-inset {
   box-shadow:
     inset 0 0 calc(36 * var(--wall-x, 1px)) rgba(102, 204, 255, 0.34),
@@ -81,7 +99,7 @@ const outlinePath = computed(() => {
 }
 
 @keyframes hold-border {
-  from { stroke-dashoffset: 1; }
+  from { stroke-dashoffset: var(--path-length); }
   to { stroke-dashoffset: 0; }
 }
 
