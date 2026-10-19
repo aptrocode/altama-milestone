@@ -49,3 +49,6 @@ sensor-background.json
 # Raw asset sequences / master imports (not deployed)
 public/new-assets/
 
+
+# One-click launcher state on the event PC (logs, kiosk browser profile, pid)
+.wall-run/

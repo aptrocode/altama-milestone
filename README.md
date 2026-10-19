@@ -13,6 +13,18 @@ bun run dev
 
 Open the URL printed by Nuxt. Build with `bun run build`, create static output with `bun run generate`, and preview with `bun run preview`.
 
+### PC event (sekali klik, Windows)
+
+Wall dan Sensor Service berjalan lokal di PC event; tidak perlu VPS atau internet (kecuali saat build pertama untuk font). Butuh Bun dan Chrome/Edge.
+
+| File | Fungsi |
+| :--- | :--- |
+| `start-wall.bat` | Build otomatis bila ada perubahan, jalankan Sensor Service + server wall (`http://127.0.0.1:3300`), buka browser fullscreen (kiosk) |
+| `open-dashboard.bat` | Buka `/dashboard` di profil browser yang sama dengan wall (setting hold ikut tersimpan di sana) |
+| `stop-wall.bat` | Hentikan semuanya dari luar (mis. lewat remote desktop) |
+
+Menutup wall: **Alt+F4** di browser, tutup jendela "Altama Wall", atau `stop-wall.bat`; ketiganya menghentikan Sensor Service, server wall, dan browser. Service yang crash dijalankan ulang otomatis. Log dan profil browser ada di `.wall-run/`. Opsi di `.env` (dibaca saat start, tanpa rebuild): `WALL_PORT` (default 3300), `WS_PORT` (8787), `NUXT_PUBLIC_SENSOR_ENABLED` (default `true`), `NUXT_PUBLIC_SENSOR_WS_URL`. Tutup `bun dev` / `sensor:service` sebelum start agar port tidak bentrok. Logika: `scripts/wall-launcher.ps1`.
+
 ## Operator Shortcuts & Interaction
 
 ### 1. Keyboard & Wireless Presenter Remote

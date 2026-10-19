@@ -49,6 +49,11 @@ export default defineNuxtConfig({
     },
   },
 
+  nitro: {
+    // Raw image sequences/master imports stay out of the build output (see .gitignore).
+    ignore: ['**/new-assets/**'],
+  },
+
   vite: {
     plugins: [
       tailwindcss(),

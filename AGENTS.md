@@ -29,7 +29,7 @@ Read only the document needed:
 - `app/utils/`: strict sensor parsing and hold lifecycle.
 - `app/error.vue`: global recovery UI.
 - `public/`: local flags plus provisional `summit/`, `illustrations/`, `brands/`, and `photos/` media; `scripts/check-assets.ts`: active asset/config validation.
-- `sensor-service/`: Sensor Service (`main.ts` transports; `service.ts` wall/admin protocol; `hokuyo.ts`/`scip.ts` UST-10LX; `calibration.ts`, `tracker.ts`, `normalized.ts` Augmenta/TUIO, `dwell.ts`, `show-control.ts`; `simulate.ts`/`synthetic.ts` simulators). `scripts/send-osc.ts`: OSC command sender.
+- `sensor-service/`: Sensor Service (`main.ts` transports; `service.ts` wall/admin protocol; `hokuyo.ts`/`scip.ts` UST-10LX; `calibration.ts`, `tracker.ts`, `normalized.ts` Augmenta/TUIO, `dwell.ts`, `show-control.ts`; `simulate.ts`/`synthetic.ts` simulators). `scripts/send-osc.ts`: OSC command sender. `scripts/wall-launcher.ps1` (via `start-wall.bat`, `open-dashboard.bat`, `stop-wall.bat`): one-click event-PC launcher that builds when stale, runs `.output/server` and the Sensor Service with Bun, opens the kiosk browser, and kills everything through a Windows job object when it closes.
 - `test/`: state, controller, hold, protocol, osc, socket, layout-query, and Sensor Service regression tests.
 
 ## Invariants
