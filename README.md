@@ -1,105 +1,53 @@
 # Altama Interactive Wall
 
-Fullscreen Nuxt 4 kiosk for ALTAMA's **2304 × 1344** LED installation.
+Kiosk Nuxt 4 fullscreen untuk LED wall **ALTAMA Summit 2026** (2304 × 1344). Enam kolom berdiri sendiri: Tentang Altama, Our Brand, Infrastruktur, Digital Trust, Distribusi & Pemasaran, dan Altama Summit 2026, masing-masing dengan bahasa Indonesia, English, dan 中文. Input lewat sentuh/mouse (hold), keyboard, OSC, atau sensor LiDAR. HP dan tablet mendapat tampilan bertumpuk yang bisa di-scroll.
 
-Six independent columns cover Tentang Altama, Our Brand, Infrastruktur, Digital Trust, Distribusi & Pemasaran, and Altama Summit 2026, styled after the ALTAMA Summit 2026 "Powering Partnership" mockups. Each idle card has floating Indonesian (default), English, and Simplified Chinese flag controls. The chosen language stays with that column through its submenu/carousel. Artwork, photos, and company copy are provisional crops/drafts until the client approves final assets; see [docs/content.md](docs/content.md) to edit a column and [docs/assets.md](docs/assets.md) to replace media or add a background video. Phones and tablets get a stacked, scrollable version of the same columns.
-
-## Run
+## Development
 
 ```bash
 bun install --frozen-lockfile
 bun run dev
 ```
 
-Open the URL printed by Nuxt. Build with `bun run build`, create static output with `bun run generate`, and preview with `bun run preview`.
+Wall di `http://localhost:3000`, dashboard operator di `/dashboard`. Sensor Service + OSC (opsional): `bun run sensor:service`.
 
-### PC event (sekali klik, Windows)
+## PC event (Windows, sekali klik)
 
-Wall dan Sensor Service berjalan lokal di PC event; tidak perlu VPS atau internet (kecuali saat build pertama untuk font). Butuh Bun dan Chrome/Edge.
+Semua berjalan lokal di PC event, tanpa VPS atau internet. Butuh Bun dan Chrome/Edge.
 
 | File | Fungsi |
 | :--- | :--- |
-| `start-wall.bat` | Build otomatis bila ada perubahan, jalankan Sensor Service + server wall (`http://127.0.0.1:3300`), buka browser fullscreen (kiosk) |
-| `open-dashboard.bat` | Buka `/dashboard` di profil browser yang sama dengan wall (setting hold ikut tersimpan di sana) |
-| `stop-wall.bat` | Hentikan semuanya dari luar (mis. lewat remote desktop) |
+| `start-wall.bat` | Build bila ada perubahan, jalankan wall + Sensor Service, buka browser fullscreen |
+| `open-dashboard.bat` | Buka dashboard di profil browser yang sama dengan wall |
+| `stop-wall.bat` | Hentikan semuanya (mis. lewat remote desktop) |
 
-Menutup wall: **Alt+F4** di browser, tutup jendela "Altama Wall", atau `stop-wall.bat`; ketiganya menghentikan Sensor Service, server wall, dan browser. Service yang crash dijalankan ulang otomatis. Log dan profil browser ada di `.wall-run/`. Opsi di `.env` (dibaca saat start, tanpa rebuild): `WALL_PORT` (default 3300), `WS_PORT` (8787), `NUXT_PUBLIC_SENSOR_ENABLED` (default `true`), `NUXT_PUBLIC_SENSOR_WS_URL`. Tutup `bun dev` / `sensor:service` sebelum start agar port tidak bentrok. Logika: `scripts/wall-launcher.ps1`.
+Tutup dengan **Alt+F4**, menutup jendela "Altama Wall", atau `stop-wall.bat`. Opsi port/sensor ada di `.env` (lihat `scripts/wall-launcher.ps1`).
 
-## Operator Shortcuts & Interaction
+## Dashboard (`/dashboard`)
 
-### 1. Keyboard & Wireless Presenter Remote
+- **Hold**: tombol mana yang harus ditahan dan berapa lama (bahasa & close default tidak perlu ditahan).
+- **Wall**: detik reset otomatis semua section dan posisi Y card.
+- **Sensor**: sumber sentuh (Hokuyo, Augmenta, TUIO), port, kalibrasi, status live.
 
-Dapat dioperasikan langsung menggunakan keyboard fisik, wireless numpad, atau remote presenter (clicker USB):
+Sidebar: export/import pengaturan, fullscreen, dan reset ke default. Detail: [docs/dashboard.md](docs/dashboard.md).
 
-| Shortcut | Perangkat | Fungsi |
-| :--- | :--- | :--- |
-| **`1` – `6`** / **Numpad `1` – `6`** | Keyboard / Numpad | Buka / tutup kolom 1 sampai 6 (kolom 2/5 membuka sub-item default) |
-| **`Esc`** / **`R`** | Keyboard / Remote | Reset seluruh kolom ke tampilan awal (*standby*) |
-| **`←`** / **`PageUp`** | Keyboard / Clicker | Geser ke foto sebelumnya (*Previous*) pada kolom aktif paling kiri |
-| **`→`** / **`PageDown`** | Keyboard / Clicker | Geser ke foto berikutnya (*Next*) pada kolom aktif paling kiri |
-| **`Enter`** / **`Space`** | Keyboard / Remote | Langsung mengaktifkan tombol yang sedang fokus (tanpa hold) |
-| **`D`** | Keyboard | Menampilkan/menyembunyikan panel diagnostik sensor (mode dev) |
-| **Mouse / Touch Hold** | Layar Sentuh / Mouse | Tahan (default 1 detik, bisa diatur/dimatikan di `/dashboard`) untuk membuka kolom, tile Tekiro/RYU/Rexco/Distribusi/Pemasaran, panah foto, dan tombol halaman |
+## Keyboard / remote
 
-*Inaktivitas*: Setiap kolom yang aktif akan otomatis kembali ke standby setelah **30 detik** (bisa diubah di `/dashboard`) tanpa interaksi. Membuka satu kolom tidak mengubah lima kolom lainnya.
+| Tombol | Fungsi |
+| :--- | :--- |
+| `1`–`6` | Buka/tutup kolom |
+| `Esc` / `R` | Reset semua kolom |
+| `←` `→` / `PageUp` `PageDown` | Foto sebelumnya/berikutnya di kolom terbuka paling kiri |
+| `Enter` / `Space` | Aktifkan tombol yang fokus tanpa hold |
 
-### 2. OSC Show Control (Resolume Arena, TouchDesigner, QLab)
+Perintah OSC (`/altama/*`, UDP 9000) dan simulator sensor: [docs/sensor.md](docs/sensor.md).
 
-Jalankan Sensor Service di background (OSC show control selalu aktif di dalamnya):
-```bash
-bun run sensor:service
-```
-Default port: **UDP `9000`** (OSC Input) dan **WS `8787`** (Nuxt WebSocket). `bun run osc:service` tetap jalan sebagai alias.
+## Dokumentasi & cek
 
-| Alamat OSC | Argumen | Contoh Perintah | Aksi |
-| :--- | :--- | :--- | :--- |
-| `/altama/column` | `1..6` (int) | `/altama/column 1` | Buka / toggle kolom |
-| `/altama/col/<id>` | *(none)* | `/altama/col/2` | Buka kolom dari path |
-| `/altama/open` | `1..6` (int) | `/altama/open 3` | Buka kolom standby |
-| `/altama/back` | `[1..6]` *(opsional)* | `/altama/back 2` | Kembali (atau reset semua jika kosong) |
-| `/altama/next` | `1..6` (int) | `/altama/next 1` | Pindah ke foto berikutnya |
-| `/altama/prev` | `1..6` (int) | `/altama/prev 1` | Pindah ke foto sebelumnya |
-| `/altama/page` | `kolom`, `halaman` (mulai 1) | `/altama/page 2 2` | Tampilkan halaman teks |
-| `/altama/subItem` | `kolom`, `key` | `/altama/subItem 2 tekiro` | Pilih sub-item merek/jalur |
-| `/altama/lang` | `locale` / `kolom`, `locale` | `/altama/lang en` | Ganti bahasa (`id`, `en`, `zh-Hans`) |
-| `/altama/reset` | *(none)* | `/altama/reset` | Reset seluruh kolom ke standby |
-
-**Uji perintah OSC via CLI:**
-```bash
-bun run osc:send /altama/column 1
-bun run osc:send /altama/subItem 2 tekiro
-bun run osc:send /altama/next 2
-bun run osc:send /altama/reset
-```
-
-### 3. Sensor (Hokuyo UST-10LX, Augmenta, TUIO)
-
-Sensor Service yang sama membaca satu sumber sentuh: **Hokuyo UST-10LX** (Ethernet, default `192.168.0.10:10940`), **Augmenta** (UDP `12000`), atau **TUIO 1.1** (UDP `3333`). Pilih sumber, port, Invert Y, dan kalibrasi Hokuyo di `/dashboard`; setting disimpan service di `sensor-config.json`. Input wall memakai **protocol v2 / wall-v7** lewat WebSocket port 8787 dan default-nya mati (`NUXT_PUBLIC_SENSOR_ENABLED=true` untuk menyalakan). Tanpa hardware, pakai simulator:
+Mulai dari [AGENTS.md](AGENTS.md); detail per topik ada di `docs/`. Edit konten di `app/data/columns/` ([docs/content.md](docs/content.md)), aset di [docs/assets.md](docs/assets.md).
 
 ```bash
-bun run sensor:sim hokuyo --tap 212,700,1.5 --loop
-bun run sensor:sim tuio --tap 588,620
+bun run lint && bun run typecheck && bun run test && bun run assets:check && bun run build
 ```
 
-Detail: [docs/sensor.md](docs/sensor.md). Kalibrasi fisik dan uji multi-user di hardware event tetap wajib.
-
-### 4. Dashboard operator (`/dashboard`)
-
-Buka `http://<alamat-wall>/dashboard` di browser yang sama dengan wall. **Hold**: atur hold per grup (**Card section**, **Button page**, **Button slider**), ON/OFF dan durasi 0,3–5 detik, tersimpan di browser dan bisa di-export/import. **Sensor**: sumber, port, Invert Y, kalibrasi Hokuyo, status live, dan preview kontak, tersimpan di Sensor Service. Detail: [docs/dashboard.md](docs/dashboard.md).
-
-## Project guide
-
-Start with [AGENTS.md](AGENTS.md). Architecture, design, languages, assets, sensor, testing, push, and release instructions are split under `docs/`. Production UI lives in `app/`; shared actions/geometry live in `shared/`. `dika/` is an isolated prototype sandbox.
-
-## Checks
-
-```bash
-bun run lint
-bun run typecheck
-bun run test
-bun run assets:check
-bun run build
-bun run generate
-```
-
-See [docs/testing.md](docs/testing.md) for behavior and browser acceptance. [MIT license](LICENSE).
+[MIT license](LICENSE).

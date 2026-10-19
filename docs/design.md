@@ -15,7 +15,7 @@ The Summit logo is shared. Idle it is 278 px tall at y 70, narrow enough to stay
 
 ## Stage background
 
-`KioskBackground` renders, back to front: a coded radial gradient with SVG neon waves (fallback), the background media from `STAGE_MEDIA.background` (`image` or looping muted `video` with a poster), and an optional separate skyline. The current background is mockup 1 with its cards and logo filled in, so it already contains the skyline. On top of the image, `STAGE_MEDIA.waveSweeps` adds light streaks that travel along the traced neon waves in the top-left and top-right corners, plus a slow corner glow (scoped keyframes, off under reduced motion). The traced paths only match the current image: turn `waveSweeps` off when the background changes. A failed media file falls back to the coded layer. The final background is expected to be a video or image sequence from the design team; convert sequences to a looping video unless alpha is needed.
+`KioskBackground` renders, back to front: a coded radial gradient with SVG neon waves (fallback), the background media from `STAGE_MEDIA.background` (`image` or looping muted `video` with a poster), and an optional separate skyline. The current background is a looping 2304 × 1344 video that already contains the skyline and the wave light, so `skyline` is `null` and the code-drawn wave sweeps (`STAGE_MEDIA.waveSweeps`, traced from the old mockup image) are off. A failed media file falls back to the coded layer.
 
 ## Column content
 

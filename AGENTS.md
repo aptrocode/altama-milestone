@@ -8,8 +8,8 @@ Read only the document needed:
 - `docs/style.md`: Tailwind-first utilities, scoped CSS exceptions, and logical spacing.
 - `docs/language.md`: per-column translations and flag accessibility.
 - `docs/content.md`: where each column's text, pages, photos, and tiles live and how to replace them.
-- `docs/dashboard.md`: operator dashboard (`/dashboard`): hold per button group and Sensor Service source/calibration.
-- `docs/assets.md`: current assets, placeholders, and naming.
+- `docs/dashboard.md`: operator dashboard (`/dashboard`): sidebar with Hold, Wall (reset time, card offset), and Sensor pages; backup/reset.
+- `docs/assets.md`: deployed media, the `public/new-assets/` master-file layout, encoding commands, and naming.
 - `docs/sensor.md`: protocol v2 / wall-v7, Sensor Service sources (Hokuyo, Augmenta, TUIO), calibration, admin contract, simulators, and rollout.
 - `docs/testing.md`: commands, regression coverage, and browser acceptance.
 - `docs/push.md`: issue, branch, commit, PR, review, merge, and cleanup.
@@ -22,15 +22,16 @@ Read only the document needed:
 - `app/components/wall/`: `WallColumn` (orchestrator), `WallIdleFrame` (mockup 1), `WallOpenCard` (mockup 2: page photo slider, arrows, page tabs), `WallPageCopy`, `WallColumnPill`, `WallColumnIcon`, `WallLanguageSwitcher`, and `WallHoldButton`.
 - `app/composables/useWallController.ts`: shared action API and per-instance inactivity timers; `useStackedLayout.ts`: phone/tablet media query.
 - `app/data/columns/`: one file per column (labels, artwork, tiles, pages, photos) plus `helpers.ts`; `app/types/wall-content.ts`: their types.
-- `app/stores/`: serializable wall, system, and operator-settings state only; `app/plugins/settings-storage.client.ts` persists settings to localStorage; `app/pages/dashboard.vue` with `app/components/dashboard/` (Hold, Sensor sections) and `app/composables/useSensorAdmin.ts` (admin socket): operator dashboard.
+- `app/stores/`: serializable wall, system, and operator-settings (`hold`, `wall`) state only; `app/plugins/settings-storage.client.ts` persists settings to localStorage.
+- Operator dashboard: `app/pages/dashboard.vue` (sidebar shell) with `app/pages/dashboard/{hold,wall,sensor}.vue`, `app/components/dashboard/` (`DashboardHold`, `DashboardWall`, `DashboardSensor`, `DashboardFormActions`), `app/composables/useSettingsBackup.ts` (export/import), and `app/composables/useSensorAdmin.ts` (admin socket).
 - `app/data/wall-config.ts`: column order and lookups (`getColumnConfig`, `getColumnPages`); `wall-media.ts`: background/logo/skyline/wave sweeps; `wall-copy.ts`: interface translations/flags.
-- `shared/wall.ts`: column IDs, languages, snapshots, and actions; `shared/hold-settings.ts`: hold groups, defaults, limits; `shared/osc.ts`: OSC packet parser/builder and show-control mapping; `shared/sensor-config.ts`: Sensor Service config and dashboard admin contract; `shared/sensor-targets.ts`: visible targets and hit-testing.
+- `shared/wall.ts`: column IDs, languages, snapshots, and actions; `shared/hold-settings.ts`: hold groups, defaults, limits; `shared/wall-settings.ts`: reset time and card offset; `shared/osc.ts`: OSC packet parser/builder and show-control mapping; `shared/sensor-config.ts`: Sensor Service config and dashboard admin contract; `shared/sensor-targets.ts`: visible targets and hit-testing.
 - `shared/installation-layout.json`: canonical sensor canvas and target geometry.
 - `app/utils/`: strict sensor parsing and hold lifecycle.
 - `app/error.vue`: global recovery UI.
-- `public/`: local flags plus provisional `summit/`, `illustrations/`, `brands/`, and `photos/` media; `scripts/check-assets.ts`: active asset/config validation.
+- `public/`: deployed media (`summit/`, `illustrations/` card videos, `brands/`, `photos/`, `flags/`), all `approved: false` until the client signs off; `public/new-assets/` holds git-ignored master files (`background/`, `card-sequences/<column-key>/`, `content/<column-key>/`) that are excluded from builds; `scripts/check-assets.ts`: active asset/config validation.
 - `sensor-service/`: Sensor Service (`main.ts` transports; `service.ts` wall/admin protocol; `hokuyo.ts`/`scip.ts` UST-10LX; `calibration.ts`, `tracker.ts`, `normalized.ts` Augmenta/TUIO, `dwell.ts`, `show-control.ts`; `simulate.ts`/`synthetic.ts` simulators). `scripts/send-osc.ts`: OSC command sender. `scripts/wall-launcher.ps1` (via `start-wall.bat`, `open-dashboard.bat`, `stop-wall.bat`): one-click event-PC launcher that builds when stale, runs `.output/server` and the Sensor Service with Bun, opens the kiosk browser, and kills everything through a Windows job object when it closes.
-- `test/`: state, controller, hold, protocol, osc, socket, layout-query, and Sensor Service regression tests.
+- `test/`: state, controller (incl. reset delay), hold and wall settings, protocol (incl. card offset), osc, socket, layout-query, and Sensor Service regression tests.
 
 ## Invariants
 

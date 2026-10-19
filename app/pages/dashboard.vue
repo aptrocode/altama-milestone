@@ -1,40 +1,256 @@
 <script setup lang="ts">
-useHead({ title: 'Dashboard · Altama Interactive Wall' });
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useSettingsBackup } from '~/composables/useSettingsBackup';
+import { useSettingsStore } from '~/stores/settings';
+import { DEFAULT_WALL_SETTINGS } from '../../shared/wall-settings';
 
-const runtimeConfig = useRuntimeConfig();
-// The Sensor Service runs on the event PC next to the wall; without a configured URL use this host.
-const sensorUrl = String(runtimeConfig.public.sensorWsUrl || '') || `ws://${window.location.hostname || '127.0.0.1'}:8787`;
+/**
+ * Operator dashboard shell: a darker navy sidebar (Hold, Wall, Sensor pages under
+ * `pages/dashboard/*`, settings backup, fullscreen, reset) next to the wall-blue content, in the same hue. The
+ * sidebar is fixed from `lg` and an off-canvas drawer below it.
+ */
+const NAV = [
+  { section: 'Pengaturan', items: [
+    { to: '/dashboard/hold', label: 'Hold', hint: 'Durasi tahan tombol', icon: 'hold' },
+    { to: '/dashboard/wall', label: 'Wall', hint: 'Reset & posisi card', icon: 'wall' },
+  ] },
+  { section: 'Perangkat', items: [
+    { to: '/dashboard/sensor', label: 'Sensor', hint: 'Sumber & kalibrasi', icon: 'sensor' },
+  ] },
+] as const;
+
+const route = useRoute();
+const pageTitle = computed(() => String(route.meta.title || 'Dashboard'));
+const pageDescription = computed(() => String(route.meta.description || ''));
+useHead({ title: () => `${pageTitle.value} · Dashboard · Altama Interactive Wall` });
+
+const drawerOpen = ref(false);
+watch(() => route.path, () => {
+  drawerOpen.value = false;
+});
+
+function onKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape')
+    drawerOpen.value = false;
+}
+onMounted(() => window.addEventListener('keydown', onKeydown));
+
+const settings = useSettingsStore();
+const backup = useSettingsBackup();
+const fileInput = ref<HTMLInputElement | null>(null);
+const notice = ref('');
+let noticeTimer: ReturnType<typeof setTimeout> | undefined;
+function showNotice(text: string) {
+  notice.value = text;
+  clearTimeout(noticeTimer);
+  noticeTimer = setTimeout(() => (notice.value = ''), 3000);
+}
+
+function exportSettings() {
+  backup.exportSettings();
+  showNotice('Pengaturan diekspor');
+}
+
+async function importSettings(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  input.value = '';
+  if (file)
+    showNotice(await backup.importSettings(file) ? 'Pengaturan diimpor dan diterapkan' : 'File tidak valid');
+}
+
+async function toggleFullscreen() {
+  try {
+    if (document.fullscreenElement)
+      await document.exitFullscreen();
+    else
+      await document.documentElement.requestFullscreen();
+  }
+  catch {
+    showNotice('Fullscreen tidak tersedia');
+  }
+}
+
+// Reset needs a second click within 4 s so a stray tap cannot wipe the operator's settings.
+const confirmReset = ref(false);
+let confirmTimer: ReturnType<typeof setTimeout> | undefined;
+function resetAll() {
+  if (!confirmReset.value) {
+    confirmReset.value = true;
+    clearTimeout(confirmTimer);
+    confirmTimer = setTimeout(() => (confirmReset.value = false), 4000);
+    return;
+  }
+  clearTimeout(confirmTimer);
+  confirmReset.value = false;
+  settings.resetHold();
+  settings.setWall(DEFAULT_WALL_SETTINGS);
+  showNotice('Hold & Wall kembali ke default');
+}
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onKeydown);
+  clearTimeout(noticeTimer);
+  clearTimeout(confirmTimer);
+});
+
+const footButton = 'group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-semibold text-sky-100/80 transition-colors hover:bg-white/[0.06] hover:text-white';
+const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0.05] text-sky-100/55 ring-1 ring-white/[0.06] transition-colors group-hover:text-white';
 </script>
 
 <template>
-  <main class="min-h-dvh overflow-y-auto overscroll-contain touch-pan-y select-text bg-wall-night text-wall-ink font-sans">
-    <div class="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-      <header class="flex items-center justify-between border-b border-white/10 pb-4 sm:pb-6">
-        <div>
-          <h1 class="font-display text-2xl font-bold uppercase tracking-wider text-white sm:text-3xl">
-            Operator Dashboard
-          </h1>
-          <p class="text-xs text-sky-100/60 sm:text-sm">
-            Hold button groups &amp; Sensor Service
+  <div class="h-dvh overflow-hidden bg-wall-night font-sans text-wall-ink select-text">
+    <!-- Drawer backdrop (below lg). -->
+    <div
+      v-if="drawerOpen" class="fixed inset-0 z-30 bg-black/60 backdrop-blur-[2px] lg:hidden" aria-hidden="true"
+      @click="drawerOpen = false"
+    />
+
+    <aside
+      id="dashboard-sidebar"
+      class="fixed inset-y-0 left-0 z-40 flex w-72 max-w-[85vw] flex-col bg-[#020624] shadow-[1px_0_0_rgba(102,204,255,0.12)] transition-transform duration-200 ease-out motion-reduce:transition-none lg:w-64 lg:translate-x-0"
+      :class="drawerOpen ? 'translate-x-0' : '-translate-x-full'"
+      aria-label="Navigasi dashboard"
+    >
+      <div class="flex items-center gap-3 px-5 pt-[max(1.5rem,env(safe-area-inset-top))] pb-6">
+        <span class="grid size-10 place-items-center rounded-xl bg-linear-to-br from-wall-glow to-[#3b5bff] text-[#06124f] shadow-[0_0_18px_rgba(102,204,255,0.35)]" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2" /><path d="M8 20h8M12 16v4" /></svg>
+        </span>
+        <div class="min-w-0">
+          <p class="font-display text-lg font-bold uppercase leading-tight tracking-wider text-white">
+            Dashboard
+          </p>
+          <p class="truncate text-xs text-sky-100/55">
+            Altama Interactive Wall
           </p>
         </div>
-        <NuxtLink
-          to="/"
-          class="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-3.5 py-2 text-xs font-bold uppercase tracking-wide text-wall-glow transition-colors hover:bg-white/15 hover:text-white sm:text-sm"
+        <button
+          type="button" class="ml-auto grid size-9 place-items-center rounded-lg text-sky-100/55 hover:bg-white/[0.06] hover:text-white lg:hidden"
+          aria-label="Tutup menu" @click="drawerOpen = false"
         >
-          Buka wall →
-        </NuxtLink>
+          <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </div>
+
+      <nav class="flex-1 space-y-6 overflow-y-auto px-3">
+        <div v-for="group in NAV" :key="group.section">
+          <p class="px-3 pb-2 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-sky-100/40">
+            {{ group.section }}
+          </p>
+          <div class="space-y-1">
+            <NuxtLink
+              v-for="item in group.items" :key="item.to" :to="item.to"
+              class="group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sky-100/80 transition-colors hover:bg-white/[0.06] hover:text-white"
+              active-class="dashboard-nav-active !bg-wall-glow/[0.12] !text-white"
+            >
+              <span class="nav-icon grid size-9 shrink-0 place-items-center rounded-md bg-white/[0.05] text-sky-100/55 ring-1 ring-white/[0.06] transition-colors group-hover:text-white">
+                <svg viewBox="0 0 24 24" class="size-[1.15rem]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <template v-if="item.icon === 'hold'">
+                    <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
+                  </template>
+                  <template v-else-if="item.icon === 'wall'">
+                    <rect x="3" y="4" width="5" height="16" rx="1" /><rect x="10" y="4" width="5" height="16" rx="1" /><rect x="17" y="4" width="4" height="16" rx="1" />
+                  </template>
+                  <template v-else>
+                    <path d="M4.9 19.1a10 10 0 0 1 0-14.2M19.1 4.9a10 10 0 0 1 0 14.2M7.8 16.2a6 6 0 0 1 0-8.4M16.2 7.8a6 6 0 0 1 0 8.4" /><circle cx="12" cy="12" r="2" />
+                  </template>
+                </svg>
+              </span>
+              <span class="min-w-0">
+                <span class="block text-sm font-bold leading-tight">{{ item.label }}</span>
+                <span class="block truncate text-xs text-sky-100/40 group-hover:text-sky-100/55">{{ item.hint }}</span>
+              </span>
+            </NuxtLink>
+          </div>
+        </div>
+      </nav>
+
+      <div class="space-y-0.5 border-t border-white/[0.06] px-3 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <button type="button" :class="footButton" @click="exportSettings">
+          <span :class="footIcon">
+            <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14" /></svg>
+          </span>
+          Export pengaturan
+        </button>
+        <button type="button" :class="footButton" @click="fileInput?.click()">
+          <span :class="footIcon">
+            <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21V9M7 14l5-5 5 5M5 3h14" /></svg>
+          </span>
+          Import pengaturan
+        </button>
+        <input ref="fileInput" type="file" accept="application/json,.json" class="hidden" @change="importSettings">
+        <button type="button" :class="footButton" @click="toggleFullscreen">
+          <span :class="footIcon">
+            <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
+          </span>
+          Fullscreen
+        </button>
+        <button
+          type="button" class="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-semibold transition-colors"
+          :class="confirmReset ? 'bg-rose-500/15 text-rose-200 hover:bg-rose-500/25' : 'text-rose-300/90 hover:bg-rose-500/10 hover:text-rose-200'"
+          data-dashboard-reset @click="resetAll"
+        >
+          <span class="grid size-8 shrink-0 place-items-center rounded-md bg-rose-500/10 text-rose-300 ring-1 ring-rose-400/20">
+            <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>
+          </span>
+          {{ confirmReset ? 'Klik lagi untuk reset' : 'Reset ke default' }}
+        </button>
+      </div>
+    </aside>
+
+    <!-- The document never scrolls (kiosk rules in main.css), so the content column is the scroll area. -->
+    <div class="flex h-dvh flex-col overflow-y-auto overscroll-contain touch-pan-y lg:pl-64">
+      <!-- Top bar only below lg, where the sidebar is a drawer. -->
+      <header class="sticky top-0 z-20 flex items-center gap-3 border-b border-white/10 bg-wall-night/90 px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 backdrop-blur sm:px-6 lg:hidden">
+        <button
+          type="button" class="grid size-10 place-items-center rounded-lg ring-1 ring-white/15 hover:bg-white/10"
+          aria-controls="dashboard-sidebar" :aria-expanded="drawerOpen" aria-label="Buka menu" @click="drawerOpen = true"
+        >
+          <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+        </button>
+        <p class="font-display text-lg font-bold uppercase tracking-wider text-white">
+          {{ pageTitle }}
+        </p>
       </header>
 
-      <div class="mt-6 grid grid-cols-1 items-start gap-8 lg:grid-cols-2 lg:gap-10 xl:gap-12">
-        <section class="w-full">
-          <DashboardHold />
-        </section>
+      <p
+        v-if="notice" class="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 rounded-lg bg-emerald-400 px-4 py-2.5 text-sm font-bold text-[#04213a] shadow-lg"
+        role="status" aria-live="polite"
+      >
+        {{ notice }}
+      </p>
 
-        <section class="w-full">
-          <DashboardSensor :url="sensorUrl" />
-        </section>
-      </div>
+      <main class="w-full flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10">
+        <h1 class="font-display text-3xl font-bold uppercase tracking-wider text-white sm:text-4xl">
+          {{ pageTitle }}
+        </h1>
+        <p v-if="pageDescription" class="mt-1 text-sm text-sky-100/60 sm:text-base">
+          {{ pageDescription }}
+        </p>
+        <div class="mt-6">
+          <NuxtPage />
+        </div>
+      </main>
     </div>
-  </main>
+  </div>
 </template>
+
+<style scoped>
+/* Active page: a glow accent bar on the left edge and a lit icon tile. */
+.dashboard-nav-active::before {
+  content: '';
+  position: absolute;
+  left: -0.75rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--color-wall-glow);
+  box-shadow: 0 0 10px rgba(102, 204, 255, 0.7);
+}
+
+.dashboard-nav-active .nav-icon {
+  background: rgba(102, 204, 255, 0.18);
+  color: var(--color-wall-glow);
+}
+</style>
