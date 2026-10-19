@@ -61,6 +61,14 @@ describe('sensor protocol v2 and shared action routing', () => {
 
   it('rejects page tabs outside the declared tab targets', () => {
     expect(parseSensorMessage(sensorInput({ type: 'page', columnId: 1, page: 1 })).ok).toBe(true);
+  });
+
+  it('validates language input against the bar mode the wall draws', () => {
+    // The left edge of the full-width ID button lies outside the compact flag.
+    const point = { x: 32 + 14 + 8 + 2, y: 1017 };
+    const message = sensorInput({ type: 'language', columnId: 1, locale: 'id' }, point);
+    expect(parseSensorMessage(message).ok).toBe(false);
+    expect(parseSensorMessage(message, 0, 'full').ok).toBe(true);
     const tab = JSON.parse(sensorInput({ type: 'page', columnId: 1, page: 0 }));
     expect(parseSensorMessage(sensorInput({ type: 'page', columnId: 1, page: 1 }, { x: tab.x })).ok).toBe(false);
     expect(parseSensorMessage(sensorInput({ type: 'page', columnId: 1, page: 0 }, { action: { type: 'page', columnId: 1, page: -1 } })).ok).toBe(false);

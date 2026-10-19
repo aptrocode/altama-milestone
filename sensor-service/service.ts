@@ -1,4 +1,5 @@
 import type { HoldSettings } from '../shared/hold-settings';
+import type { LanguageBarMode } from '../shared/language-bar';
 import type { OscMessage } from '../shared/osc';
 import type { Point2, SensorAdminClientMessage, SensorAdminServerMessage, SensorConfig, SensorServiceStatus } from '../shared/sensor-config';
 import type { ColumnId, ColumnSnapshot, PublishedColumn, WallLocale } from '../shared/wall';
@@ -37,7 +38,7 @@ export interface SensorServiceOptions {
 const BACKGROUND_SCANS = 40;
 const BACKGROUND_TIMEOUT_MS = 5_000;
 
-interface WallState { columns: Partial<Record<ColumnId, PublishedColumn>>; hold: HoldSettings; cardOffsetY: number; showClose: boolean; showArrows: boolean }
+interface WallState { columns: Partial<Record<ColumnId, PublishedColumn>>; hold: HoldSettings; cardOffsetY: number; showClose: boolean; showArrows: boolean; languageBar: LanguageBarMode }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -189,6 +190,7 @@ export class SensorService {
       offsetY: state?.cardOffsetY ?? 0,
       showClose: state?.showClose ?? true,
       showArrows: state?.showArrows ?? true,
+      languageBar: state?.languageBar ?? 'compact',
     }), this.now());
   }
 
@@ -257,6 +259,7 @@ export class SensorService {
         cardOffsetY: data.cardOffsetY !== undefined ? normalizeWallSettings({ cardOffsetY: data.cardOffsetY }).cardOffsetY : previous?.cardOffsetY ?? 0,
         showClose: typeof data.showClose === 'boolean' ? data.showClose : previous?.showClose ?? true,
         showArrows: typeof data.showArrows === 'boolean' ? data.showArrows : previous?.showArrows ?? true,
+        languageBar: data.languageBar !== undefined ? normalizeWallSettings({ languageBar: data.languageBar }).languageBar : previous?.languageBar ?? 'compact',
       };
       this.walls.set(client, state);
       if (this.primaryWall === client)

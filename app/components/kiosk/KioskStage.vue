@@ -82,6 +82,7 @@ const sensorSocket = useSensorSocket({
   getCardOffsetY: () => settings.wall.cardOffsetY,
   getShowClose: () => settings.wall.showClose,
   getShowArrows: () => settings.wall.showArrows,
+  getLanguageBar: () => settings.wall.languageBar,
 });
 
 wall.$subscribe(() => sensorSocket.publishState(), { flush: 'post' });

@@ -1,4 +1,5 @@
 import type { HoldSettings } from '../../shared/hold-settings';
+import type { LanguageBarMode } from '../../shared/language-bar';
 import type { ColumnId, ColumnSnapshot } from '../../shared/wall';
 import type { SensorMessage } from '~/types/sensor';
 import { useSystemStore } from '~/stores/system';
@@ -19,6 +20,8 @@ export interface SensorSocketOptions {
   getShowClose?: () => boolean;
   /** Slider arrows shown (dashboard); false drops the previous/next targets. */
   getShowArrows?: () => boolean;
+  /** Compact or full-width language bar (dashboard); moves the language targets. */
+  getLanguageBar?: () => LanguageBarMode;
   heartbeatTimeoutMs?: number;
   maxMessageBytes?: number;
 }
@@ -152,7 +155,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
         return;
       }
 
-      const result = parseSensorMessage(event.data, options.getCardOffsetY?.() ?? 0);
+      const result = parseSensorMessage(event.data, options.getCardOffsetY?.() ?? 0, options.getLanguageBar?.() ?? 'compact');
       if (!result.ok) {
         system.setSocketStatus('error', result.error);
         return;
@@ -227,6 +230,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
       ...(options.getCardOffsetY ? { cardOffsetY: options.getCardOffsetY() } : {}),
       ...(options.getShowClose ? { showClose: options.getShowClose() } : {}),
       ...(options.getShowArrows ? { showArrows: options.getShowArrows() } : {}),
+      ...(options.getLanguageBar ? { languageBar: options.getLanguageBar() } : {}),
     });
   }
 

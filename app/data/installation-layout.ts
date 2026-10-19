@@ -1,5 +1,7 @@
+import type { LanguageBarMode } from '../../shared/language-bar';
 import type { ColumnId, WallAction, WallLocale } from '../../shared/wall';
 import rawLayout from '../../shared/installation-layout.json';
+import { languageGeometry } from '../../shared/language-bar';
 
 export interface Rect { x: number; y: number; width: number; height: number }
 
@@ -78,15 +80,15 @@ export function offsetRect<T extends Rect>(rect: T, offsetY: number): T {
   return offsetY ? { ...rect, y: rect.y + offsetY } : rect;
 }
 
-/** Target rects of an action on the LED wall, shifted by the dashboard card offset. */
-export function getActionRects(action: WallAction, offsetY = 0): Rect[] {
+/** Target rects of an action on the LED wall, shifted by the dashboard card offset, with the dashboard language bar mode. */
+export function getActionRects(action: WallAction, offsetY = 0, languageBar: LanguageBarMode = 'compact'): Rect[] {
   const column = installationLayout.columns.find(item => item.id === action.columnId);
   if (!column)
     return [];
   const rects = (() => {
     switch (action.type) {
       case 'main': return column.main ? [column.main] : [];
-      case 'language': return column.languages.filter(item => item.locale === action.locale);
+      case 'language': return languageGeometry(column, languageBar).languages.filter(item => item.locale === action.locale);
       case 'subItem': return column.subItems?.filter(item => item.key === action.subItemId) || [];
       case 'back': return [column.active.back];
       case 'previous': return [column.active.previous];

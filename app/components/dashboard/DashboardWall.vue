@@ -12,6 +12,7 @@ const { draft, dirty, status, save, restoreDefaults } = useSettingsDraft({
   defaults: DEFAULT_WALL_SETTINGS,
   save: value => settings.setWall(value),
 });
+const LANGUAGE_BAR_OPTIONS = [{ value: 'compact', label: 'Compact' }, { value: 'full', label: 'Full width' }] as const;
 const field = 'w-20 rounded-md bg-white/10 px-2 py-1.5 text-right font-bold text-white ring-1 ring-white/15 focus:outline-none focus:ring-2 focus:ring-wall-glow';
 
 function set(key: keyof WallSettings, value: string) {
@@ -122,6 +123,26 @@ function nudgeOffset(delta: number) {
             :value="draft.autoSlideSeconds" @change="set('autoSlideSeconds', ($event.target as HTMLInputElement).value)"
           >
           <span class="text-sm text-sky-100/60">s</span>
+        </div>
+      </li>
+      <li class="flex flex-wrap items-center gap-4 px-4 py-4" data-wall-setting="languageBar">
+        <div class="min-w-0 flex-1 basis-56">
+          <p class="font-bold text-white">
+            Tampilan bahasa
+          </p>
+          <p class="text-sm text-sky-100/60">
+            Compact: bar bendera kecil di tengah. Full width: bar selebar card dengan tombol bendera lebih besar. Area sentuh sensor ikut berubah.
+          </p>
+        </div>
+        <div class="flex rounded-lg bg-white/10 p-1 ring-1 ring-white/15" role="radiogroup" aria-label="Tampilan bahasa">
+          <button
+            v-for="mode in LANGUAGE_BAR_OPTIONS" :key="mode.value" type="button" role="radio" :aria-checked="draft.languageBar === mode.value"
+            class="rounded-md px-3 py-1.5 text-sm font-bold transition-colors"
+            :class="draft.languageBar === mode.value ? 'bg-wall-glow text-[#050d4f]' : 'text-sky-100/70 hover:bg-white/10'"
+            @click="draft = normalizeWallSettings({ ...draft, languageBar: mode.value })"
+          >
+            {{ mode.label }}
+          </button>
         </div>
       </li>
     </ul>

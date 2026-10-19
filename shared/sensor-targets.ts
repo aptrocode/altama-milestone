@@ -1,7 +1,9 @@
 import type { HoldGroup } from './hold-settings';
+import type { LanguageBarMode } from './language-bar';
 import type { ColumnId, PublishedColumn, WallAction, WallLocale } from './wall';
 import { HOLD_GROUP_BY_ACTION } from './hold-settings';
 import rawLayout from './installation-layout.json';
+import { languageGeometry } from './language-bar';
 import { COLUMN_IDS } from './wall';
 
 export interface Rect { x: number; y: number; width: number; height: number }
@@ -33,7 +35,7 @@ export interface SensorTarget {
 }
 
 /** Dashboard wall settings that change which targets exist and where. */
-export interface TargetOptions { offsetY?: number; showClose?: boolean; showArrows?: boolean }
+export interface TargetOptions { offsetY?: number; showClose?: boolean; showArrows?: boolean; languageBar?: LanguageBarMode }
 
 export function isInsideRect(x: number, y: number, rect: Rect): boolean {
   return x >= rect.x && y >= rect.y && x < rect.x + rect.width && y < rect.y + rect.height;
@@ -50,9 +52,10 @@ function target(action: WallAction, key: string, rect: Rect, offsetY: number, ex
  * `offsetY` is the wall's dashboard card offset: every column, and so every target, moves by it.
  * `showClose: false` hides the open card's close button, so it has no Back target either;
  * `showArrows: false` hides the photo arrows (photos auto-slide), so previous/next go too.
+ * `languageBar` picks the compact or full-width flag bar (shared/language-bar.ts).
  */
 export function visibleTargets(snapshots: Partial<Record<ColumnId, PublishedColumn>>, options: TargetOptions = {}): SensorTarget[] {
-  const { offsetY = 0, showClose = true, showArrows = true } = options;
+  const { offsetY = 0, showClose = true, showArrows = true, languageBar = 'compact' } = options;
   const targets: SensorTarget[] = [];
   for (const columnId of COLUMN_IDS) {
     const snapshot = snapshots[columnId];
@@ -61,12 +64,13 @@ export function visibleTargets(snapshots: Partial<Record<ColumnId, PublishedColu
       continue;
 
     if (snapshot.phase === 'idle') {
-      for (const language of geometry.languages)
+      const bar = languageGeometry(geometry, languageBar);
+      for (const language of bar.languages)
         targets.push(target({ type: 'language', columnId, locale: language.locale as WallLocale }, `${columnId}:language:${language.locale}`, language, offsetY));
       for (const item of geometry.subItems ?? [])
         targets.push(target({ type: 'subItem', columnId, subItemId: item.key }, `${columnId}:subItem:${item.key}`, item, offsetY));
       if (geometry.main)
-        targets.push(target({ type: 'main', columnId }, `${columnId}:main`, geometry.main, offsetY, geometry.languageBar));
+        targets.push(target({ type: 'main', columnId }, `${columnId}:main`, geometry.main, offsetY, bar.languageBar));
       continue;
     }
 
