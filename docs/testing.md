@@ -21,7 +21,7 @@ Behavior tests cover:
 - independent idle-only language selection, hidden-language rejection, and locale retention while open;
 - direct sub-item tiles, column independence, hidden-action rejection, repeated main input, photo-slider wrap, pages that switch their own photos and text, and Back/reset;
 - per-column inactivity, R/Escape translated-idle regression, operator-close regression, cross-instance isolation, and scope disposal;
-- one-second pointer hold, cancellation/release/blur, native keyboard activation, updated callbacks, and listener/timer cleanup;
+- one-second pointer hold, native multitouch (simultaneous holds on different buttons, independent release, a second finger on a held button ignored, one pointer per button), cancellation/release/blur, native keyboard activation, updated callbacks, and listener/timer cleanup;
 - protocol v2 parsing, input destinations, tile/arrow/page/Back routing, missing main targets for columns 2/5, old-version rejection, and declared-target coordinates;
 - the stacked-layout media query and its listener cleanup;
 - hold settings normalization/defaults (language and back off), wall settings clamping, configurable reset delay, card-offset target shifting and input validation, configurable dwell, hold-off normal press, and the `hold` payload sent to Sensor Service;
@@ -36,7 +36,7 @@ Do not add tests that merely restate markup. Use controlled timers for behavior 
 2. Fresh load: six idle columns, all Indonesian, branding visible.
 3. Choose English/Chinese independently while idle, then open those columns. Their language is retained; flags disappear while open. Return to idle to choose again.
 4. Confirm flag-only controls inside each card, selected state, focus, language attributes, full translated headings, and no visible 1–6 badges.
-5. Hold a main, tile, photo-arrow, or page-tab button for one second; its border traces the matching outline. Short/cancelled contact clears progress and does nothing. Reduced motion uses a static border until completion. Enter and Space activate focused buttons. Digits 1–6 open/go back in their own column.
+5. Hold a main, tile, photo-arrow, or page-tab button for one second; its border traces the matching outline. Short/cancelled contact clears progress and does nothing. Reduced motion uses a static border until completion. Enter and Space activate focused buttons. Digits 1–6 open/go back in their own column. On a touchscreen overlay, two fingers holding buttons in different columns both complete; a second finger on an already-held button changes nothing.
 6. Holding a Tekiro/RYU/Rexco or Distribusi/Pemasaran tile opens it directly; opening any column leaves the other five unchanged. Back returns to idle.
 7. Arrows move only the current page's photos and wrap; page tabs (column 1, Tekiro) switch photos and text together and restart the slider. Both restart only that column's timer. The visible page's tab cannot be pressed, held, or triggered by sensor input; arrow discs nudge in their direction.
 8. At the dashboard reset time (default 30 seconds) without activity, only the inactive column returns to idle/Indonesian. R/Escape retain languages immediately and their timers still expire.
