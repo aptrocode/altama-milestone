@@ -8,7 +8,7 @@ Read only the document needed:
 - `docs/style.md`: Tailwind-first utilities, scoped CSS exceptions, and logical spacing.
 - `docs/language.md`: per-column translations and flag accessibility.
 - `docs/content.md`: where each column's text, pages, photos, and tiles live and how to replace them.
-- `docs/dashboard.md`: operator dashboard (`/dashboard`): sidebar with Hold, Wall (reset time, card offset, close and slider switches, auto slide, language bar mode), and Sensor pages; backup/reset.
+- `docs/dashboard.md`: operator dashboard (`/dashboard`): sidebar with Wall (reset time, card offset, close, slider, and page switches, auto slide/page, language bar mode), Hold, and Sensor pages; backup/reset.
 - `docs/assets.md`: deployed media, the `public/new-assets/` master-file layout, encoding commands, and naming.
 - `docs/sensor.md`: protocol v2 / wall-v7, Sensor Service sources (Hokuyo, Augmenta, TUIO), calibration, admin contract, simulators, and rollout.
 - `docs/testing.md`: commands, regression coverage, and browser acceptance.
@@ -42,7 +42,8 @@ Read only the document needed:
 - Open-card text follows the card-copy system in `docs/style.md` (dot bullets, glow labels, fact tables, 18 px body); only `WallPageCopy` styles it. Open cards grow with the visible page up to y 1312 before any text shrinks; never clip copy. Card artwork videos and expandable tiles must line up with the layout targets (see "Card artwork" in `docs/style.md`).
 - Hold rules come from the operator dashboard (`shared/hold-settings.ts`, default on and 1 s): group `card` (main + tiles), `page` (page tabs), `slider` (photo arrows), `language` (flags), `back` (✕); each can be turned off (normal press) or set to 0.3–5 s; language and back default off. Border progress follows the button's corners and the configured duration; release/cancel clears it. Enter/Space always activate directly. Never hardcode hold behaviour in components; use `WallHoldButton` with a `group`. Sensor Service receives the same rules (`hold` in client messages).
 - The close (✕) button follows the dashboard `showClose` switch (default on); when off, WallColumn hides it and Sensor Service drops the Back target.
-- The photo arrows follow the dashboard `showArrows` switch (default on); when off, WallOpenCard hides them, Sensor Service drops previous/next, and `useWallController` auto-slides open cards every `autoSlideSeconds` (default 5 s) without counting as activity.
+- The photo arrows follow the dashboard `showArrows` switch (default on); when off, WallOpenCard hides them, Sensor Service drops previous/next, and `useWallController` auto-slides open cards every `autoSlideSeconds` (default 5 s) without counting as activity; a video slide plays once to its end instead of the interval.
+- The page tabs follow the dashboard `showPages` switch (default on); when off, WallOpenCard hides them, Sensor Service drops page targets, and `useWallController` shows the next page every `autoPageSeconds` (default 10 s), letting a playing video finish first. The Hold page hides the groups of buttons the Wall page hides.
 - The idle language bar follows the dashboard `languageBar` mode (`compact` default, or `full` width with larger buttons). Its rects come only from `languageGeometry` in `shared/language-bar.ts`, which the wall drawing, wall input validation, and Sensor Service targets all use.
 - Card position is the dashboard `cardOffsetY` (−120 to 120 logical px), never a hardcoded shift: WallColumn moves the whole column by it on the LED wall, Sensor Service shifts its targets by it, and the wall validates input against the shifted rects.
 - Browser, operator, and sensor actions use `useWallController.dispatch`; UI never mutates Pinia directly.

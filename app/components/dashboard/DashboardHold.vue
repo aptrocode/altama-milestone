@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { HoldGroup } from '../../../shared/hold-settings';
+import { computed } from 'vue';
 import DashboardFormActions from '~/components/dashboard/DashboardFormActions.vue';
 import { useSettingsDraft } from '~/composables/useSettingsDraft';
 import { useSettingsStore } from '~/stores/settings';
@@ -14,6 +15,15 @@ const GROUP_LABEL: Record<HoldGroup, { title: string; hint: string }> = {
 };
 
 const settings = useSettingsStore();
+// Groups whose buttons the Wall page hides are hidden here too (their values are kept).
+const hiddenByWall = computed(() => ({
+  page: !settings.wall.showPages,
+  slider: !settings.wall.showArrows,
+  back: !settings.wall.showClose,
+}) as Partial<Record<HoldGroup, boolean>>);
+const visibleGroups = computed(() => HOLD_GROUPS.filter(group => !hiddenByWall.value[group]));
+const hiddenNote = computed(() => HOLD_GROUPS.filter(group => hiddenByWall.value[group]).map(group => GROUP_LABEL[group].title));
+const listFormat = new Intl.ListFormat('id', { type: 'conjunction' });
 const { draft, dirty, status, save, restoreDefaults } = useSettingsDraft({
   saved: () => settings.hold,
   normalize: normalizeHoldSettings,
@@ -31,7 +41,7 @@ function setSeconds(group: HoldGroup, value: string) {
 <template>
   <section aria-label="Hold">
     <ul class="divide-y divide-white/10 rounded-xl bg-white/5 ring-1 ring-white/10">
-      <li v-for="group in HOLD_GROUPS" :key="group" class="flex items-center gap-4 px-4 py-4" :data-hold-setting="group">
+      <li v-for="group in visibleGroups" :key="group" class="flex items-center gap-4 px-4 py-4" :data-hold-setting="group">
         <div class="min-w-0 flex-1">
           <p class="font-bold text-white">
             {{ GROUP_LABEL[group].title }}
@@ -60,6 +70,12 @@ function setSeconds(group: HoldGroup, value: string) {
         </button>
       </li>
     </ul>
+    <p v-if="hiddenNote.length" class="mt-3 text-sm text-sky-100/60" data-hold-hidden-note>
+      {{ listFormat.format(hiddenNote) }} disembunyikan karena tombolnya dimatikan di
+      <NuxtLink to="/dashboard/wall" class="font-bold text-white underline underline-offset-2">
+        halaman Wall
+      </NuxtLink>
+    </p>
 
     <DashboardFormActions :dirty="dirty" :status="status" @save="save" @defaults="restoreDefaults" />
   </section>

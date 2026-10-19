@@ -38,7 +38,7 @@ export interface SensorServiceOptions {
 const BACKGROUND_SCANS = 40;
 const BACKGROUND_TIMEOUT_MS = 5_000;
 
-interface WallState { columns: Partial<Record<ColumnId, PublishedColumn>>; hold: HoldSettings; cardOffsetY: number; showClose: boolean; showArrows: boolean; languageBar: LanguageBarMode }
+interface WallState { columns: Partial<Record<ColumnId, PublishedColumn>>; hold: HoldSettings; cardOffsetY: number; showClose: boolean; showArrows: boolean; showPages: boolean; languageBar: LanguageBarMode }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -190,6 +190,7 @@ export class SensorService {
       offsetY: state?.cardOffsetY ?? 0,
       showClose: state?.showClose ?? true,
       showArrows: state?.showArrows ?? true,
+      showPages: state?.showPages ?? true,
       languageBar: state?.languageBar ?? 'compact',
     }), this.now());
   }
@@ -259,6 +260,7 @@ export class SensorService {
         cardOffsetY: data.cardOffsetY !== undefined ? normalizeWallSettings({ cardOffsetY: data.cardOffsetY }).cardOffsetY : previous?.cardOffsetY ?? 0,
         showClose: typeof data.showClose === 'boolean' ? data.showClose : previous?.showClose ?? true,
         showArrows: typeof data.showArrows === 'boolean' ? data.showArrows : previous?.showArrows ?? true,
+        showPages: typeof data.showPages === 'boolean' ? data.showPages : previous?.showPages ?? true,
         languageBar: data.languageBar !== undefined ? normalizeWallSettings({ languageBar: data.languageBar }).languageBar : previous?.languageBar ?? 'compact',
       };
       this.walls.set(client, state);

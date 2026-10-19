@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({ redirect: '/dashboard/hold' });
+definePageMeta({ redirect: '/dashboard/wall' });
 </script>
 
 <template>

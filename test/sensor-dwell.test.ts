@@ -51,6 +51,11 @@ describe('visible targets', () => {
       expect(isInsideRect(flag.rect.x + 1, flag.rect.y + 1, main.exclude!)).toBe(true);
   });
 
+  it('drops the page tabs when the wall hides them (auto page)', () => {
+    const open = { 1: { ...idle, phase: 'active' as const, photoCount: 3, pageCount: 2 } };
+    expect(visibleTargets(open, { showPages: false }).map(item => item.key)).toEqual(['1:back', '1:previous', '1:next']);
+  });
+
   it('drops the photo arrows when the wall hides them (auto slide)', () => {
     const open = { 1: { ...idle, phase: 'active' as const, photoCount: 3, pageCount: 2 } };
     expect(visibleTargets(open, { showArrows: false }).map(item => item.key)).toEqual(['1:back', '1:page:1']);

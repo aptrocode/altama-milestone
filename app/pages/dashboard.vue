@@ -5,14 +5,14 @@ import { useSettingsStore } from '~/stores/settings';
 import { DEFAULT_WALL_SETTINGS } from '../../shared/wall-settings';
 
 /**
- * Operator dashboard shell: a darker navy sidebar (Hold, Wall, Sensor pages under
+ * Operator dashboard shell: a darker navy sidebar (Wall, Hold, Sensor pages under
  * `pages/dashboard/*`, settings backup, fullscreen, reset) next to the wall-blue content, in the same hue. The
  * sidebar is fixed from `lg` and an off-canvas drawer below it.
  */
 const NAV = [
   { section: 'Pengaturan', items: [
+    { to: '/dashboard/wall', label: 'Wall', hint: 'Tampilan, reset & auto slide', icon: 'wall' },
     { to: '/dashboard/hold', label: 'Hold', hint: 'Durasi tahan tombol', icon: 'hold' },
-    { to: '/dashboard/wall', label: 'Wall', hint: 'Reset & posisi card', icon: 'wall' },
   ] },
   { section: 'Perangkat', items: [
     { to: '/dashboard/sensor', label: 'Sensor', hint: 'Sumber & kalibrasi', icon: 'sensor' },

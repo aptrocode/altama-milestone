@@ -2,7 +2,7 @@
 import type { ColumnId, WallAction, WallLocale } from '../../../shared/wall';
 import type { Rect } from '~/data/installation-layout';
 import type { ContentPage } from '~/types/wall-content';
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, nextTick, reactive, ref, watch } from 'vue';
 import WallHoldButton from '~/components/wall/WallHoldButton.vue';
 import WallPageCopy from '~/components/wall/WallPageCopy.vue';
 import { installationLayout, rectStyle } from '~/data/installation-layout';
@@ -23,16 +23,47 @@ const props = defineProps<{
   geometry: { card: Rect; previous: Rect; next: Rect; pages: (Rect & { page: number })[] };
   /** Dashboard switch; when off the photos auto-slide (useWallController) instead. */
   showArrows?: boolean;
+  /** Dashboard switch; when off pages change on their own (useWallController) instead. */
+  showPages?: boolean;
 }>();
-const emit = defineEmits<{ action: [action: WallAction]; height: [logical: number] }>();
+const emit = defineEmits<{ action: [action: WallAction]; height: [logical: number]; mediaEnded: [] }>();
 
 const visual = installationLayout.visual;
 const current = computed(() => props.pages[props.page] || props.pages[0]);
 // Keep the frame for every page of the card so tabs and text never jump between pages.
 const hasPhotoFrame = computed(() => props.pages.some(item => item.photos.length > 0));
 const hasSlider = computed(() => props.showArrows !== false && (current.value?.photos.length || 0) > 1);
-const hasPages = computed(() => props.pages.length > 1);
+const hasPages = computed(() => props.showPages !== false && props.pages.length > 1);
 const tabs = computed(() => props.geometry.pages.slice(0, props.pages.length));
+// Auto slide (arrows hidden) or auto page (tabs hidden): a video slide restarts when shown, plays
+// once, and reports its end (or a playback error) so the controller moves on; others pause.
+// Otherwise videos loop.
+const playOnce = computed(() => (props.showArrows === false && (current.value?.photos.length || 0) > 1)
+  || (props.showPages === false && props.pages.length > 1));
+const videos: (HTMLVideoElement | null)[] = [];
+function setVideo(index: number, element: unknown) {
+  videos[index] = element instanceof HTMLVideoElement ? element : null;
+}
+watch([() => props.photo, () => props.page, playOnce], async () => {
+  await nextTick();
+  if (!playOnce.value)
+    return;
+  videos.forEach((video, index) => {
+    if (!video)
+      return;
+    if (index === props.photo) {
+      video.currentTime = 0;
+      video.play().catch(() => {});
+    }
+    else {
+      video.pause();
+    }
+  });
+}, { immediate: true });
+function onVideoDone(index: number) {
+  if (playOnce.value && index === props.photo)
+    emit('mediaEnded');
+}
 // Text starts below whichever of the photo frame and page tabs are present.
 const textTop = computed(() => hasPages.value ? visual.textTop.tabs : hasPhotoFrame.value ? visual.textTop.photo : visual.textTop.plain);
 const TEXT_BOTTOM = 20;
@@ -77,12 +108,15 @@ function onNatural(index: number, px: number) {
       >
         <video
           v-if="item && isVideoSrc(item.src)"
+          :ref="element => setVideo(index, element)"
           :src="item.src"
           autoplay
-          loop
+          :loop="!playOnce"
           muted
           playsinline
           class="size-full object-cover pointer-events-none"
+          @ended="onVideoDone(index)"
+          @error="onVideoDone(index)"
         />
         <img v-else-if="item" :src="item.src" alt="" class="size-full object-cover">
         <div v-else class="size-full flex flex-col items-center justify-center gap-[calc(8*var(--wall-y))] border border-dashed border-white/25 [border-radius:inherit]">

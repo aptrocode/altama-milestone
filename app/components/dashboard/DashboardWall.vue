@@ -3,7 +3,7 @@ import type { WallSettings } from '../../../shared/wall-settings';
 import DashboardFormActions from '~/components/dashboard/DashboardFormActions.vue';
 import { useSettingsDraft } from '~/composables/useSettingsDraft';
 import { useSettingsStore } from '~/stores/settings';
-import { AUTO_SLIDE_SECONDS, CARD_OFFSET_Y, DEFAULT_WALL_SETTINGS, normalizeWallSettings, RESET_SECONDS } from '../../../shared/wall-settings';
+import { AUTO_PAGE_SECONDS, AUTO_SLIDE_SECONDS, CARD_OFFSET_Y, DEFAULT_WALL_SETTINGS, normalizeWallSettings, RESET_SECONDS } from '../../../shared/wall-settings';
 
 const settings = useSettingsStore();
 const { draft, dirty, status, save, restoreDefaults } = useSettingsDraft({
@@ -113,7 +113,7 @@ function nudgeOffset(delta: number) {
             Auto slide
           </p>
           <p class="text-sm text-sky-100/60">
-            Foto berikutnya muncul setiap sekian detik ({{ AUTO_SLIDE_SECONDS.min }}–{{ AUTO_SLIDE_SECONDS.max }} s). Hitungan mulai ulang setiap kali foto atau page berganti.
+            Foto berikutnya muncul setiap sekian detik ({{ AUTO_SLIDE_SECONDS.min }}–{{ AUTO_SLIDE_SECONDS.max }} s). Video diputar sampai selesai dulu. Hitungan mulai ulang setiap kali foto atau page berganti.
           </p>
         </div>
         <div class="flex items-center gap-1.5">
@@ -121,6 +121,42 @@ function nudgeOffset(delta: number) {
             type="number" inputmode="numeric" :class="field"
             aria-label="Detik auto slide" :min="AUTO_SLIDE_SECONDS.min" :max="AUTO_SLIDE_SECONDS.max" :step="AUTO_SLIDE_SECONDS.step"
             :value="draft.autoSlideSeconds" @change="set('autoSlideSeconds', ($event.target as HTMLInputElement).value)"
+          >
+          <span class="text-sm text-sky-100/60">s</span>
+        </div>
+      </li>
+      <li class="flex flex-wrap items-center gap-4 px-4 py-4" data-wall-setting="showPages">
+        <div class="min-w-0 flex-1 basis-56">
+          <p class="font-bold text-white">
+            Tombol page
+          </p>
+          <p class="text-sm text-sky-100/60">
+            Tampilkan tab page (mis. 1960/1996, PAGE 1/2) di card yang terbuka. Jika off, page berganti otomatis (auto page).
+          </p>
+        </div>
+        <button
+          type="button" role="switch" :aria-checked="draft.showPages" aria-label="Tampilkan tombol page"
+          class="relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors"
+          :class="draft.showPages ? 'bg-emerald-400' : 'bg-white/20'"
+          @click="draft = normalizeWallSettings({ ...draft, showPages: !draft.showPages })"
+        >
+          <span class="inline-block size-5 rounded-full bg-white shadow transition-transform" :class="draft.showPages ? 'translate-x-6' : 'translate-x-1'" />
+        </button>
+      </li>
+      <li v-if="!draft.showPages" class="flex flex-wrap items-center gap-4 px-4 py-4" data-wall-setting="autoPageSeconds">
+        <div class="min-w-0 flex-1 basis-56">
+          <p class="font-bold text-white">
+            Auto page
+          </p>
+          <p class="text-sm text-sky-100/60">
+            Page berikutnya muncul setiap sekian detik ({{ AUTO_PAGE_SECONDS.min }}–{{ AUTO_PAGE_SECONDS.max }} s), dihitung sejak page terakhir berganti. Video diputar sampai selesai dulu.
+          </p>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <input
+            type="number" inputmode="numeric" :class="field"
+            aria-label="Detik auto page" :min="AUTO_PAGE_SECONDS.min" :max="AUTO_PAGE_SECONDS.max" :step="AUTO_PAGE_SECONDS.step"
+            :value="draft.autoPageSeconds" @change="set('autoPageSeconds', ($event.target as HTMLInputElement).value)"
           >
           <span class="text-sm text-sky-100/60">s</span>
         </div>
