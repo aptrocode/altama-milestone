@@ -37,7 +37,8 @@ class OscListener {
   bind(port: number) {
     this.close();
     this.port = port;
-    const socket = dgram.createSocket({ type: 'udp4', reuseAddr: true });
+    // No reuseAddr: a port already used by another app (or another source) must fail visibly.
+    const socket = dgram.createSocket('udp4');
     this.socket = socket;
     socket.on('message', (buffer: Buffer) => {
       try {
@@ -88,17 +89,21 @@ const tuio = new OscListener('TUIO', messages => service.handleTuio(messages), (
 function startHokuyo(config: SensorConfig) {
   hokuyo?.stop();
   service.setSourceState(false, 'hokuyo connecting', 0);
-  hokuyo = new HokuyoClient({
+  const client: HokuyoClient = new HokuyoClient({
     host: config.hokuyo.host,
     port: config.hokuyo.port,
     onScan: (ranges, params) => service.handleScan(ranges, params),
     onStatus: (status) => {
+      // A stopped client (source switched or host changed) must not overwrite the new source's status.
+      if (hokuyo !== client || service.config.source !== 'hokuyo')
+        return;
       const detail = status.streaming ? '' : status.connected ? 'hokuyo no scans' : `hokuyo ${status.error || 'offline'}`;
       service.setSourceState(status.streaming, detail, status.scanRate);
     },
     log,
   });
-  hokuyo.start();
+  hokuyo = client;
+  client.start();
 }
 
 function applyTransports(next: SensorConfig, previous: SensorConfig | null) {

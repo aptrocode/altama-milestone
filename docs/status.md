@@ -35,7 +35,7 @@ Nuxt, Vue, Pinia, Bun, and Tailwind documentation was fetched through Context7 o
 
 ## Validation
 
-- Sensor Service (19 October 2026): lint, typecheck (Nuxt and `sensor-service/tsconfig.json`), 96 tests across 13 files, asset validation, build, and generate passed. End-to-end with the dev server and simulators: dashboard calibration of the simulated UST-10LX (four corners via **Ambil**), held taps opening columns 1/4/6, a language flag, and two simultaneous hands; Augmenta v2 and v1 with flipped Y and Invert Y; TUIO cursors. Dashboard checked at 1440 px and 375 px without horizontal overflow. No physical sensor was available.
+- Sensor Service (19 October 2026): lint, typecheck (Nuxt and `sensor-service/tsconfig.json`), 102 tests across 13 files, asset validation, build, and generate passed. End-to-end with the dev server and simulators: dashboard calibration of the simulated UST-10LX (four corners via **Ambil**), held taps opening columns 1/4/6, a language flag, and two simultaneous hands; Augmenta v2 and v1 with flipped Y and Invert Y; TUIO cursors. Dashboard checked at 1440 px and 375 px without horizontal overflow. No physical sensor was available.
 
 - Summit revision 2 (per-page photos, hold arrows/tabs, stacked layout): lint, typecheck, 55 tests across seven files, asset/config validation (17 provisional media files), production build, and static generation passed.
 - Headless Edge at 2304 × 1344, 1920 × 1080, and 1600 × 900: every visible target (main, 18 flags, 5 tiles, Back, arrows, page tabs) matches wall-v5 within 0.06 logical px after transitions settle, and every open page fits its card (fonts scale with the smaller axis). Single-column pills sit 20 px above their card; rails keep one height on every column.

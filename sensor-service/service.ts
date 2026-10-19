@@ -34,6 +34,9 @@ export interface SensorServiceOptions {
 }
 
 const BACKGROUND_SCANS = 40;
+const BACKGROUND_TIMEOUT_MS = 5_000;
+
+interface WallState { columns: Partial<Record<ColumnId, PublishedColumn>>; hold: HoldSettings }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -73,6 +76,12 @@ export class SensorService {
   private readonly writer: ProtocolWriter;
   private readonly now: () => number;
   private readonly clients = new Map<ServiceClient, Role>();
+  /**
+   * Snapshots per connected wall, in connection order. The first (primary) wall defines the visible
+   * targets and receives touch input, so a second renderer (a phone opening "/") cannot change what
+   * the LED wall's contacts hit.
+   */
+  private readonly walls = new Map<ServiceClient, WallState>();
   private columns: Partial<Record<ColumnId, PublishedColumn>> = {};
   private hold: HoldSettings = normalizeHoldSettings(DEFAULT_HOLD_SETTINGS);
   private readonly engine: DwellEngine;
@@ -84,7 +93,7 @@ export class SensorService {
   private scanRate = 0;
   private calibrating = false;
   private sensorPoints: Point2[] = [];
-  private capture: { scans: number; ranges: number[]; client: ServiceClient } | null = null;
+  private capture: { scans: number; ranges: number[]; client: ServiceClient; startedAt: number } | null = null;
   private lastStatusKey = '';
   private inputs = 0;
   private lastInput = '';
@@ -155,8 +164,27 @@ export class SensorService {
     this.clients.delete(client);
     if (this.capture?.client === client)
       this.capture = null;
-    if (role === 'wall')
+    if (role === 'wall') {
+      const wasPrimary = this.primaryWall === client;
+      this.walls.delete(client);
+      if (wasPrimary)
+        this.applyPrimaryWall();
       this.broadcastAdminState();
+    }
+  }
+
+  private get primaryWall(): ServiceClient | undefined {
+    return this.walls.keys().next().value;
+  }
+
+  /** Targets and hold rules follow the primary wall; none while no wall is connected. */
+  private applyPrimaryWall() {
+    const primary = this.primaryWall;
+    const state = primary ? this.walls.get(primary)! : null;
+    this.columns = state?.columns ?? {};
+    this.hold = state?.hold ?? normalizeHoldSettings(DEFAULT_HOLD_SETTINGS);
+    this.engine.setHold(this.hold);
+    this.engine.setTargets(visibleTargets(this.columns), this.now());
   }
 
   private send(client: ServiceClient, data: string) {
@@ -214,21 +242,26 @@ export class SensorService {
         return;
       if (data.layoutVersion !== SENSOR_LAYOUT_VERSION)
         this.options.log?.(`[WS] wall layout ${String(data.layoutVersion)} differs from ${SENSOR_LAYOUT_VERSION}`);
-      this.columns = { ...this.columns, ...parseColumns(data.columns) };
-      if (data.hold !== undefined) {
-        this.hold = normalizeHoldSettings(data.hold);
-        this.engine.setHold(this.hold);
-      }
-      this.engine.setTargets(visibleTargets(this.columns), this.now());
-      if (data.type === 'clientHello' && role === 'pending') {
+      const isHello = data.type === 'clientHello' && role === 'pending';
+      if (!isHello && role !== 'wall')
+        return;
+      const previous = this.walls.get(client);
+      const state: WallState = {
+        columns: { ...previous?.columns, ...parseColumns(data.columns) },
+        hold: data.hold !== undefined ? normalizeHoldSettings(data.hold) : previous?.hold ?? normalizeHoldSettings(DEFAULT_HOLD_SETTINGS),
+      };
+      this.walls.set(client, state);
+      if (this.primaryWall === client)
+        this.applyPrimaryWall();
+      if (isHello) {
         this.clients.set(client, 'wall');
         this.send(client, this.writer.hello(this.sensorReady, this.calibrated));
         if (this.detail)
           this.send(client, this.writer.status(this.sensorReady, this.calibrated, this.detail));
-        this.options.log?.('[WS] wall connected');
+        this.options.log?.(`[WS] wall connected${this.primaryWall === client ? '' : ' (secondary: no touch input)'}`);
         this.broadcastAdminState();
       }
-      else if (data.hold !== undefined) {
+      else if (data.hold !== undefined && this.primaryWall === client) {
         this.broadcastAdminState();
       }
       return;
@@ -248,18 +281,23 @@ export class SensorService {
   private handleAdmin(client: ServiceClient, message: SensorAdminClientMessage) {
     const reply = (ok: boolean, error?: string) => this.sendAdmin(client, { version: SENSOR_ADMIN_VERSION, type: 'adminResult', request: message.type, ok, ...(error ? { error } : {}) });
     switch (message.type) {
-      case 'setConfig':
+      case 'setConfig': {
         if (!isRecord(message.config))
           return reply(false, 'invalid config');
-        this.applyConfig(mergeSensorConfig(this.config, message.config));
+        const next = mergeSensorConfig(this.config, message.config);
+        const sourcePort = next.source === 'augmenta' ? next.augmenta.port : next.source === 'tuio' ? next.tuio.port : null;
+        if (sourcePort === next.osc.port)
+          return reply(false, `port ${sourcePort} dipakai OSC`);
+        this.applyConfig(next);
         return reply(true);
+      }
       case 'calibrate':
         this.setCalibrating(message.on === true);
         return reply(true);
       case 'captureBackground':
         if (this.config.source !== 'hokuyo' || !this.sourceReady)
           return reply(false, 'hokuyo not streaming');
-        this.capture = { scans: 0, ranges: [], client };
+        this.capture = { scans: 0, ranges: [], client, startedAt: this.now() };
         return;
       case 'clearBackground':
         this.setBackground(null);
@@ -280,7 +318,7 @@ export class SensorService {
       this.augmenta.clear();
       this.tuio.clear();
       this.sensorPoints = [];
-      this.capture = null;
+      this.failCapture('source changed');
       this.sourceReady = next.source === 'off';
       this.sourceDetail = '';
       this.scanRate = 0;
@@ -295,6 +333,14 @@ export class SensorService {
     this.calibrating = on;
     this.engine.suppressed = on;
     this.refreshStatus();
+  }
+
+  /** Ends a pending background capture with an error reply so the dashboard is never left waiting. */
+  private failCapture(error: string) {
+    const capture = this.capture;
+    this.capture = null;
+    if (capture)
+      this.sendAdmin(capture.client, { version: SENSOR_ADMIN_VERSION, type: 'adminResult', request: 'captureBackground', ok: false, error });
   }
 
   private setBackground(background: number[] | null) {
@@ -315,6 +361,7 @@ export class SensorService {
       this.engine.update([], this.now());
       this.tracker.clear();
       this.sensorPoints = [];
+      this.failCapture('hokuyo offline');
     }
     const before = this.lastStatusKey;
     this.refreshStatus();
@@ -389,7 +436,9 @@ export class SensorService {
     this.inputs++;
     this.lastInput = `${pointerId} ${JSON.stringify(action)}`;
     this.options.log?.(`[Input] ${this.lastInput} @ ${Math.floor(x)},${Math.floor(y)}`);
-    this.broadcast('wall', this.writer.input(pointerId, x, y, action));
+    const primary = this.primaryWall;
+    if (primary)
+      this.send(primary, this.writer.input(pointerId, x, y, action));
     this.broadcastAdminState();
   }
 
@@ -397,6 +446,8 @@ export class SensorService {
 
   /** ~30 ms: expires Augmenta/TUIO contacts and completes dwell between frames. */
   tick() {
+    if (this.capture && this.now() - this.capture.startedAt > BACKGROUND_TIMEOUT_MS)
+      this.failCapture('timeout');
     if (this.config.source === 'augmenta' || this.config.source === 'tuio')
       this.feedNormalized();
     else

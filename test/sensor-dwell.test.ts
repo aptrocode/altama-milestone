@@ -114,4 +114,18 @@ describe('dwell engine', () => {
     engine.tick(550);
     expect(inputs.map(i => i.target.key)).toEqual(['1:back']);
   });
+
+  it('does not fire contacts left on a target when calibration mode ends', () => {
+    const { engine, inputs } = setup();
+    engine.suppressed = true;
+    engine.update([{ id: 'p', x: 212, y: 700 }], 0);
+    engine.tick(3_000);
+    engine.suppressed = false;
+    engine.update([{ id: 'p', x: 212, y: 700 }], 3_030);
+    engine.tick(6_000);
+    expect(inputs).toEqual([]);
+    engine.update([{ id: 'q', x: 212, y: 700 }], 6_100);
+    engine.tick(7_100);
+    expect(inputs.map(i => i.pointerId)).toEqual(['q']);
+  });
 });

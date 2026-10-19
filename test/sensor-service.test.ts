@@ -141,4 +141,61 @@ describe('sensor Service protocol v2', () => {
     expect(inputs[0]!.action).toEqual({ type: 'subItem', columnId: 2, subItemId: 'rexco' });
     expect(inputs[0]!.pointerId).toMatch(/^lidar-/);
   });
+
+  it('lets only the first wall drive targets and receive touch input', () => {
+    const { service, wall, parsed, at } = setup({ ...DEFAULT_SENSOR_CONFIG, source: 'tuio' });
+    service.setSourceState(true);
+    const phoneFrames: string[] = [];
+    const phone = { send: (data: string) => void phoneFrames.push(data) };
+    service.addClient(phone);
+    // The LED wall has column 1 open; a phone opening "/" reports it idle.
+    service.handleMessage(wall, JSON.stringify({ version: 2, type: 'clientState', layoutVersion: 'wall-v5', columns: { ...columns, 1: { ...idle, phase: 'active', photoCount: 1, pageCount: 1 } } }));
+    service.handleMessage(phone, JSON.stringify({ version: 2, type: 'clientHello', layoutVersion: 'wall-v5', columns }));
+    expect(phoneFrames.map(frame => JSON.parse(frame).type)).toEqual(['hello']);
+    at(0);
+    service.handleTuio(tuioFrame([[1, 212, 700]], 1));
+    at(2_000);
+    service.tick();
+    expect(parsed().some(result => result.ok && result.message.type === 'input')).toBe(false);
+    expect(phoneFrames.some(frame => frame.includes('"input"'))).toBe(false);
+
+    // When the LED wall leaves, the phone becomes primary.
+    service.removeClient(wall);
+    at(2_100);
+    service.handleTuio(tuioFrame([[2, 212, 700]], 2));
+    at(3_200);
+    service.tick();
+    expect(phoneFrames.filter(frame => frame.includes('"input"'))).toHaveLength(1);
+  });
+
+  it('drops show-control actions without a wall-v5 target', () => {
+    const { service, parsed } = setup();
+    service.handleShowControl(parseOscPacket(createOscMessage('/altama/page', [1, 3])));
+    service.handleShowControl(parseOscPacket(createOscMessage('/altama/subItem', [1, 'foo'])));
+    service.handleShowControl(parseOscPacket(createOscMessage('/altama/page', [1, 2])));
+    const actions = parsed().flatMap(result => result.ok && result.message.type === 'input' ? [result.message.action] : []);
+    expect(actions).toEqual([{ type: 'page', columnId: 1, page: 1 }]);
+    expect(parsed().every(result => result.ok)).toBe(true);
+  });
+
+  it('refuses a touch source on the show-control port', () => {
+    const { service, admin, adminMessages } = setup();
+    service.handleMessage(admin, JSON.stringify({ version: 2, type: 'setConfig', config: { source: 'tuio', tuio: { port: 9000 } } }));
+    expect(adminMessages().at(-1)).toMatchObject({ type: 'adminResult', request: 'setConfig', ok: false });
+    expect(service.config.source).toBe('off');
+  });
+
+  it('answers a background capture that cannot finish', () => {
+    const { service, admin, adminMessages, at } = setup({ ...DEFAULT_SENSOR_CONFIG, source: 'hokuyo' });
+    service.setSourceState(true, '', 40);
+    at(0);
+    service.handleMessage(admin, JSON.stringify({ version: 2, type: 'captureBackground' }));
+    at(6_000);
+    service.tick();
+    expect(adminMessages().at(-1)).toMatchObject({ type: 'adminResult', request: 'captureBackground', ok: false, error: 'timeout' });
+    service.handleMessage(admin, JSON.stringify({ version: 2, type: 'captureBackground' }));
+    service.setSourceState(false, 'hokuyo offline', 0);
+    const results = adminMessages().filter(message => message.type === 'adminResult');
+    expect(results.at(-1)).toMatchObject({ request: 'captureBackground', ok: false, error: 'hokuyo offline' });
+  });
 });

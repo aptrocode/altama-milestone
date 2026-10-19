@@ -56,7 +56,7 @@ Per scan (`sensor-service/tracker.ts`):
 3. Cluster centroids (sensor mm: x toward the front step, y counterclockwise) go through the calibration homography to logical wall px; points outside the 2304 × 1344 canvas are dropped.
 4. A nearest-neighbour tracker gives stable IDs (`lidar-N`): a contact must persist two scans, may jump at most 140 px per scan, and keeps its identity through 150 ms dropouts.
 
-**Calibration.** The homography is a least-squares fit (normalized DLT) of at least four measured points, no three collinear. Default wall points are the outer corners of the six idle frames (32,426 · 2272,426 · 2272,1068 · 32,1068). Procedure on site:
+**Calibration.** The homography is a least-squares fit (normalized DLT) of at least four measured points that span an area (corners plus collinear mid-edge points are fine; four nearly collinear points are rejected, as is a fit whose horizon falls between the points). Default wall points are the outer corners of the six idle frames (32,426 · 2272,426 · 2272,1068 · 32,1068). Procedure on site:
 1. Mount the sensor so its scan plane is parallel to and a few cm in front of the LED surface; set the IP on the dashboard and save.
 2. Press **Mode kalibrasi** (inputs stop; the wall gets `calibrated: false`).
 3. Hold a hand or a round object on point 1 so it is the only (largest) cluster and press **Ambil** on row 1; repeat for every point. Extra points (up to 12, e.g. centre and mid-edges) average out error; the dashboard shows the RMS error from the fifth point on (four points always fit exactly).
@@ -82,7 +82,8 @@ Extra and scene messages are ignored; an object without updates for 1 s is relea
 For every source (`shared/sensor-targets.ts`, `sensor-service/dwell.ts`):
 - contacts are hit-tested only against the targets visible for each column's latest snapshot (rules below); flags and Back win over the frame below them, and main ignores the language overlay;
 - a hold target (main, sub-item tile, arrows, page tabs) fires after its group's dashboard duration, taken when the contact reached the target; when the group is off, and for language/Back, the contact must stay 250 ms;
-- each contact sends at most one input and must be released before it acts again (no repeat while held, no chained actions when the column changes under it);
+- each contact sends at most one input and must be released before it acts again (no repeat while held, no chained actions when the column changes under it); contacts still present when calibration mode ends count as spent;
+- only the first connected wall (primary) defines the visible targets and receives touch and show-control input; walls that connect later (a phone opening `/`) get hello/status/heartbeat only until the primary disconnects. Keep one wall open;
 - leaving a target restarts the dwell, except for edge jitter shorter than 120 ms; a target that disappears (column opened/closed) is dropped at once;
 - input `x`/`y` are the contact position floored to integers, inside the declared rectangle.
 
@@ -165,7 +166,7 @@ Valid sub-items: column 2 = `tekiro`, `ryu`, `rexco`; column 5 = `distribusi`, `
 | --- | --- | --- | --- |
 | `off` | true | true | `osc only` |
 | `hokuyo` | scans arriving | homography solved | `hokuyo connecting`, `hokuyo no scans`, `hokuyo not calibrated` |
-| `augmenta` / `tuio` | UDP port bound | true | bind error |
+| `augmenta` / `tuio` | UDP port bound | true | bind error (e.g. port used by another app) |
 
 While **Mode kalibrasi** is on, `calibrated` is false and `detail` is `calibrating`. The renderer drops every input, OSC show control included, unless both flags are true; select source `off` for show-control-only operation.
 
@@ -173,7 +174,7 @@ The wall-v5 idle frame is 360 × 642 logical px at y 426; the open card is 330 �
 
 ## OSC Show Control (Resolume Arena & TouchDesigner)
 
-The Sensor Service always listens for OSC show control from Resolume Arena, TouchDesigner, QLab, or Bitfocus Companion and sends the matching protocol v2 input at the centre of the declared target (`sensor-service/show-control.ts`). Show control bypasses dwell and target visibility; the renderer still validates the phase.
+The Sensor Service always listens for OSC show control from Resolume Arena, TouchDesigner, QLab, or Bitfocus Companion and sends the matching protocol v2 input at the centre of the declared target (`sensor-service/show-control.ts`). Show control bypasses dwell and target visibility; the renderer still validates the phase. Commands without a wall-v5 target (a page that does not exist, an unknown sub-item) are dropped instead of being sent.
 
 ### Ports and configuration
 
@@ -212,9 +213,9 @@ bun run osc:send /altama/reset
 | Direction | `type` | Fields | Notes |
 | --- | --- | --- | --- |
 | dashboard → service | `adminHello` | — | Replies with `adminState` |
-| dashboard → service | `setConfig` | `config` (full or partial) | Merged, normalized, saved, applied (ports rebound, LiDAR reconnected); replies `adminResult` |
+| dashboard → service | `setConfig` | `config` (full or partial) | Merged, normalized, saved, applied (ports rebound, LiDAR reconnected); replies `adminResult`. Refused when the active Augmenta/TUIO port equals the OSC port |
 | dashboard → service | `calibrate` | `on: boolean` | Calibration mode (not saved) |
-| dashboard → service | `captureBackground` / `clearBackground` | — | Hokuyo only; capture replies after 40 scans |
+| dashboard → service | `captureBackground` / `clearBackground` | — | Hokuyo only; capture replies after 40 scans, or with an error after 5 s, when the LiDAR drops, or when the source changes |
 | service → dashboard | `adminState` | `config`, `status` | On hello and whenever config, readiness, wall count, hold rules, or inputs change |
 | service → dashboard | `adminContacts` | `contacts[]` (`id`, `x`, `y`, `target`, `progress`, `fired`), `sensorPoints[]` | 10 Hz; `sensorPoints` are Hokuyo clusters in sensor mm, largest first (**Ambil** takes the first) |
 | service → dashboard | `adminResult` | `request`, `ok`, `error?` | Reply to a request |

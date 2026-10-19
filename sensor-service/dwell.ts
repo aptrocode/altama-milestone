@@ -42,12 +42,28 @@ export class DwellEngine {
   private targets: SensorTarget[] = [];
   private readonly contacts = new Map<string, ContactState>();
   /** While true (calibration), contacts are tracked and previewed but never fire. */
-  suppressed = false;
+  private suppressedState = false;
 
   constructor(options: DwellOptions) {
     this.minContactMs = options.minContactMs ?? 250;
     this.graceMs = options.graceMs ?? 120;
     this.onInput = options.onInput;
+  }
+
+  get suppressed() {
+    return this.suppressedState;
+  }
+
+  /**
+   * Calibration pauses input. Contacts still present when it ends count as spent, so an object left on a
+   * calibration point does not fire the moment calibration mode is switched off.
+   */
+  set suppressed(on: boolean) {
+    if (this.suppressedState && !on) {
+      for (const contact of this.contacts.values())
+        contact.fired = true;
+    }
+    this.suppressedState = on;
   }
 
   setHold(hold: unknown) {

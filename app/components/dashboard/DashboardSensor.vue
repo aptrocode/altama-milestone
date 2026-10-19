@@ -19,7 +19,9 @@ const clone = (value: SensorConfig): SensorConfig => normalizeSensorConfig(JSON.
 const same = (a: SensorConfig | null, b: SensorConfig | null) => !!a && !!b && JSON.stringify(normalizeSensorConfig(a)) === JSON.stringify(normalizeSensorConfig(b));
 const dirty = computed(() => !!draft.value && !!admin.config.value && !same(draft.value, admin.config.value));
 
-// Follow the service (another dashboard, a restart) unless the operator is editing.
+// Follow the service (another dashboard, a restart) unless the operator is editing. Number fields use
+// v-model.lazy: the 10 Hz contact preview re-renders this form, and a plain :value binding would reset
+// a field while it is being typed in.
 watch(admin.config, (next, previous) => {
   if (next && (!draft.value || !previous || same(draft.value, previous)))
     draft.value = clone(next);
@@ -70,12 +72,6 @@ function cancel() {
   if (admin.config.value)
     draft.value = clone(admin.config.value);
   message.value = '';
-}
-
-function setNumber(apply: (value: number) => void, raw: string) {
-  const value = Number.parseFloat(raw);
-  if (Number.isFinite(value))
-    apply(value);
 }
 
 function capture(index: number) {
@@ -133,13 +129,13 @@ function contactColor(contact: { target: string | null; fired: boolean }) {
             <input v-model.trim="draft.hokuyo.host" :class="field" class="mt-1" spellcheck="false" data-sensor-host>
           </label>
           <label class="text-sm text-sky-100/60">Port
-            <input type="number" :class="field" class="mt-1" :value="draft.hokuyo.port" @change="setNumber(v => draft!.hokuyo.port = v, ($event.target as HTMLInputElement).value)">
+            <input v-model.lazy.number="draft.hokuyo.port" type="number" :class="field" class="mt-1">
           </label>
         </div>
 
         <div v-for="source in (['augmenta', 'tuio'] as const)" v-show="draft.source === source" :key="source" class="grid grid-cols-[6rem_1fr] items-end gap-3">
           <label class="text-sm text-sky-100/60">Port
-            <input type="number" :class="field" class="mt-1" :value="draft[source].port" @change="setNumber(v => draft![source].port = v, ($event.target as HTMLInputElement).value)">
+            <input v-model.lazy.number="draft[source].port" type="number" :class="field" class="mt-1">
           </label>
           <div class="flex items-center justify-end gap-3 pb-1">
             <span class="text-sm font-bold">Invert Y</span>
@@ -156,7 +152,7 @@ function contactColor(contact: { target: string | null; fired: boolean }) {
 
         <label class="grid grid-cols-[1fr_6rem] items-center gap-3 text-sm text-sky-100/60">
           OSC show control
-          <input type="number" :class="field" :value="draft.osc.port" aria-label="Port OSC" @change="setNumber(v => draft!.osc.port = v, ($event.target as HTMLInputElement).value)">
+          <input v-model.lazy.number="draft.osc.port" type="number" :class="field" aria-label="Port OSC">
         </label>
       </div>
 
@@ -179,8 +175,8 @@ function contactColor(contact: { target: string | null; fired: boolean }) {
         <ol class="mt-3 space-y-2">
           <li v-for="(point, index) in draft.hokuyo.calibration" :key="index" class="grid grid-cols-[1rem_3.75rem_3.75rem_1fr_auto_auto] items-center gap-1.5 text-sm sm:grid-cols-[1.5rem_4.5rem_4.5rem_1fr_auto_auto] sm:gap-2">
             <span class="font-bold text-wall-glow">{{ index + 1 }}</span>
-            <input type="number" :class="field" :value="point.wall.x" :aria-label="`Titik ${index + 1} x`" @change="setNumber(v => point.wall.x = v, ($event.target as HTMLInputElement).value)">
-            <input type="number" :class="field" :value="point.wall.y" :aria-label="`Titik ${index + 1} y`" @change="setNumber(v => point.wall.y = v, ($event.target as HTMLInputElement).value)">
+            <input v-model.lazy.number="point.wall.x" type="number" :class="field" :aria-label="`Titik ${index + 1} x`">
+            <input v-model.lazy.number="point.wall.y" type="number" :class="field" :aria-label="`Titik ${index + 1} y`">
             <span class="truncate text-right text-xs tabular-nums text-sky-100/70 sm:text-sm" :title="point.sensor ? 'mm' : undefined">{{ point.sensor ? `${Math.round(point.sensor.x)}, ${Math.round(point.sensor.y)}` : '—' }}</span>
             <button type="button" :class="smallButton" :disabled="!nearest" @click="capture(index)">
               Ambil

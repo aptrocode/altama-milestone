@@ -107,17 +107,61 @@ export function solveHomography(pairs: { from: Point2; to: Point2 }[]): Homograp
   return matrix.map(value => value / scale) as Homography;
 }
 
-/** Builds the wall calibration from measured points; null until four valid, non-degenerate pairs exist. */
+function cross(o: Point2, a: Point2, b: Point2): number {
+  return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+}
+
+/**
+ * Convex-hull area relative to the squared bounding-box diagonal: about 0.25 for the default frame
+ * corners, near 0 when the points (almost) lie on one line and cannot define a plane mapping.
+ */
+export function spreadRatio(points: Point2[]): number {
+  const sorted = [...points].sort((a, b) => a.x - b.x || a.y - b.y);
+  if (sorted.length < 3)
+    return 0;
+  const half = (pass: Point2[]) => {
+    const chain: Point2[] = [];
+    for (const point of pass) {
+      while (chain.length >= 2 && cross(chain.at(-2)!, chain.at(-1)!, point) <= 0)
+        chain.pop();
+      chain.push(point);
+    }
+    chain.pop();
+    return chain;
+  };
+  const hull = [...half(sorted), ...half([...sorted].reverse())];
+  let area = 0;
+  for (let i = 0; i < hull.length; i++) {
+    const a = hull[i]!;
+    const b = hull[(i + 1) % hull.length]!;
+    area += a.x * b.y - b.x * a.y;
+  }
+  const xs = points.map(p => p.x);
+  const ys = points.map(p => p.y);
+  const diagonal = (Math.max(...xs) - Math.min(...xs)) ** 2 + (Math.max(...ys) - Math.min(...ys)) ** 2;
+  return diagonal > 0 ? Math.abs(area) / 2 / diagonal : 0;
+}
+
+/** Below this spread the measured points are treated as collinear (see spreadRatio). */
+export const MIN_SPREAD_RATIO = 0.02;
+
+/** Builds the wall calibration from measured points; null until four valid, well-spread pairs exist. */
 export function buildCalibration(points: CalibrationPoint[]): Calibration | null {
   const pairs = points.flatMap(point => point.sensor ? [{ from: point.sensor, to: point.wall }] : []);
+  if (spreadRatio(pairs.map(pair => pair.from)) < MIN_SPREAD_RATIO || spreadRatio(pairs.map(pair => pair.to)) < MIN_SPREAD_RATIO)
+    return null;
   const matrix = solveHomography(pairs);
   if (!matrix)
     return null;
   let squared = 0;
+  let sign = 0;
   for (const pair of pairs) {
     const mapped = applyHomography(matrix, pair.from);
-    if (!mapped)
+    // The measured points must all lie on the same side of the mapping's horizon (w > 0 or w < 0).
+    const w = matrix[6] * pair.from.x + matrix[7] * pair.from.y + matrix[8];
+    if (!mapped || (sign !== 0 && Math.sign(w) !== sign))
       return null;
+    sign = Math.sign(w);
     squared += (mapped.x - pair.to.x) ** 2 + (mapped.y - pair.to.y) ** 2;
   }
   return { matrix, rmsPx: Math.sqrt(squared / pairs.length), points: pairs.length };

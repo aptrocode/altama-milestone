@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyHomography, buildCalibration, solveHomography } from '../sensor-service/calibration';
+import { applyHomography, buildCalibration, MIN_SPREAD_RATIO, solveHomography, spreadRatio } from '../sensor-service/calibration';
 import { DEMO_RIG, renderScan, wallToSensor } from '../sensor-service/synthetic';
 import { clusterPoints, clustersToWall, scanToPoints, Tracker } from '../sensor-service/tracker';
 import { DEFAULT_CALIBRATION_WALL_POINTS, DEFAULT_SENSOR_CONFIG } from '../shared/sensor-config';
@@ -33,6 +33,16 @@ describe('homography calibration', () => {
     expect(fitted.points).toBe(6);
     expect(fitted.rmsPx).toBeGreaterThan(0.5);
     expect(fitted.rmsPx).toBeLessThan(2.5);
+  });
+
+  it('rejects nearly collinear measurements that would still fit exactly', () => {
+    expect(spreadRatio(DEFAULT_CALIBRATION_WALL_POINTS)).toBeGreaterThan(0.2);
+    const sliver = [{ x: 0, y: 0 }, { x: 1000, y: 5 }, { x: 2000, y: 0 }, { x: 3000, y: 6 }];
+    expect(spreadRatio(sliver)).toBeLessThan(MIN_SPREAD_RATIO);
+    expect(buildCalibration(DEFAULT_CALIBRATION_WALL_POINTS.map((wall, i) => ({ wall, sensor: sliver[i]! })))).toBeNull();
+    // Corners plus collinear mid-edge points are fine.
+    const withMidEdge = [...demoCalibration, { wall: { x: 1152, y: 426 }, sensor: wallToSensor({ x: 1152, y: 426 }) }];
+    expect(buildCalibration(withMidEdge)?.points).toBe(5);
   });
 
   it('refuses fewer than four points or collinear points', () => {

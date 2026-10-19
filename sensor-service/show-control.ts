@@ -24,23 +24,26 @@ function toTargetAction(action: WallAction): WallAction {
   return action;
 }
 
-function targetRect(action: WallAction): Rect {
-  const column = columns.find(col => col.id === action.columnId)!;
+/** Declared target of an action, or null when wall-v5 has none (page 3, unknown sub-item), which the renderer would reject. */
+function targetRect(action: WallAction): Rect | null {
+  const column = columns.find(col => col.id === action.columnId);
+  if (!column)
+    return null;
   switch (action.type) {
-    case 'main': return column.main ?? column.card;
+    case 'main': return column.main ?? null;
     case 'back': return column.active.back;
     case 'previous': return column.active.previous;
     case 'next': return column.active.next;
-    case 'page': return column.active.pages.find(item => item.page === action.page) ?? column.active.card;
-    case 'subItem': return column.subItems?.find(item => item.key === action.subItemId) ?? column.card;
-    case 'language': return column.languages.find(item => item.locale === action.locale) ?? column.languageBar;
+    case 'page': return column.active.pages.find(item => item.page === action.page) ?? null;
+    case 'subItem': return column.subItems?.find(item => item.key === action.subItemId) ?? null;
+    case 'language': return column.languages.find(item => item.locale === action.locale) ?? null;
   }
 }
 
-/** /altama/* show-control messages as wall actions at the centre of their declared target. */
+/** /altama/* show-control messages as wall actions at the centre of their declared target; unmappable ones are dropped. */
 export function showControlInputs(messages: OscMessage[], snapshots: Record<ColumnId, ColumnSnapshot>): { action: WallAction; x: number; y: number }[] {
-  return messages.flatMap(message => oscToWallActions(message, snapshots).map(toTargetAction).map((action) => {
+  return messages.flatMap(message => oscToWallActions(message, snapshots).map(toTargetAction).flatMap((action) => {
     const rect = targetRect(action);
-    return { action, x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+    return rect ? [{ action, x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 }] : [];
   }));
 }
