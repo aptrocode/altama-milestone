@@ -10,13 +10,13 @@ const props = defineProps<{
   locale: WallLocale;
   bar: Rect;
   targets: (Rect & { locale: WallLocale })[];
-  /** Full-width bar: buttons are pills concentric with the bar (half their height) instead of 8 px corners. */
-  pill?: boolean;
 }>();
 defineEmits<{ select: [locale: WallLocale] }>();
 
+// Buttons are pills concentric with the pill bar: half their height equals the bar radius minus its
+// padding (compact 31 − 7 = 24, full width 38 − 8 = 30).
 function radius(target: Rect) {
-  return props.pill ? target.height / 2 : 8;
+  return target.height / 2;
 }
 
 function buttonStyle(target: Rect) {
