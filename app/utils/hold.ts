@@ -1,5 +1,8 @@
 export const HOLD_DURATION_MS = 1_000;
 
+/** Pointers currently holding some button: one finger drives at most one button at a time. */
+const heldPointers = new Set<number>();
+
 export interface HoldOptions {
   onActivate: () => void;
   /** false: any press activates immediately (operator dashboard "hold off"). Default true. */
@@ -9,8 +12,9 @@ export interface HoldOptions {
 }
 
 /**
- * Pointer contact must dwell while hold is enabled; native keyboard/assistive clicks always
- * activate immediately. Options can change at any time through `update` (dashboard edits).
+ * Pointer contact must dwell while hold is enabled. Every touch contact counts (native
+ * multitouch), so different buttons hold independently; a button follows only the first
+ * pointer that pressed it. Native keyboard/assistive clicks always activate immediately. Options can change at any time through `update` (dashboard edits).
  */
 export function bindHold(element: HTMLElement, initial: HoldOptions) {
   let options = initial;
@@ -23,6 +27,8 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
   function cancel() {
     clearTimeout(holdTimer);
     holdTimer = undefined;
+    if (pointerId !== null)
+      heldPointers.delete(pointerId);
     pointerId = null;
     element.classList.remove('holding');
   }
@@ -37,11 +43,12 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
 
   function start(event: Event) {
     const pointer = event as PointerEvent;
-    if (!holdEnabled() || pointer.button !== 0 || pointer.isPrimary === false || pointerId !== null)
+    if (!holdEnabled() || pointer.button !== 0 || pointerId !== null || heldPointers.has(pointer.pointerId))
       return;
     clearTimeout(completionTimer);
     element.classList.remove('hold-complete');
     pointerId = pointer.pointerId;
+    heldPointers.add(pointerId);
     element.classList.add('holding');
     holdTimer = setTimeout(finish, options.durationMs ?? HOLD_DURATION_MS);
   }

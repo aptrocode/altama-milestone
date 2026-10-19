@@ -2,9 +2,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { bindHold } from '../app/utils/hold';
 
 class Button extends EventTarget {
-  view = new EventTarget();
-  ownerDocument = { defaultView: this.view };
+  ownerDocument: { defaultView: EventTarget };
   classes = new Set<string>();
+  constructor(public view = new EventTarget()) {
+    super();
+    this.ownerDocument = { defaultView: view };
+  }
+
   classList = {
     add: (name: string) => this.classes.add(name),
     remove: (name: string) => this.classes.delete(name),
@@ -16,8 +20,8 @@ function event(type: string, properties: Record<string, unknown>) {
 }
 
 const bindings: ReturnType<typeof bindHold>[] = [];
-function setup(options: { enabled?: boolean; durationMs?: number } = {}) {
-  const button = new Button();
+function setup(options: { enabled?: boolean; durationMs?: number } = {}, view?: EventTarget) {
+  const button = new Button(view);
   const activate = vi.fn();
   const binding = bindHold(button as unknown as HTMLElement, { onActivate: activate, ...options });
   bindings.push(binding);
@@ -88,12 +92,67 @@ describe('hold input lifecycle', () => {
     expect(button.classes.has('holding')).toBe(false);
   });
 
-  it('ignores secondary mouse buttons and non-primary contacts', () => {
+  it('ignores secondary mouse buttons', () => {
     const { button, activate } = setup();
     button.dispatchEvent(event('pointerdown', { button: 2, pointerId: 1, isPrimary: true }));
-    button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 2, isPrimary: false }));
     vi.advanceTimersByTime(2000);
     expect(activate).not.toHaveBeenCalled();
+  });
+
+  it('holds different buttons with simultaneous touches', () => {
+    const view = new EventTarget();
+    const first = setup({}, view);
+    const second = setup({}, view);
+    first.button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 1, isPrimary: true }));
+    vi.advanceTimersByTime(400);
+    second.button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 2, isPrimary: false }));
+    expect(second.button.classes.has('holding')).toBe(true);
+    vi.advanceTimersByTime(600);
+    expect(first.activate).toHaveBeenCalledTimes(1);
+    expect(second.activate).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(400);
+    expect(second.activate).toHaveBeenCalledTimes(1);
+  });
+
+  it('releases each touch independently', () => {
+    const view = new EventTarget();
+    const first = setup({}, view);
+    const second = setup({}, view);
+    first.button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 1, isPrimary: true }));
+    second.button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 2, isPrimary: false }));
+    view.dispatchEvent(event('pointerup', { pointerId: 1 }));
+    vi.advanceTimersByTime(1000);
+    expect(first.activate).not.toHaveBeenCalled();
+    expect(first.button.classes.has('holding')).toBe(false);
+    expect(second.activate).toHaveBeenCalledTimes(1);
+  });
+
+  it('ignores a second touch on a held button without restarting it', () => {
+    const { button, activate } = setup();
+    button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 1, isPrimary: true }));
+    vi.advanceTimersByTime(600);
+    button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 2, isPrimary: false }));
+    button.view.dispatchEvent(event('pointerup', { pointerId: 2 }));
+    vi.advanceTimersByTime(400);
+    expect(activate).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(2000);
+    expect(activate).toHaveBeenCalledTimes(1);
+  });
+
+  it('lets one touch drive only one button at a time', () => {
+    const view = new EventTarget();
+    const inner = setup({}, view);
+    const outer = setup({}, view);
+    const down = { button: 0, pointerId: 3, isPrimary: false };
+    inner.button.dispatchEvent(event('pointerdown', down));
+    outer.button.dispatchEvent(event('pointerdown', down));
+    expect(outer.button.classes.has('holding')).toBe(false);
+    vi.advanceTimersByTime(1000);
+    expect(inner.activate).toHaveBeenCalledTimes(1);
+    expect(outer.activate).not.toHaveBeenCalled();
+    outer.button.dispatchEvent(event('pointerdown', down));
+    vi.advanceTimersByTime(1000);
+    expect(outer.activate).toHaveBeenCalledTimes(1);
   });
 
   it('removes all listeners and timers during disposal', () => {
