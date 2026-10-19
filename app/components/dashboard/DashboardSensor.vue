@@ -4,6 +4,7 @@ import { computed, ref, watch } from 'vue';
 import { useSensorAdmin } from '~/composables/useSensorAdmin';
 import { installationLayout, offsetRect } from '~/data/installation-layout';
 import { useSettingsStore } from '~/stores/settings';
+import { columnOffsetY, extendDown, languageGeometry } from '../../../shared/language-bar';
 import { MAX_CALIBRATION_POINTS, normalizeSensorConfig, SENSOR_ADMIN_VERSION, SENSOR_CANVAS, SENSOR_SOURCES } from '../../../shared/sensor-config';
 
 const props = defineProps<{ url: string }>();
@@ -62,8 +63,12 @@ const calibrationText = computed(() => {
 });
 
 const settings = useSettingsStore();
-// Idle frames where the wall draws them, i.e. moved by the saved card offset.
-const columns = computed(() => installationLayout.columns.map(column => offsetRect(column.card, settings.wall.cardOffsetY)));
+// Idle frames where the wall draws them: moved by the saved card offset (and the grid language bar's
+// raise) and as tall as that bar makes them.
+const columns = computed(() => installationLayout.columns.map((column) => {
+  const mode = settings.wall.languageBar;
+  return offsetRect(extendDown(column.card, languageGeometry(column, mode).extend), columnOffsetY(settings.wall.cardOffsetY, mode));
+}));
 const nearest = computed(() => admin.sensorPoints.value[0] ?? null);
 
 function save() {

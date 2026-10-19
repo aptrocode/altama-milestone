@@ -15,6 +15,7 @@ import { useSettingsStore } from '~/stores/settings';
 import { useSystemStore } from '~/stores/system';
 import { useWallStore } from '~/stores/wall';
 import { isVideoSrc } from '~/utils/media';
+import { columnOffsetY, languageGeometry } from '../../../shared/language-bar';
 import { COLUMN_IDS } from '../../../shared/wall';
 
 const wall = useWallStore();
@@ -46,8 +47,10 @@ const stackedView = layout.visual.stacked;
 // Phones/tablets: each column is drawn in its own box with a uniform scale (container width),
 // showing only the logical rows its idle frame or open layout uses.
 function stackedWindow(id: ColumnId) {
-  if (wall.getColumnState(id) === 'idle')
-    return stackedView.idle;
+  if (wall.getColumnState(id) === 'idle') {
+    const extend = languageGeometry(getColumnLayout(id), settings.wall.languageBar).extend;
+    return { y: stackedView.idle.y, height: stackedView.idle.height + extend };
+  }
   return getColumnConfig(id).type === 'expandable' ? stackedView.open : stackedView.openSingle;
 }
 
@@ -151,7 +154,7 @@ onUnmounted(() => {
       >
       <WallColumn
         v-for="column in WALL_CONFIG.columns" :key="column.id"
-        :column="column" :snapshot="wall.columns[column.id]" :copy="wall.getColumnCopy(column.id)" :offset-y="settings.wall.cardOffsetY"
+        :column="column" :snapshot="wall.columns[column.id]" :copy="wall.getColumnCopy(column.id)" :offset-y="columnOffsetY(settings.wall.cardOffsetY, settings.wall.languageBar)"
         @action="dispatch" @activity="controls.touchColumn" @slide-ended="controls.mediaEnded"
       />
     </template>

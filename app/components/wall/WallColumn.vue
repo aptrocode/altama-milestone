@@ -10,6 +10,7 @@ import { getColumnLayout, installationLayout, rectStyle } from '~/data/installat
 import { getColumnPages } from '~/data/wall-config';
 import { WALL_COPY } from '~/data/wall-copy';
 import { useSettingsStore } from '~/stores/settings';
+import { extendDown, languageGeometry } from '../../../shared/language-bar';
 
 /**
  * One column in logical canvas units. Idle shows WallIdleFrame (mockup 1); open shows the raised
@@ -30,6 +31,8 @@ const settings = useSettingsStore();
 const geometry = computed(() => getColumnLayout(props.column.id));
 const visual = installationLayout.visual;
 const idle = computed(() => props.snapshot.phase === 'idle');
+// The 2 + 1 language grid makes the idle frame taller (downward).
+const idleFrame = computed(() => extendDown(geometry.value.card, languageGeometry(geometry.value, settings.wall.languageBar).extend));
 const pages = computed(() => getColumnPages(props.column, props.snapshot.subItem));
 const openSubItem = computed(() => props.column.type === 'expandable' && !idle.value
   ? props.column.subItems?.find(sub => sub.key === props.snapshot.subItem)
@@ -91,7 +94,7 @@ function act(action: WallAction) {
       leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0"
     >
       <WallIdleFrame
-        v-if="idle" class="absolute" :style="rectStyle(geometry.card, geometry.section)"
+        v-if="idle" class="absolute" :style="rectStyle(idleFrame, geometry.section)"
         :column="column" :locale="snapshot.locale" :label="copy.label" @action="act"
       />
     </Transition>

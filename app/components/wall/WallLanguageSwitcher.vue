@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ColumnId, WallLocale } from '../../../shared/wall';
 import type { Rect } from '~/data/installation-layout';
+import { computed } from 'vue';
 import WallHoldButton from '~/components/wall/WallHoldButton.vue';
 import { rectStyle } from '~/data/installation-layout';
 import { FLAG_SOURCES, WALL_COPY } from '~/data/wall-copy';
@@ -19,6 +20,13 @@ function radius(target: Rect) {
   return target.height / 2;
 }
 
+// The bar's corners are concentric with its buttons: their radius plus the bar padding (a pill for
+// one row, a rounded rectangle for the 2 + 1 grid).
+const barRadius = computed(() => {
+  const first = props.targets[0];
+  return first ? radius(first) + (first.y - props.bar.y) : 0;
+});
+
 function buttonStyle(target: Rect) {
   const r = radius(target);
   return { ...rectStyle(target, props.bar), borderRadius: `calc(${r} * var(--wall-x)) / calc(${r} * var(--wall-y))` };
@@ -27,8 +35,9 @@ function buttonStyle(target: Rect) {
 
 <template>
   <fieldset
-    class="wall-language-bar m-0 p-0 min-w-0 rounded-full bg-[#050d4f]/90 ring-2 ring-wall-glow/70 shadow-[0_0_calc(16*var(--wall-x))_rgba(80,190,255,0.55)]"
+    class="wall-language-bar m-0 p-0 min-w-0 bg-[#050d4f]/90 ring-2 ring-wall-glow/70 shadow-[0_0_calc(16*var(--wall-x))_rgba(80,190,255,0.55)]"
     role="group" :aria-label="WALL_COPY[locale].language"
+    :style="{ borderRadius: `calc(${barRadius} * var(--wall-x)) / calc(${barRadius} * var(--wall-y))` }"
   >
     <WallHoldButton
       v-for="target in targets" :key="target.locale" :outline="target" group="language" :radius="radius(target)"

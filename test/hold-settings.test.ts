@@ -35,6 +35,7 @@ describe('hold settings', () => {
     expect(normalizeWallSettings({ resetSeconds: 45.4, cardOffsetY: -31, showClose: false, showArrows: false, autoSlideSeconds: 7.6, showPages: false, autoPageSeconds: 500, languageBar: 'full' }))
       .toEqual({ resetSeconds: 45, cardOffsetY: -30, showClose: false, showArrows: false, autoSlideSeconds: 8, showPages: false, autoPageSeconds: 120, languageBar: 'full' });
     expect(normalizeWallSettings({ languageBar: 'huge' }).languageBar).toBe('compact');
+    expect(normalizeWallSettings({ languageBar: 'grid' }).languageBar).toBe('grid');
     expect(normalizeWallSettings({ showClose: 'no', showArrows: 1 })).toMatchObject({ showClose: true, showArrows: true });
   });
 

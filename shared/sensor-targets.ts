@@ -3,7 +3,7 @@ import type { LanguageBarMode } from './language-bar';
 import type { ColumnId, PublishedColumn, WallAction, WallLocale } from './wall';
 import { HOLD_GROUP_BY_ACTION } from './hold-settings';
 import rawLayout from './installation-layout.json';
-import { languageGeometry } from './language-bar';
+import { columnOffsetY, extendDown, languageGeometry } from './language-bar';
 import { COLUMN_IDS } from './wall';
 
 export interface Rect { x: number; y: number; width: number; height: number }
@@ -53,10 +53,13 @@ function target(action: WallAction, key: string, rect: Rect, offsetY: number, ex
  * `showClose: false` hides the open card's close button, so it has no Back target either;
  * `showArrows: false` hides the photo arrows (photos auto-slide), so previous/next go too.
  * `showPages: false` hides the page tabs (pages auto-change), so page targets go too.
- * `languageBar` picks the compact or full-width flag bar (shared/language-bar.ts).
+ * `languageBar` picks the compact, full-width, or 2 + 1 grid flag bar (shared/language-bar.ts);
+ * the grid makes the idle frame, and so main, taller.
  */
 export function visibleTargets(snapshots: Partial<Record<ColumnId, PublishedColumn>>, options: TargetOptions = {}): SensorTarget[] {
-  const { offsetY = 0, showClose = true, showArrows = true, showPages = true, languageBar = 'compact' } = options;
+  const { showClose = true, showArrows = true, showPages = true, languageBar = 'compact' } = options;
+  // The grid language bar raises every column a little on top of the card offset.
+  const offsetY = columnOffsetY(options.offsetY ?? 0, languageBar);
   const targets: SensorTarget[] = [];
   for (const columnId of COLUMN_IDS) {
     const snapshot = snapshots[columnId];
@@ -71,7 +74,7 @@ export function visibleTargets(snapshots: Partial<Record<ColumnId, PublishedColu
       for (const item of geometry.subItems ?? [])
         targets.push(target({ type: 'subItem', columnId, subItemId: item.key }, `${columnId}:subItem:${item.key}`, item, offsetY));
       if (geometry.main)
-        targets.push(target({ type: 'main', columnId }, `${columnId}:main`, geometry.main, offsetY, bar.languageBar));
+        targets.push(target({ type: 'main', columnId }, `${columnId}:main`, extendDown(geometry.main, bar.extend), offsetY, bar.languageBar));
       continue;
     }
 

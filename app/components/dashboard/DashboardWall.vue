@@ -12,7 +12,7 @@ const { draft, dirty, status, save, restoreDefaults } = useSettingsDraft({
   defaults: DEFAULT_WALL_SETTINGS,
   save: value => settings.setWall(value),
 });
-const LANGUAGE_BAR_OPTIONS = [{ value: 'compact', label: 'Compact' }, { value: 'full', label: 'Full width' }] as const;
+const LANGUAGE_BAR_OPTIONS = [{ value: 'compact', label: 'Compact' }, { value: 'full', label: 'Full width' }, { value: 'grid', label: 'Grid 2 + 1' }] as const;
 const field = 'w-20 rounded-md bg-white/10 px-2 py-1.5 text-right font-bold text-white ring-1 ring-white/15 focus:outline-none focus:ring-2 focus:ring-wall-glow';
 
 function set(key: keyof WallSettings, value: string) {
@@ -167,7 +167,7 @@ function nudgeOffset(delta: number) {
             Tampilan bahasa
           </p>
           <p class="text-sm text-sky-100/60">
-            Compact: bar bendera kecil di tengah. Full width: bar selebar card dengan tombol bendera lebih besar. Area sentuh sensor ikut berubah.
+            Compact: bar bendera kecil di tengah. Full width: bar selebar card dengan tombol bendera lebih besar. Grid 2 + 1: ID kiri, EN kanan, 中文 di bawah tengah dengan tombol paling besar; card idle jadi lebih tinggi ke bawah. Area sentuh sensor ikut berubah.
           </p>
         </div>
         <div class="flex rounded-lg bg-white/10 p-1 ring-1 ring-white/15" role="radiogroup" aria-label="Tampilan bahasa">

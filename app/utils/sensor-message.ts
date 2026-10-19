@@ -4,7 +4,7 @@ import type { SensorMessage, SensorParseResult } from '~/types/sensor';
 import { getActionRects, installationLayout, isPointInsideCanvas, isPointInsideRect, offsetRect } from '~/data/installation-layout';
 import { WALL_CONFIG } from '~/data/wall-config';
 import { SENSOR_PROTOCOL_VERSION } from '~/types/sensor';
-import { languageGeometry } from '../../shared/language-bar';
+import { columnOffsetY, languageGeometry } from '../../shared/language-bar';
 import { COLUMN_IDS, WALL_LOCALES } from '../../shared/wall';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -110,7 +110,7 @@ export function parseSensorMessage(raw: string, cardOffsetY = 0, languageBar: La
   if (!getActionRects(action, cardOffsetY, languageBar).some(rect => isPointInsideRect(x, y, rect)))
     return failure('coordinates do not match the declared target');
   const geometry = installationLayout.columns.find(column => column.id === action.columnId)!;
-  if (action.type === 'main' && isPointInsideRect(x, y, offsetRect(languageGeometry(geometry, languageBar).languageBar, cardOffsetY)))
+  if (action.type === 'main' && isPointInsideRect(x, y, offsetRect(languageGeometry(geometry, languageBar).languageBar, columnOffsetY(cardOffsetY, languageBar))))
     return failure('language overlay occludes the main target');
 
   return { ok: true, message: { ...envelope, type: 'input', action, pointerId: value.pointerId, x, y } };
