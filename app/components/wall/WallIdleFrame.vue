@@ -103,7 +103,7 @@ onBeforeUnmount(() => {
     </WallHoldButton>
     <WallLanguageSwitcher
       class="absolute z-20" :style="rectStyle(language.languageBar, card)"
-      :column-id="column.id" :locale="locale" :bar="language.languageBar" :targets="language.languages"
+      :column-id="column.id" :locale="locale" :bar="language.languageBar" :targets="language.languages" :pill="settings.wall.languageBar === 'full'"
       @select="emit('action', { type: 'language', columnId: column.id, locale: $event })"
     />
   </div>
