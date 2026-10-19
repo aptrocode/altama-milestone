@@ -5,8 +5,24 @@ import WallHoldButton from '~/components/wall/WallHoldButton.vue';
 import { rectStyle } from '~/data/installation-layout';
 import { FLAG_SOURCES, WALL_COPY } from '~/data/wall-copy';
 
-defineProps<{ columnId: ColumnId; locale: WallLocale; bar: Rect; targets: (Rect & { locale: WallLocale })[] }>();
+const props = defineProps<{
+  columnId: ColumnId;
+  locale: WallLocale;
+  bar: Rect;
+  targets: (Rect & { locale: WallLocale })[];
+}>();
 defineEmits<{ select: [locale: WallLocale] }>();
+
+// Buttons are pills concentric with the pill bar: half their height equals the bar radius minus its
+// padding (compact 31 − 7 = 24, full width 38 − 8 = 30).
+function radius(target: Rect) {
+  return target.height / 2;
+}
+
+function buttonStyle(target: Rect) {
+  const r = radius(target);
+  return { ...rectStyle(target, props.bar), borderRadius: `calc(${r} * var(--wall-x)) / calc(${r} * var(--wall-y))` };
+}
 </script>
 
 <template>
@@ -15,10 +31,10 @@ defineEmits<{ select: [locale: WallLocale] }>();
     role="group" :aria-label="WALL_COPY[locale].language"
   >
     <WallHoldButton
-      v-for="target in targets" :key="target.locale" :outline="target" group="language" :radius="8"
-      class="wall-flag absolute flex items-center justify-center rounded-[calc(8*var(--wall-x))] cursor-pointer transition-[box-shadow,background-color] duration-150"
+      v-for="target in targets" :key="target.locale" :outline="target" group="language" :radius="radius(target)"
+      class="wall-flag absolute flex items-center justify-center cursor-pointer transition-[box-shadow,background-color] duration-150"
       :class="locale === target.locale ? 'bg-white/15 ring-2 ring-wall-glow shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.8)]' : 'hover:bg-white/10'"
-      :style="rectStyle(target, bar)"
+      :style="buttonStyle(target)"
       :aria-label="WALL_COPY[locale].languages[target.locale]" :title="WALL_COPY[locale].languages[target.locale]"
       :aria-pressed="locale === target.locale" :data-col="columnId" data-sensor-action="language"
       :data-locale="target.locale" @activate="$emit('select', target.locale)"
