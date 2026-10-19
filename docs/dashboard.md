@@ -41,7 +41,7 @@ The sidebar footer acts on every browser-stored setting:
 
 ### Storage and scope
 
-- Hold and Wall live in this browser's `localStorage` (`altama.settings.v1`) through `app/plugins/settings-storage.client.ts`. Open the dashboard in the same browser profile as the wall on the event PC: with `start-wall.bat`, use `open-dashboard.bat` (the kiosk uses its own profile in `.wall-run/browser-profile` on `http://127.0.0.1:<WALL_PORT>`). A wall already open in another tab updates immediately (storage event); no reload is needed.
+- Hold and Wall live in this browser's `localStorage` (`altama.settings.v1`) through `app/plugins/settings-storage.client.ts`. Open the dashboard in the same browser profile as the wall on the event PC: in the kiosk started by `start-wall.bat` press **Ctrl+Shift+D** (again to return to the wall; the kiosk uses its own profile in `.wall-run/browser-profile` on `http://127.0.0.1:<WALL_PORT>`). A wall already open in another tab updates immediately (storage event); no reload is needed.
 - Clearing browser data restores the defaults; keep an exported JSON as backup.
 - There is no server or login. The page is not secret: anyone who can type a URL on the kiosk browser can open it. The wall runs fullscreen, so visitors cannot reach it in practice.
 - The wall publishes the hold rules as `hold` and the card offset as `cardOffsetY` in every `clientHello`/`clientState` message, so LiDAR input follows the same configuration and targets move with the cards. See [sensor](./sensor.md).
