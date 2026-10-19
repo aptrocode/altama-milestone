@@ -4,9 +4,9 @@ All current Summit artwork and photos are **provisional crops from the two clien
 
 | Path | Use | Source |
 | --- | --- | --- |
-| `public/summit/background.webp` | Stage background (includes skyline) | Mockup 1 with the cards and logo filled by a blurred vertical blend, scaled to 2304 × 1344 |
+| `public/summit/background.mp4` | Stage background (includes skyline) | 2304 × 1344 seamless looping H.264 video (7.16 MB) |
 | `public/summit/logo-powering-partnership.webp` | Header logo | Mockup 1 crop, background keyed to transparent white |
-| `public/illustrations/{column-key}.webp` | Idle artwork for columns 1, 3, 4, 6 | Mockup 1 card crops, edges feathered |
+| `public/illustrations/{column-key}.webm` | Idle artwork for columns 1, 3, 4, 6 | Transparent VP9 WebM video loop (~3 MB per column) |
 | `public/illustrations/distribution/{distribusi,pemasaran}.webp` | Column 5 tiles | Mockup 1 crops without the baked-in captions |
 | `public/brands/{tekiro,ryu,rexco}.webp` | Column 2 tiles (RYU/Rexco also above their open card) | Mockup 1 crops |
 | `public/brands/tekiro-wordmark.webp` | Tekiro logo above the open card | Mockup 2 crop, background keyed out |

@@ -1,6 +1,6 @@
 # Operator dashboard
 
-`/dashboard` is a small configuration page for operators with two sections: **Hold** (dwell per button group, stored in this browser) and **Sensor** (touch source, ports, calibration, live status; stored by the Sensor Service on the event PC).
+`/dashboard` is an operator configuration page with two sections: **Hold** (dwell per button group, stored in this browser) and **Sensor** (touch source, ports, calibration, live status; stored by the Sensor Service on the event PC). On desktop screens it renders in two columns (Hold on the left, Sensor on the right); on tablets and smartphones it stacks into a single responsive column.
 
 ## Hold
 
