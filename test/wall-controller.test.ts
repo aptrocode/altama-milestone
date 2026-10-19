@@ -1,3 +1,4 @@
+import type { ColumnId } from '../shared/wall';
 import { createPinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { effectScope } from 'vue';
@@ -114,11 +115,11 @@ describe('column inactivity lifecycle', () => {
 });
 
 describe('photo auto slide', () => {
-  function open(autoSlideMs: () => number) {
+  function open(autoSlideMs: () => number, slidePlaysToEnd?: (id: ColumnId) => boolean) {
     const wall = useWallStore(createPinia());
     const scope = effectScope();
     scopes.push(scope);
-    const controls = scope.run(() => useWallController(wall, { autoSlideMs }))!;
+    const controls = scope.run(() => useWallController(wall, { autoSlideMs, slidePlaysToEnd }))!;
     // Column 1 opens on a page with several photos.
     controls.dispatch({ type: 'main', columnId: 1 });
     expect(wall.publishedColumns[1]!.photoCount).toBeGreaterThan(1);
@@ -152,5 +153,71 @@ describe('photo auto slide', () => {
     const { wall } = open(() => 0);
     vi.advanceTimersByTime(20000);
     expect(wall.publishedColumns[1]!.photo).toBe(0);
+  });
+  it('lets a video slide play to its end, then images use the interval', () => {
+    // Photo 0 is a "video"; the others are images.
+    let current: ReturnType<typeof useWallStore> | undefined;
+    const { wall, controls } = open(() => 5000, id => current?.publishedColumns[id]!.photo === 0);
+    current = wall;
+    controls.touchColumn(1);
+    controls.dispatch({ type: 'previous', columnId: 1 });
+    controls.dispatch({ type: 'next', columnId: 1 });
+    vi.advanceTimersByTime(20000);
+    expect(wall.publishedColumns[1]!.photo).toBe(0);
+    controls.mediaEnded(1);
+    expect(wall.publishedColumns[1]!.photo).toBe(1);
+    // An image: a late or stray ended event does nothing, the interval moves on.
+    controls.mediaEnded(1);
+    expect(wall.publishedColumns[1]!.photo).toBe(1);
+    vi.advanceTimersByTime(5000);
+    expect(wall.publishedColumns[1]!.photo).not.toBe(1);
+  });
+
+  it('ignores a video end while auto slide is off', () => {
+    const { wall, controls } = open(() => 0, () => true);
+    controls.mediaEnded(1);
+    expect(wall.publishedColumns[1]!.photo).toBe(0);
+  });
+});
+
+describe('page auto change', () => {
+  function open(options: { autoPageMs: () => number; autoSlideMs?: () => number; slidePlaysToEnd?: (id: ColumnId) => boolean }) {
+    const wall = useWallStore(createPinia());
+    const scope = effectScope();
+    scopes.push(scope);
+    const controls = scope.run(() => useWallController(wall, { resetDelayMs: () => 120_000, ...options }))!;
+    // Our Brand · Tekiro has two pages (PAGE 1 / PAGE 2).
+    controls.dispatch({ type: 'subItem', columnId: 2, subItemId: 'tekiro' });
+    expect(wall.publishedColumns[2]!.pageCount).toBe(2);
+    return { wall, controls };
+  }
+
+  it('shows the next page every interval and wraps', () => {
+    const { wall } = open({ autoPageMs: () => 10_000 });
+    vi.advanceTimersByTime(9999);
+    expect(wall.publishedColumns[2]!.page).toBe(0);
+    vi.advanceTimersByTime(1);
+    expect(wall.publishedColumns[2]!.page).toBe(1);
+    expect(wall.publishedColumns[2]!.photo).toBe(0);
+    vi.advanceTimersByTime(10_000);
+    expect(wall.publishedColumns[2]!.page).toBe(0);
+  });
+
+  it('waits for a playing video slide to end before changing page', () => {
+    let video = true;
+    const { wall, controls } = open({ autoPageMs: () => 10_000, slidePlaysToEnd: () => video });
+    vi.advanceTimersByTime(15_000);
+    expect(wall.publishedColumns[2]!.page).toBe(0);
+    video = false;
+    controls.touchColumn(2);
+    video = true;
+    controls.mediaEnded(2);
+    expect(wall.publishedColumns[2]!.page).toBe(1);
+  });
+
+  it('stays off while the interval is 0 (page tabs shown)', () => {
+    const { wall } = open({ autoPageMs: () => 0 });
+    vi.advanceTimersByTime(60_000);
+    expect(wall.publishedColumns[2]!.page).toBe(0);
   });
 });

@@ -35,7 +35,7 @@ export interface SensorTarget {
 }
 
 /** Dashboard wall settings that change which targets exist and where. */
-export interface TargetOptions { offsetY?: number; showClose?: boolean; showArrows?: boolean; languageBar?: LanguageBarMode }
+export interface TargetOptions { offsetY?: number; showClose?: boolean; showArrows?: boolean; showPages?: boolean; languageBar?: LanguageBarMode }
 
 export function isInsideRect(x: number, y: number, rect: Rect): boolean {
   return x >= rect.x && y >= rect.y && x < rect.x + rect.width && y < rect.y + rect.height;
@@ -52,10 +52,11 @@ function target(action: WallAction, key: string, rect: Rect, offsetY: number, ex
  * `offsetY` is the wall's dashboard card offset: every column, and so every target, moves by it.
  * `showClose: false` hides the open card's close button, so it has no Back target either;
  * `showArrows: false` hides the photo arrows (photos auto-slide), so previous/next go too.
+ * `showPages: false` hides the page tabs (pages auto-change), so page targets go too.
  * `languageBar` picks the compact or full-width flag bar (shared/language-bar.ts).
  */
 export function visibleTargets(snapshots: Partial<Record<ColumnId, PublishedColumn>>, options: TargetOptions = {}): SensorTarget[] {
-  const { offsetY = 0, showClose = true, showArrows = true, languageBar = 'compact' } = options;
+  const { offsetY = 0, showClose = true, showArrows = true, showPages = true, languageBar = 'compact' } = options;
   const targets: SensorTarget[] = [];
   for (const columnId of COLUMN_IDS) {
     const snapshot = snapshots[columnId];
@@ -81,7 +82,7 @@ export function visibleTargets(snapshots: Partial<Record<ColumnId, PublishedColu
       targets.push(target({ type: 'next', columnId }, `${columnId}:next`, geometry.active.next, offsetY));
     }
     const pageCount = snapshot.pageCount ?? 0;
-    if (pageCount > 1) {
+    if (showPages && pageCount > 1) {
       // The visible page's tab is inert, so only the other tab is a target.
       for (const page of geometry.active.pages.filter(item => item.page < pageCount && item.page !== snapshot.page))
         targets.push(target({ type: 'page', columnId, page: page.page }, `${columnId}:page:${page.page}`, page, offsetY));

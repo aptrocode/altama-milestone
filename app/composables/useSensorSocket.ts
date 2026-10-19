@@ -20,6 +20,8 @@ export interface SensorSocketOptions {
   getShowClose?: () => boolean;
   /** Slider arrows shown (dashboard); false drops the previous/next targets. */
   getShowArrows?: () => boolean;
+  /** Page tabs shown (dashboard); false drops the page targets. */
+  getShowPages?: () => boolean;
   /** Compact or full-width language bar (dashboard); moves the language targets. */
   getLanguageBar?: () => LanguageBarMode;
   heartbeatTimeoutMs?: number;
@@ -230,6 +232,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
       ...(options.getCardOffsetY ? { cardOffsetY: options.getCardOffsetY() } : {}),
       ...(options.getShowClose ? { showClose: options.getShowClose() } : {}),
       ...(options.getShowArrows ? { showArrows: options.getShowArrows() } : {}),
+      ...(options.getShowPages ? { showPages: options.getShowPages() } : {}),
       ...(options.getLanguageBar ? { languageBar: options.getLanguageBar() } : {}),
     });
   }

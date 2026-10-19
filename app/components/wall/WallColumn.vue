@@ -24,7 +24,7 @@ const props = withDefaults(defineProps<{
   /** Dashboard card offset in logical px (LED wall only): moves the whole column up or down. */
   offsetY?: number;
 }>(), { origin: () => ({ x: 0, y: 0 }), offsetY: 0 });
-const emit = defineEmits<{ action: [action: WallAction]; activity: [id: ColumnId]; cardBottom: [y: number] }>();
+const emit = defineEmits<{ action: [action: WallAction]; activity: [id: ColumnId]; cardBottom: [y: number]; slideEnded: [id: ColumnId] }>();
 
 const settings = useSettingsStore();
 const geometry = computed(() => getColumnLayout(props.column.id));
@@ -123,7 +123,8 @@ function act(action: WallAction) {
       <WallOpenCard
         v-if="!idle" class="absolute transition-[height] duration-300 ease-out motion-reduce:transition-none" :style="cardStyle"
         :column-id="column.id" :pages="pages" :locale="snapshot.locale" :photo="snapshot.photo" :page="snapshot.page"
-        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" @action="act" @height="onCardHeight"
+        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" :show-pages="settings.wall.showPages" @action="act" @height="onCardHeight"
+        @media-ended="emit('slideEnded', column.id)"
       />
     </Transition>
 

@@ -9,11 +9,12 @@ import { useSensorSocket } from '~/composables/useSensorSocket';
 import { useStackedLayout } from '~/composables/useStackedLayout';
 import { useWallController } from '~/composables/useWallController';
 import { getColumnLayout, installationLayout } from '~/data/installation-layout';
-import { getColumnConfig, WALL_CONFIG } from '~/data/wall-config';
+import { getColumnConfig, getColumnPages, WALL_CONFIG } from '~/data/wall-config';
 import { STAGE_MEDIA } from '~/data/wall-media';
 import { useSettingsStore } from '~/stores/settings';
 import { useSystemStore } from '~/stores/system';
 import { useWallStore } from '~/stores/wall';
+import { isVideoSrc } from '~/utils/media';
 import { COLUMN_IDS } from '../../../shared/wall';
 
 const wall = useWallStore();
@@ -22,6 +23,12 @@ const settings = useSettingsStore();
 const controls = useWallController(wall, {
   resetDelayMs: () => settings.wall.resetSeconds * 1000,
   autoSlideMs: () => settings.wall.showArrows ? 0 : settings.wall.autoSlideSeconds * 1000,
+  autoPageMs: () => settings.wall.showPages ? 0 : settings.wall.autoPageSeconds * 1000,
+  // Video slides play to their end (client request); images use the interval.
+  slidePlaysToEnd: (id) => {
+    const snapshot = wall.columns[id];
+    return isVideoSrc(getColumnPages(getColumnConfig(id), snapshot.subItem)[snapshot.page]?.photos[snapshot.photo]?.src);
+  },
 });
 const runtimeConfig = useRuntimeConfig();
 const showDiagnostics = ref(false);
@@ -82,6 +89,7 @@ const sensorSocket = useSensorSocket({
   getCardOffsetY: () => settings.wall.cardOffsetY,
   getShowClose: () => settings.wall.showClose,
   getShowArrows: () => settings.wall.showArrows,
+  getShowPages: () => settings.wall.showPages,
   getLanguageBar: () => settings.wall.languageBar,
 });
 
@@ -144,7 +152,7 @@ onUnmounted(() => {
       <WallColumn
         v-for="column in WALL_CONFIG.columns" :key="column.id"
         :column="column" :snapshot="wall.columns[column.id]" :copy="wall.getColumnCopy(column.id)" :offset-y="settings.wall.cardOffsetY"
-        @action="dispatch" @activity="controls.touchColumn"
+        @action="dispatch" @activity="controls.touchColumn" @slide-ended="controls.mediaEnded"
       />
     </template>
 
@@ -158,7 +166,7 @@ onUnmounted(() => {
           <div class="relative overflow-hidden transition-[height] duration-500 ease-out motion-reduce:transition-none" :style="stackedBox(column.id)">
             <WallColumn
               :column="column" :snapshot="wall.columns[column.id]" :copy="wall.getColumnCopy(column.id)" :origin="stackedOrigin(column.id)"
-              @action="dispatch" @activity="controls.touchColumn" @card-bottom="cardBottoms[column.id] = $event"
+              @action="dispatch" @activity="controls.touchColumn" @slide-ended="controls.mediaEnded" @card-bottom="cardBottoms[column.id] = $event"
             />
           </div>
         </div>
