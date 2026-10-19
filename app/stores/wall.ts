@@ -94,8 +94,9 @@ export const useWallStore = defineStore('wall', {
           break;
         }
         case 'page':
+          // The visible page's tab is inert: re-selecting it is not a page change.
           if (column.phase !== 'active' || pages.length < 2 || !Number.isSafeInteger(action.page)
-            || action.page < 0 || action.page >= pages.length) {
+            || action.page < 0 || action.page >= pages.length || action.page === column.page) {
             return false;
           }
           // Each page owns its photos, so switching pages restarts its slider.

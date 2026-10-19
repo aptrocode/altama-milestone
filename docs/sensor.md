@@ -81,6 +81,7 @@ Extra and scene messages are ignored; an object without updates for 1 s is relea
 
 For every source (`shared/sensor-targets.ts`, `sensor-service/dwell.ts`):
 - contacts are hit-tested only against the targets visible for each column's latest snapshot (rules below); flags and Back win over the frame below them, and main ignores the language overlay;
+- the visible page's tab is not a target (re-selecting the shown page does nothing);
 - a hold target (main, sub-item tile, arrows, page tabs) fires after its group's dashboard duration, taken when the contact reached the target; when the group is off, and for language/Back, the contact must stay 250 ms;
 - each contact sends at most one input and must be released before it acts again (no repeat while held, no chained actions when the column changes under it); contacts still present when calibration mode ends count as spent;
 - only the first connected wall (primary) defines the visible targets and receives touch and show-control input; walls that connect later (a phone opening `/`) get hello/status/heartbeat only until the primary disconnects. Keep one wall open;

@@ -36,7 +36,7 @@ Do not add tests that merely restate markup. Use controlled timers for behavior 
 4. Confirm flag-only controls inside each card, selected state, focus, language attributes, full translated headings, and no visible 1–6 badges.
 5. Hold a main, tile, photo-arrow, or page-tab button for one second; its border traces the matching outline. Short/cancelled contact clears progress and does nothing. Reduced motion uses a static border until completion. Enter and Space activate focused buttons. Digits 1–6 open/go back in their own column.
 6. Holding a Tekiro/RYU/Rexco or Distribusi/Pemasaran tile opens it directly; opening any column leaves the other five unchanged. Back returns to idle.
-7. Arrows move only the current page's photos and wrap; page tabs (column 1, Tekiro) switch photos and text together and restart the slider. Both restart only that column's timer.
+7. Arrows move only the current page's photos and wrap; page tabs (column 1, Tekiro) switch photos and text together and restart the slider. Both restart only that column's timer. The visible page's tab cannot be pressed, held, or triggered by sensor input; arrow discs nudge in their direction.
 8. At the dashboard reset time (default 30 seconds) without activity, only the inactive column returns to idle/Indonesian. R/Escape retain languages immediately and their timers still expire.
 9. Compare every visible `data-sensor-action` button with its shared logical rectangle, including tiles, Back, arrows, and page tabs. Arrows align with the photo frame's vertical midpoint; flags float inside and centered only while idle, without reducing content height. Scale x/y independently for previews.
 10. Unknown route shows the custom error page; recovery returns to the wall.

@@ -101,7 +101,12 @@ function isVideo(src?: string) {
         :aria-label="WALL_COPY[locale][direction]" :data-sensor-action="direction"
         @activate="$emit('action', { type: direction, columnId })"
       >
-        <span class="relative w-[calc(34*var(--wall-x))] h-[calc(34*var(--wall-y))] flex items-center justify-center rounded-full bg-white text-[#0b1a78] shadow-[0_calc(2*var(--wall-y))_calc(8*var(--wall-y))_rgba(0,0,30,0.45)] pointer-events-none">
+        <!-- The white disc nudges in its direction on a loop (translate only); the 44 px hit area
+             and the hold outline stay put. -->
+        <span
+          class="relative w-[calc(34*var(--wall-x))] h-[calc(34*var(--wall-y))] flex items-center justify-center rounded-full bg-white text-[#0b1a78] shadow-[0_calc(2*var(--wall-y))_calc(8*var(--wall-y))_rgba(0,0,30,0.45)] pointer-events-none"
+          :class="direction === 'previous' ? 'arrow-nudge-previous' : 'arrow-nudge-next'"
+        >
           <svg
             class="w-[calc(20*var(--wall-x))] h-[calc(20*var(--wall-y))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"
             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
@@ -116,9 +121,9 @@ function isVideo(src?: string) {
       <WallHoldButton
         v-for="target in tabs" :key="target.page"
         class="wall-page-tab absolute flex items-center justify-center [border-radius:calc(7*var(--wall-x))/calc(7*var(--wall-y))] font-display text-[length:calc(24*var(--wall-u))] font-bold uppercase tracking-wide"
-        :class="page === target.page ? 'bg-[#0b1a78] text-white ring-2 ring-[#9fdcff] shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.8)]' : 'bg-white text-[#0b1a78] ring-2 ring-white/80 hover:bg-sky-100'"
+        :class="page === target.page ? 'pointer-events-none !cursor-default bg-[#0b1a78] text-white ring-2 ring-[#9fdcff] shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.8)]' : 'bg-white text-[#0b1a78] ring-2 ring-white/80 hover:bg-sky-100'"
         :style="rectStyle(target, geometry.card)" :outline="target" group="page" :radius="7"
-        :aria-pressed="page === target.page" data-sensor-action="page" :data-page="target.page"
+        :disabled="page === target.page" :aria-current="page === target.page ? 'page' : undefined" data-sensor-action="page" :data-page="target.page"
         @activate="$emit('action', { type: 'page', columnId, page: target.page })"
       >
         <span class="relative pointer-events-none">{{ pages[target.page]!.i18n[locale].tab || String(target.page + 1) }}</span>
@@ -137,3 +142,25 @@ function isVideo(src?: string) {
     <span ref="probe" class="pointer-events-none invisible absolute top-0 left-0 w-0 h-[calc(1000*var(--wall-y))]" aria-hidden="true" />
   </div>
 </template>
+
+<style scoped>
+/* Slider arrows nudge in their direction on a loop; Vue scopes these keyframes. Off under reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .arrow-nudge-previous {
+    animation: arrow-nudge-previous 1.6s ease-in-out infinite;
+  }
+  .arrow-nudge-next {
+    animation: arrow-nudge-next 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes arrow-nudge-previous {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(calc(-5 * var(--wall-x, 1px))); }
+}
+
+@keyframes arrow-nudge-next {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(calc(5 * var(--wall-x, 1px))); }
+}
+</style>
