@@ -38,17 +38,12 @@ desktop.ini
 .env.*
 !.env.example
 
-# Deprecated standalone prototypes
-start-localhost.bat
-mainProject/
-
 # Sensor Service state on the event PC
 sensor-config.json
 sensor-background.json
 
-# Raw asset sequences / master imports (not deployed)
+# Master files: client content, card/background PNG sequences (see docs/assets.md); never deployed
 public/new-assets/
-
 
 # One-click launcher state on the event PC (logs, kiosk browser profile, pid)
 .wall-run/

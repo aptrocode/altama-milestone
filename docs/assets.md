@@ -1,37 +1,49 @@
 # Assets
 
-All current Summit artwork and photos are **provisional crops from the two client mockups** (2000 × 1167, same ratio as the 2304 × 1344 canvas). They exist so the wall can be reviewed while the design team is away. Every entry in the content configuration carries `approved: false` until the client supplies or approves the final file.
+Deployed media lives in `public/`; master files stay in the git-ignored `public/new-assets/` (below). Card videos, background, and most slider photos now come from the client; brand tiles and a few placeholders are still mockup crops. Every entry in the content configuration carries `approved: false` until the client approves the final file.
 
 | Path | Use | Source |
 | --- | --- | --- |
-| `public/summit/background.mp4` | Stage background (includes skyline) | 2304 × 1344 seamless looping H.264 video (7.16 MB) |
+| `public/summit/background.mp4` | Stage background (includes skyline and wave light) | 2304 × 1344 seamless looping H.264 video (7.5 MB) from `new-assets/background/` |
 | `public/summit/logo-powering-partnership.webp` | Header logo | Mockup 1 crop, background keyed to transparent white |
-| `public/illustrations/{column-key}.webm` | Idle card artwork for columns 1, 3, 4, 5, 6 (column 5 includes the Distribusi/Pemasaran tile panels) | Transparent VP9 WebM loop, 1050 × 1790, 30 fps, 10 s, ~3 MB, from the PNG sequence in `public/new-assets/card-button/{column-key}/` |
+| `public/illustrations/{column-key}.webm` | Idle card artwork for columns 1, 3, 4, 5, 6 (column 5 includes the Distribusi/Pemasaran tile panels) | Transparent VP9 WebM loop, 1050 × 1790, 30 fps, 10 s, ~3 MB, from the PNG sequence in `public/new-assets/card-sequences/{column-key}/` |
 | `public/illustrations/distribution/{distribusi,pemasaran}.webp` | Column 5 tile images (unused while the card video is set) | Mockup 1 crops without the baked-in captions |
 | `public/brands/tekiro-wordmark.webp` | Tekiro tile logo (on black) and logo above the open card | Mockup 2 crop, background keyed out |
 | `public/brands/ryu-tile.webp` | RYU tile (full-bleed white panel + green band, 672 × 264) | Mockup 1 crop with the rounded/blurred mockup corners squared off |
-| `public/brands/ryu-wordmark.png` | RYU logo above the open card | Transparent official logo |
-| `public/brands/rexco.png`, `rexco-wordmark.png` | Rexco tile logo (on brand blue) and logo above the open card | Transparent white logo |
-| `public/photos/{column-key}[/{sub-item}]/photo-1.webp` | First photo of the first page | Mockup 2 photo frames (226 × 124 px) with the baked-in arrows painted over |
+| `public/brands/ryu-wordmark.webp` | RYU logo above the open card | Client logo, squared corners |
+| `public/brands/rexco.webp`, `rexco-wordmark.webp` | Rexco tile logo (on brand blue) and logo above the open card | Client logo, transparent white |
+| `public/photos/{column-key}[/{sub-item}]/…` | Slider photos (`.webp`, 524 px wide = 2× the 262 px frame) and the infrastructure video (`.mp4`, 720p) | Client photos from `new-assets/content/` (Tekiro and some slots are still mockup crops or numbered placeholders) |
+| `public/photos/our-brands/{rexco,ryu}/penghargaan/` | Award logos (600 px), not placed in a card yet | Client files |
 | `public/flags/{indonesia,english,china}.svg` | Language controls | Local SVGs |
 
-The photo crops are small and will look soft on the LED. Brand logos (Tekiro, RYU, Rexco, ODP, ALTAMA) are trademarks; replace the crops with official files from the client's brand kit.
+Brand logos (Tekiro, RYU, Rexco, ODP, ALTAMA) are trademarks; replace remaining mockup crops with official files from the client's brand kit.
 
 Brand tiles: a sub-item with `tileBackground` shows its `image` as a transparent logo centred on that colour with the same padding on every tile (Tekiro, Rexco); without it the image is a full-bleed tile design (RYU). Prefer transparent official logos plus `tileBackground`.
 
-Card videos from a PNG sequence: name the folder and frames in kebab-case after the column key (`public/new-assets/card-button/distribution/distribution-00000.png`), then encode a transparent loop of about 3 MB:
+## Master files (`public/new-assets/`)
+
+Git-ignored and excluded from the build output (`nitro.ignore`). Names are lowercase kebab-case, grouped by the column keys used in code:
+
+```text
+public/new-assets/
+  background/                  background-00000.png … + background-master.mp4
+  card-sequences/<column-key>/ <column-key>-00000.png … + <column-key>.webm (last encode)
+  content/<column-key>/        client sources: slider/ (page-1/, page-2/), awards/, logo/
+```
+
+Column keys: `about-altama`, `our-brands` (`tekiro`, `ryu`, `rexco`), `infrastructure`, `digital-partners`, `distribution` (`distribusi`, `pemasaran`), `summit-2026`. Deployed files are derived from these: photos as WebP 524 px wide, videos as 720p H.264 without audio, logos as WebP with alpha.
+
+Card videos from a PNG sequence (e.g. `public/new-assets/card-sequences/distribution/distribution-00000.png`): encode a transparent loop of about 3 MB:
 
 ```bash
-ffmpeg -framerate 30 -i public/new-assets/card-button/<key>/<key>-%05d.png -c:v libvpx-vp9 -pix_fmt yuva420p -b:v 1200k -minrate 600k -maxrate 1800k -auto-alt-ref 0 -row-mt 1 -deadline good -cpu-used 2 -an public/illustrations/<key>.webm
+ffmpeg -framerate 30 -i public/new-assets/card-sequences/<key>/<key>-%05d.png -c:v libvpx-vp9 -pix_fmt yuva420p -b:v 1200k -minrate 600k -maxrate 1800k -auto-alt-ref 0 -row-mt 1 -deadline good -cpu-used 2 -an public/illustrations/<key>.webm
 ```
 
 Column 5 (`distribution`) lifts its two panels 22 source px inside the frame while encoding, to leave room for the flags; its tile targets (wall-v7) match the lifted panels:
 
 ```bash
-ffmpeg -framerate 30 -i public/new-assets/card-button/distribution/distribution-%05d.png -filter_complex "[0]split[base][src];[src]crop=962:1272:44:350[panels];[base][panels]overlay=44:328,format=yuva420p" -c:v libvpx-vp9 -pix_fmt yuva420p -b:v 1200k -minrate 600k -maxrate 1800k -auto-alt-ref 0 -row-mt 1 -deadline good -cpu-used 2 -an public/illustrations/distribution.webm
+ffmpeg -framerate 30 -i public/new-assets/card-sequences/distribution/distribution-%05d.png -filter_complex "[0]split[base][src];[src]crop=962:1272:44:350[panels];[base][panels]overlay=44:328,format=yuva420p" -c:v libvpx-vp9 -pix_fmt yuva420p -b:v 1200k -minrate 600k -maxrate 1800k -auto-alt-ref 0 -row-mt 1 -deadline good -cpu-used 2 -an public/illustrations/distribution.webm
 ```
-
-`public/new-assets/` stays out of git and out of the build output.
 
 ## Replacing assets
 
@@ -40,7 +52,7 @@ ffmpeg -framerate 30 -i public/new-assets/card-button/distribution/distribution-
 3. Each page's `photos` array is its slider; replace a `PHOTO_PLACEHOLDER` slot with a photo or add more slots. Paged content needs a tab label in every language and at most two pages (the wall-v7 tab targets).
 4. Run `bun run assets:check` and check both viewports.
 
-Background media: set `STAGE_MEDIA.background` to `{ kind: 'video', src, poster, approved }` or `{ kind: 'image', src, approved }`. Preferred video: 2304 × 1344, H.264 MP4 or VP9 WebM, muted seamless loop, local file. Convert image sequences to video unless alpha is required. The current background image already contains the skyline, so `skyline` is `null`; set a separate skyline only if the final video lacks one. If the video contains the logo, set `logo` to `null`. Set `waveSweeps` to `false` whenever the background changes, because its animated light paths are traced from the current image.
+Background media: set `STAGE_MEDIA.background` to `{ kind: 'video', src, poster, approved }` or `{ kind: 'image', src, approved }`. Preferred video: 2304 × 1344, H.264 MP4 or VP9 WebM, muted seamless loop, local file. Convert image sequences to video unless alpha is required. The current background video already contains the skyline and the wave light, so `skyline` is `null` and `waveSweeps` is `false` (the sweeps are traced from the old mockup image). If a video contains the logo, set `logo` to `null`.
 
 ## Contributor rules
 

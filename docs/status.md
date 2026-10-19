@@ -1,21 +1,22 @@
 # Project status
 
-Updated 19 October 2026. Package version remains 0.3.0; the Summit revision (branch `codex/feat-summit-wall-theme`) is unreleased until its PR/release workflow completes.
+Updated 20 October 2026. Package version remains 0.3.0; changes land on `main` through squash-merged PRs and are unreleased until the release workflow runs.
 
 ## Implemented
 
 - Fullscreen Nuxt 4 SPA with six independent wall columns on the official 2304 × 1344 canvas, laid out after the two ALTAMA Summit 2026 "Powering Partnership" reference mockups.
 - Responsive stacked layout for phones (1 column) and tablets/portrait screens (2 columns) using the same column components at a uniform scale; the wall layout stays fixed on wide landscape screens.
-- Operator dashboard (`/dashboard`): hold on/off and 0.3–5 s per group (card, page, slider), saved in localStorage with export/import, applied live to the wall and published to Sensor Service; Sensor section for source selection, ports, Invert Y, Hokuyo calibration/background, live status, and contact preview.
+- Operator dashboard (`/dashboard`, responsive sidebar): Hold page (on/off and 0.3–5 s per group: card, page, slider, language, back; language/back off by default), Wall page (one reset time for every section, card Y offset that also moves sensor targets), Sensor page (source, ports, Invert Y, Hokuyo calibration/background, live status, contact preview); settings saved in localStorage with export/import and reset, applied live to the wall and published to Sensor Service.
+- One-click event-PC launcher (`start-wall.bat` / `open-dashboard.bat` / `stop-wall.bat`).
 - Sensor Service (`sensor-service/`, `bun run sensor:service`): Hokuyo UST-10LX over SCIP 2.0 (streaming, checksums, reconnect), homography calibration from 4–12 measured points, background masking, clustering and tracking; Augmenta OSC v1/v2 and TUIO 1.1 cursors with Invert Y; hit-testing against wall-v7 visible targets, dwell from published hold rules, one input per contact; protocol v2 hello/status/heartbeat/input; OSC show control `/altama/*`; config in `sensor-config.json` edited from the dashboard; Hokuyo/Augmenta/TUIO simulators.
 - Content split into one file per column (`app/data/columns/`) with typed helpers and an editing guide (`docs/content.md`).
 - Per-column layouts: idle glowing frame (title pill, artwork or sub-item tiles, flags) and open layout (raised pill, sub-item name, rounded content card). Opening one column leaves the other five unchanged; the shared logo shrinks only while column 3 or 4 is open.
 - Our Brand (Tekiro, RYU, Rexco) and Distribusi & Pemasaran open their sub-items directly from idle tiles; there is no submenu.
-- Open cards: pages that each own a photo slider and text; hold arrows move photos within the page, hold page tabs switch the whole page; bullet/paragraph copy from the references and a corner Back badge.
-- Swappable stage media (`app/data/wall-media.ts`): reference-derived background image (with skyline) with animated light sweeps along its top-corner waves, coded gradient fallback, optional looping video, and logo; every media entry carries `approved`.
+- Open cards: pages that each own a photo slider and text; hold arrows move photos within the page, hold page tabs switch the whole page; card height grows with the tallest page (to y 1312); card-copy system (dot bullets, glow labels, fact tables, 18 px) revealed item by item; corner Back badge.
+- Swappable stage media (`app/data/wall-media.ts`): looping background video (with skyline), coded gradient fallback, and logo; transparent card videos for every column except Our Brand; every media entry carries `approved`.
 - Floating flag-only Indonesian (default), English, and Simplified Chinese controls inside idle frames; open content keeps the chosen locale.
 - Geometry-derived SVG hold borders on main, tile, arrow, and page-tab targets with one-second perimeter progress, cancellation cleanup, and a static reduced-motion outline. Native keyboard activation and operator shortcuts remain available.
-- Serializable Pinia snapshots (`phase`, `locale`, `subItem`, `photo`, `page`) and a scope-owned 30-second inactivity controller.
+- Serializable Pinia snapshots (`phase`, `locale`, `subItem`, `photo`, `page`) and a scope-owned inactivity controller (dashboard reset time, default 30 s).
 - Native WebSocket protocol v2 / wall-v7, semantic actions (including `page`), UI-state publication with photo/page counts, readiness/session/sequence/layout validation, and reconnect/heartbeat handling. OSC show control (now inside the Sensor Service) supports `/altama/page`.
 - Main input rejects contacts inside the language overlay; hidden actions and legacy layout input are rejected.
 - Custom recovery/loading UI and development-only diagnostics.
@@ -35,6 +36,7 @@ Nuxt, Vue, Pinia, Bun, and Tailwind documentation was fetched through Context7 o
 
 ## Validation
 
+- Dashboard sidebar and wall settings (20 October 2026): lint, typecheck, 106 tests, asset validation, and build passed; dashboard checked at 1440 px and 375 px (drawer, page navigation, content scroll, reset); flags/close normal press, card offset, staggered reveal, and column 5 panel alignment checked in the browser.
 - Sensor Service (19 October 2026): lint, typecheck (Nuxt and `sensor-service/tsconfig.json`), 102 tests across 13 files, asset validation, build, and generate passed. End-to-end with the dev server and simulators: dashboard calibration of the simulated UST-10LX (four corners via **Ambil**), held taps opening columns 1/4/6, a language flag, and two simultaneous hands; Augmenta v2 and v1 with flipped Y and Invert Y; TUIO cursors. Dashboard checked at 1440 px and 375 px without horizontal overflow. No physical sensor was available.
 
 - Summit revision 2 (per-page photos, hold arrows/tabs, stacked layout): lint, typecheck, 55 tests across seven files, asset/config validation (17 provisional media files), production build, and static generation passed.

@@ -98,11 +98,8 @@ function contactColor(contact: { target: string | null; fired: boolean }) {
 </script>
 
 <template>
-  <section aria-labelledby="dashboard-sensor">
-    <div class="flex items-center justify-between gap-4">
-      <h2 id="dashboard-sensor" class="font-display text-2xl font-medium uppercase tracking-wide text-white">
-        Sensor
-      </h2>
+  <section aria-label="Sensor">
+    <div class="flex items-center justify-end gap-4">
       <p class="flex items-center gap-2 text-sm font-bold text-sky-100/80" role="status" aria-live="polite" data-sensor-status>
         <span class="size-2.5 rounded-full" :class="tone.dot" />
         {{ tone.text }}
