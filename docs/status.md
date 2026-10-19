@@ -28,7 +28,7 @@ Previous GSAP milestone reveal/cache, 19 sketch/color pairs, fixture generation,
 
 The Sensor Service adds no dependencies (Bun `node:net`/`node:dgram`/`Bun.serve`); its typecheck uses the existing TypeScript.
 
-Installed project versions: Nuxt 4.6.1, Vue 3.5.43, Vue Router 5.4.0, Pinia 4.0.3, @pinia/nuxt 1.0.2, @nuxt/fonts 1.0.1, Tailwind/Vite plugin 4.3.3. Tooling: Vitest 5.0.4, vue-tsc 3.3.13, TypeScript 6.0.3, ESLint 10.12.0, @antfu/eslint-config 9.5.1.
+Installed project versions (20 October 2026, all at their latest release): Nuxt 4.6.2, Vue 3.5.44, Vue Router 5.4.0, Pinia 4.1.0, @pinia/nuxt 1.0.3, @nuxt/fonts 1.0.1, Tailwind/Vite plugin 4.3.3. Tooling: Vitest 5.0.5, vue-tsc 3.3.13, TypeScript 6.0.3, ESLint 10.13.0, @antfu/eslint-config 9.5.1. TypeScript stays on 6.x: TypeScript 7 (native) no longer exports `typescript/lib/tsc`, so `vue-tsc` 3.3.13 and therefore `nuxt typecheck` fail with it (checked 20 October 2026); move once vue-tsc supports it.
 
 GSAP and direct Sharp dependencies were removed in the preceding repair. The Summit revision adds no dependencies; it swaps the `@nuxt/fonts` families from League Spartan to Roboto Condensed and Oswald. Use package.json/bun.lock as the source of truth rather than assuming this snapshot is perpetually latest.
 

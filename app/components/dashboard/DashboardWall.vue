@@ -1,33 +1,18 @@
 <script setup lang="ts">
 import type { WallSettings } from '../../../shared/wall-settings';
-import { computed, ref, watch } from 'vue';
 import DashboardFormActions from '~/components/dashboard/DashboardFormActions.vue';
+import { useSettingsDraft } from '~/composables/useSettingsDraft';
 import { useSettingsStore } from '~/stores/settings';
 import { CARD_OFFSET_Y, DEFAULT_WALL_SETTINGS, normalizeWallSettings, RESET_SECONDS } from '../../../shared/wall-settings';
 
 const settings = useSettingsStore();
-const draft = ref<WallSettings>(normalizeWallSettings(settings.wall));
-const status = ref('');
+const { draft, dirty, status, save, restoreDefaults } = useSettingsDraft({
+  saved: () => settings.wall,
+  normalize: normalizeWallSettings,
+  defaults: DEFAULT_WALL_SETTINGS,
+  save: value => settings.setWall(value),
+});
 const field = 'w-20 rounded-md bg-white/10 px-2 py-1.5 text-right font-bold text-white ring-1 ring-white/15 focus:outline-none focus:ring-2 focus:ring-wall-glow';
-
-const dirty = computed(() => JSON.stringify(normalizeWallSettings(draft.value)) !== JSON.stringify(settings.wall));
-
-// Follow changes from another tab or an import unless the operator is editing.
-watch(() => settings.wall, (next) => {
-  if (!dirty.value)
-    draft.value = normalizeWallSettings(next);
-}, { deep: true });
-
-function save() {
-  settings.setWall(draft.value);
-  draft.value = normalizeWallSettings(settings.wall);
-  status.value = 'Tersimpan';
-}
-
-function restoreDefaults() {
-  draft.value = normalizeWallSettings(DEFAULT_WALL_SETTINGS);
-  status.value = 'Default dimuat, klik Simpan';
-}
 
 function set(key: keyof WallSettings, value: string) {
   const number = Number.parseFloat(value);

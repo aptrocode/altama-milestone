@@ -2,6 +2,8 @@
 
 ## Commands
 
+`bun dev` (wall + Sensor Service) for development; `bun run dev:web` runs Nuxt alone.
+
 ```bash
 bun run lint
 bun run typecheck

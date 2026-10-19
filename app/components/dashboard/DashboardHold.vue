@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { HoldGroup, HoldSettings } from '../../../shared/hold-settings';
-import { computed, ref, watch } from 'vue';
+import type { HoldGroup } from '../../../shared/hold-settings';
 import DashboardFormActions from '~/components/dashboard/DashboardFormActions.vue';
+import { useSettingsDraft } from '~/composables/useSettingsDraft';
 import { useSettingsStore } from '~/stores/settings';
 import { DEFAULT_HOLD_SETTINGS, HOLD_GROUPS, HOLD_SECONDS, normalizeHoldSettings } from '../../../shared/hold-settings';
 
@@ -14,28 +14,12 @@ const GROUP_LABEL: Record<HoldGroup, { title: string; hint: string }> = {
 };
 
 const settings = useSettingsStore();
-const copy = (value: HoldSettings): HoldSettings => normalizeHoldSettings(JSON.parse(JSON.stringify(value)));
-const draft = ref<HoldSettings>(copy(settings.hold));
-const status = ref('');
-
-const dirty = computed(() => JSON.stringify(normalizeHoldSettings(draft.value)) !== JSON.stringify(settings.hold));
-
-// Another tab (or an import) may change the saved settings; follow them unless the operator is editing.
-watch(() => settings.hold, (next) => {
-  if (!dirty.value)
-    draft.value = copy(next);
-}, { deep: true });
-
-function save() {
-  settings.setHold(draft.value);
-  draft.value = copy(settings.hold);
-  status.value = 'Tersimpan';
-}
-
-function restoreDefaults() {
-  draft.value = copy(DEFAULT_HOLD_SETTINGS);
-  status.value = 'Default dimuat, klik Simpan';
-}
+const { draft, dirty, status, save, restoreDefaults } = useSettingsDraft({
+  saved: () => settings.hold,
+  normalize: normalizeHoldSettings,
+  defaults: DEFAULT_HOLD_SETTINGS,
+  save: value => settings.setHold(value),
+});
 
 function setSeconds(group: HoldGroup, value: string) {
   const seconds = Number.parseFloat(value);
