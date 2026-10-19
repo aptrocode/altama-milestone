@@ -1,5 +1,5 @@
 import type { ColumnConfig } from '~/types/wall-content';
-import { onlyPage, PHOTO_PLACEHOLDER, provisional } from './helpers';
+import { onlyPage, provisional } from './helpers';
 
 /** Column 5 — Distribusi & Pemasaran. Idle tiles open Distribusi or Pemasaran directly. */
 export const DISTRIBUTION: ColumnConfig = {
@@ -21,25 +21,103 @@ export const DISTRIBUTION: ColumnConfig = {
       image: provisional('/illustrations/distribution/distribusi.webp'),
       i18n: { 'id': { label: 'DISTRIBUSI' }, 'en': { label: 'DISTRIBUTION' }, 'zh-Hans': { label: '分销' } },
       pages: [
-        onlyPage([provisional('/photos/distribution/distribusi/photo-1.webp'), PHOTO_PLACEHOLDER], {
-          'id': [{ bullets: [
-            { lead: 'Marketplace' },
-            { lead: 'Modern Market' },
-            { lead: 'Jangkauan Indonesia', text: 'Hadir di 38 provinsi lewat 800+ mitra distribusi langsung dan 100.000+ jaringan distribusi tidak langsung' },
-            { lead: 'Jangkauan internasional', text: 'Pendistribusian hingga mancanegara.' },
-          ] }],
-          'en': [{ bullets: [
-            { lead: 'Marketplace' },
-            { lead: 'Modern Market' },
-            { lead: 'Indonesian reach', text: 'Present in 38 provinces through 800+ direct distribution partners and 100,000+ indirect distribution outlets' },
-            { lead: 'International reach', text: 'Distribution to overseas markets.' },
-          ] }],
-          'zh-Hans': [{ bullets: [
-            { lead: '电商平台' },
-            { lead: '现代零售渠道' },
-            { lead: '印尼覆盖', text: '通过 800 多家直接分销伙伴和 100,000 多个间接分销网点覆盖 38 个省份' },
-            { lead: '国际覆盖', text: '分销至海外市场。' },
-          ] }],
+        onlyPage([provisional('/photos/distribution/distribusi/photo-1.webp')], {
+          'id': [{
+            bullets: [
+              {
+                lead: 'Marketplace',
+                text: 'TikTok Shop, Tokped, Shopee, dan lainnya',
+                images: [
+                  provisional('/photos/distribution/distribusi/marketplace/tiktok-shop.webp'),
+                  provisional('/photos/distribution/distribusi/marketplace/tokopedia.webp'),
+                  provisional('/photos/distribution/distribusi/marketplace/shopee.webp'),
+                  provisional('/photos/distribution/distribusi/marketplace/lazada.webp'),
+                ],
+              },
+              {
+                lead: 'Modern Market',
+                text: 'MR DIY, Mitra10, dan lainnya',
+                images: [
+                  provisional('/photos/distribution/distribusi/modern-market/mr-diy.webp'),
+                  provisional('/photos/distribution/distribusi/modern-market/mitra10.webp'),
+                  provisional('/photos/distribution/distribusi/modern-market/ace-hardware.webp'),
+                  provisional('/photos/distribution/distribusi/modern-market/depo-bangunan.webp'),
+                ],
+              },
+              {
+                lead: 'Jangkauan Indonesia:',
+                text: 'Hadir di 38 provinsi lewat 800+ mitra distribusi langsung dan 100.000+ jaringan distribusi tidak langsung',
+              },
+              {
+                lead: 'Jangkauan internasional:',
+                text: 'Pendistribusian hingga mancanegara.',
+              },
+            ],
+          }],
+          'en': [{
+            bullets: [
+              {
+                lead: 'Marketplace',
+                text: 'TikTok Shop, Tokopedia, Shopee, and others',
+                images: [
+                  provisional('/photos/distribution/distribusi/marketplace/tiktok-shop.webp'),
+                  provisional('/photos/distribution/distribusi/marketplace/tokopedia.webp'),
+                  provisional('/photos/distribution/distribusi/marketplace/shopee.webp'),
+                  provisional('/photos/distribution/distribusi/marketplace/lazada.webp'),
+                ],
+              },
+              {
+                lead: 'Modern Market',
+                text: 'MR. D.I.Y., Mitra10, and others',
+                images: [
+                  provisional('/photos/distribution/distribusi/modern-market/mr-diy.webp'),
+                  provisional('/photos/distribution/distribusi/modern-market/mitra10.webp'),
+                  provisional('/photos/distribution/distribusi/modern-market/ace-hardware.webp'),
+                  provisional('/photos/distribution/distribusi/modern-market/depo-bangunan.webp'),
+                ],
+              },
+              {
+                lead: 'Indonesian Reach:',
+                text: 'Present across 38 provinces through 800+ direct distribution partners and 100,000+ indirect distribution networks.',
+              },
+              {
+                lead: 'International Reach:',
+                text: 'Distribution reaching international markets.',
+              },
+            ],
+          }],
+          'zh-Hans': [{
+            bullets: [
+              {
+                lead: '电商平台',
+                text: 'TikTok Shop、Tokopedia、Shopee 及其他电商平台',
+                images: [
+                  provisional('/photos/distribution/distribusi/marketplace/tiktok-shop.webp'),
+                  provisional('/photos/distribution/distribusi/marketplace/tokopedia.webp'),
+                  provisional('/photos/distribution/distribusi/marketplace/shopee.webp'),
+                  provisional('/photos/distribution/distribusi/marketplace/lazada.webp'),
+                ],
+              },
+              {
+                lead: '现代零售渠道',
+                text: 'MR. D.I.Y.、Mitra10 及其他零售卖场',
+                images: [
+                  provisional('/photos/distribution/distribusi/modern-market/mr-diy.webp'),
+                  provisional('/photos/distribution/distribusi/modern-market/mitra10.webp'),
+                  provisional('/photos/distribution/distribusi/modern-market/ace-hardware.webp'),
+                  provisional('/photos/distribution/distribusi/modern-market/depo-bangunan.webp'),
+                ],
+              },
+              {
+                lead: '印尼覆盖范围：',
+                text: '覆盖 38 个省份，拥有 800 多家直接分销合作伙伴和 100,000 多个间接分销网络。',
+              },
+              {
+                lead: '国际业务拓展：',
+                text: '产品远销海外多个国家和地区。',
+              },
+            ],
+          }],
         }),
       ],
     },
@@ -48,11 +126,72 @@ export const DISTRIBUTION: ColumnConfig = {
       image: provisional('/illustrations/distribution/pemasaran.webp'),
       i18n: { 'id': { label: 'PEMASARAN' }, 'en': { label: 'MARKETING' }, 'zh-Hans': { label: '营销' } },
       pages: [
-        onlyPage([PHOTO_PLACEHOLDER, PHOTO_PLACEHOLDER], {
-          'id': ['Aktivasi merek terpadu melalui pameran otomotif nasional, workshop mekanik, roadshow edukasi, dan komunitas industri.'],
-          'en': ['Integrated brand activations through national automotive expos, mechanic workshops, educational roadshows, and industrial communities.'],
-          'zh-Hans': ['通过国家级汽车展会、机械维修工坊、教育巡展以及行业社群进行一体化品牌推广。'],
-        }),
+        onlyPage(
+          [
+            provisional('/photos/distribution/pemasaran/photo-1.webp'),
+            provisional('/photos/distribution/pemasaran/photo-2.webp'),
+            provisional('/photos/distribution/pemasaran/photo-3.webp'),
+            provisional('/photos/distribution/pemasaran/photo-4.webp'),
+            provisional('/photos/distribution/pemasaran/photo-5.webp'),
+            provisional('/photos/distribution/pemasaran/photo-6.webp'),
+            provisional('/photos/distribution/pemasaran/photo-7.webp'),
+            provisional('/photos/distribution/pemasaran/photo-8.webp'),
+            provisional('/photos/distribution/pemasaran/photo-9.webp'),
+          ],
+          {
+            'id': [{
+              bullets: [
+                { lead: 'Demonstrasi Produk' },
+                {
+                  lead: 'TEKIRO Mechanic Competition:',
+                  text: 'Program CSR pendidikan vokasi untuk SMK se-Indonesia.',
+                },
+                { lead: 'Pameran' },
+                { lead: 'Sponsorship & Komunitas' },
+                { lead: 'Branding' },
+                { lead: 'Influencer/Key Opinion Leader (KOL)' },
+                {
+                  lead: 'Social Media:',
+                  text: 'Aktif dalam branding digital melalui berbagai platform media sosial lebih dari +350,000 followers dan rata-rata views tahunan +30,000,000 views.',
+                },
+              ],
+            }],
+            'en': [{
+              bullets: [
+                { lead: 'Product Demonstrations' },
+                {
+                  lead: 'TEKIRO Mechanic Competition:',
+                  text: 'Vocational education CSR program for vocational high schools across Indonesia.',
+                },
+                { lead: 'Exhibitions & Expos' },
+                { lead: 'Sponsorship & Communities' },
+                { lead: 'Brand Building' },
+                { lead: 'Influencers / Key Opinion Leaders (KOL)' },
+                {
+                  lead: 'Social Media:',
+                  text: 'Active digital branding across social platforms with over +350,000 followers and an annual average of +30,000,000 views.',
+                },
+              ],
+            }],
+            'zh-Hans': [{
+              bullets: [
+                { lead: '产品演示' },
+                {
+                  lead: 'TEKIRO 机械师技能大赛：',
+                  text: '面向全印尼职业高中的教育公益项目。',
+                },
+                { lead: '展会活动' },
+                { lead: '赞助与社群' },
+                { lead: '品牌建设' },
+                { lead: '关键意见领袖 (KOL) / 达人合作' },
+                {
+                  lead: '社交媒体运营：',
+                  text: '活跃于各大社交平台进行数字化品牌推广，粉丝数超 350,000+，年均浏览量突破 30,000,000+ 次。',
+                },
+              ],
+            }],
+          },
+        ),
       ],
     },
   ],

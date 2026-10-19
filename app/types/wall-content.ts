@@ -13,6 +13,7 @@ export interface BulletItem {
   lead: string;
   text?: string;
   image?: MediaAsset;
+  images?: MediaAsset[];
 }
 
 /**

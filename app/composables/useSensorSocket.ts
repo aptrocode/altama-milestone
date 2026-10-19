@@ -15,6 +15,8 @@ export interface SensorSocketOptions {
   getHold?: () => HoldSettings;
   /** Dashboard card offset (logical px) so Sensor Service shifts its targets like the wall does. */
   getCardOffsetY?: () => number;
+  /** Whether open cards show their close button (Sensor Service drops the Back target when not). */
+  getShowClose?: () => boolean;
   heartbeatTimeoutMs?: number;
   maxMessageBytes?: number;
 }
@@ -134,6 +136,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
         columns: options.getColumns(),
         ...(options.getHold ? { hold: options.getHold() } : {}),
         ...(options.getCardOffsetY ? { cardOffsetY: options.getCardOffsetY() } : {}),
+        ...(options.getShowClose ? { showClose: options.getShowClose() } : {}),
       }));
 
       heartbeatTimer = setInterval(() => {
@@ -229,6 +232,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
       columns: options.getColumns(),
       ...(options.getHold ? { hold: options.getHold() } : {}),
       ...(options.getCardOffsetY ? { cardOffsetY: options.getCardOffsetY() } : {}),
+      ...(options.getShowClose ? { showClose: options.getShowClose() } : {}),
     }));
   }
 
