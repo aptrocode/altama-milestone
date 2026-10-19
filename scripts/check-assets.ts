@@ -43,6 +43,11 @@ function checkPages(owner: string, pages: ContentPage[] | undefined) {
           block.bullets.forEach((item, bIndex) => {
             if (item.image)
               media.push({ owner: `${owner} page ${index + 1} bullet ${bIndex + 1} image`, asset: item.image });
+            if (item.images) {
+              item.images.forEach((img, imgIndex) => {
+                media.push({ owner: `${owner} page ${index + 1} bullet ${bIndex + 1} image ${imgIndex + 1}`, asset: img });
+              });
+            }
           });
         }
       });

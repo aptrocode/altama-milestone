@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useSettingsBackup } from '~/composables/useSettingsBackup';
 import { useSettingsStore } from '~/stores/settings';
 import { DEFAULT_WALL_SETTINGS } from '../../shared/wall-settings';
@@ -25,12 +25,18 @@ const pageDescription = computed(() => String(route.meta.description || ''));
 useHead({ title: () => `${pageTitle.value} · Dashboard · Altama Interactive Wall` });
 
 const drawerOpen = ref(false);
+// Reset asks for confirmation in a dialog (see askReset) so a stray tap cannot wipe settings.
+const resetDialog = ref(false);
 watch(() => route.path, () => {
   drawerOpen.value = false;
 });
 
 function onKeydown(event: KeyboardEvent) {
-  if (event.key === 'Escape')
+  if (event.key !== 'Escape')
+    return;
+  if (resetDialog.value)
+    resetDialog.value = false;
+  else
     drawerOpen.value = false;
 }
 onMounted(() => window.addEventListener('keydown', onKeydown));
@@ -71,18 +77,13 @@ async function toggleFullscreen() {
   }
 }
 
-// Reset needs a second click within 4 s so a stray tap cannot wipe the operator's settings.
-const confirmReset = ref(false);
-let confirmTimer: ReturnType<typeof setTimeout> | undefined;
-function resetAll() {
-  if (!confirmReset.value) {
-    confirmReset.value = true;
-    clearTimeout(confirmTimer);
-    confirmTimer = setTimeout(() => (confirmReset.value = false), 4000);
-    return;
-  }
-  clearTimeout(confirmTimer);
-  confirmReset.value = false;
+const cancelButton = ref<HTMLButtonElement | null>(null);
+function askReset() {
+  resetDialog.value = true;
+  nextTick(() => cancelButton.value?.focus());
+}
+function confirmReset() {
+  resetDialog.value = false;
   settings.resetHold();
   settings.setWall(DEFAULT_WALL_SETTINGS);
   showNotice('Hold & Wall kembali ke default');
@@ -91,7 +92,6 @@ function resetAll() {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', onKeydown);
   clearTimeout(noticeTimer);
-  clearTimeout(confirmTimer);
 });
 
 const footButton = 'group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-semibold text-sky-100/80 transition-colors hover:bg-white/[0.06] hover:text-white';
@@ -186,14 +186,13 @@ const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0
           Fullscreen
         </button>
         <button
-          type="button" class="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-semibold transition-colors"
-          :class="confirmReset ? 'bg-rose-500/15 text-rose-200 hover:bg-rose-500/25' : 'text-rose-300/90 hover:bg-rose-500/10 hover:text-rose-200'"
-          data-dashboard-reset @click="resetAll"
+          type="button" class="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-semibold text-rose-300/90 transition-colors hover:bg-rose-500/10 hover:text-rose-200"
+          aria-haspopup="dialog" data-dashboard-reset @click="askReset"
         >
           <span class="grid size-8 shrink-0 place-items-center rounded-md bg-rose-500/10 text-rose-300 ring-1 ring-rose-400/20">
             <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>
           </span>
-          {{ confirmReset ? 'Klik lagi untuk reset' : 'Reset ke default' }}
+          Reset ke default
         </button>
       </div>
     </aside>
@@ -231,6 +230,45 @@ const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0
           <NuxtPage />
         </div>
       </main>
+    </div>
+
+    <!-- Reset confirmation: centred card on wide screens, full-width sheet with large buttons on phones. -->
+    <div
+      v-if="resetDialog" class="fixed inset-0 z-[60] flex items-end justify-center bg-black/65 p-4 backdrop-blur-[2px] sm:items-center"
+      @click.self="resetDialog = false"
+    >
+      <div
+        role="alertdialog" aria-modal="true" aria-labelledby="reset-title" aria-describedby="reset-text"
+        class="w-full max-w-md rounded-2xl bg-[#071048] p-5 shadow-2xl ring-1 ring-wall-glow/25 sm:p-6"
+      >
+        <div class="flex items-start gap-4">
+          <span class="grid size-11 shrink-0 place-items-center rounded-full bg-rose-500/15 text-rose-300 ring-1 ring-rose-400/30" aria-hidden="true">
+            <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>
+          </span>
+          <div class="min-w-0">
+            <h2 id="reset-title" class="font-display text-xl font-bold uppercase tracking-wide text-white">
+              Reset ke default?
+            </h2>
+            <p id="reset-text" class="mt-1.5 text-sm leading-relaxed text-sky-100/70">
+              Semua pengaturan <b class="text-white">Hold</b> dan <b class="text-white">Wall</b> di browser ini kembali ke nilai awal dan langsung berlaku di wall. Pengaturan Sensor tidak berubah.
+            </p>
+          </div>
+        </div>
+        <div class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <button
+            ref="cancelButton" type="button" class="rounded-lg px-4 py-2.5 font-bold ring-1 ring-white/20 hover:bg-white/10"
+            @click="resetDialog = false"
+          >
+            Batal
+          </button>
+          <button
+            type="button" class="rounded-lg bg-rose-500 px-4 py-2.5 font-bold text-white hover:bg-rose-400"
+            data-dashboard-reset-confirm @click="confirmReset"
+          >
+            Ya, reset
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>

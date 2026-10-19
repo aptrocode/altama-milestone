@@ -29,9 +29,10 @@ describe('hold settings', () => {
 
   it('clamps wall settings: reset seconds and card offset', () => {
     expect(normalizeWallSettings(null)).toEqual(DEFAULT_WALL_SETTINGS);
-    expect(DEFAULT_WALL_SETTINGS).toEqual({ resetSeconds: 30, cardOffsetY: 0 });
-    expect(normalizeWallSettings({ resetSeconds: 2, cardOffsetY: 999 })).toEqual({ resetSeconds: 5, cardOffsetY: 120 });
-    expect(normalizeWallSettings({ resetSeconds: 45.4, cardOffsetY: -31 })).toEqual({ resetSeconds: 45, cardOffsetY: -30 });
+    expect(DEFAULT_WALL_SETTINGS).toEqual({ resetSeconds: 30, cardOffsetY: 0, showClose: true });
+    expect(normalizeWallSettings({ resetSeconds: 2, cardOffsetY: 999 })).toEqual({ resetSeconds: 5, cardOffsetY: 120, showClose: true });
+    expect(normalizeWallSettings({ resetSeconds: 45.4, cardOffsetY: -31, showClose: false })).toEqual({ resetSeconds: 45, cardOffsetY: -30, showClose: false });
+    expect(normalizeWallSettings({ showClose: 'no' }).showClose).toBe(true);
   });
 
   it('stores normalized settings and resets to defaults', () => {
@@ -42,6 +43,6 @@ describe('hold settings', () => {
     settings.resetHold();
     expect(settings.hold).toEqual(DEFAULT_HOLD_SETTINGS);
     settings.setWall({ resetSeconds: 60, cardOffsetY: -40 });
-    expect(settings.wall).toEqual({ resetSeconds: 60, cardOffsetY: -40 });
+    expect(settings.wall).toEqual({ resetSeconds: 60, cardOffsetY: -40, showClose: true });
   });
 });

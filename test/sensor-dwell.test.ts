@@ -28,6 +28,12 @@ describe('visible targets', () => {
     expect(visibleTargets({})).toEqual([]);
   });
 
+  it('drops the Back target when the wall hides its close button', () => {
+    const open = { 1: { ...idle, phase: 'active' as const, photoCount: 3, pageCount: 2 } };
+    expect(visibleTargets(open).map(item => item.key)).toContain('1:back');
+    expect(visibleTargets(open, 0, false).map(item => item.key)).toEqual(['1:previous', '1:next', '1:page:0', '1:page:1']);
+  });
+
   it('moves every target with the dashboard card offset', () => {
     const base = visibleTargets(allIdle);
     const raised = visibleTargets(allIdle, -40);

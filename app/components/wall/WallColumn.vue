@@ -9,6 +9,7 @@ import WallOpenCard from '~/components/wall/WallOpenCard.vue';
 import { getColumnLayout, installationLayout, rectStyle } from '~/data/installation-layout';
 import { getColumnPages } from '~/data/wall-config';
 import { WALL_COPY } from '~/data/wall-copy';
+import { useSettingsStore } from '~/stores/settings';
 
 /**
  * One column in logical canvas units. Idle shows WallIdleFrame (mockup 1); open shows the raised
@@ -25,6 +26,7 @@ const props = withDefaults(defineProps<{
 }>(), { origin: () => ({ x: 0, y: 0 }), offsetY: 0 });
 const emit = defineEmits<{ action: [action: WallAction]; activity: [id: ColumnId]; cardBottom: [y: number] }>();
 
+const settings = useSettingsStore();
 const geometry = computed(() => getColumnLayout(props.column.id));
 const visual = installationLayout.visual;
 const idle = computed(() => props.snapshot.phase === 'idle');
@@ -130,7 +132,7 @@ function act(action: WallAction) {
       leave-active-class="transition duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0"
     >
       <WallHoldButton
-        v-if="!idle" :outline="geometry.active.back" group="back" :radius="22"
+        v-if="!idle && settings.wall.showClose" :outline="geometry.active.back" group="back" :radius="22"
         class="wall-back absolute z-20 flex items-center justify-center rounded-full bg-[#0b1a78] ring-2 ring-[#bfe8ff] shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.8)] text-white text-[length:calc(20*var(--wall-u))] hover:bg-red-500 cursor-pointer"
         :style="rectStyle(geometry.active.back, geometry.section)"
         :aria-label="WALL_COPY[snapshot.locale].back" data-sensor-action="back"

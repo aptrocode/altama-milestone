@@ -77,6 +77,7 @@ const sensorSocket = useSensorSocket({
   getColumns: () => wall.publishedColumns,
   getHold: () => settings.hold,
   getCardOffsetY: () => settings.wall.cardOffsetY,
+  getShowClose: () => settings.wall.showClose,
 });
 
 wall.$subscribe(() => sensorSocket.publishState(), { flush: 'post' });

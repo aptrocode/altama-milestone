@@ -13,7 +13,9 @@ The sidebar footer acts on every browser-stored setting:
 - **Export pengaturan** downloads `altama-settings.json` (hold and wall settings).
 - **Import pengaturan** applies a backup immediately (older `altama-hold-settings.json` files with only `hold` still import).
 - **Fullscreen** toggles browser fullscreen.
-- **Reset ke default** restores Hold and Wall defaults after a second click within 4 s.
+- **Reset ke default** opens a confirmation dialog (centred on wide screens, a bottom sheet with full-width buttons on phones; Batal, the backdrop, or Escape cancel) and restores Hold and Wall defaults on **Ya, reset**.
+
+Every button, switch, link, and tab (including the Sensor source tabs) shows a pointer cursor; `main.css` restores it after Tailwind's preflight reset.
 
 ## Hold
 
@@ -36,6 +38,7 @@ The sidebar footer acts on every browser-stored setting:
 | --- | --- | --- |
 | Reset otomatis | Seconds without interaction before a column returns to idle/Indonesian; one value for every column (5–600 s) | 30 s |
 | Posisi Y card | Moves every column (frame, title, card, controls) up (−) or down (+) on the LED wall, −120 to 120 logical px; ↑/↓ nudge by 10. Open cards still end at y 1312 on screen; the phone/tablet layout ignores it | 0 |
+| Tombol close | Shows the open card's ✕ button. Off hides it on every column and removes the Back touch target from Sensor Service; cards still close after the reset time, with operator keys 1–6, R/Escape, and OSC `/altama/back` | On |
 
 **Simpan** and **Default** work as on the Hold page.
 
@@ -44,7 +47,7 @@ The sidebar footer acts on every browser-stored setting:
 - Hold and Wall live in this browser's `localStorage` (`altama.settings.v1`) through `app/plugins/settings-storage.client.ts`. Open the dashboard in the same browser profile as the wall on the event PC: in the kiosk started by `start-wall.bat` press **Ctrl+Shift+D** (again to return to the wall; the kiosk uses its own profile in `.wall-run/browser-profile` on `http://127.0.0.1:<WALL_PORT>`). A wall already open in another tab updates immediately (storage event); no reload is needed.
 - Clearing browser data restores the defaults; keep an exported JSON as backup.
 - There is no server or login. The page is not secret: anyone who can type a URL on the kiosk browser can open it. The wall runs fullscreen, so visitors cannot reach it in practice.
-- The wall publishes the hold rules as `hold` and the card offset as `cardOffsetY` in every `clientHello`/`clientState` message, so LiDAR input follows the same configuration and targets move with the cards. See [sensor](./sensor.md).
+- The wall publishes the hold rules as `hold`, the card offset as `cardOffsetY`, and the close switch as `showClose` in every `clientHello`/`clientState` message, so LiDAR input follows the same configuration and targets move with the cards. See [sensor](./sensor.md).
 
 ## Sensor
 

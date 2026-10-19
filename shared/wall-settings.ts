@@ -5,16 +5,19 @@
  *   without interaction; one value for every column.
  * - cardOffsetY: logical px added to every column's frame, title, card, and controls on the LED
  *   wall (negative moves them up). The stacked phone/tablet layout ignores it.
+ * - showClose: whether open cards show their close (✕) button. When off, Sensor Service drops the
+ *   Back touch target too; columns still close on inactivity, operator keys, and OSC.
  */
 export interface WallSettings {
   resetSeconds: number;
   cardOffsetY: number;
+  showClose: boolean;
 }
 
 export const RESET_SECONDS = { min: 5, max: 600, step: 1 } as const;
 export const CARD_OFFSET_Y = { min: -120, max: 120, step: 2 } as const;
 
-export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0 };
+export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true };
 
 function clampNumber(value: unknown, fallback: number, limits: { min: number; max: number; step: number }): number {
   const raw = typeof value === 'number' && Number.isFinite(value) ? value : fallback;
@@ -28,5 +31,6 @@ export function normalizeWallSettings(value: unknown): WallSettings {
   return {
     resetSeconds: clampNumber(source.resetSeconds, DEFAULT_WALL_SETTINGS.resetSeconds, RESET_SECONDS),
     cardOffsetY: clampNumber(source.cardOffsetY, DEFAULT_WALL_SETTINGS.cardOffsetY, CARD_OFFSET_Y),
+    showClose: typeof source.showClose === 'boolean' ? source.showClose : DEFAULT_WALL_SETTINGS.showClose,
   };
 }

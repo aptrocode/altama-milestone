@@ -30,6 +30,15 @@
     @apply focus-visible:outline-3 focus-visible:outline-amber-300 focus-visible:outline-offset-3;
   }
 
+  /* Tailwind's preflight resets buttons to the default cursor; every clickable control points. */
+  button:not(:disabled), [role="button"], [role="switch"], [role="tab"], a[href], label[for], select {
+    @apply cursor-pointer;
+  }
+
+  button:disabled {
+    @apply cursor-not-allowed;
+  }
+
   img {
     -webkit-user-drag: none;
   }

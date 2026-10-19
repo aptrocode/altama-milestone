@@ -85,6 +85,24 @@ function nudgeOffset(delta: number) {
           <span class="text-sm text-sky-100/60">px</span>
         </div>
       </li>
+      <li class="flex flex-wrap items-center gap-4 px-4 py-4" data-wall-setting="showClose">
+        <div class="min-w-0 flex-1 basis-56">
+          <p class="font-bold text-white">
+            Tombol close
+          </p>
+          <p class="text-sm text-sky-100/60">
+            Tampilkan tombol ✕ di card yang terbuka. Jika off, card tetap tertutup otomatis setelah waktu reset.
+          </p>
+        </div>
+        <button
+          type="button" role="switch" :aria-checked="draft.showClose" aria-label="Tampilkan tombol close"
+          class="relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors"
+          :class="draft.showClose ? 'bg-emerald-400' : 'bg-white/20'"
+          @click="draft = normalizeWallSettings({ ...draft, showClose: !draft.showClose })"
+        >
+          <span class="inline-block size-5 rounded-full bg-white shadow transition-transform" :class="draft.showClose ? 'translate-x-6' : 'translate-x-1'" />
+        </button>
+      </li>
     </ul>
 
     <DashboardFormActions :dirty="dirty" :status="status" @save="save" @defaults="restoreDefaults" />

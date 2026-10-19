@@ -100,7 +100,7 @@ Static output embeds public runtime values; rebuild when these change. Mouse/key
 
 ## Envelope and health
 
-`clientHello` and `clientState` also carry the dashboard settings that affect touch: `hold` (rules for the groups `card`, `page`, `slider`, `language`, `back`; language and back are off by default, i.e. only the short deliberate contact) and `cardOffsetY` (logical px, −120 to 120). The service shifts every visible target by `cardOffsetY` before hit-testing, and the wall validates input against the same shifted rectangles, so moving the cards on `/dashboard` needs no recalibration.
+`clientHello` and `clientState` also carry the dashboard settings that affect touch: `hold` (rules for the groups `card`, `page`, `slider`, `language`, `back`; language and back are off by default, i.e. only the short deliberate contact) and `cardOffsetY` (logical px, −120 to 120), and `showClose` (default `true`; `false` removes every Back target because the wall hides its close button). The service shifts every visible target by `cardOffsetY` before hit-testing, and the wall validates input against the same shifted rectangles, so moving the cards on `/dashboard` needs no recalibration.
 
 Every service message includes `version: 2`, nonempty `sessionId`, increasing integer `seq`, `layoutVersion: "wall-v7"`, and `type`.
 

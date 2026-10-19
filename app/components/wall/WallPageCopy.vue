@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { WallLocale } from '../../../shared/wall';
-import type { PageCopy } from '~/types/wall-content';
+import type { BulletItem, MediaAsset, PageCopy } from '~/types/wall-content';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 /**
@@ -71,6 +71,8 @@ const revealStart = computed(() => {
     return start;
   });
 });
+/** An item's logos (`image` and/or `images`), shown at the right edge of its row. */
+const logos = (item: BulletItem): MediaAsset[] => [...(item.image ? [item.image] : []), ...(item.images ?? [])];
 const reveal = (blockIndex: number, itemIndex = 0) => ({ '--reveal-i': revealStart.value[blockIndex]! + itemIndex });
 
 // Restart the reveal each time this page becomes the visible one (open, page tab, language).
@@ -119,9 +121,14 @@ watch(() => [props.active, props.copy], () => {
       <ul v-else-if="'bullets' in block" class="grid gap-[calc(7*var(--wall-y)*var(--copy-scale,1))]">
         <li
           v-for="(item, itemIndex) in block.bullets" :key="item.lead" data-reveal :style="reveal(index, itemIndex)"
-          class="relative pl-[calc(13*var(--wall-x))] before:absolute before:left-0 before:top-[0.36em] before:size-[calc(6*var(--wall-u))] before:rounded-full before:bg-wall-glow before:shadow-[0_0_calc(6*var(--wall-u))_rgba(102,204,255,0.8)]"
+          class="grid min-w-0 items-center gap-x-[calc(10*var(--wall-x))]"
+          :class="logos(item).length === 1 ? 'grid-cols-[minmax(0,1fr)_auto]' : 'grid-cols-[minmax(0,1fr)]'"
         >
-          <div class="min-w-0">
+          <!-- The dot belongs to the text block, so it stays on the first text line even when a
+               taller logo centres the row. One logo sits in a fixed box at the right edge (so the
+               logos of a list line up); several logos (e.g. marketplaces) form a row under the text
+               that always fits the card. -->
+          <div class="relative min-w-0 pl-[calc(13*var(--wall-x))] before:absolute before:left-0 before:top-[0.36em] before:size-[calc(6*var(--wall-u))] before:rounded-full before:bg-wall-glow before:shadow-[0_0_calc(6*var(--wall-u))_rgba(102,204,255,0.8)]">
             <!-- A lead without text is the item itself, so it reads as body text rather than a label. -->
             <span
               class="block"
@@ -130,10 +137,21 @@ watch(() => [props.active, props.copy], () => {
             <span v-if="item.text" class="mt-[calc(2*var(--wall-y)*var(--copy-scale,1))] block leading-[1.25] text-white">{{ item.text }}</span>
           </div>
           <div
-            v-if="item.image"
-            class="mt-[calc(3*var(--wall-y)*var(--copy-scale,1))] inline-flex h-[calc(28*var(--wall-y)*var(--copy-scale,1))] max-w-full items-center justify-center rounded-md bg-white/95 px-[calc(6*var(--wall-x))] py-[calc(2*var(--wall-y))] shadow-[0_2px_8px_rgba(0,0,0,0.35)]"
+            v-if="logos(item).length === 1"
+            class="flex w-[calc(78*var(--wall-x))] h-[calc(36*var(--wall-y))] items-center justify-center rounded-md bg-white/95 px-[calc(5*var(--wall-x))] py-[calc(3*var(--wall-y))] shadow-[0_2px_8px_rgba(0,0,0,0.35)]"
           >
-            <img :src="item.image.src" :alt="item.lead" class="h-full w-auto max-w-full object-contain" @load="fit">
+            <img :src="logos(item)[0]!.src" :alt="item.lead" class="max-h-full max-w-full object-contain" @load="fit">
+          </div>
+          <div
+            v-else-if="logos(item).length > 1"
+            class="mt-[calc(5*var(--wall-y)*var(--copy-scale,1))] grid grid-cols-4 gap-[calc(5*var(--wall-x))] pl-[calc(13*var(--wall-x))]"
+          >
+            <div
+              v-for="(logo, logoIndex) in logos(item)" :key="logoIndex"
+              class="flex min-w-0 h-[calc(32*var(--wall-y))] items-center justify-center rounded-md bg-white px-[calc(4*var(--wall-x))] py-[calc(3*var(--wall-y))] shadow-[0_2px_8px_rgba(0,0,0,0.35)]"
+            >
+              <img :src="logo.src" :alt="item.lead" class="max-h-full max-w-full object-contain" @load="fit">
+            </div>
           </div>
         </li>
       </ul>
