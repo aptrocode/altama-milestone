@@ -17,7 +17,7 @@
 
 ### Storage and scope
 
-- Settings live in this browser's `localStorage` (`altama.settings.v1`) through `app/plugins/settings-storage.client.ts`. Open the dashboard in the same browser profile as the wall on the event PC. A wall already open in another tab updates immediately (storage event); no reload is needed.
+- Settings live in this browser's `localStorage` (`altama.settings.v1`) through `app/plugins/settings-storage.client.ts`. Open the dashboard in the same browser profile as the wall on the event PC: with `start-wall.bat`, use `open-dashboard.bat` (the kiosk uses its own profile in `.wall-run/browser-profile` on `http://127.0.0.1:<WALL_PORT>`). A wall already open in another tab updates immediately (storage event); no reload is needed.
 - Clearing browser data restores the defaults; keep an exported JSON as backup.
 - There is no server or login. The page is not secret: anyone who can type a URL on the kiosk browser can open it. The wall runs fullscreen, so visitors cannot reach it in practice.
 - `bun run generate` emits `dashboard/index.html`, so the URL works on plain static hosting too; the `Buka wall` link navigates back to `/`.

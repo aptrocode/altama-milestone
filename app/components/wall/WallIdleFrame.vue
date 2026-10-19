@@ -20,6 +20,14 @@ const tiles = computed(() => (geometry.value.subItems || []).map(tile => ({
   sub: props.column.subItems!.find(sub => sub.key === tile.key)!,
 })));
 
+// Columns 2/5 have no card video, so their frame redraws the video's neon border, measured from
+// public/new-assets/card-button: 19 px corners, blue halo to -5.5, white core on the edge, and a
+// bright blue band fading into the navy fill by +12 (logical px from the frame edge).
+const NEON_FRAME = [
+  '[border-radius:calc(19*var(--wall-x))/calc(19*var(--wall-y))] bg-linear-to-b from-[#011c80] via-[#00176c] to-[#00144c]',
+  'shadow-[0_0_0_calc(0.6*var(--wall-x))_#f2f8ff,0_0_calc(1.5*var(--wall-x))_calc(2*var(--wall-x))_#1a8cff,0_0_calc(1*var(--wall-x))_calc(5.5*var(--wall-x))_#0044f2,0_0_calc(6*var(--wall-x))_calc(5*var(--wall-x))_rgba(0,60,255,0.35),inset_0_0_0_calc(1.2*var(--wall-x))_#eef6ff,inset_0_0_calc(1.5*var(--wall-x))_calc(2.6*var(--wall-x))_#3aa0ff,inset_0_0_calc(2*var(--wall-x))_calc(9.5*var(--wall-x))_#0436ff,inset_0_0_calc(8*var(--wall-x))_calc(11*var(--wall-x))_rgba(0,40,230,0.55)]',
+].join(' ');
+
 const videoElement = ref<HTMLVideoElement | null>(null);
 
 onBeforeUnmount(() => {
@@ -34,8 +42,10 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="wall-frame [border-radius:calc(14*var(--wall-x))/calc(14*var(--wall-y))]"
-    :class="!geometry.main ? 'bg-[#0a1a80]/35 border-[calc(2.5*var(--wall-x))] border-cyan-300 shadow-[0_0_calc(14*var(--wall-x))_rgba(56,189,248,0.85),inset_0_0_calc(18*var(--wall-x))_rgba(56,189,248,0.3)]' : ''"
+    class="wall-frame"
+    :class="geometry.main
+      ? '[border-radius:calc(14*var(--wall-x))/calc(14*var(--wall-y))]'
+      : NEON_FRAME"
   >
     <WallHoldButton
       v-if="geometry.main" class="absolute inset-0 [border-radius:inherit] hover:bg-white/5"
