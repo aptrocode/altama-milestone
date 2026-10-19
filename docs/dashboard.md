@@ -1,6 +1,8 @@
 # Operator dashboard
 
-`/dashboard` is a small configuration page for operators. It currently controls hold (dwell) behaviour only.
+`/dashboard` is a small configuration page for operators with two sections: **Hold** (dwell per button group, stored in this browser) and **Sensor** (touch source, ports, calibration, live status; stored by the Sensor Service on the event PC).
+
+## Hold
 
 | Group | Buttons | Default |
 | --- | --- | --- |
@@ -13,22 +15,37 @@
 - Language flags and Back (✕) always activate on a normal press. Keyboard Enter/Space always activate immediately.
 - **Simpan** applies the edit, **Default** loads the defaults (save to apply), **Export/Import** download or load `altama-hold-settings.json` as a backup or to copy settings to another machine.
 
-## Storage and scope
+### Storage and scope
 
 - Settings live in this browser's `localStorage` (`altama.settings.v1`) through `app/plugins/settings-storage.client.ts`. Open the dashboard in the same browser profile as the wall on the event PC. A wall already open in another tab updates immediately (storage event); no reload is needed.
 - Clearing browser data restores the defaults; keep an exported JSON as backup.
 - There is no server or login. The page is not secret: anyone who can type a URL on the kiosk browser can open it. The wall runs fullscreen, so visitors cannot reach it in practice.
 - `bun run generate` emits `dashboard/index.html`, so the URL works on plain static hosting too; the `Buka wall` link navigates back to `/`.
 
-## Code
+### Code
 
 - `shared/hold-settings.ts`: groups, defaults, limits, `normalizeHoldSettings`, and the action → group map (`HOLD_GROUP_BY_ACTION`).
 - `app/stores/settings.ts`: serializable settings state.
 - `app/components/wall/WallHoldButton.vue`: reads its `group` rule and passes `{ enabled, durationMs }` to the `v-hold` directive (`app/utils/hold.ts`).
-- `app/pages/dashboard.vue`: the form.
+- `app/components/dashboard/DashboardHold.vue`: the form.
 
 To add another setting, extend the store state and normalizer, persist it through the same plugin, and add a section to the dashboard.
 
-## Sensor Service
-
 The wall publishes the current rules as `hold` in every `clientHello`/`clientState` message, so LiDAR input follows the same configuration. See [sensor](./sensor.md).
+
+## Sensor
+
+The section talks to the Sensor Service over WebSocket (`NUXT_PUBLIC_SENSOR_WS_URL`, or `ws://<this host>:8787` when unset) and works whether or not wall sensor input is enabled. Start the service first (`bun run sensor:service`); while it is unreachable the section shows only that command and the URL.
+
+- **Status** (top right): source and state (`Hokuyo · 40 Hz`, `belum kalibrasi`, `kalibrasi`, `Service offline`, …) and the number of connected walls.
+- **Off / Hokuyo / Augmenta / TUIO**: the active touch source. `Off` keeps OSC show control only.
+- **Hokuyo**: IP and port of the UST-10LX. **Augmenta / TUIO**: UDP port and **Invert Y**. **OSC show control**: UDP port for `/altama/*`.
+- **Kalibrasi** (Hokuyo): wall points (logical px) with the measured sensor position (mm). **Mode kalibrasi** pauses input; **Ambil** stores the largest current cluster for that row; **+ Titik** / ✕ add or remove points (4–12). `✓` means solved; from the fifth point on the RMS error in px is shown. Background **Ambil** / **Hapus** captures or clears the static scene (nobody in front of the wall). Procedure: [sensor](./sensor.md#hokuyo-ust-10lx).
+- **Preview**: the six idle frames, calibration points, and live contacts (grey = no target, blue ring = dwell progress, green = sent). The caption counts contacts, Hokuyo clusters, and inputs sent since the service started.
+- **Simpan** sends the config to the service, which saves `sensor-config.json` and applies it immediately (rebinding ports or reconnecting the LiDAR). **Batal** discards edits. Changes made elsewhere (another dashboard, the file after a restart) appear unless you are editing.
+
+### Code
+
+- `shared/sensor-config.ts`: config shape, defaults, normalizer, and the admin message contract.
+- `app/composables/useSensorAdmin.ts`: admin socket with reconnect, owned by the section's scope.
+- `app/components/dashboard/DashboardHold.vue`, `DashboardSensor.vue`: the two sections; `app/pages/dashboard.vue` composes them.

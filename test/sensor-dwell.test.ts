@@ -1,0 +1,131 @@
+import type { DwellInput } from '../sensor-service/dwell';
+import type { ColumnId, PublishedColumn } from '../shared/wall';
+import { describe, expect, it } from 'vitest';
+import { DwellEngine } from '../sensor-service/dwell';
+import { hitTest, visibleTargets } from '../shared/sensor-targets';
+import { COLUMN_IDS } from '../shared/wall';
+
+const idle: PublishedColumn = { phase: 'idle', locale: 'id', subItem: '', photo: 0, page: 0, photoCount: 2, pageCount: 2 };
+const allIdle = Object.fromEntries(COLUMN_IDS.map(id => [id, idle])) as Record<ColumnId, PublishedColumn>;
+
+describe('visible targets', () => {
+  it('shows flags, main, and tiles only while idle; columns 2/5 have tiles and no main', () => {
+    const keys = visibleTargets(allIdle).map(item => item.key);
+    expect(keys).toContain('1:main');
+    expect(keys).toContain('1:language:zh-Hans');
+    expect(keys).toContain('2:subItem:rexco');
+    expect(keys).toContain('5:subItem:pemasaran');
+    expect(keys).not.toContain('2:main');
+    expect(keys).not.toContain('5:main');
+    expect(keys.some(key => key.includes('back') || key.includes('page') || key.includes('next'))).toBe(false);
+  });
+
+  it('shows Back, arrows only with several photos, and only existing page tabs while open', () => {
+    const open = (photoCount: number, pageCount: number) => visibleTargets({ 1: { ...idle, phase: 'active', photoCount, pageCount } }).map(item => item.key);
+    expect(open(1, 1)).toEqual(['1:back']);
+    expect(open(3, 1)).toEqual(['1:back', '1:previous', '1:next']);
+    expect(open(1, 2)).toEqual(['1:back', '1:page:0', '1:page:1']);
+    expect(visibleTargets({})).toEqual([]);
+  });
+
+  it('lets flags win over main and ignores the language overlay padding', () => {
+    const targets = visibleTargets(allIdle);
+    expect(hitTest(136, 1017, targets)?.key).toBe('1:language:id');
+    expect(hitTest(90, 1000, targets)).toBeNull();
+    expect(hitTest(212, 700, targets)?.key).toBe('1:main');
+    expect(hitTest(400, 700, targets)).toBeNull();
+  });
+});
+
+describe('dwell engine', () => {
+  function setup(hold?: unknown) {
+    const inputs: DwellInput[] = [];
+    const engine = new DwellEngine({ onInput: input => inputs.push(input) });
+    if (hold)
+      engine.setHold(hold);
+    engine.setTargets(visibleTargets(allIdle), 0);
+    return { engine, inputs };
+  }
+
+  it('fires a hold target once after its configured dwell', () => {
+    const { engine, inputs } = setup();
+    engine.update([{ id: 'p', x: 212, y: 700 }], 0);
+    engine.update([{ id: 'p', x: 214, y: 702 }], 990);
+    expect(inputs).toEqual([]);
+    engine.tick(1_000);
+    expect(inputs.map(i => i.target.action)).toEqual([{ type: 'main', columnId: 1 }]);
+    engine.update([{ id: 'p', x: 214, y: 702 }], 5_000);
+    expect(inputs).toHaveLength(1);
+  });
+
+  it('uses the dashboard duration current when the contact reached the target', () => {
+    const { engine, inputs } = setup({ card: { enabled: true, seconds: 2.5 } });
+    engine.update([{ id: 'p', x: 588, y: 600 }], 0);
+    engine.setHold({ card: { enabled: true, seconds: 0.5 } });
+    engine.tick(2_400);
+    expect(inputs).toEqual([]);
+    engine.tick(2_500);
+    expect(inputs[0]!.target.action).toEqual({ type: 'subItem', columnId: 2, subItemId: 'tekiro' });
+  });
+
+  it('still requires a short deliberate contact when hold is off, and for language', () => {
+    const { engine, inputs } = setup({ card: { enabled: false, seconds: 1 } });
+    engine.update([{ id: 'a', x: 212, y: 700 }, { id: 'b', x: 588, y: 1017 }], 0);
+    engine.tick(200);
+    expect(inputs).toEqual([]);
+    engine.tick(250);
+    expect(inputs.map(i => i.target.key).sort()).toEqual(['1:main', '2:language:en']);
+    engine.tick(2_000);
+    expect(inputs).toHaveLength(2);
+  });
+
+  it('ignores passers-by, restarts on another target, and tolerates edge jitter', () => {
+    const { engine, inputs } = setup();
+    engine.update([{ id: 'p', x: 212, y: 700 }], 0);
+    engine.update([], 600);
+    engine.update([{ id: 'q', x: 588, y: 600 }], 700);
+    engine.update([{ id: 'q', x: 588, y: 760 }], 1_400);
+    engine.tick(2_300);
+    expect(inputs).toEqual([]);
+    engine.update([{ id: 'q', x: 588, y: 830 }], 2_350);
+    engine.update([{ id: 'q', x: 588, y: 760 }], 2_400);
+    engine.tick(3_290);
+    expect(inputs).toEqual([]);
+    engine.tick(3_300);
+    expect(inputs.map(i => i.target.key)).toEqual(['2:subItem:ryu']);
+    expect(inputs[0]).toMatchObject({ pointerId: 'q', x: 588, y: 760 });
+  });
+
+  it('previews progress and never fires while suppressed (calibration)', () => {
+    const { engine, inputs } = setup();
+    engine.suppressed = true;
+    engine.update([{ id: 'p', x: 212, y: 700 }], 0);
+    expect(engine.preview(500)).toEqual([{ id: 'p', x: 212, y: 700, target: '1:main', progress: 0.5, fired: false }]);
+    engine.tick(5_000);
+    expect(inputs).toEqual([]);
+  });
+
+  it('re-targets when the column snapshot changes under a contact', () => {
+    const { engine, inputs } = setup();
+    engine.update([{ id: 'p', x: 356, y: 524 }], 0);
+    engine.setTargets(visibleTargets({ ...allIdle, 1: { ...idle, phase: 'active' } }), 300);
+    engine.tick(540);
+    expect(inputs).toEqual([]);
+    engine.tick(550);
+    expect(inputs.map(i => i.target.key)).toEqual(['1:back']);
+  });
+
+  it('does not fire contacts left on a target when calibration mode ends', () => {
+    const { engine, inputs } = setup();
+    engine.suppressed = true;
+    engine.update([{ id: 'p', x: 212, y: 700 }], 0);
+    engine.tick(3_000);
+    engine.suppressed = false;
+    engine.update([{ id: 'p', x: 212, y: 700 }], 3_030);
+    engine.tick(6_000);
+    expect(inputs).toEqual([]);
+    engine.update([{ id: 'q', x: 212, y: 700 }], 6_100);
+    engine.tick(7_100);
+    expect(inputs.map(i => i.pointerId)).toEqual(['q']);
+  });
+});

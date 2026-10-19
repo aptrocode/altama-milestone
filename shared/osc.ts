@@ -110,7 +110,10 @@ export function parseOscPacket(buffer: Uint8Array): OscMessage[] {
   return [{ address, types: typeTag, args }];
 }
 
-export function createOscMessage(address: string, args: (number | string | boolean)[] = []): Uint8Array {
+/** Forces a float argument even for whole numbers (TUIO/Augmenta positions such as 0 or 1). */
+export interface OscFloat { float: number }
+
+export function createOscMessage(address: string, args: (number | string | boolean | OscFloat)[] = []): Uint8Array {
   const addrBytes = writeOscString(address);
   let typeTag = ',';
   const argByteList: Uint8Array[] = [];
@@ -118,6 +121,12 @@ export function createOscMessage(address: string, args: (number | string | boole
   for (const arg of args) {
     if (typeof arg === 'boolean') {
       typeTag += arg ? 'T' : 'F';
+    }
+    else if (typeof arg === 'object') {
+      typeTag += 'f';
+      const b = new Uint8Array(4);
+      new DataView(b.buffer).setFloat32(0, arg.float, false);
+      argByteList.push(b);
     }
     else if (typeof arg === 'number') {
       if (Number.isInteger(arg)) {
@@ -150,6 +159,25 @@ export function createOscMessage(address: string, args: (number | string | boole
   for (const b of argByteList) {
     out.set(b, pos);
     pos += b.length;
+  }
+  return out;
+}
+
+/** Wraps messages in one OSC bundle with the "immediately" time tag. */
+export function createOscBundle(messages: Uint8Array[]): Uint8Array {
+  const header = writeOscString('#bundle');
+  const total = header.length + 8 + messages.reduce((sum, message) => sum + 4 + message.length, 0);
+  const out = new Uint8Array(total);
+  const view = new DataView(out.buffer);
+  out.set(header, 0);
+  let pos = header.length;
+  view.setUint32(pos, 0, false);
+  view.setUint32(pos + 4, 1, false);
+  pos += 8;
+  for (const message of messages) {
+    view.setInt32(pos, message.length, false);
+    out.set(message, pos + 4);
+    pos += 4 + message.length;
   }
   return out;
 }

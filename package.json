@@ -19,11 +19,13 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "typecheck": "nuxt typecheck",
+    "typecheck": "nuxt typecheck && tsc -p sensor-service/tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",
     "assets:check": "bun scripts/check-assets.ts",
-    "osc:service": "bun scripts/sensor-osc-service.ts",
+    "sensor:service": "bun sensor-service/main.ts",
+    "sensor:sim": "bun sensor-service/simulate.ts",
+    "osc:service": "bun sensor-service/main.ts",
     "osc:send": "bun scripts/send-osc.ts"
   },
   "dependencies": {

@@ -23,7 +23,8 @@ Behavior tests cover:
 - protocol v2 parsing, input destinations, tile/arrow/page/Back routing, missing main targets for columns 2/5, old-version rejection, and declared-target coordinates;
 - the stacked-layout media query and its listener cleanup;
 - hold settings normalization/defaults, configurable dwell, hold-off normal press, and the `hold` payload sent to Sensor Service;
-- socket handshake, readiness/calibration gating, replay/sequence/session/layout rejection, outgoing state snapshots, heartbeat failure, stop cleanup, and disabled reconnect.
+- socket handshake, readiness/calibration gating, replay/sequence/session/layout rejection, outgoing state snapshots, heartbeat failure, stop cleanup, and disabled reconnect;
+- Sensor Service: SCIP 2.0 checksums/encoding/stream parsing and PP, homography calibration (exact, noisy, degenerate), scan filtering/background/clustering/tracking, Augmenta v1/v2 and TUIO 1.1 parsing with release/timeouts and Invert Y, per-column target visibility and hit priority, dwell from hold rules with the off/language minimum, one input per contact, jitter grace, calibration suppression, admin/wall separation, config merge, OSC show control, and frames validated by the renderer's own parser (including a synthetic UST-10LX end-to-end run).
 
 Do not add tests that merely restate markup. Use controlled timers for behavior and browser measurements for geometry.
 
@@ -46,6 +47,7 @@ Do not add tests that merely restate markup. Use controlled timers for behavior 
 14. Responsive: at 390 × 844 (phone) and 820 × 1180 (tablet) the layout switches to the stacked list (1 / 2 columns), scrolls vertically without horizontal overflow, opens columns in place, and keeps text inside cards. Wide landscape screens (≥ 1024 px) keep the wall layout.
 
 15. Dashboard: on `/dashboard`, turn a group off and change another's duration, save, and confirm the wall (same browser, also an already open tab) uses a normal press / the new duration; Default and Export/Import round-trip the settings; the page works at phone width.
+16. Sensor (no hardware): run `bun run sensor:service`, the wall with `NUXT_PUBLIC_SENSOR_ENABLED=true NUXT_PUBLIC_SENSOR_WS_URL=ws://127.0.0.1:8787`, and `/dashboard`. Select Hokuyo at 127.0.0.1, start `bun run sensor:sim hokuyo --tap <x,y,900>` at each calibration point and press **Ambil** in calibration mode, save, end calibration, then run taps on targets: the preview shows contacts and progress, and the wall opens/changes only the touched column after the configured dwell. Repeat with `sensor:sim augmenta --flip-y` (Invert Y on) and `sensor:sim tuio`.
 
 ## External production checks
 

@@ -41,3 +41,7 @@ desktop.ini
 # Deprecated standalone prototypes
 start-localhost.bat
 mainProject/
+
+# Sensor Service state on the event PC
+sensor-config.json
+sensor-background.json
