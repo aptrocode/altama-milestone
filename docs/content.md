@@ -4,10 +4,10 @@ Every column's text, artwork, tiles, pages, and photos live in one file. Change 
 
 | Column | File | Kind |
 | --- | --- | --- |
-| 1 Tentang Altama | `app/data/columns/1-about-altama.ts` | single, pages 1960 / 1996 |
+| 1 Tentang Altama | `app/data/columns/1-about-altama.ts` | single, 1 page with 2-photo slider |
 | 2 Our Brand | `app/data/columns/2-our-brands.ts` | expandable: `tekiro`, `ryu`, `rexco` |
-| 3 Infrastruktur | `app/data/columns/3-infrastructure.ts` | single |
-| 4 Digital Trust | `app/data/columns/4-digital-trust.ts` | single |
+| 3 Infrastruktur | `app/data/columns/3-infrastructure.ts` | single, 1 page with video & 7-photo slider |
+| 4 Digital Trust | `app/data/columns/4-digital-trust.ts` | single, 1 page with 2-photo slider |
 | 5 Distribusi & Pemasaran | `app/data/columns/5-distribution.ts` | expandable: `distribusi`, `pemasaran` |
 | 6 Altama Summit 2026 | `app/data/columns/6-summit-2026.ts` | single, text only |
 
@@ -23,7 +23,8 @@ Related files:
 A column (or a sub-item of columns 2/5) has `pages`. Each page has its **own photo slider** and its own text in `id`, `en`, and `zh-Hans`:
 
 ```ts
-const firstPage = page([provisional('/photos/about-altama/photo-1.webp'), PHOTO_PLACEHOLDER], {
+const firstPage = onlyPage([provisional('/photos/about-altama/photo-1.png'), provisional('/photos/about-altama/photo-2.png')], {
+
   'id': { tab: '1960', blocks: ['Paragraf...'] },
   'en': { tab: '1960', blocks: ['Paragraph...'] },
   'zh-Hans': { tab: '1960', blocks: ['段落...'] },
@@ -31,9 +32,9 @@ const firstPage = page([provisional('/photos/about-altama/photo-1.webp'), PHOTO_
 ```
 
 - Arrows move between the photos of the current page. Page tabs switch the whole page (photos and text) and restart its slider. Both are hold targets whose on/off and duration are set on `/dashboard` (default 1 s).
-- Tabs show only when there are two pages (the wall-v5 layout has two tab targets). Arrows show only when the current page has two or more photo slots. A page with `[]` photos shows text only; keep the photo frame consistent across pages of one card.
+- Tabs show only when there are two pages (the wall-v6 layout has two tab targets). Arrows show only when the current page has two or more photo slots. A page with `[]` photos shows text only; keep the photo frame consistent across pages of one card.
 - `PHOTO_PLACEHOLDER` renders a numbered "FOTO 0n" slot until a real photo exists.
-- `blocks` accepts a paragraph string, `{ bullets: [{ lead, text }] }` (text under a bold lead), `{ inline: true, bullets }` (compact `lead: text` lines), or `{ numbered: [...] }`.
+- `blocks` accepts a paragraph string, `{ bullets: [{ lead, text }] }` (dot + glow label with the text under it), `{ inline: true, bullets }` (a label | value fact table for short facts), or `{ numbered: [...] }`. Styling is fixed by the card-copy rules in [style](./style.md#card-copy); the card grows with long content, so prefer complete copy over shortening it.
 - Use `onlyPage()` for a single page without a tab and `pendingPage()` for a page whose copy the client has not supplied.
 
 ## Replacing a photo or artwork

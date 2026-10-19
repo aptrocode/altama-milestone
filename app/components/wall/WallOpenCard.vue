@@ -2,7 +2,7 @@
 import type { ColumnId, WallAction, WallLocale } from '../../../shared/wall';
 import type { Rect } from '~/data/installation-layout';
 import type { ContentPage } from '~/types/wall-content';
-import { computed } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import WallHoldButton from '~/components/wall/WallHoldButton.vue';
 import WallPageCopy from '~/components/wall/WallPageCopy.vue';
 import { installationLayout, rectStyle } from '~/data/installation-layout';
@@ -20,7 +20,7 @@ const props = defineProps<{
   page: number;
   geometry: { card: Rect; previous: Rect; next: Rect; pages: (Rect & { page: number })[] };
 }>();
-defineEmits<{ action: [action: WallAction] }>();
+const emit = defineEmits<{ action: [action: WallAction]; height: [logical: number] }>();
 
 const visual = installationLayout.visual;
 const current = computed(() => props.pages[props.page] || props.pages[0]);
@@ -31,14 +31,32 @@ const hasPages = computed(() => props.pages.length > 1);
 const tabs = computed(() => props.geometry.pages.slice(0, props.pages.length));
 // Text starts below whichever of the photo frame and page tabs are present.
 const textTop = computed(() => hasPages.value ? visual.textTop.tabs : hasPhotoFrame.value ? visual.textTop.photo : visual.textTop.plain);
+const TEXT_BOTTOM = 20;
 const textStyle = computed(() => ({
   top: `calc(${textTop.value} * var(--wall-y))`,
-  bottom: `calc(20 * var(--wall-y))`,
+  bottom: `calc(${TEXT_BOTTOM} * var(--wall-y))`,
   left: `calc(26 * var(--wall-x))`,
   right: `calc(24 * var(--wall-x))`,
 }));
-// The long Summit story uses a slightly smaller body size to fit the card.
-const dense = computed(() => props.pages.some(item => JSON.stringify(item.i18n[props.locale].blocks).length > 520));
+
+// The card is as tall as its tallest page needs (WallColumn clamps it between the layout's card
+// height and visual.openCardMaxBottom), so tabs and text never jump between pages. A probe of
+// 1000 logical px converts measured CSS px without being affected by the height transition.
+const probe = ref<HTMLElement | null>(null);
+const naturals = reactive<Record<number, number>>({});
+function reportHeight() {
+  const pxPerUnit = (probe.value?.offsetHeight || 0) / 1000;
+  const tallest = Math.max(0, ...props.pages.map((_, index) => naturals[index] || 0));
+  if (pxPerUnit > 0 && tallest > 0)
+    emit('height', Math.ceil(textTop.value + tallest / pxPerUnit + TEXT_BOTTOM));
+}
+watch([naturals, textTop, () => props.pages], reportHeight);
+function onNatural(index: number, px: number) {
+  naturals[index] = px;
+}
+function isVideo(src?: string) {
+  return src ? /\.(?:mp4|webm|ogg)$/i.test(src) : false;
+}
 </script>
 
 <template>
@@ -54,7 +72,16 @@ const dense = computed(() => props.pages.some(item => JSON.stringify(item.i18n[p
         class="absolute inset-0 transition-opacity duration-300 motion-reduce:transition-none"
         :class="photo === index ? 'opacity-100' : 'opacity-0'" :aria-hidden="photo !== index" :data-photo="index + 1"
       >
-        <img v-if="item" :src="item.src" alt="" class="size-full object-cover">
+        <video
+          v-if="item && isVideo(item.src)"
+          :src="item.src"
+          autoplay
+          loop
+          muted
+          playsinline
+          class="size-full object-cover pointer-events-none"
+        />
+        <img v-else-if="item" :src="item.src" alt="" class="size-full object-cover">
         <div v-else class="size-full flex flex-col items-center justify-center gap-[calc(8*var(--wall-y))] border border-dashed border-white/25 [border-radius:inherit]">
           <svg viewBox="0 0 100 80" class="w-[calc(44*var(--wall-x))] h-[calc(35*var(--wall-y))] text-white/40" aria-hidden="true">
             <polygon points="50,15 85,65 15,65" fill="currentColor" />
@@ -99,10 +126,12 @@ const dense = computed(() => props.pages.some(item => JSON.stringify(item.i18n[p
     <div class="absolute" :style="textStyle">
       <WallPageCopy
         v-for="(item, index) in pages" :key="index"
-        class="absolute inset-0 overflow-hidden text-white font-bold leading-[1.18] transition-opacity duration-300 motion-reduce:transition-none"
-        :class="[page === index ? 'opacity-100' : 'opacity-0', dense ? 'text-[length:calc(14*var(--wall-u))]' : 'text-[length:calc(14.5*var(--wall-u))]']"
+        class="absolute inset-0 overflow-hidden text-white transition-opacity duration-300 motion-reduce:transition-none"
+        :class="page === index ? 'opacity-100' : 'opacity-0'"
         :aria-hidden="page !== index" :copy="item.i18n[locale]" :locale="locale"
+        @natural="onNatural(index, $event)"
       />
     </div>
+    <span ref="probe" class="pointer-events-none invisible absolute top-0 left-0 w-0 h-[calc(1000*var(--wall-y))]" aria-hidden="true" />
   </div>
 </template>

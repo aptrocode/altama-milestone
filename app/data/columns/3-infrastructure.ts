@@ -1,5 +1,5 @@
 import type { ColumnConfig } from '~/types/wall-content';
-import { onlyPage, PHOTO_PLACEHOLDER, provisional } from './helpers';
+import { onlyPage, provisional } from './helpers';
 
 /** Column 3 — Infrastruktur. */
 export const INFRASTRUCTURE: ColumnConfig = {
@@ -14,7 +14,16 @@ export const INFRASTRUCTURE: ColumnConfig = {
     'zh-Hans': { label: '基础设施' },
   },
   pages: [
-    onlyPage([provisional('/photos/infrastructure/photo-1.webp'), PHOTO_PLACEHOLDER], {
+    onlyPage([
+      provisional('/photos/infrastructure/photo-1.mp4'),
+      provisional('/photos/infrastructure/photo-2.webp'),
+      provisional('/photos/infrastructure/photo-3.webp'),
+      provisional('/photos/infrastructure/photo-4.webp'),
+      provisional('/photos/infrastructure/photo-5.webp'),
+      provisional('/photos/infrastructure/photo-6.webp'),
+      provisional('/photos/infrastructure/photo-7.webp'),
+      provisional('/photos/infrastructure/photo-8.webp'),
+    ], {
       'id': [{ bullets: [
         { lead: 'Warehouse Management System' },
         { lead: 'Fasilitas Gudang & Armada Pengiriman', text: 'Didukung armada truk, forklift, dan reach truck.' },

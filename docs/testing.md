@@ -51,4 +51,4 @@ Do not add tests that merely restate markup. Use controlled timers for behavior 
 
 ## External production checks
 
-Deploy Sensor Service v2/wall-v5, recalibrate against measured targets, and test on hardware. Validate offline font/media availability, extended memory/performance, multi-user occlusion, startup supervision, and rollback. Photos/translations need client approval separately.
+Deploy Sensor Service v2/wall-v6, recalibrate against measured targets, and test on hardware. Validate offline font/media availability, extended memory/performance, multi-user occlusion, startup supervision, and rollback. Photos/translations need client approval separately.

@@ -24,7 +24,7 @@ function setup(config: unknown = DEFAULT_SENSOR_CONFIG) {
   const admin = client();
   service.addClient(wall);
   service.addClient(admin);
-  service.handleMessage(wall, JSON.stringify({ version: 2, type: 'clientHello', layoutVersion: 'wall-v5', columns, hold: { card: { enabled: true, seconds: 1 } } }));
+  service.handleMessage(wall, JSON.stringify({ version: 2, type: 'clientHello', layoutVersion: 'wall-v6', columns, hold: { card: { enabled: true, seconds: 1 } } }));
   service.handleMessage(admin, JSON.stringify({ version: 2, type: 'adminHello' }));
   const parsed = () => wall.frames.map(frame => parseSensorMessage(frame));
   const adminMessages = () => admin.frames.map(frame => JSON.parse(frame) as SensorAdminServerMessage);
@@ -46,7 +46,7 @@ describe('sensor Service protocol v2', () => {
     const results = parsed();
     expect(results.every(result => result.ok)).toBe(true);
     const messages = results.map(result => result.ok ? result.message : null);
-    expect(messages[0]).toMatchObject({ type: 'hello', sensorReady: true, calibrated: true, layoutVersion: 'wall-v5' });
+    expect(messages[0]).toMatchObject({ type: 'hello', sensorReady: true, calibrated: true, layoutVersion: 'wall-v6' });
     expect(messages.map(message => message!.seq)).toEqual([...messages.map(message => message!.seq)].sort((a, b) => a - b));
     expect(new Set(messages.map(message => message!.sessionId)).size).toBe(1);
   });
@@ -89,7 +89,7 @@ describe('sensor Service protocol v2', () => {
     expect(Math.abs(first!.y - 701)).toBeLessThanOrEqual(1);
 
     // Column 1 opened: its flags vanish, so a cursor on a former flag sends nothing.
-    service.handleMessage(wall, JSON.stringify({ version: 2, type: 'clientState', layoutVersion: 'wall-v5', columns: { ...columns, 1: { ...idle, phase: 'active', photoCount: 1, pageCount: 1 } } }));
+    service.handleMessage(wall, JSON.stringify({ version: 2, type: 'clientState', layoutVersion: 'wall-v6', columns: { ...columns, 1: { ...idle, phase: 'active', photoCount: 1, pageCount: 1 } } }));
     at(2_000);
     service.handleTuio(tuioFrame([[2, 136, 1017]], 4));
     at(3_000);
@@ -149,8 +149,8 @@ describe('sensor Service protocol v2', () => {
     const phone = { send: (data: string) => void phoneFrames.push(data) };
     service.addClient(phone);
     // The LED wall has column 1 open; a phone opening "/" reports it idle.
-    service.handleMessage(wall, JSON.stringify({ version: 2, type: 'clientState', layoutVersion: 'wall-v5', columns: { ...columns, 1: { ...idle, phase: 'active', photoCount: 1, pageCount: 1 } } }));
-    service.handleMessage(phone, JSON.stringify({ version: 2, type: 'clientHello', layoutVersion: 'wall-v5', columns }));
+    service.handleMessage(wall, JSON.stringify({ version: 2, type: 'clientState', layoutVersion: 'wall-v6', columns: { ...columns, 1: { ...idle, phase: 'active', photoCount: 1, pageCount: 1 } } }));
+    service.handleMessage(phone, JSON.stringify({ version: 2, type: 'clientHello', layoutVersion: 'wall-v6', columns }));
     expect(phoneFrames.map(frame => JSON.parse(frame).type)).toEqual(['hello']);
     at(0);
     service.handleTuio(tuioFrame([[1, 212, 700]], 1));
@@ -168,7 +168,7 @@ describe('sensor Service protocol v2', () => {
     expect(phoneFrames.filter(frame => frame.includes('"input"'))).toHaveLength(1);
   });
 
-  it('drops show-control actions without a wall-v5 target', () => {
+  it('drops show-control actions without a wall-v6 target', () => {
     const { service, parsed } = setup();
     service.handleShowControl(parseOscPacket(createOscMessage('/altama/page', [1, 3])));
     service.handleShowControl(parseOscPacket(createOscMessage('/altama/subItem', [1, 'foo'])));

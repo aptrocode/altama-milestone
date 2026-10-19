@@ -7,6 +7,7 @@ export const DISTRIBUTION: ColumnConfig = {
   key: 'distribution',
   type: 'expandable',
   icon: 'pin',
+  illustration: provisional('/illustrations/distribution.webm'),
   captionTiles: true,
   defaultSub: 'distribusi',
   i18n: {
