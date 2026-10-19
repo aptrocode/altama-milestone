@@ -19,7 +19,10 @@ import { COLUMN_IDS } from '../../../shared/wall';
 const wall = useWallStore();
 const system = useSystemStore();
 const settings = useSettingsStore();
-const controls = useWallController(wall, { resetDelayMs: () => settings.wall.resetSeconds * 1000 });
+const controls = useWallController(wall, {
+  resetDelayMs: () => settings.wall.resetSeconds * 1000,
+  autoSlideMs: () => settings.wall.showArrows ? 0 : settings.wall.autoSlideSeconds * 1000,
+});
 const runtimeConfig = useRuntimeConfig();
 const showDiagnostics = ref(false);
 const layout = installationLayout;
@@ -78,6 +81,8 @@ const sensorSocket = useSensorSocket({
   getHold: () => settings.hold,
   getCardOffsetY: () => settings.wall.cardOffsetY,
   getShowClose: () => settings.wall.showClose,
+  getShowArrows: () => settings.wall.showArrows,
+  getLanguageBar: () => settings.wall.languageBar,
 });
 
 wall.$subscribe(() => sensorSocket.publishState(), { flush: 'post' });

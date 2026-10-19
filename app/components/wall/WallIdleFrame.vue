@@ -5,7 +5,9 @@ import { computed, onBeforeUnmount, ref } from 'vue';
 import WallHoldButton from '~/components/wall/WallHoldButton.vue';
 import WallLanguageSwitcher from '~/components/wall/WallLanguageSwitcher.vue';
 import { getColumnLayout, rectStyle } from '~/data/installation-layout';
+import { useSettingsStore } from '~/stores/settings';
 import { isVideoSrc } from '~/utils/media';
+import { languageGeometry } from '../../../shared/language-bar';
 
 /**
  * Idle frame (reference mockup 1): one full-frame hold target with artwork for single columns,
@@ -14,7 +16,10 @@ import { isVideoSrc } from '~/utils/media';
 const props = defineProps<{ column: ColumnConfig; locale: WallLocale; label: string }>();
 const emit = defineEmits<{ action: [action: WallAction] }>();
 
+const settings = useSettingsStore();
 const geometry = computed(() => getColumnLayout(props.column.id));
+// Compact pill or full-width bar (dashboard), the same rects Sensor Service uses.
+const language = computed(() => languageGeometry(geometry.value, settings.wall.languageBar));
 const card = computed(() => geometry.value.card);
 const tiles = computed(() => (geometry.value.subItems || []).map(tile => ({
   tile,
@@ -97,8 +102,8 @@ onBeforeUnmount(() => {
       >
     </WallHoldButton>
     <WallLanguageSwitcher
-      class="absolute z-20" :style="rectStyle(geometry.languageBar, card)"
-      :column-id="column.id" :locale="locale" :bar="geometry.languageBar" :targets="geometry.languages"
+      class="absolute z-20" :style="rectStyle(language.languageBar, card)"
+      :column-id="column.id" :locale="locale" :bar="language.languageBar" :targets="language.languages"
       @select="emit('action', { type: 'language', columnId: column.id, locale: $event })"
     />
   </div>

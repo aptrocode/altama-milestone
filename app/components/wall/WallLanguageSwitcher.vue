@@ -23,7 +23,11 @@ defineEmits<{ select: [locale: WallLocale] }>();
       :aria-pressed="locale === target.locale" :data-col="columnId" data-sensor-action="language"
       :data-locale="target.locale" @activate="$emit('select', target.locale)"
     >
-      <img :src="FLAG_SOURCES[target.locale]" alt="" class="w-[calc(48*var(--wall-x))] h-[calc(32*var(--wall-y))] object-cover pointer-events-none">
+      <!-- 3:2 flag at two thirds of the button height: 48 × 32 compact, larger in the full-width bar. -->
+      <img
+        :src="FLAG_SOURCES[target.locale]" alt="" class="object-cover pointer-events-none"
+        :style="{ width: `calc(${target.height} * var(--wall-x))`, height: `calc(${target.height * 2 / 3} * var(--wall-y))` }"
+      >
     </WallHoldButton>
   </fieldset>
 </template>

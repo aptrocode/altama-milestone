@@ -1,8 +1,10 @@
+import type { LanguageBarMode } from '../../shared/language-bar';
 import type { ColumnId, WallAction, WallLocale } from '../../shared/wall';
 import type { SensorMessage, SensorParseResult } from '~/types/sensor';
 import { getActionRects, installationLayout, isPointInsideCanvas, isPointInsideRect, offsetRect } from '~/data/installation-layout';
 import { WALL_CONFIG } from '~/data/wall-config';
 import { SENSOR_PROTOCOL_VERSION } from '~/types/sensor';
+import { languageGeometry } from '../../shared/language-bar';
 import { COLUMN_IDS, WALL_LOCALES } from '../../shared/wall';
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -44,8 +46,11 @@ function failure(error: string): SensorParseResult {
   return { ok: false, error };
 }
 
-/** `cardOffsetY` is the dashboard card offset the wall is drawn with; input must hit the shifted target. */
-export function parseSensorMessage(raw: string, cardOffsetY = 0): SensorParseResult {
+/**
+ * `cardOffsetY` is the dashboard card offset the wall is drawn with and `languageBar` its language
+ * bar mode; input must hit the target as drawn.
+ */
+export function parseSensorMessage(raw: string, cardOffsetY = 0, languageBar: LanguageBarMode = 'compact'): SensorParseResult {
   let value: unknown;
   try {
     value = JSON.parse(raw);
@@ -102,10 +107,10 @@ export function parseSensorMessage(raw: string, cardOffsetY = 0): SensorParseRes
     return failure('coordinates are outside the logical canvas');
   const x = value.x as number;
   const y = value.y as number;
-  if (!getActionRects(action, cardOffsetY).some(rect => isPointInsideRect(x, y, rect)))
+  if (!getActionRects(action, cardOffsetY, languageBar).some(rect => isPointInsideRect(x, y, rect)))
     return failure('coordinates do not match the declared target');
   const geometry = installationLayout.columns.find(column => column.id === action.columnId)!;
-  if (action.type === 'main' && isPointInsideRect(x, y, offsetRect(geometry.languageBar, cardOffsetY)))
+  if (action.type === 'main' && isPointInsideRect(x, y, offsetRect(languageGeometry(geometry, languageBar).languageBar, cardOffsetY)))
     return failure('language overlay occludes the main target');
 
   return { ok: true, message: { ...envelope, type: 'input', action, pointerId: value.pointerId, x, y } };

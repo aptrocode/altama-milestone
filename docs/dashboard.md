@@ -39,6 +39,9 @@ Every button, switch, link, and tab (including the Sensor source tabs) shows a p
 | Reset otomatis | Seconds without interaction before a column returns to idle/Indonesian; one value for every column (5–600 s) | 30 s |
 | Posisi Y card | Moves every column (frame, title, card, controls) up (−) or down (+) on the LED wall, −120 to 120 logical px; ↑/↓ nudge by 10. Open cards still end at y 1312 on screen; the phone/tablet layout ignores it | 0 |
 | Tombol close | Shows the open card's ✕ button. Off hides it on every column and removes the Back touch target from Sensor Service; cards still close after the reset time, with operator keys 1–6, R/Escape, and OSC `/altama/back` | On |
+| Tombol slider | Shows the photo arrows on open cards. Off hides them on every column, removes the previous/next touch targets from Sensor Service, and turns on auto slide | On |
+| Auto slide | Shown only while Tombol slider is off: an open card with several photos moves to the next photo (wrapping) every N seconds, 2–60 s. Any photo, page, or sub-item change restarts that column's countdown; auto slide is not visitor activity, so the reset time still closes the card. Operator ←/→ keys and OSC still change photos | 5 s |
+| Tampilan bahasa | **Compact**: the flag pill in the middle of the idle frame (three 64 × 48 buttons). **Full width**: the bar spans the frame to 14 px from its edges, 76 px tall, with three equal 102 × 60 buttons and larger flags, on the same centre line. Sensor Service moves the language targets with it (`shared/language-bar.ts`) | Compact |
 
 **Simpan** and **Default** work as on the Hold page.
 
@@ -47,7 +50,7 @@ Every button, switch, link, and tab (including the Sensor source tabs) shows a p
 - Hold and Wall live in this browser's `localStorage` (`altama.settings.v1`) through `app/plugins/settings-storage.client.ts`. Open the dashboard in the same browser profile as the wall on the event PC: in the kiosk started by `start-wall.bat` press **Ctrl+Shift+D** (again to return to the wall; the kiosk uses its own profile in `.wall-run/browser-profile` on `http://127.0.0.1:<WALL_PORT>`). A wall already open in another tab updates immediately (storage event); no reload is needed.
 - Clearing browser data restores the defaults; keep an exported JSON as backup.
 - There is no server or login. The page is not secret: anyone who can type a URL on the kiosk browser can open it. The wall runs fullscreen, so visitors cannot reach it in practice.
-- The wall publishes the hold rules as `hold`, the card offset as `cardOffsetY`, and the close switch as `showClose` in every `clientHello`/`clientState` message, so LiDAR input follows the same configuration and targets move with the cards. See [sensor](./sensor.md).
+- The wall publishes the hold rules as `hold`, the card offset as `cardOffsetY`, the close switch as `showClose`, the slider switch as `showArrows`, and the language bar mode as `languageBar` in every `clientHello`/`clientState` message, so LiDAR input follows the same configuration and targets move with the cards. See [sensor](./sensor.md).
 
 ## Sensor
 

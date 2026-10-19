@@ -8,7 +8,7 @@ Read only the document needed:
 - `docs/style.md`: Tailwind-first utilities, scoped CSS exceptions, and logical spacing.
 - `docs/language.md`: per-column translations and flag accessibility.
 - `docs/content.md`: where each column's text, pages, photos, and tiles live and how to replace them.
-- `docs/dashboard.md`: operator dashboard (`/dashboard`): sidebar with Hold, Wall (reset time, card offset), and Sensor pages; backup/reset.
+- `docs/dashboard.md`: operator dashboard (`/dashboard`): sidebar with Hold, Wall (reset time, card offset, close and slider switches, auto slide, language bar mode), and Sensor pages; backup/reset.
 - `docs/assets.md`: deployed media, the `public/new-assets/` master-file layout, encoding commands, and naming.
 - `docs/sensor.md`: protocol v2 / wall-v7, Sensor Service sources (Hokuyo, Augmenta, TUIO), calibration, admin contract, simulators, and rollout.
 - `docs/testing.md`: commands, regression coverage, and browser acceptance.
@@ -25,7 +25,7 @@ Read only the document needed:
 - `app/stores/`: serializable wall, system, and operator-settings (`hold`, `wall`) state only; `app/plugins/settings-storage.client.ts` persists settings to localStorage.
 - Operator dashboard: `app/pages/dashboard.vue` (sidebar shell) with `app/pages/dashboard/{hold,wall,sensor}.vue`, `app/components/dashboard/` (`DashboardHold`, `DashboardWall`, `DashboardSensor`, `DashboardFormActions`), `app/composables/useSettingsBackup.ts` (export/import), `app/composables/useSettingsDraft.ts` (draft/dirty/save/default for the browser-stored forms), and `app/composables/useSensorAdmin.ts` (admin socket).
 - `app/data/wall-config.ts`: column order and lookups (`getColumnConfig`, `getColumnPages`); `wall-media.ts`: background/logo/skyline/wave sweeps; `wall-copy.ts`: interface translations/flags.
-- `shared/wall.ts`: column IDs, languages, snapshots, and actions; `shared/hold-settings.ts`: hold groups, defaults, limits; `shared/wall-settings.ts`: reset time and card offset; `shared/osc.ts`: OSC packet parser/builder and show-control mapping; `shared/sensor-config.ts`: Sensor Service config and dashboard admin contract; `shared/sensor-targets.ts`: visible targets and hit-testing.
+- `shared/wall.ts`: column IDs, languages, snapshots, and actions; `shared/hold-settings.ts`: hold groups, defaults, limits; `shared/wall-settings.ts`: reset time, card offset, close and slider switches, auto slide, language bar mode; `shared/language-bar.ts`: compact/full language bar geometry; `shared/osc.ts`: OSC packet parser/builder and show-control mapping; `shared/sensor-config.ts`: Sensor Service config and dashboard admin contract; `shared/sensor-targets.ts`: visible targets and hit-testing.
 - `shared/installation-layout.json`: canonical sensor canvas and target geometry.
 - `app/utils/`: strict sensor parsing, hold lifecycle, and `isVideoSrc` (media type).
 - `app/error.vue`: global recovery UI.
@@ -42,6 +42,8 @@ Read only the document needed:
 - Open-card text follows the card-copy system in `docs/style.md` (dot bullets, glow labels, fact tables, 18 px body); only `WallPageCopy` styles it. Open cards grow with the visible page up to y 1312 before any text shrinks; never clip copy. Card artwork videos and expandable tiles must line up with the layout targets (see "Card artwork" in `docs/style.md`).
 - Hold rules come from the operator dashboard (`shared/hold-settings.ts`, default on and 1 s): group `card` (main + tiles), `page` (page tabs), `slider` (photo arrows), `language` (flags), `back` (✕); each can be turned off (normal press) or set to 0.3–5 s; language and back default off. Border progress follows the button's corners and the configured duration; release/cancel clears it. Enter/Space always activate directly. Never hardcode hold behaviour in components; use `WallHoldButton` with a `group`. Sensor Service receives the same rules (`hold` in client messages).
 - The close (✕) button follows the dashboard `showClose` switch (default on); when off, WallColumn hides it and Sensor Service drops the Back target.
+- The photo arrows follow the dashboard `showArrows` switch (default on); when off, WallOpenCard hides them, Sensor Service drops previous/next, and `useWallController` auto-slides open cards every `autoSlideSeconds` (default 5 s) without counting as activity.
+- The idle language bar follows the dashboard `languageBar` mode (`compact` default, or `full` width with larger buttons). Its rects come only from `languageGeometry` in `shared/language-bar.ts`, which the wall drawing, wall input validation, and Sensor Service targets all use.
 - Card position is the dashboard `cardOffsetY` (−120 to 120 logical px), never a hardcoded shift: WallColumn moves the whole column by it on the LED wall, Sensor Service shifts its targets by it, and the wall validates input against the shifted rects.
 - Browser, operator, and sensor actions use `useWallController.dispatch`; UI never mutates Pinia directly.
 - Keep DOM, sockets, timers, Promises, and animation instances outside Pinia state. Dispose browser resources with their owning scope.

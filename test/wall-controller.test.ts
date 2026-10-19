@@ -112,3 +112,45 @@ describe('column inactivity lifecycle', () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 });
+
+describe('photo auto slide', () => {
+  function open(autoSlideMs: () => number) {
+    const wall = useWallStore(createPinia());
+    const scope = effectScope();
+    scopes.push(scope);
+    const controls = scope.run(() => useWallController(wall, { autoSlideMs }))!;
+    // Column 1 opens on a page with several photos.
+    controls.dispatch({ type: 'main', columnId: 1 });
+    expect(wall.publishedColumns[1]!.photoCount).toBeGreaterThan(1);
+    return { wall, controls };
+  }
+
+  it('advances open cards every interval and restarts after a manual change', () => {
+    const { wall, controls } = open(() => 5000);
+    vi.advanceTimersByTime(4999);
+    expect(wall.publishedColumns[1]!.photo).toBe(0);
+    vi.advanceTimersByTime(1);
+    expect(wall.publishedColumns[1]!.photo).toBe(1);
+    vi.advanceTimersByTime(3000);
+    controls.dispatch({ type: 'previous', columnId: 1 });
+    vi.advanceTimersByTime(4999);
+    expect(wall.publishedColumns[1]!.photo).toBe(0);
+    vi.advanceTimersByTime(1);
+    expect(wall.publishedColumns[1]!.photo).toBe(1);
+  });
+
+  it('does not count as activity: the reset still closes the card', () => {
+    const { wall } = open(() => 5000);
+    vi.advanceTimersByTime(29999);
+    expect(wall.getColumnState(1)).toBe('active');
+    vi.advanceTimersByTime(1);
+    expect(wall.getColumnState(1)).toBe('idle');
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('stays off while the interval is 0 (arrows shown)', () => {
+    const { wall } = open(() => 0);
+    vi.advanceTimersByTime(20000);
+    expect(wall.publishedColumns[1]!.photo).toBe(0);
+  });
+});

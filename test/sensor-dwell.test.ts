@@ -2,7 +2,7 @@ import type { DwellInput } from '../sensor-service/dwell';
 import type { ColumnId, PublishedColumn } from '../shared/wall';
 import { describe, expect, it } from 'vitest';
 import { DwellEngine } from '../sensor-service/dwell';
-import { hitTest, visibleTargets } from '../shared/sensor-targets';
+import { hitTest, isInsideRect, visibleTargets } from '../shared/sensor-targets';
 import { COLUMN_IDS } from '../shared/wall';
 
 const idle: PublishedColumn = { phase: 'idle', locale: 'id', subItem: '', photo: 0, page: 0, photoCount: 2, pageCount: 2 };
@@ -33,12 +33,32 @@ describe('visible targets', () => {
   it('drops the Back target when the wall hides its close button', () => {
     const open = { 1: { ...idle, phase: 'active' as const, photoCount: 3, pageCount: 2 } };
     expect(visibleTargets(open).map(item => item.key)).toContain('1:back');
-    expect(visibleTargets(open, 0, false).map(item => item.key)).toEqual(['1:previous', '1:next', '1:page:1']);
+    expect(visibleTargets(open, { showClose: false }).map(item => item.key)).toEqual(['1:previous', '1:next', '1:page:1']);
+  });
+
+  it('moves the language targets to the full-width bar and keeps main excluded under it', () => {
+    const compact = visibleTargets(allIdle).filter(item => item.key.startsWith('1:'));
+    const full = visibleTargets(allIdle, { languageBar: 'full' }).filter(item => item.key.startsWith('1:'));
+    const flags = full.filter(item => item.action.type === 'language');
+    const main = full.find(item => item.key === '1:main')!;
+    expect(flags.map(item => item.key)).toEqual(compact.filter(item => item.action.type === 'language').map(item => item.key));
+    // Three equal buttons spanning the frame between its 14 px insets, wider and taller than compact.
+    expect(flags[0]!.rect.x).toBe(main.rect.x + 22);
+    expect(flags[2]!.rect.x + flags[2]!.rect.width).toBeCloseTo(main.rect.x + main.rect.width - 22);
+    expect(flags[0]!.rect.width).toBeGreaterThan(compact.find(item => item.key === '1:language:id')!.rect.width);
+    expect(flags[0]!.rect.height).toBe(60);
+    for (const flag of flags)
+      expect(isInsideRect(flag.rect.x + 1, flag.rect.y + 1, main.exclude!)).toBe(true);
+  });
+
+  it('drops the photo arrows when the wall hides them (auto slide)', () => {
+    const open = { 1: { ...idle, phase: 'active' as const, photoCount: 3, pageCount: 2 } };
+    expect(visibleTargets(open, { showArrows: false }).map(item => item.key)).toEqual(['1:back', '1:page:1']);
   });
 
   it('moves every target with the dashboard card offset', () => {
     const base = visibleTargets(allIdle);
-    const raised = visibleTargets(allIdle, -40);
+    const raised = visibleTargets(allIdle, { offsetY: -40 });
     expect(raised.map(item => item.rect.y)).toEqual(base.map(item => item.rect.y - 40));
     expect(hitTest(136, 1017 - 40, raised)?.key).toBe('1:language:id');
     expect(hitTest(212, 700 - 40, raised)?.key).toBe('1:main');
