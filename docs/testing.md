@@ -22,6 +22,7 @@ Behavior tests cover:
 - one-second pointer hold, cancellation/release/blur, native keyboard activation, updated callbacks, and listener/timer cleanup;
 - protocol v2 parsing, input destinations, tile/arrow/page/Back routing, missing main targets for columns 2/5, old-version rejection, and declared-target coordinates;
 - the stacked-layout media query and its listener cleanup;
+- hold settings normalization/defaults, configurable dwell, hold-off normal press, and the `hold` payload sent to Sensor Service;
 - socket handshake, readiness/calibration gating, replay/sequence/session/layout rejection, outgoing state snapshots, heartbeat failure, stop cleanup, and disabled reconnect.
 
 Do not add tests that merely restate markup. Use controlled timers for behavior and browser measurements for geometry.
@@ -43,6 +44,8 @@ Do not add tests that merely restate markup. Use controlled timers for behavior 
 13. Only the opened column's pill moves up; the logo shrinks only while column 3 or 4 is open; open expandable columns show their sub-item under the pill. Compare idle/open screens with the two reference mockups. Background media (when configured) loops, and a missing file falls back to the coded gradient.
 
 14. Responsive: at 390 × 844 (phone) and 820 × 1180 (tablet) the layout switches to the stacked list (1 / 2 columns), scrolls vertically without horizontal overflow, opens columns in place, and keeps text inside cards. Wide landscape screens (≥ 1024 px) keep the wall layout.
+
+15. Dashboard: on `/dashboard`, turn a group off and change another's duration, save, and confirm the wall (same browser, also an already open tab) uses a normal press / the new duration; Default and Export/Import round-trip the settings; the page works at phone width.
 
 ## External production checks
 

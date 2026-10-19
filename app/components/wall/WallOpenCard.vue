@@ -68,7 +68,7 @@ const dense = computed(() => props.pages.some(item => JSON.stringify(item.i18n[p
       <WallHoldButton
         v-for="direction in ['previous', 'next'] as const" :key="direction"
         class="wall-photo-arrow absolute z-10 flex items-center justify-center rounded-full"
-        :style="rectStyle(geometry[direction], geometry.card)" :outline="geometry[direction]" :radius="22"
+        :style="rectStyle(geometry[direction], geometry.card)" :outline="geometry[direction]" group="slider" :radius="22"
         :aria-label="WALL_COPY[locale][direction]" :data-sensor-action="direction"
         @activate="$emit('action', { type: direction, columnId })"
       >
@@ -88,7 +88,7 @@ const dense = computed(() => props.pages.some(item => JSON.stringify(item.i18n[p
         v-for="target in tabs" :key="target.page"
         class="wall-page-tab absolute flex items-center justify-center [border-radius:calc(7*var(--wall-x))/calc(7*var(--wall-y))] font-display text-[length:calc(24*var(--wall-u))] font-bold uppercase tracking-wide"
         :class="page === target.page ? 'bg-[#0b1a78] text-white ring-2 ring-[#9fdcff] shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.8)]' : 'bg-white text-[#0b1a78] ring-2 ring-white/80 hover:bg-sky-100'"
-        :style="rectStyle(target, geometry.card)" :outline="target" :radius="7"
+        :style="rectStyle(target, geometry.card)" :outline="target" group="page" :radius="7"
         :aria-pressed="page === target.page" data-sensor-action="page" :data-page="target.page"
         @activate="$emit('action', { type: 'page', columnId, page: target.page })"
       >

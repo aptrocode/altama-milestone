@@ -27,6 +27,12 @@ On connection, the renderer sends:
 ```json
 { "version": 2, "type": "clientHello", "layoutVersion": "wall-v5", "columns": { "1": { "phase": "idle", "locale": "id", "subItem": "", "photo": 0, "page": 0, "photoCount": 2, "pageCount": 2 } } }
 ```
+Both messages also carry `hold`, the operator's dwell rules from `/dashboard`:
+```json
+{ "hold": { "card": { "enabled": true, "seconds": 1 }, "page": { "enabled": false, "seconds": 1 }, "slider": { "enabled": true, "seconds": 2.4 } } }
+```
+`card` covers `main` and `subItem`, `page` covers `page`, `slider` covers `previous`/`next` (`HOLD_GROUP_BY_ACTION` in `shared/hold-settings.ts`). Apply the rule current at contact start. When a group is disabled, still require a short deliberate contact (about 0.2–0.3 s) and send one input per contact, so passers-by do not trigger it. If `hold` is missing, use the defaults (all enabled, 1 s).
+
 The actual `columns` payload always includes IDs 1–6. `phase` is `idle` or `active`; `photoCount` is the number of photo slots on the page currently shown and `pageCount` the number of pages of the selected content. Changes send the same snapshot with `type: "clientState"`.
 
 Sensor Service combines that snapshot with `shared/installation-layout.json`:
@@ -38,7 +44,7 @@ Sensor Service combines that snapshot with `shared/installation-layout.json`:
 
 Each column is independent: target visibility depends only on that column's snapshot.
 
-Do not detect against hidden target groups. Main, sub-item tile, photo-arrow (`previous`/`next`), and page-tab targets require one second of deliberate contact before sending one input. Immediate language/Back input should be debounced to one action per deliberate contact. Contact release is internal to Sensor Service; do not send legacy touchStart/touchEnd events.
+Do not detect against hidden target groups. Main, sub-item tile, photo-arrow (`previous`/`next`), and page-tab targets follow the `hold` rules above (default one second of deliberate contact before one input). Immediate language/Back input should be debounced to one action per deliberate contact. Contact release is internal to Sensor Service; do not send legacy touchStart/touchEnd events.
 
 ## Input
 

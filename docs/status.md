@@ -6,6 +6,7 @@ Updated 17 October 2026. Package version remains 0.3.0; the Summit revision (bra
 
 - Fullscreen Nuxt 4 SPA with six independent wall columns on the official 2304 × 1344 canvas, laid out after the two ALTAMA Summit 2026 "Powering Partnership" reference mockups.
 - Responsive stacked layout for phones (1 column) and tablets/portrait screens (2 columns) using the same column components at a uniform scale; the wall layout stays fixed on wide landscape screens.
+- Operator dashboard (`/dashboard`): hold on/off and 0.3–5 s per group (card, page, slider), saved in localStorage with export/import, applied live to the wall and published to Sensor Service.
 - Content split into one file per column (`app/data/columns/`) with typed helpers and an editing guide (`docs/content.md`).
 - Per-column layouts: idle glowing frame (title pill, artwork or sub-item tiles, flags) and open layout (raised pill, sub-item name, rounded content card). Opening one column leaves the other five unchanged; the shared logo shrinks only while column 3 or 4 is open.
 - Our Brand (Tekiro, RYU, Rexco) and Distribusi & Pemasaran open their sub-items directly from idle tiles; there is no submenu.

@@ -1,9 +1,10 @@
 import type { ObjectDirective } from 'vue';
+import type { HoldOptions } from '~/utils/hold';
 import { bindHold } from '~/utils/hold';
 
 const bindings = new WeakMap<HTMLElement, ReturnType<typeof bindHold>>();
 
-const holdDirective: ObjectDirective<HTMLElement, () => void> = {
+const holdDirective: ObjectDirective<HTMLElement, HoldOptions> = {
   mounted(element, binding) {
     bindings.set(element, bindHold(element, binding.value));
   },

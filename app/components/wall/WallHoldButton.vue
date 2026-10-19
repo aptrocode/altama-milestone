@@ -1,10 +1,19 @@
 <script setup lang="ts">
+import type { HoldGroup } from '../../../shared/hold-settings';
 import type { Rect } from '~/data/installation-layout';
 import { computed } from 'vue';
-import { HOLD_DURATION_MS } from '~/utils/hold';
+import { useSettingsStore } from '~/stores/settings';
 
-const props = defineProps<{ outline: Rect; radius?: number; bottomCornersOnly?: boolean }>();
-defineEmits<{ activate: [] }>();
+/** A wall button whose hold rule (on/off, seconds) comes from the operator dashboard group. */
+const props = defineProps<{ outline: Rect; group: HoldGroup; radius?: number; bottomCornersOnly?: boolean }>();
+const emit = defineEmits<{ activate: [] }>();
+const settings = useSettingsStore();
+const rule = computed(() => settings.holdRule(props.group));
+const hold = computed(() => ({
+  onActivate: () => emit('activate'),
+  enabled: rule.value.enabled,
+  durationMs: Math.round(rule.value.seconds * 1000),
+}));
 
 // Keep the stroke inside the button and its arcs aligned with the CSS corners.
 const outlinePath = computed(() => {
@@ -32,9 +41,9 @@ const outlinePath = computed(() => {
 
 <template>
   <button
-    v-hold="() => $emit('activate')" type="button"
+    v-hold="hold" type="button"
     class="group/hold cursor-pointer transition-colors duration-150"
-    :style="{ '--hold-duration': `${HOLD_DURATION_MS}ms` }"
+    :style="{ '--hold-duration': `${hold.durationMs}ms` }" :data-hold-group="group" :data-hold="rule.enabled ? 'on' : 'off'"
   >
     <div
       class="hold-inset pointer-events-none absolute inset-0 rounded-[inherit] transition-opacity duration-200 opacity-0 group-[.holding]/hold:opacity-100 group-[.hold-complete]/hold:opacity-100"

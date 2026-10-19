@@ -11,6 +11,7 @@ import { useWallController } from '~/composables/useWallController';
 import { getColumnLayout, installationLayout } from '~/data/installation-layout';
 import { getColumnConfig, WALL_CONFIG } from '~/data/wall-config';
 import { STAGE_MEDIA } from '~/data/wall-media';
+import { useSettingsStore } from '~/stores/settings';
 import { useSystemStore } from '~/stores/system';
 import { useWallStore } from '~/stores/wall';
 import { COLUMN_IDS } from '../../../shared/wall';
@@ -18,6 +19,7 @@ import { COLUMN_IDS } from '../../../shared/wall';
 const wall = useWallStore();
 const controls = useWallController(wall);
 const system = useSystemStore();
+const settings = useSettingsStore();
 const runtimeConfig = useRuntimeConfig();
 const showDiagnostics = ref(false);
 const layout = installationLayout;
@@ -68,9 +70,11 @@ const sensorSocket = useSensorSocket({
   expectedLayoutVersion: layout.layoutVersion,
   onMessage: handleSensorMessage,
   getColumns: () => wall.publishedColumns,
+  getHold: () => settings.hold,
 });
 
 wall.$subscribe(() => sensorSocket.publishState(), { flush: 'post' });
+settings.$subscribe(() => sensorSocket.publishState(), { flush: 'post' });
 
 function handleKeyboard(event: KeyboardEvent) {
   if (event.repeat || event.ctrlKey || event.altKey || event.metaKey)
