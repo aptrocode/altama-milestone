@@ -37,8 +37,10 @@ export interface ContentPage {
 
 export interface SubItem {
   key: string;
-  /** Idle tile artwork. */
+  /** Idle tile artwork: a full-bleed tile design, or a transparent logo when `tileBackground` is set. */
   image: MediaAsset;
+  /** Brand colour behind a transparent logo; the logo is then centred with the same padding on every tile. */
+  tileBackground?: string;
   /** Logo shown under the column title while the sub-item is open; text label otherwise. */
   wordmark?: MediaAsset;
   i18n: Record<WallLocale, { label: string }>;
@@ -53,7 +55,7 @@ export interface ColumnConfig {
   type: 'single' | 'expandable';
   icon: ColumnIcon;
   i18n: Record<WallLocale, { label: string }>;
-  /** Idle artwork for single columns. */
+  /** Idle card artwork (usually a transparent video with the frame baked in); expandable columns draw their tiles over it. */
   illustration?: MediaAsset;
   /** Open-card pages for single columns; expandable columns use their sub-item pages. */
   pages?: ContentPage[];

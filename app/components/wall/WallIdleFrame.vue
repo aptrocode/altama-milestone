@@ -20,7 +20,7 @@ const tiles = computed(() => (geometry.value.subItems || []).map(tile => ({
   sub: props.column.subItems!.find(sub => sub.key === tile.key)!,
 })));
 
-// Columns 2/5 have no card video, so their frame redraws the video's neon border, measured from
+// Columns without card artwork (Our Brand) redraw the card videos' neon border, measured from
 // public/new-assets/card-button: 19 px corners, blue halo to -5.5, white core on the edge, and a
 // bright blue band fading into the navy fill by +12 (logical px from the frame edge).
 const NEON_FRAME = [
@@ -28,6 +28,7 @@ const NEON_FRAME = [
   'shadow-[0_0_0_calc(0.6*var(--wall-x))_#f2f8ff,0_0_calc(1.5*var(--wall-x))_calc(2*var(--wall-x))_#1a8cff,0_0_calc(1*var(--wall-x))_calc(5.5*var(--wall-x))_#0044f2,0_0_calc(6*var(--wall-x))_calc(5*var(--wall-x))_rgba(0,60,255,0.35),inset_0_0_0_calc(1.2*var(--wall-x))_#eef6ff,inset_0_0_calc(1.5*var(--wall-x))_calc(2.6*var(--wall-x))_#3aa0ff,inset_0_0_calc(2*var(--wall-x))_calc(9.5*var(--wall-x))_#0436ff,inset_0_0_calc(8*var(--wall-x))_calc(11*var(--wall-x))_rgba(0,40,230,0.55)]',
 ].join(' ');
 
+const cardVideo = computed(() => /\.(?:webm|mp4)$/.test(props.column.illustration?.src || ''));
 const videoElement = ref<HTMLVideoElement | null>(null);
 
 onBeforeUnmount(() => {
@@ -43,33 +44,36 @@ onBeforeUnmount(() => {
 <template>
   <div
     class="wall-frame"
-    :class="geometry.main
+    :class="column.illustration
       ? '[border-radius:calc(14*var(--wall-x))/calc(14*var(--wall-y))]'
       : NEON_FRAME"
   >
+    <!-- Card artwork (usually a transparent video with the frame, glow, and tile panels baked in).
+         It spans 9 logical px beyond the frame on every side, like the source renders. -->
+    <div v-if="column.illustration" class="pointer-events-none absolute -inset-[calc(9*var(--wall-x))]">
+      <video
+        v-if="cardVideo"
+        ref="videoElement" :src="column.illustration.src"
+        autoplay loop muted playsinline preload="auto" disablepictureinpicture
+        class="size-full object-fill"
+      />
+      <img v-else :src="column.illustration.src" alt="" class="size-full object-fill">
+    </div>
     <WallHoldButton
       v-if="geometry.main" class="absolute inset-0 [border-radius:inherit] hover:bg-white/5"
       :outline="geometry.main" group="card" :radius="14" :aria-label="label" data-sensor-action="main"
       @activate="emit('action', { type: 'main', columnId: column.id })"
-    >
-      <div class="pointer-events-none absolute -inset-[calc(9*var(--wall-x))]">
-        <video
-          v-if="column.illustration?.src.endsWith('.webm') || column.illustration?.src.endsWith('.mp4')"
-          ref="videoElement" :src="column.illustration.src"
-          autoplay loop muted playsinline preload="auto" disablepictureinpicture
-          class="size-full object-fill"
-        />
-        <img
-          v-else-if="column.illustration" :src="column.illustration.src" alt=""
-          class="size-full object-fill"
-        >
-      </div>
-    </WallHoldButton>
+    />
+    <!-- Over card artwork the tiles are transparent targets on its panels (19 px corners);
+         otherwise each tile draws its own image. -->
     <WallHoldButton
       v-for="{ tile, sub } in tiles" :key="tile.key"
-      class="absolute overflow-hidden [border-radius:calc(10*var(--wall-x))/calc(10*var(--wall-y))] ring-1 ring-white/30 shadow-[0_0_calc(10*var(--wall-x))_rgba(80,190,255,0.35)]"
-      :class="column.captionTiles ? 'bg-[#1530b8]/70' : ''"
-      :style="rectStyle(tile, card)" :outline="tile" group="card" :radius="10" :aria-label="sub.i18n[locale].label"
+      class="absolute overflow-hidden"
+      :class="column.illustration
+        ? '[border-radius:calc(19*var(--wall-x))/calc(19*var(--wall-y))] hover:bg-white/5'
+        : ['[border-radius:calc(10*var(--wall-x))/calc(10*var(--wall-y))] ring-1 ring-white/30 shadow-[0_0_calc(10*var(--wall-x))_rgba(80,190,255,0.35)]', column.captionTiles ? 'bg-[#1530b8]/70' : '']"
+      :style="{ ...rectStyle(tile, card), backgroundColor: column.illustration ? undefined : sub.tileBackground }"
+      :outline="tile" group="card" :radius="column.illustration ? 19 : 10" :aria-label="sub.i18n[locale].label"
       data-sensor-action="subItem" :data-sub-item="tile.key"
       @activate="emit('action', { type: 'subItem', columnId: column.id, subItemId: tile.key })"
     >
@@ -77,7 +81,11 @@ onBeforeUnmount(() => {
         {{ sub.i18n[locale].label }}
       </span>
       <img
-        :src="sub.image.src" alt="" class="absolute inset-x-0 bottom-0 w-full object-cover pointer-events-none"
+        v-if="!column.illustration && sub.tileBackground" :src="sub.image.src" alt=""
+        class="absolute left-[calc(18*var(--wall-x))] top-[calc(22*var(--wall-y))] w-[calc(100%-36*var(--wall-x))] h-[calc(100%-44*var(--wall-y))] object-contain pointer-events-none"
+      >
+      <img
+        v-else-if="!column.illustration" :src="sub.image.src" alt="" class="absolute inset-x-0 bottom-0 w-full object-cover pointer-events-none"
         :class="column.captionTiles ? 'h-[78%]' : 'h-full'"
       >
     </WallHoldButton>

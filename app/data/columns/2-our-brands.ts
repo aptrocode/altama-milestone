@@ -1,5 +1,5 @@
 import type { ColumnConfig } from '~/types/wall-content';
-import { onlyPage, page, PAGE_TABS, pendingPage, PHOTO_PLACEHOLDER, provisional } from './helpers';
+import { page, PAGE_TABS, pendingPage, PHOTO_PLACEHOLDER, provisional } from './helpers';
 
 /** Column 2 — Our Brand. Idle tiles open Tekiro, RYU, or Rexco directly. */
 export const OUR_BRANDS: ColumnConfig = {
@@ -16,7 +16,8 @@ export const OUR_BRANDS: ColumnConfig = {
   subItems: [
     {
       key: 'tekiro',
-      image: provisional('/brands/tekiro.webp'),
+      image: provisional('/brands/tekiro-wordmark.webp'),
+      tileBackground: '#000000',
       wordmark: provisional('/brands/tekiro-wordmark.webp'),
       i18n: { 'id': { label: 'TEKIRO' }, 'en': { label: 'TEKIRO' }, 'zh-Hans': { label: 'TEKIRO' } },
       pages: [
@@ -57,28 +58,218 @@ export const OUR_BRANDS: ColumnConfig = {
     },
     {
       key: 'ryu',
-      image: provisional('/brands/ryu.webp'),
-      wordmark: provisional('/brands/ryu.webp'),
+      image: provisional('/brands/ryu-tile.webp'),
+      wordmark: provisional('/brands/ryu-wordmark.webp'),
       i18n: { 'id': { label: 'RYU' }, 'en': { label: 'RYU' }, 'zh-Hans': { label: 'RYU' } },
       pages: [
-        onlyPage([PHOTO_PLACEHOLDER, PHOTO_PLACEHOLDER], {
-          'id': ['Power tools bertenaga dan tahan lama yang dirancang khusus untuk memenuhi kebutuhan proyek konstruksi dan perkayuan modern.'],
-          'en': ['High-powered, durable power tools specifically designed to meet modern construction and woodworking demands.'],
-          'zh-Hans': ['强劲耐用的电动工具，专为满足现代建筑和木工需求而设计。'],
-        }),
+        page(
+          [
+            provisional('/photos/our-brands/ryu/page-1-photo-1.webp'),
+            provisional('/photos/our-brands/ryu/page-1-photo-2.webp'),
+            provisional('/photos/our-brands/ryu/page-1-photo-3.webp'),
+          ],
+          {
+            'id': {
+              tab: PAGE_TABS.first.id,
+              blocks: [
+                {
+                  bullets: [
+                    { lead: 'Lahir', text: '2006' },
+                    { lead: 'Jumlah SKU', text: '547 SKU' },
+                    { lead: 'Market Segment', text: 'Industri, Perkayuan, Bangunan, DIY/Rumahan, Otomotif.' },
+                    { lead: 'Kategori Produk', text: 'Power Tool, Engine, Welding, Cordless, Accessories, Spare Parts.' },
+                    { lead: 'Sertifikasi', text: 'K3L' },
+                  ],
+                },
+              ],
+            },
+            'en': {
+              tab: PAGE_TABS.first.en,
+              blocks: [
+                {
+                  bullets: [
+                    { lead: 'Founded', text: '2006' },
+                    { lead: 'SKU count', text: '547 SKUs' },
+                    { lead: 'Market Segments', text: 'Industry, Woodworking, Construction, DIY/Home, Automotive.' },
+                    { lead: 'Product Categories', text: 'Power Tool, Engine, Welding, Cordless, Accessories, Spare Parts.' },
+                    { lead: 'Certifications', text: 'K3L' },
+                  ],
+                },
+              ],
+            },
+            'zh-Hans': {
+              tab: PAGE_TABS.first['zh-Hans'],
+              blocks: [
+                {
+                  bullets: [
+                    { lead: '创立', text: '2006 年' },
+                    { lead: 'SKU 数量', text: '共 547 个 SKU' },
+                    { lead: '市场领域', text: '工业、木工、建筑、家用/DIY、汽车。' },
+                    { lead: '产品类别', text: '电动工具、引擎、焊接、无绳工具、配件、零配件。' },
+                    { lead: '产品认证', text: 'K3L' },
+                  ],
+                },
+              ],
+            },
+          },
+        ),
+        page(
+          [
+            provisional('/photos/our-brands/ryu/page-2-photo-1.webp'),
+            provisional('/photos/our-brands/ryu/page-2-photo-2.webp'),
+            provisional('/photos/our-brands/ryu/page-2-photo-3.webp'),
+          ],
+          {
+            'id': {
+              tab: PAGE_TABS.second.id,
+              blocks: [
+                'Penghargaan:',
+                {
+                  bullets: [
+                    { lead: '4x Superbrands' },
+                    { lead: '3x Indonesia Digital Popular Brand Award' },
+                    { lead: 'Indonesia Brand Champion Award' },
+                  ],
+                },
+              ],
+            },
+            'en': {
+              tab: PAGE_TABS.second.en,
+              blocks: [
+                'Awards & Accolades:',
+                {
+                  bullets: [
+                    { lead: '4x Superbrands' },
+                    { lead: '3x Indonesia Digital Popular Brand Award' },
+                    { lead: 'Indonesia Brand Champion Award' },
+                  ],
+                },
+              ],
+            },
+            'zh-Hans': {
+              tab: PAGE_TABS.second['zh-Hans'],
+              blocks: [
+                '所获荣誉：',
+                {
+                  bullets: [
+                    { lead: '4届 Superbrands 超级品牌大奖' },
+                    { lead: '3届 印尼数字大众品牌大奖 (Indonesia Digital Popular Brand Award)' },
+                    { lead: '印尼品牌冠军大奖 (Indonesia Brand Champion Award)' },
+                  ],
+                },
+              ],
+            },
+          },
+        ),
       ],
     },
     {
       key: 'rexco',
       image: provisional('/brands/rexco.webp'),
-      wordmark: provisional('/brands/rexco.webp'),
+      tileBackground: '#1f1f9e',
+      wordmark: provisional('/brands/rexco-wordmark.webp'),
       i18n: { 'id': { label: 'REXCO' }, 'en': { label: 'REXCO' }, 'zh-Hans': { label: 'REXCO' } },
       pages: [
-        onlyPage([PHOTO_PLACEHOLDER, PHOTO_PLACEHOLDER], {
-          'id': ['Solusi cairan kimia perawatan industri dan otomotif untuk pembersihan, pelumasan, dan perlindungan anti-karat tingkat tinggi.'],
-          'en': ['Industrial and automotive chemical solutions delivering superior cleaning, lubrication, and rust protection.'],
-          'zh-Hans': ['工业与汽车专业化学维护方案，提供卓越的清洁、润滑与强效防锈保护。'],
-        }),
+        page(
+          [
+            provisional('/photos/our-brands/rexco/page-1-photo-1.webp'),
+            provisional('/photos/our-brands/rexco/page-1-photo-2.webp'),
+            provisional('/photos/our-brands/rexco/page-1-photo-3.webp'),
+            provisional('/photos/our-brands/rexco/page-1-photo-4.webp'),
+          ],
+          {
+            'id': {
+              tab: PAGE_TABS.first.id,
+              blocks: [
+                {
+                  bullets: [
+                    { lead: 'Lahir', text: '2013' },
+                    { lead: 'Jumlah SKU', text: '18 SKU total' },
+                    { lead: 'Market Segment', text: 'Industri, Otomotif, Rumahan/DIY, Pertukangan, Mining, Kelistrikan.' },
+                    { lead: 'Kategori', text: 'Pelumasan, Pembersih, dan Perawatan & Kebersihan Diri' },
+                    { lead: 'Sertifikasi', text: 'MSDS, TDS, dan RoHS.' },
+                  ],
+                },
+              ],
+            },
+            'en': {
+              tab: PAGE_TABS.first.en,
+              blocks: [
+                {
+                  bullets: [
+                    { lead: 'Founded', text: '2013' },
+                    { lead: 'SKU count', text: '18 total SKUs' },
+                    { lead: 'Market Segments', text: 'Industry, Automotive, Household/DIY, Carpentry, Mining, Electrical.' },
+                    { lead: 'Categories', text: 'Lubrication, Cleaning, and Personal Care & Hygiene' },
+                    { lead: 'Certifications', text: 'MSDS, TDS, and RoHS.' },
+                  ],
+                },
+              ],
+            },
+            'zh-Hans': {
+              tab: PAGE_TABS.first['zh-Hans'],
+              blocks: [
+                {
+                  bullets: [
+                    { lead: '创立', text: '2013 年' },
+                    { lead: 'SKU 数量', text: '共 18 个 SKU' },
+                    { lead: '市场领域', text: '工业、汽车、家用/DIY、木工、采矿、电气。' },
+                    { lead: '产品类别', text: '润滑、清洁以及个人护理与卫生' },
+                    { lead: '产品认证', text: 'MSDS、TDS 与 RoHS。' },
+                  ],
+                },
+              ],
+            },
+          },
+        ),
+        page(
+          [
+            provisional('/photos/our-brands/rexco/page-2-photo-1.webp'),
+            provisional('/photos/our-brands/rexco/page-2-photo-2.webp'),
+            provisional('/photos/our-brands/rexco/page-2-photo-3.webp'),
+          ],
+          {
+            'id': {
+              tab: PAGE_TABS.second.id,
+              blocks: [
+                'Penghargaan:',
+                {
+                  bullets: [
+                    { lead: '4x Superbrands' },
+                    { lead: '3x Indonesia Digital Popular Brand Award' },
+                    { lead: 'Indonesia Brand Champion Award' },
+                  ],
+                },
+              ],
+            },
+            'en': {
+              tab: PAGE_TABS.second.en,
+              blocks: [
+                'Awards & Accolades:',
+                {
+                  bullets: [
+                    { lead: '4x Superbrands' },
+                    { lead: '3x Indonesia Digital Popular Brand Award' },
+                    { lead: 'Indonesia Brand Champion Award' },
+                  ],
+                },
+              ],
+            },
+            'zh-Hans': {
+              tab: PAGE_TABS.second['zh-Hans'],
+              blocks: [
+                '所获荣誉：',
+                {
+                  bullets: [
+                    { lead: '4届 Superbrands 超级品牌大奖' },
+                    { lead: '3届 印尼数字大众品牌大奖 (Indonesia Digital Popular Brand Award)' },
+                    { lead: '印尼品牌冠军大奖 (Indonesia Brand Champion Award)' },
+                  ],
+                },
+              ],
+            },
+          },
+        ),
       ],
     },
   ],

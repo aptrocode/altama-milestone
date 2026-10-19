@@ -1,7 +1,7 @@
 import type { ColumnConfig } from '~/types/wall-content';
-import { page, pendingPage, PHOTO_PLACEHOLDER, provisional } from './helpers';
+import { onlyPage, provisional } from './helpers';
 
-/** Column 1 — Tentang Altama. Pages: 1960 / 1996, each with its own photo slider. */
+/** Column 1 — Tentang Altama. Single card page with a 2-photo slider. */
 export const ABOUT_ALTAMA: ColumnConfig = {
   id: 1,
   key: 'about-altama',
@@ -14,11 +14,25 @@ export const ABOUT_ALTAMA: ColumnConfig = {
     'zh-Hans': { label: '关于 ALTAMA' },
   },
   pages: [
-    page([provisional('/photos/about-altama/photo-1.webp'), PHOTO_PLACEHOLDER], {
-      'id': { tab: '1960', blocks: ['Berawal dari CV. Sumber Daya Group, bisnis keluarga yang telah menapaki industri sejak 1967 hampir enam dekade pengalaman menjadi fondasi ALTAMA hari ini'] },
-      'en': { tab: '1960', blocks: ['It began with CV. Sumber Daya Group, a family business in the industry since 1967; nearly six decades of experience form the foundation of ALTAMA today'] },
-      'zh-Hans': { tab: '1960', blocks: ['ALTAMA 起源于家族企业 CV. Sumber Daya Group，自 1967 年起深耕行业，近六十年的经验奠定了今日 ALTAMA 的基础'] },
-    }),
-    pendingPage([PHOTO_PLACEHOLDER, PHOTO_PLACEHOLDER], { 'id': '1996', 'en': '1996', 'zh-Hans': '1996' }),
+    onlyPage(
+      [
+        provisional('/photos/about-altama/photo-1.webp'),
+        provisional('/photos/about-altama/photo-2.webp'),
+      ],
+      {
+        'id': [
+          'Berawal dari CV. Sumber Daya Group, bisnis keluarga yang telah menapaki industri sejak 1967 hampir enam dekade pengalaman menjadi fondasi ALTAMA hari ini',
+          'Resmi berdiri sebagai badan usaha pada 1996, menjadi titik awal Altama seperti yang dikenal luas sekarang.',
+        ],
+        'en': [
+          'Originating from CV. Sumber Daya Group, a family business in the industry since 1967, nearly six decades of experience form the foundation of ALTAMA today.',
+          'Officially established as a business entity in 1996, marking the beginning of Altama as widely known today.',
+        ],
+        'zh-Hans': [
+          'ALTAMA 起源于自 1967 年起深耕行业的家族企业 CV. Sumber Daya Group，近六十年的丰富经验奠定了今日 ALTAMA 的基石。',
+          '1996 年正式成立为法人企业，成为如今广为人知的 ALTAMA 的起点。',
+        ],
+      },
+    ),
   ],
 };

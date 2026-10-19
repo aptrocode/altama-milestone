@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ColumnId, ColumnSnapshot, WallAction } from '../../../shared/wall';
 import type { ColumnConfig } from '~/types/wall-content';
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import WallColumnPill from '~/components/wall/WallColumnPill.vue';
 import WallIdleFrame from '~/components/wall/WallIdleFrame.vue';
 import WallOpenCard from '~/components/wall/WallOpenCard.vue';
@@ -20,7 +20,7 @@ const props = withDefaults(defineProps<{
   copy: { label: string; activeLabel: string };
   origin?: { x: number; y: number };
 }>(), { origin: () => ({ x: 0, y: 0 }) });
-const emit = defineEmits<{ action: [action: WallAction]; activity: [id: ColumnId] }>();
+const emit = defineEmits<{ action: [action: WallAction]; activity: [id: ColumnId]; cardBottom: [y: number] }>();
 
 const geometry = computed(() => getColumnLayout(props.column.id));
 const visual = installationLayout.visual;
@@ -34,6 +34,27 @@ const openSubItem = computed(() => props.column.type === 'expandable' && !idle.v
 const pillStyle = computed(() => rectStyle(idle.value
   ? visual.idlePill
   : props.column.type === 'expandable' ? visual.activePill : visual.activePillSingle));
+
+// The open card grows with its content (WallOpenCard reports the height it needs) between the
+// layout's card height and visual.openCardMaxBottom; the glow rails end 22 px below it.
+const cardHeight = ref(geometry.value.active.card.height);
+function onCardHeight(needed: number) {
+  const card = geometry.value.active.card;
+  cardHeight.value = Math.min(visual.openCardMaxBottom - card.y, Math.max(card.height, needed));
+}
+watch([idle, () => props.snapshot.subItem], () => {
+  cardHeight.value = geometry.value.active.card.height;
+});
+const cardBottom = computed(() => geometry.value.active.card.y + cardHeight.value);
+watch(cardBottom, bottom => emit('cardBottom', bottom), { immediate: true });
+const cardStyle = computed(() => ({
+  ...rectStyle(geometry.value.active.card, geometry.value.section),
+  height: `calc(${cardHeight.value} * var(--wall-y))`,
+}));
+const railStyle = computed(() => ({
+  top: `calc(${visual.rail.y} * var(--wall-y))`,
+  height: `calc(${cardBottom.value + 22 - visual.rail.y} * var(--wall-y))`,
+}));
 
 function act(action: WallAction) {
   emit('action', action);
@@ -51,8 +72,8 @@ function act(action: WallAction) {
       leave-active-class="transition duration-300 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0"
     >
       <div
-        v-if="!idle" class="wall-rails pointer-events-none absolute -inset-x-[calc(8*var(--wall-x))]"
-        :style="{ top: `calc(${visual.rail.y} * var(--wall-y))`, height: `calc(${visual.rail.height} * var(--wall-y))` }" aria-hidden="true"
+        v-if="!idle" class="wall-rails pointer-events-none absolute -inset-x-[calc(8*var(--wall-x))] transition-[height] duration-300 ease-out motion-reduce:transition-none"
+        :style="railStyle" aria-hidden="true"
       >
         <span class="absolute inset-y-0 left-0 w-[calc(3*var(--wall-x))] bg-linear-to-b from-transparent via-wall-glow/70 to-transparent shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.7)]" />
         <span class="absolute inset-y-0 right-0 w-[calc(3*var(--wall-x))] bg-linear-to-b from-transparent via-wall-glow/70 to-transparent shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.7)]" />
@@ -81,7 +102,7 @@ function act(action: WallAction) {
       <div v-if="openSubItem" class="absolute flex items-center justify-center pointer-events-none" :style="rectStyle(visual.subtitle)">
         <img
           v-if="openSubItem.wordmark" :src="openSubItem.wordmark.src" :alt="copy.activeLabel"
-          class="max-w-[calc(300*var(--wall-x))] h-[calc(62*var(--wall-y))] object-contain [border-radius:calc(8*var(--wall-x))/calc(8*var(--wall-y))]"
+          class="max-w-[calc(300*var(--wall-x))] h-[calc(92*var(--wall-y))] object-contain"
         >
         <span v-else class="text-[length:calc(32*var(--wall-u))] font-extrabold uppercase tracking-wide text-white drop-shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.9)]">
           {{ copy.activeLabel }}
@@ -94,9 +115,9 @@ function act(action: WallAction) {
       leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0"
     >
       <WallOpenCard
-        v-if="!idle" class="absolute" :style="rectStyle(geometry.active.card, geometry.section)"
+        v-if="!idle" class="absolute transition-[height] duration-300 ease-out motion-reduce:transition-none" :style="cardStyle"
         :column-id="column.id" :pages="pages" :locale="snapshot.locale" :photo="snapshot.photo" :page="snapshot.page"
-        :geometry="geometry.active" @action="act"
+        :geometry="geometry.active" @action="act" @height="onCardHeight"
       />
     </Transition>
 

@@ -1,5 +1,5 @@
 {
-  "layoutVersion": "wall-v5",
+  "layoutVersion": "wall-v6",
   "protocolVersion": 2,
   "canvas": {
     "width": 2304,
@@ -66,6 +66,7 @@
       "y": 268,
       "height": 790
     },
+    "openCardMaxBottom": 1312,
     "stacked": {
       "padX": 12,
       "idle": {
@@ -484,29 +485,29 @@
       },
       "languageBar": {
         "x": 1585,
-        "y": 986,
+        "y": 996,
         "width": 262,
-        "height": 62
+        "height": 56
       },
       "languages": [
         {
           "locale": "id",
           "x": 1608,
-          "y": 993,
+          "y": 1000,
           "width": 64,
           "height": 48
         },
         {
           "locale": "en",
           "x": 1684,
-          "y": 993,
+          "y": 1000,
           "width": 64,
           "height": 48
         },
         {
           "locale": "zh-Hans",
           "x": 1760,
-          "y": 993,
+          "y": 1000,
           "width": 64,
           "height": 48
         }
@@ -514,16 +515,16 @@
       "subItems": [
         {
           "key": "distribusi",
-          "x": 1548,
-          "y": 552,
-          "width": 336,
-          "height": 203
+          "x": 1547,
+          "y": 554,
+          "width": 338,
+          "height": 227
         },
         {
           "key": "pemasaran",
-          "x": 1548,
-          "y": 763,
-          "width": 336,
+          "x": 1547,
+          "y": 789,
+          "width": 338,
           "height": 203
         }
       ],

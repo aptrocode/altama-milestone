@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ColumnId, WallAction } from '../../../shared/wall';
 import type { SensorMessage } from '~/types/sensor';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 import KioskBackground from '~/components/kiosk/KioskBackground.vue';
 import KioskStatus from '~/components/kiosk/KioskStatus.vue';
 import WallColumn from '~/components/wall/WallColumn.vue';
@@ -41,13 +41,18 @@ function stackedWindow(id: ColumnId) {
   return getColumnConfig(id).type === 'expandable' ? stackedView.open : stackedView.openSingle;
 }
 
+// Open cards grow with their content, so a stacked box also grows to the card's bottom.
+const cardBottoms = reactive<Partial<Record<ColumnId, number>>>({});
+
 function stackedBox(id: ColumnId) {
   const view = stackedWindow(id);
+  const bottom = wall.getColumnState(id) === 'idle' ? 0 : (cardBottoms[id] || 0) + 14;
+  const height = Math.max(view.height, bottom - view.y);
   return {
     '--wall-x': `calc(100cqw / ${layout.frame.columnWidth + stackedView.padX * 2})`,
     '--wall-y': 'var(--wall-x)',
     '--wall-u': 'var(--wall-x)',
-    'height': `calc(${view.height} * var(--wall-x))`,
+    'height': `calc(${height} * var(--wall-x))`,
   };
 }
 
@@ -146,7 +151,7 @@ onUnmounted(() => {
           <div class="relative overflow-hidden transition-[height] duration-500 ease-out motion-reduce:transition-none" :style="stackedBox(column.id)">
             <WallColumn
               :column="column" :snapshot="wall.columns[column.id]" :copy="wall.getColumnCopy(column.id)" :origin="stackedOrigin(column.id)"
-              @action="dispatch" @activity="controls.touchColumn"
+              @action="dispatch" @activity="controls.touchColumn" @card-bottom="cardBottoms[column.id] = $event"
             />
           </div>
         </div>
