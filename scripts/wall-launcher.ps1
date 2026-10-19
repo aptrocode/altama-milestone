@@ -1,15 +1,12 @@
-# Altama wall launcher for the event PC (Windows PowerShell 5.1+).
+# Altama wall launcher for the event PC (Windows PowerShell 5.1+), run by start-wall.bat.
 #
-#   start      build when needed, start Sensor Service + wall server, open the browser in kiosk mode,
-#              and stop everything when the browser closes, this window closes, or Ctrl+C is pressed.
-#   dashboard  open /dashboard in the same browser profile (hold settings live in its localStorage).
-#   stop       stop a running launcher and everything it started.
+# Builds when needed, starts the Sensor Service and the wall server, and opens the wall in a kiosk
+# browser. Closing this window (or Ctrl+C, or closing the browser) stops everything it started.
+# The dashboard opens inside the kiosk with Ctrl+Shift+D (same browser profile, so the same settings).
 #
 # Settings come from .env (optional): WALL_PORT (default 3300), NUXT_PUBLIC_SENSOR_ENABLED (default
 # true), NUXT_PUBLIC_SENSOR_WS_URL (default ws://127.0.0.1:<WS_PORT>), WS_PORT (default 8787).
 # Keep this file ASCII: Windows PowerShell 5.1 reads BOM-less scripts in the ANSI code page.
-
-param([ValidateSet('start', 'dashboard', 'stop')][string]$Mode = 'start')
 
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent $PSScriptRoot
@@ -26,7 +23,7 @@ function Say([string]$Text, [string]$Color = 'Gray') {
 
 function Fail([string]$Text) {
   Say $Text 'Red'
-  if ($Mode -eq 'start') { Read-Host 'Tekan Enter untuk menutup' | Out-Null }
+  Read-Host 'Tekan Enter untuk menutup' | Out-Null
   exit 1
 }
 
@@ -89,32 +86,11 @@ function Test-WallServer {
   catch { return $false }
 }
 
-# ---------------------------------------------------------------- stop / dashboard
-
-if ($Mode -eq 'stop') {
-  $launcher = Get-LauncherProcess
-  if (-not $launcher) { Say 'Wall tidak sedang berjalan.' 'Yellow'; exit 0 }
-  Say "Menghentikan launcher (PID $($launcher.Id)) beserta Sensor Service, server wall, dan browser..."
-  # The launcher's job object takes every child process down with it.
-  Stop-Process -Id $launcher.Id -Force
-  Remove-Item $PidFile -ErrorAction SilentlyContinue
-  Say 'Selesai.' 'Green'
-  exit 0
-}
-
-if ($Mode -eq 'dashboard') {
-  if (-not (Test-WallServer)) { Fail "Wall belum berjalan di $WallUrl. Jalankan start-wall.bat dulu." }
-  $browser = Find-Browser
-  if (-not $browser) { Fail 'Chrome / Edge tidak ditemukan.' }
-  Start-Process -FilePath $browser -ArgumentList @("--user-data-dir=`"$ProfileDir`"", "--app=$WallUrl/dashboard", '--no-first-run', '--no-default-browser-check')
-  exit 0
-}
-
 # ---------------------------------------------------------------- start
 
 $Host.UI.RawUI.WindowTitle = 'Altama Wall - jangan tutup jendela ini'
 
-if (Get-LauncherProcess) { Fail 'Wall sudah berjalan di jendela lain. Tutup dulu (atau jalankan stop-wall.bat).' }
+if (Get-LauncherProcess) { Fail 'Wall sudah berjalan di jendela lain. Tutup jendela itu dulu.' }
 
 $bun = (Get-Command bun -ErrorAction SilentlyContinue).Source
 if (-not $bun) { $bun = "$env:USERPROFILE\.bun\bin\bun.exe" }
@@ -175,7 +151,7 @@ public static class WallJob {
 }
 '@
 if (-not [WallJob]::KillChildrenOnExit()) {
-  Say 'Peringatan: auto-cleanup saat jendela ditutup tidak aktif. Gunakan stop-wall.bat bila perlu.' 'Yellow'
+  Say 'Peringatan: auto-cleanup saat jendela ditutup tidak aktif; tutup browser dulu sebelum jendela ini.' 'Yellow'
 }
 Set-Content -Path $PidFile -Value "$PID|$((Get-Process -Id $PID).StartTime.Ticks)" -Encoding ascii
 
@@ -250,8 +226,8 @@ try {
   $browserProcess = Start-Process -FilePath $browser -ArgumentList $browserArgs -PassThru
   Say "Wall tampil di layar (sensor input: $SensorEnabled)." 'Green'
   Write-Host ''
-  Write-Host '  Menutup wall : Alt+F4 di browser, ATAU tutup jendela ini, ATAU stop-wall.bat' -ForegroundColor Cyan
-  Write-Host '  Dashboard    : open-dashboard.bat (atur hold, sensor, kalibrasi)' -ForegroundColor Cyan
+  Write-Host '  Menutup wall : tutup jendela ini (semua ikut mati), atau Alt+F4 di browser' -ForegroundColor Cyan
+  Write-Host '  Dashboard    : Ctrl+Shift+D di wall (tekan lagi untuk kembali ke wall)' -ForegroundColor Cyan
   Write-Host "  Log          : $LogDir" -ForegroundColor Cyan
   Write-Host ''
 
