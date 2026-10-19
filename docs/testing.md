@@ -19,7 +19,7 @@ Run build, generate, and typecheck sequentially because they share Nuxt generate
 
 Behavior tests cover:
 - independent idle-only language selection, hidden-language rejection, and locale retention while open;
-- direct sub-item tiles, column independence, hidden-action rejection, repeated main input, photo-slider wrap, auto slide (interval, restart, video to its end, not activity), auto page (interval, wrap, waits for video), compact/full language bar targets and validation, pages that switch their own photos and text, and Back/reset;
+- direct sub-item tiles, column independence, hidden-action rejection, repeated main input, photo-slider wrap, auto slide (interval, restart, video to its end, not activity), auto page (interval, wrap, waits for video), compact/full/grid language bar targets, taller main, grid raise, and validation, pages that switch their own photos and text, and Back/reset;
 - per-column inactivity, R/Escape translated-idle regression, operator-close regression, cross-instance isolation, and scope disposal;
 - one-second pointer hold, native multitouch (simultaneous holds on different buttons, independent release, a second finger on a held button ignored, one pointer per button), cancellation/release/blur, native keyboard activation, updated callbacks, and listener/timer cleanup;
 - protocol v2 parsing, input destinations, tile/arrow/page/Back routing, missing main targets for columns 2/5, old-version rejection, and declared-target coordinates;

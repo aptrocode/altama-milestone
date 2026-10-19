@@ -51,6 +51,27 @@ describe('visible targets', () => {
       expect(isInsideRect(flag.rect.x + 1, flag.rect.y + 1, main.exclude!)).toBe(true);
   });
 
+  it('stacks the grid language bar 2 + 1 and grows main downward', () => {
+    const compact = visibleTargets(allIdle).filter(item => item.key.startsWith('1:'));
+    const grid = visibleTargets(allIdle, { languageBar: 'grid' }).filter(item => item.key.startsWith('1:'));
+    const flag = (locale: string) => grid.find(item => item.key === `1:language:${locale}`)!.rect;
+    const main = grid.find(item => item.key === '1:main')!;
+    const compactMain = compact.find(item => item.key === '1:main')!;
+    // ID left and EN right on one row, 中文 centred below them.
+    expect(flag('id').y).toBe(flag('en').y);
+    expect(flag('en').x).toBeGreaterThan(flag('id').x + flag('id').width);
+    expect(flag('zh-Hans').y).toBe(flag('id').y + flag('id').height + 6);
+    expect(flag('zh-Hans').x + flag('zh-Hans').width / 2).toBeCloseTo(main.rect.x + main.rect.width / 2);
+    expect(flag('id').width).toBeGreaterThan(150);
+    // The frame grows by one button row plus the gap; every flag stays inside it and excluded from main.
+    expect(main.rect.height).toBe(compactMain.rect.height + 66);
+    // The whole column moves up by the grid raise (on top of the card offset).
+    expect(main.rect.y).toBe(compactMain.rect.y - 40);
+    expect(flag('zh-Hans').y + flag('zh-Hans').height).toBeLessThan(main.rect.y + main.rect.height);
+    for (const locale of ['id', 'en', 'zh-Hans'])
+      expect(isInsideRect(flag(locale).x + 1, flag(locale).y + 1, main.exclude!)).toBe(true);
+  });
+
   it('drops the page tabs when the wall hides them (auto page)', () => {
     const open = { 1: { ...idle, phase: 'active' as const, photoCount: 3, pageCount: 2 } };
     expect(visibleTargets(open, { showPages: false }).map(item => item.key)).toEqual(['1:back', '1:previous', '1:next']);
