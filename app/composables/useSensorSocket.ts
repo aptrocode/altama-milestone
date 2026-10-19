@@ -1,3 +1,4 @@
+import type { HoldSettings } from '../../shared/hold-settings';
 import type { ColumnId, ColumnSnapshot } from '../../shared/wall';
 import type { SensorMessage } from '~/types/sensor';
 import { useSystemStore } from '~/stores/system';
@@ -10,6 +11,8 @@ export interface SensorSocketOptions {
   expectedLayoutVersion: string;
   onMessage: (message: SensorMessage) => void;
   getColumns: () => Record<ColumnId, ColumnSnapshot>;
+  /** Operator hold rules so Sensor Service applies the same dwell as pointer users. */
+  getHold?: () => HoldSettings;
   heartbeatTimeoutMs?: number;
   maxMessageBytes?: number;
 }
@@ -127,6 +130,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
         type: 'clientHello',
         layoutVersion: options.expectedLayoutVersion,
         columns: options.getColumns(),
+        ...(options.getHold ? { hold: options.getHold() } : {}),
       }));
 
       heartbeatTimer = setInterval(() => {
@@ -220,6 +224,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
       type: 'clientState',
       layoutVersion: options.expectedLayoutVersion,
       columns: options.getColumns(),
+      ...(options.getHold ? { hold: options.getHold() } : {}),
     }));
   }
 

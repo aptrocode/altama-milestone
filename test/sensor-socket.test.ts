@@ -4,6 +4,7 @@ import { useSensorSocket } from '../app/composables/useSensorSocket';
 import { installationLayout } from '../app/data/installation-layout';
 import { useSystemStore } from '../app/stores/system';
 import { useWallStore } from '../app/stores/wall';
+import { normalizeHoldSettings } from '../shared/hold-settings';
 import { sensorInput } from './helpers';
 
 class Socket {
@@ -56,6 +57,7 @@ function setup(enabled = true) {
     url: 'ws://localhost:8787',
     expectedLayoutVersion: installationLayout.layoutVersion,
     getColumns: () => wall.columns,
+    getHold: () => normalizeHoldSettings({ page: { enabled: false } }),
     onMessage,
   });
   clients.push(client);
@@ -88,7 +90,7 @@ describe('sensor socket lifecycle', () => {
   it('publishes protocol v2 and current UI state for Sensor Service target selection', () => {
     const { wall, client, socket } = setup();
     socket.open();
-    expect(JSON.parse(socket.sent[0]!)).toMatchObject({ version: 2, type: 'clientHello', columns: wall.columns });
+    expect(JSON.parse(socket.sent[0]!)).toMatchObject({ version: 2, type: 'clientHello', columns: wall.columns, hold: { page: { enabled: false, seconds: 1 } } });
     wall.dispatch({ type: 'language', columnId: 6, locale: 'en' });
     client.publishState();
     expect(JSON.parse(socket.sent[1]!)).toMatchObject({ type: 'clientState', columns: { 6: { locale: 'en' } } });

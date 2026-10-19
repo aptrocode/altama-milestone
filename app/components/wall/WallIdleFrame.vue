@@ -28,7 +28,7 @@ const tiles = computed(() => (geometry.value.subItems || []).map(tile => ({
   >
     <WallHoldButton
       v-if="geometry.main" class="absolute inset-0 [border-radius:inherit] hover:bg-white/5"
-      :outline="geometry.main" :radius="14" :aria-label="label" data-sensor-action="main"
+      :outline="geometry.main" group="card" :radius="14" :aria-label="label" data-sensor-action="main"
       @activate="emit('action', { type: 'main', columnId: column.id })"
     >
       <img
@@ -40,7 +40,7 @@ const tiles = computed(() => (geometry.value.subItems || []).map(tile => ({
       v-for="{ tile, sub } in tiles" :key="tile.key"
       class="absolute overflow-hidden [border-radius:calc(10*var(--wall-x))/calc(10*var(--wall-y))] ring-1 ring-white/30 shadow-[0_0_calc(10*var(--wall-x))_rgba(80,190,255,0.35)]"
       :class="column.captionTiles ? 'bg-[#1530b8]/70' : ''"
-      :style="rectStyle(tile, card)" :outline="tile" :radius="10" :aria-label="sub.i18n[locale].label"
+      :style="rectStyle(tile, card)" :outline="tile" group="card" :radius="10" :aria-label="sub.i18n[locale].label"
       data-sensor-action="subItem" :data-sub-item="tile.key"
       @activate="emit('action', { type: 'subItem', columnId: column.id, subItemId: tile.key })"
     >
