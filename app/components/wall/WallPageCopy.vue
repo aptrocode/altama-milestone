@@ -15,11 +15,11 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
  * becomes the visible one: when the card opens and on every page switch.
  */
 const props = defineProps<{ copy: PageCopy; locale: WallLocale; active?: boolean }>();
-/** Content height at full size in CSS px; the open card grows to fit its tallest page. */
+/** Content height at full size in CSS px; the open card grows to fit the visible page. */
 const emit = defineEmits<{ natural: [px: number] }>();
 
 // Body text is 18 logical px. The card grows with its content first (WallOpenCard); a page that
-// still overflows the tallest card shrinks in small steps (down to 80%) instead of being clipped.
+// still overflows the tallest card (y 1312) shrinks in small steps (down to 80%) instead of being clipped.
 const MIN_SCALE = 0.65;
 const root = ref<HTMLElement | null>(null);
 const scale = ref(1);

@@ -39,18 +39,20 @@ const textStyle = computed(() => ({
   right: `calc(24 * var(--wall-x))`,
 }));
 
-// The card is as tall as its tallest page needs (WallColumn clamps it between the layout's card
-// height and visual.openCardMaxBottom), so tabs and text never jump between pages. A probe of
-// 1000 logical px converts measured CSS px without being affected by the height transition.
+// The card is as tall as the visible page needs (WallColumn clamps it between the layout's card
+// height and visual.openCardMaxBottom), so a short page never carries the empty space of a long
+// one; photos and tabs sit above the text, so only the bottom edge moves (animated) on a page
+// switch. A probe of 1000 logical px converts measured CSS px without being affected by the
+// height transition.
 const probe = ref<HTMLElement | null>(null);
 const naturals = reactive<Record<number, number>>({});
 function reportHeight() {
   const pxPerUnit = (probe.value?.offsetHeight || 0) / 1000;
-  const tallest = Math.max(0, ...props.pages.map((_, index) => naturals[index] || 0));
-  if (pxPerUnit > 0 && tallest > 0)
-    emit('height', Math.ceil(textTop.value + tallest / pxPerUnit + TEXT_BOTTOM));
+  const visible = naturals[props.page] || 0;
+  if (pxPerUnit > 0 && visible > 0)
+    emit('height', Math.ceil(textTop.value + visible / pxPerUnit + TEXT_BOTTOM));
 }
-watch([naturals, textTop, () => props.pages], reportHeight);
+watch([naturals, textTop, () => props.pages, () => props.page], reportHeight);
 function onNatural(index: number, px: number) {
   naturals[index] = px;
 }
