@@ -34,7 +34,9 @@ Operator settings live in the `settings` store (serializable `hold` rules). `app
 
 `KioskBackground` owns its optional `<video>`: it pauses and releases the source on unmount and falls back to the coded gradient when media fails to load.
 
-`useSensorSocket` owns native WebSocket, reconnect, heartbeat, and session state. It publishes serializable UI snapshots so Sensor Service knows which target group is visible. Pinia contains none of those browser resources.
+`useSensorSocket` owns native WebSocket, reconnect, heartbeat, and session state. It publishes serializable UI snapshots so Sensor Service knows which target group is visible. On `/dashboard`, `useSensorAdmin` owns a separate admin socket to the same service (config, calibration, live contacts) and closes it with the Sensor section's scope. Pinia contains none of those browser resources.
+
+The Sensor Service (`sensor-service/`, Bun) is a separate process: `main.ts` owns sockets, UDP ports, the LiDAR TCP client, and timers; `service.ts` is transport-free (wall protocol, admin contract, source selection) so tests drive it directly. Geometry and visibility come from `shared/sensor-targets.ts`, the same canonical JSON the renderer validates against.
 
 ## Geometry and dependency policy
 

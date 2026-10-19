@@ -33,11 +33,11 @@ Dapat dioperasikan langsung menggunakan keyboard fisik, wireless numpad, atau re
 
 ### 2. OSC Show Control (Resolume Arena, TouchDesigner, QLab)
 
-Jalankan service penerima OSC di background:
+Jalankan Sensor Service di background (OSC show control selalu aktif di dalamnya):
 ```bash
-bun run osc:service
+bun run sensor:service
 ```
-Default port: **UDP `9000`** (OSC Input) dan **WS `8787`** (Nuxt WebSocket).
+Default port: **UDP `9000`** (OSC Input) dan **WS `8787`** (Nuxt WebSocket). `bun run osc:service` tetap jalan sebagai alias.
 
 | Alamat OSC | Argumen | Contoh Perintah | Aksi |
 | :--- | :--- | :--- | :--- |
@@ -60,11 +60,20 @@ bun run osc:send /altama/next 2
 bun run osc:send /altama/reset
 ```
 
-Sensor LiDAR integration uses **protocol v2 / wall-v5** via WebSocket at port 8787; see [docs/sensor.md](docs/sensor.md). Sensor input is disabled by default (`NUXT_PUBLIC_SENSOR_ENABLED=true` to enable).
+### 3. Sensor (Hokuyo UST-10LX, Augmenta, TUIO)
 
-### 3. Dashboard operator (`/dashboard`)
+Sensor Service yang sama membaca satu sumber sentuh: **Hokuyo UST-10LX** (Ethernet, default `192.168.0.10:10940`), **Augmenta** (UDP `12000`), atau **TUIO 1.1** (UDP `3333`). Pilih sumber, port, Invert Y, dan kalibrasi Hokuyo di `/dashboard`; setting disimpan service di `sensor-config.json`. Input wall memakai **protocol v2 / wall-v5** lewat WebSocket port 8787 dan default-nya mati (`NUXT_PUBLIC_SENSOR_ENABLED=true` untuk menyalakan). Tanpa hardware, pakai simulator:
 
-Buka `http://<alamat-wall>/dashboard` di browser yang sama dengan wall untuk mengatur hold per grup: **Card section**, **Button page**, dan **Button slider**. Tiap grup bisa ON/OFF dan diatur durasinya (0,3–5 detik). Pengaturan tersimpan di browser (localStorage), langsung dipakai wall, dan bisa di-export/import sebagai file JSON. Detail: [docs/dashboard.md](docs/dashboard.md).
+```bash
+bun run sensor:sim hokuyo --tap 212,700,1.5 --loop
+bun run sensor:sim tuio --tap 588,620
+```
+
+Detail: [docs/sensor.md](docs/sensor.md). Kalibrasi fisik dan uji multi-user di hardware event tetap wajib.
+
+### 4. Dashboard operator (`/dashboard`)
+
+Buka `http://<alamat-wall>/dashboard` di browser yang sama dengan wall. **Hold**: atur hold per grup (**Card section**, **Button page**, **Button slider**), ON/OFF dan durasi 0,3–5 detik, tersimpan di browser dan bisa di-export/import. **Sensor**: sumber, port, Invert Y, kalibrasi Hokuyo, status live, dan preview kontak, tersimpan di Sensor Service. Detail: [docs/dashboard.md](docs/dashboard.md).
 
 ## Project guide
 

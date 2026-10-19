@@ -1,12 +1,13 @@
 # Project status
 
-Updated 17 October 2026. Package version remains 0.3.0; the Summit revision (branch `codex/feat-summit-wall-theme`) is unreleased until its PR/release workflow completes.
+Updated 19 October 2026. Package version remains 0.3.0; the Summit revision (branch `codex/feat-summit-wall-theme`) is unreleased until its PR/release workflow completes.
 
 ## Implemented
 
 - Fullscreen Nuxt 4 SPA with six independent wall columns on the official 2304 × 1344 canvas, laid out after the two ALTAMA Summit 2026 "Powering Partnership" reference mockups.
 - Responsive stacked layout for phones (1 column) and tablets/portrait screens (2 columns) using the same column components at a uniform scale; the wall layout stays fixed on wide landscape screens.
-- Operator dashboard (`/dashboard`): hold on/off and 0.3–5 s per group (card, page, slider), saved in localStorage with export/import, applied live to the wall and published to Sensor Service.
+- Operator dashboard (`/dashboard`): hold on/off and 0.3–5 s per group (card, page, slider), saved in localStorage with export/import, applied live to the wall and published to Sensor Service; Sensor section for source selection, ports, Invert Y, Hokuyo calibration/background, live status, and contact preview.
+- Sensor Service (`sensor-service/`, `bun run sensor:service`): Hokuyo UST-10LX over SCIP 2.0 (streaming, checksums, reconnect), homography calibration from 4–12 measured points, background masking, clustering and tracking; Augmenta OSC v1/v2 and TUIO 1.1 cursors with Invert Y; hit-testing against wall-v5 visible targets, dwell from published hold rules, one input per contact; protocol v2 hello/status/heartbeat/input; OSC show control `/altama/*`; config in `sensor-config.json` edited from the dashboard; Hokuyo/Augmenta/TUIO simulators.
 - Content split into one file per column (`app/data/columns/`) with typed helpers and an editing guide (`docs/content.md`).
 - Per-column layouts: idle glowing frame (title pill, artwork or sub-item tiles, flags) and open layout (raised pill, sub-item name, rounded content card). Opening one column leaves the other five unchanged; the shared logo shrinks only while column 3 or 4 is open.
 - Our Brand (Tekiro, RYU, Rexco) and Distribusi & Pemasaran open their sub-items directly from idle tiles; there is no submenu.
@@ -15,7 +16,7 @@ Updated 17 October 2026. Package version remains 0.3.0; the Summit revision (bra
 - Floating flag-only Indonesian (default), English, and Simplified Chinese controls inside idle frames; open content keeps the chosen locale.
 - Geometry-derived SVG hold borders on main, tile, arrow, and page-tab targets with one-second perimeter progress, cancellation cleanup, and a static reduced-motion outline. Native keyboard activation and operator shortcuts remain available.
 - Serializable Pinia snapshots (`phase`, `locale`, `subItem`, `photo`, `page`) and a scope-owned 30-second inactivity controller.
-- Native WebSocket protocol v2 / wall-v5, semantic actions (including `page`), UI-state publication with photo/page counts, readiness/session/sequence/layout validation, and reconnect/heartbeat handling. OSC bridge supports `/altama/page`.
+- Native WebSocket protocol v2 / wall-v5, semantic actions (including `page`), UI-state publication with photo/page counts, readiness/session/sequence/layout validation, and reconnect/heartbeat handling. OSC show control (now inside the Sensor Service) supports `/altama/page`.
 - Main input rejects contacts inside the language overlay; hidden actions and legacy layout input are rejected.
 - Custom recovery/loading UI and development-only diagnostics.
 - Validation of flags, translated labels/pages, tab labels and tab-target limits, sub-item tile ownership, idle/open target bounds, and every referenced media file.
@@ -24,6 +25,8 @@ Previous GSAP milestone reveal/cache, 19 sketch/color pairs, fixture generation,
 
 ## Dependencies
 
+The Sensor Service adds no dependencies (Bun `node:net`/`node:dgram`/`Bun.serve`); its typecheck uses the existing TypeScript.
+
 Installed project versions: Nuxt 4.6.1, Vue 3.5.43, Vue Router 5.4.0, Pinia 4.0.3, @pinia/nuxt 1.0.2, @nuxt/fonts 1.0.1, Tailwind/Vite plugin 4.3.3. Tooling: Vitest 5.0.4, vue-tsc 3.3.13, TypeScript 6.0.3, ESLint 10.12.0, @antfu/eslint-config 9.5.1.
 
 GSAP and direct Sharp dependencies were removed in the preceding repair. The Summit revision adds no dependencies; it swaps the `@nuxt/fonts` families from League Spartan to Roboto Condensed and Oswald. Use package.json/bun.lock as the source of truth rather than assuming this snapshot is perpetually latest.
@@ -31,6 +34,8 @@ GSAP and direct Sharp dependencies were removed in the preceding repair. The Sum
 Nuxt, Vue, Pinia, Bun, and Tailwind documentation was fetched through Context7 on 1 October 2026. SVG pathLength/stroke normalization was checked against MDN. See [style](./style.md) and [design](./design.md) for references.
 
 ## Validation
+
+- Sensor Service (19 October 2026): lint, typecheck (Nuxt and `sensor-service/tsconfig.json`), 96 tests across 13 files, asset validation, build, and generate passed. End-to-end with the dev server and simulators: dashboard calibration of the simulated UST-10LX (four corners via **Ambil**), held taps opening columns 1/4/6, a language flag, and two simultaneous hands; Augmenta v2 and v1 with flipped Y and Invert Y; TUIO cursors. Dashboard checked at 1440 px and 375 px without horizontal overflow. No physical sensor was available.
 
 - Summit revision 2 (per-page photos, hold arrows/tabs, stacked layout): lint, typecheck, 55 tests across seven files, asset/config validation (17 provisional media files), production build, and static generation passed.
 - Headless Edge at 2304 × 1344, 1920 × 1080, and 1600 × 900: every visible target (main, 18 flags, 5 tiles, Back, arrows, page tabs) matches wall-v5 within 0.06 logical px after transitions settle, and every open page fits its card (fonts scale with the smaller axis). Single-column pills sit 20 px above their card; rails keep one height on every column.
@@ -43,7 +48,7 @@ Nuxt, Vue, Pinia, Bun, and Tailwind documentation was fetched through Context7 o
 
 - Final assets from the design team: background video/sequence, official logos, illustrations, and full-resolution photos. Current files are mockup crops (photos 226 × 124 px, one per slider; other slots are numbered placeholders) and need client approval. Column 1's 1996 page and Tekiro PAGE 2 are placeholders, and RYU, Rexco, and Pemasaran have no reference content yet.
 - Client approval of company claims and the drafted English/Chinese translations.
-- Sensor Service implementation/deployment for protocol v2/wall-v5 and physical recalibration. Old services are intentionally rejected; deploy matching renderer/service geometry together before enabling input.
+- Sensor Service deployment on the event PC (supervised start), physical calibration of the UST-10LX, background capture, and tuning of cluster/tracker thresholds against real hands; multi-user tests. Only synthetic scans have been tested. Old services are intentionally rejected; deploy matching renderer/service geometry together before enabling input.
 - Final PC/LED/Hokuyo hardware, multi-user coverage, occlusion, and long-duration performance validation.
 - Offline Chinese fonts/media, browser startup/supervision, endpoint configuration, rollout, and rollback.
 

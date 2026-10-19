@@ -8,9 +8,9 @@ Read only the document needed:
 - `docs/style.md`: Tailwind-first utilities, scoped CSS exceptions, and logical spacing.
 - `docs/language.md`: per-column translations and flag accessibility.
 - `docs/content.md`: where each column's text, pages, photos, and tiles live and how to replace them.
-- `docs/dashboard.md`: operator dashboard (`/dashboard`) for hold on/off and duration per button group.
+- `docs/dashboard.md`: operator dashboard (`/dashboard`): hold per button group and Sensor Service source/calibration.
 - `docs/assets.md`: current assets, placeholders, and naming.
-- `docs/sensor.md`: protocol v2 / wall-v5 and Sensor Service rollout.
+- `docs/sensor.md`: protocol v2 / wall-v5, Sensor Service sources (Hokuyo, Augmenta, TUIO), calibration, admin contract, simulators, and rollout.
 - `docs/testing.md`: commands, regression coverage, and browser acceptance.
 - `docs/push.md`: issue, branch, commit, PR, review, merge, and cleanup.
 - `docs/release.md`: version, tag, metadata, and release notes when release is requested.
@@ -22,15 +22,15 @@ Read only the document needed:
 - `app/components/wall/`: `WallColumn` (orchestrator), `WallIdleFrame` (mockup 1), `WallOpenCard` (mockup 2: page photo slider, arrows, page tabs), `WallPageCopy`, `WallColumnPill`, `WallColumnIcon`, `WallLanguageSwitcher`, and `WallHoldButton`.
 - `app/composables/useWallController.ts`: shared action API and per-instance inactivity timers; `useStackedLayout.ts`: phone/tablet media query.
 - `app/data/columns/`: one file per column (labels, artwork, tiles, pages, photos) plus `helpers.ts`; `app/types/wall-content.ts`: their types.
-- `app/stores/`: serializable wall, system, and operator-settings state only; `app/plugins/settings-storage.client.ts` persists settings to localStorage; `app/pages/dashboard.vue`: operator dashboard.
+- `app/stores/`: serializable wall, system, and operator-settings state only; `app/plugins/settings-storage.client.ts` persists settings to localStorage; `app/pages/dashboard.vue` with `app/components/dashboard/` (Hold, Sensor sections) and `app/composables/useSensorAdmin.ts` (admin socket): operator dashboard.
 - `app/data/wall-config.ts`: column order and lookups (`getColumnConfig`, `getColumnPages`); `wall-media.ts`: background/logo/skyline/wave sweeps; `wall-copy.ts`: interface translations/flags.
-- `shared/wall.ts`: column IDs, languages, snapshots, and actions; `shared/hold-settings.ts`: hold groups, defaults, limits; `shared/osc.ts`: OSC Show Control packet parser.
+- `shared/wall.ts`: column IDs, languages, snapshots, and actions; `shared/hold-settings.ts`: hold groups, defaults, limits; `shared/osc.ts`: OSC packet parser/builder and show-control mapping; `shared/sensor-config.ts`: Sensor Service config and dashboard admin contract; `shared/sensor-targets.ts`: visible targets and hit-testing.
 - `shared/installation-layout.json`: canonical sensor canvas and target geometry.
 - `app/utils/`: strict sensor parsing and hold lifecycle.
 - `app/error.vue`: global recovery UI.
 - `public/`: local flags plus provisional `summit/`, `illustrations/`, `brands/`, and `photos/` media; `scripts/check-assets.ts`: active asset/config validation.
-- `scripts/sensor-osc-service.ts`: OSC UDP show control bridge (Resolume/TouchDesigner) to WebSocket protocol v2.
-- `test/`: state, controller, hold, protocol, osc, socket, and layout-query regression tests.
+- `sensor-service/`: Sensor Service (`main.ts` transports; `service.ts` wall/admin protocol; `hokuyo.ts`/`scip.ts` UST-10LX; `calibration.ts`, `tracker.ts`, `normalized.ts` Augmenta/TUIO, `dwell.ts`, `show-control.ts`; `simulate.ts`/`synthetic.ts` simulators). `scripts/send-osc.ts`: OSC command sender.
+- `test/`: state, controller, hold, protocol, osc, socket, layout-query, and Sensor Service regression tests.
 
 ## Invariants
 
@@ -44,7 +44,7 @@ Read only the document needed:
 - LED/wide landscape (≥ 1024 px wide and wider than tall): fill both viewport dimensions; no outer container, maximum width, fixed aspect ratio, letterboxing, or scrolling. Narrower or portrait screens use the stacked responsive layout (uniform scale per column, vertical scroll). Never let the stacked layout change wall geometry.
 - Prefer Tailwind classes, including arbitrary values/CSS variables. Use Vue `<style scoped>` only when utilities cannot express the behavior; keep main.css for global theme/document rules. Read `docs/style.md` before styling changes.
 - Geometry changes require a new layout version and matching Sensor Service deployment.
-- Raw LiDAR, tracking, calibration, and hit detection belong to Sensor Service.
+- Raw LiDAR, tracking, calibration, and hit detection belong to Sensor Service (`sensor-service/`); its config lives in the service's `sensor-config.json`, never in the renderer. Keep `sensor-service/` free of Nuxt/Vue imports.
 - Photos, artwork, and copy are provisional until client approval; every media entry carries `approved`. Do not describe placeholders or mockup crops as final assets. Edit content only in `app/data/columns/` (see `docs/content.md`).
 - Do not recreate atoms/molecules/organisms or add barrel files without a concrete need.
 - The `dika/` directory is an isolated sandbox for Dika's prototypes and mockups. Agents and contributors working in `dika/` must not edit or delete any files outside `dika/`. All production kiosk changes belong exclusively to @adydetra (Dewa).
