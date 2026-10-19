@@ -27,7 +27,7 @@ Dapat dioperasikan langsung menggunakan keyboard fisik, wireless numpad, atau re
 | **`→`** / **`PageDown`** | Keyboard / Clicker | Geser ke foto berikutnya (*Next*) pada kolom aktif paling kiri |
 | **`Enter`** / **`Space`** | Keyboard / Remote | Langsung mengaktifkan tombol yang sedang fokus (tanpa hold) |
 | **`D`** | Keyboard | Menampilkan/menyembunyikan panel diagnostik sensor (mode dev) |
-| **Mouse / Touch Hold (1s)** | Layar Sentuh / Mouse | Tahan 1 detik untuk membuka kolom, tile Tekiro/RYU/Rexco/Distribusi/Pemasaran, panah foto, dan tombol halaman (halaman ikut mengganti foto) |
+| **Mouse / Touch Hold** | Layar Sentuh / Mouse | Tahan (default 1 detik, bisa diatur/dimatikan di `/dashboard`) untuk membuka kolom, tile Tekiro/RYU/Rexco/Distribusi/Pemasaran, panah foto, dan tombol halaman |
 
 *Inaktivitas*: Setiap kolom yang aktif akan otomatis kembali ke standby setelah **30 detik** tanpa interaksi. Membuka satu kolom tidak mengubah lima kolom lainnya.
 
@@ -61,6 +61,10 @@ bun run osc:send /altama/reset
 ```
 
 Sensor LiDAR integration uses **protocol v2 / wall-v5** via WebSocket at port 8787; see [docs/sensor.md](docs/sensor.md). Sensor input is disabled by default (`NUXT_PUBLIC_SENSOR_ENABLED=true` to enable).
+
+### 3. Dashboard operator (`/dashboard`)
+
+Buka `http://<alamat-wall>/dashboard` di browser yang sama dengan wall untuk mengatur hold per grup: **Card section**, **Button page**, dan **Button slider**. Tiap grup bisa ON/OFF dan diatur durasinya (0,3–5 detik). Pengaturan tersimpan di browser (localStorage), langsung dipakai wall, dan bisa di-export/import sebagai file JSON. Detail: [docs/dashboard.md](docs/dashboard.md).
 
 ## Project guide
 

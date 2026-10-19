@@ -30,7 +30,7 @@ const firstPage = page([provisional('/photos/about-altama/photo-1.webp'), PHOTO_
 });
 ```
 
-- Arrows move between the photos of the current page. Page tabs switch the whole page (photos and text) and restart its slider. Both are one-second hold targets.
+- Arrows move between the photos of the current page. Page tabs switch the whole page (photos and text) and restart its slider. Both are hold targets whose on/off and duration are set on `/dashboard` (default 1 s).
 - Tabs show only when there are two pages (the wall-v5 layout has two tab targets). Arrows show only when the current page has two or more photo slots. A page with `[]` photos shows text only; keep the photo frame consistent across pages of one card.
 - `PHOTO_PLACEHOLDER` renders a numbered "FOTO 0n" slot until a real photo exists.
 - `blocks` accepts a paragraph string, `{ bullets: [{ lead, text }] }` (text under a bold lead), `{ inline: true, bullets }` (compact `lead: text` lines), or `{ numbered: [...] }`.

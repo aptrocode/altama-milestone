@@ -8,6 +8,7 @@ Read only the document needed:
 - `docs/style.md`: Tailwind-first utilities, scoped CSS exceptions, and logical spacing.
 - `docs/language.md`: per-column translations and flag accessibility.
 - `docs/content.md`: where each column's text, pages, photos, and tiles live and how to replace them.
+- `docs/dashboard.md`: operator dashboard (`/dashboard`) for hold on/off and duration per button group.
 - `docs/assets.md`: current assets, placeholders, and naming.
 - `docs/sensor.md`: protocol v2 / wall-v5 and Sensor Service rollout.
 - `docs/testing.md`: commands, regression coverage, and browser acceptance.
@@ -21,9 +22,9 @@ Read only the document needed:
 - `app/components/wall/`: `WallColumn` (orchestrator), `WallIdleFrame` (mockup 1), `WallOpenCard` (mockup 2: page photo slider, arrows, page tabs), `WallPageCopy`, `WallColumnPill`, `WallColumnIcon`, `WallLanguageSwitcher`, and `WallHoldButton`.
 - `app/composables/useWallController.ts`: shared action API and per-instance inactivity timers; `useStackedLayout.ts`: phone/tablet media query.
 - `app/data/columns/`: one file per column (labels, artwork, tiles, pages, photos) plus `helpers.ts`; `app/types/wall-content.ts`: their types.
-- `app/stores/`: serializable wall and system state only.
+- `app/stores/`: serializable wall, system, and operator-settings state only; `app/plugins/settings-storage.client.ts` persists settings to localStorage; `app/pages/dashboard.vue`: operator dashboard.
 - `app/data/wall-config.ts`: column order and lookups (`getColumnConfig`, `getColumnPages`); `wall-media.ts`: background/logo/skyline/wave sweeps; `wall-copy.ts`: interface translations/flags.
-- `shared/wall.ts`: column IDs, languages, snapshots, and actions; `shared/osc.ts`: OSC Show Control packet parser.
+- `shared/wall.ts`: column IDs, languages, snapshots, and actions; `shared/hold-settings.ts`: hold groups, defaults, limits; `shared/osc.ts`: OSC Show Control packet parser.
 - `shared/installation-layout.json`: canonical sensor canvas and target geometry.
 - `app/utils/`: strict sensor parsing and hold lifecycle.
 - `app/error.vue`: global recovery UI.
@@ -37,7 +38,7 @@ Read only the document needed:
 - Six independent columns follow the Summit reference mockups: idle shows a glowing frame with title pill, artwork or sub-item tiles, and flags; opening a column changes only that column (pill rises, content card appears). Columns 2/5 open sub-items directly from idle tiles; there is no submenu. Do not show numeric badges. Each content page owns its photo slider and text: arrows move photos inside the page; page tabs switch the whole page (photos and text).
 - Fresh loads start idle in Indonesian. After 30 seconds without interaction, only that column returns to idle/Indonesian.
 - Manual Back and R/Escape preserve languages immediately; non-default idle columns still have an inactivity timer.
-- Mouse/touch hold for one second on main, tile, photo-arrow, and page-tab targets, with border progress following the button's corners; release/cancel clears it. Language and Back activate on a normal press. Native Enter/Space activate directly. Sensor Service applies equivalent dwell to the hold targets.
+- Hold rules come from the operator dashboard (`shared/hold-settings.ts`, default on and 1 s): group `card` (main + tiles), `page` (page tabs), `slider` (photo arrows); each can be turned off (normal press) or set to 0.3–5 s. Border progress follows the button's corners and the configured duration; release/cancel clears it. Language and Back always activate on a normal press; Enter/Space always activate directly. Never hardcode hold behaviour in components; use `WallHoldButton` with a `group`. Sensor Service receives the same rules (`hold` in client messages).
 - Browser, operator, and sensor actions use `useWallController.dispatch`; UI never mutates Pinia directly.
 - Keep DOM, sockets, timers, Promises, and animation instances outside Pinia state. Dispose browser resources with their owning scope.
 - LED/wide landscape (≥ 1024 px wide and wider than tall): fill both viewport dimensions; no outer container, maximum width, fixed aspect ratio, letterboxing, or scrolling. Narrower or portrait screens use the stacked responsive layout (uniform scale per column, vertical scroll). Never let the stacked layout change wall geometry.

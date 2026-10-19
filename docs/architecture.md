@@ -28,7 +28,9 @@ One `getColumnCopy` resolver chooses the localized column label and open sub-ite
 
 `useWallController` owns a private timer map per instance. Accepted actions and activity restart only that column's 30-second timer. Idle Indonesian columns need no timer; idle English/Chinese columns do. Timeout restores the default sub-item, photo/page zero, idle phase, and Indonesian. R/Escape reschedules any remaining language timer. Scope disposal clears every timer.
 
-`bindHold` owns pointer listeners and progress/completion timers. Leaving, cancellation (including a scroll gesture in the stacked layout), pointer release, blur, or unmount cancels incomplete contact. The directive updates its callback when Vue updates it. Native keyboard/assistive clicks activate immediately. `useStackedLayout` owns one `matchMedia` listener and removes it when its scope is disposed.
+Operator settings live in the `settings` store (serializable `hold` rules). `app/plugins/settings-storage.client.ts` loads them from localStorage, saves every change, and applies changes from other tabs through the `storage` event (an app-lifetime listener). `WallHoldButton` reads its group's rule; KioskStage publishes the rules to Sensor Service whenever they change.
+
+`bindHold` owns pointer listeners and progress/completion timers and takes `{ onActivate, enabled, durationMs }`; when hold is disabled a normal pointer press activates. Leaving, cancellation (including a scroll gesture in the stacked layout), pointer release, blur, or unmount cancels incomplete contact. The directive updates its callback when Vue updates it. Native keyboard/assistive clicks activate immediately. `useStackedLayout` owns one `matchMedia` listener and removes it when its scope is disposed.
 
 `KioskBackground` owns its optional `<video>`: it pauses and releases the source on unmount and falls back to the coded gradient when media fails to load.
 
