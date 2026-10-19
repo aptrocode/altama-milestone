@@ -20,7 +20,7 @@ const emit = defineEmits<{ natural: [px: number] }>();
 
 // Body text is 18 logical px. The card grows with its content first (WallOpenCard); a page that
 // still overflows the tallest card shrinks in small steps (down to 80%) instead of being clipped.
-const MIN_SCALE = 0.8;
+const MIN_SCALE = 0.65;
 const root = ref<HTMLElement | null>(null);
 const scale = ref(1);
 let observer: ResizeObserver | undefined;
@@ -40,7 +40,8 @@ function fit() {
     lastNatural = natural;
     emit('natural', natural);
   }
-  while (element.scrollHeight > element.clientHeight + 1 && next > MIN_SCALE) {
+  const available = element.parentElement?.clientHeight || element.clientHeight;
+  while (element.scrollHeight > available + 1 && next > MIN_SCALE) {
     next = Math.max(MIN_SCALE, Math.round((next - 0.02) * 100) / 100);
     element.style.setProperty('--copy-scale', String(next));
   }
@@ -52,8 +53,11 @@ onMounted(() => {
   fit();
   document.fonts?.ready.then(fit);
   observer = new ResizeObserver(fit);
-  if (root.value)
+  if (root.value) {
     observer.observe(root.value);
+    if (root.value.parentElement)
+      observer.observe(root.value.parentElement);
+  }
 });
 watch(() => [props.copy, props.locale], () => nextTick(fit));
 onBeforeUnmount(() => observer?.disconnect());
@@ -112,26 +116,24 @@ watch(() => [props.active, props.copy], () => {
         </template>
       </dl>
 
-      <ul v-else-if="'bullets' in block" class="grid gap-[calc(9*var(--wall-y))]">
+      <ul v-else-if="'bullets' in block" class="grid gap-[calc(7*var(--wall-y)*var(--copy-scale,1))]">
         <li
           v-for="(item, itemIndex) in block.bullets" :key="item.lead" data-reveal :style="reveal(index, itemIndex)"
           class="relative pl-[calc(13*var(--wall-x))] before:absolute before:left-0 before:top-[0.36em] before:size-[calc(6*var(--wall-u))] before:rounded-full before:bg-wall-glow before:shadow-[0_0_calc(6*var(--wall-u))_rgba(102,204,255,0.8)]"
-          :class="item.image ? 'grid grid-cols-[1fr_auto] items-center gap-x-[calc(10*var(--wall-x))]' : ''"
         >
-          <!-- Text on the left; an item's logo sits in a fixed box at the right edge, so every logo lines up. -->
           <div class="min-w-0">
             <!-- A lead without text is the item itself, so it reads as body text rather than a label. -->
             <span
               class="block"
               :class="item.text ? 'text-[0.82em] font-bold uppercase leading-[1.15] tracking-[0.05em] text-wall-glow' : 'font-semibold leading-[1.25] text-white'"
             >{{ item.lead }}</span>
-            <span v-if="item.text" class="mt-[calc(2*var(--wall-y))] block leading-[1.25] text-white">{{ item.text }}</span>
+            <span v-if="item.text" class="mt-[calc(2*var(--wall-y)*var(--copy-scale,1))] block leading-[1.25] text-white">{{ item.text }}</span>
           </div>
           <div
             v-if="item.image"
-            class="flex w-[calc(78*var(--wall-x))] h-[calc(36*var(--wall-y))] items-center justify-center rounded-md bg-white/95 px-[calc(5*var(--wall-x))] py-[calc(3*var(--wall-y))] shadow-[0_2px_8px_rgba(0,0,0,0.35)]"
+            class="mt-[calc(3*var(--wall-y)*var(--copy-scale,1))] inline-flex h-[calc(28*var(--wall-y)*var(--copy-scale,1))] max-w-full items-center justify-center rounded-md bg-white/95 px-[calc(6*var(--wall-x))] py-[calc(2*var(--wall-y))] shadow-[0_2px_8px_rgba(0,0,0,0.35)]"
           >
-            <img :src="item.image.src" :alt="item.lead" class="max-h-full max-w-full object-contain" @load="fit">
+            <img :src="item.image.src" :alt="item.lead" class="h-full w-auto max-w-full object-contain" @load="fit">
           </div>
         </li>
       </ul>
