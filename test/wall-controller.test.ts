@@ -29,6 +29,25 @@ describe('column inactivity lifecycle', () => {
     expect(wall.getColumnState(1)).toBe('idle');
   });
 
+  it('uses the dashboard reset time, read when each timer starts', () => {
+    const wall = useWallStore(createPinia());
+    let seconds = 10;
+    const scope = effectScope();
+    scopes.push(scope);
+    const controls = scope.run(() => useWallController(wall, { resetDelayMs: () => seconds * 1000 }))!;
+    controls.dispatch({ type: 'main', columnId: 1 });
+    vi.advanceTimersByTime(9999);
+    expect(wall.getColumnState(1)).toBe('active');
+    vi.advanceTimersByTime(1);
+    expect(wall.getColumnState(1)).toBe('idle');
+    seconds = 45;
+    controls.dispatch({ type: 'main', columnId: 1 });
+    vi.advanceTimersByTime(44999);
+    expect(wall.getColumnState(1)).toBe('active');
+    vi.advanceTimersByTime(1);
+    expect(wall.getColumnState(1)).toBe('idle');
+  });
+
   it('rearms locale-only idle timers after R/Escape', () => {
     const { wall, controls } = setup();
     controls.dispatch({ type: 'language', columnId: 1, locale: 'en' });

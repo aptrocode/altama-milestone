@@ -22,7 +22,7 @@ Behavior tests cover:
 - one-second pointer hold, cancellation/release/blur, native keyboard activation, updated callbacks, and listener/timer cleanup;
 - protocol v2 parsing, input destinations, tile/arrow/page/Back routing, missing main targets for columns 2/5, old-version rejection, and declared-target coordinates;
 - the stacked-layout media query and its listener cleanup;
-- hold settings normalization/defaults, configurable dwell, hold-off normal press, and the `hold` payload sent to Sensor Service;
+- hold settings normalization/defaults (language and back off), wall settings clamping, configurable reset delay, card-offset target shifting and input validation, configurable dwell, hold-off normal press, and the `hold` payload sent to Sensor Service;
 - socket handshake, readiness/calibration gating, replay/sequence/session/layout rejection, outgoing state snapshots, heartbeat failure, stop cleanup, and disabled reconnect;
 - Sensor Service: SCIP 2.0 checksums/encoding/stream parsing and PP, homography calibration (exact, noisy, degenerate), scan filtering/background/clustering/tracking, Augmenta v1/v2 and TUIO 1.1 parsing with release/timeouts and Invert Y, per-column target visibility and hit priority, dwell from hold rules with the off/language minimum, one input per contact, jitter grace, calibration suppression, admin/wall separation, config merge, OSC show control, and frames validated by the renderer's own parser (including a synthetic UST-10LX end-to-end run).
 
@@ -37,7 +37,7 @@ Do not add tests that merely restate markup. Use controlled timers for behavior 
 5. Hold a main, tile, photo-arrow, or page-tab button for one second; its border traces the matching outline. Short/cancelled contact clears progress and does nothing. Reduced motion uses a static border until completion. Enter and Space activate focused buttons. Digits 1–6 open/go back in their own column.
 6. Holding a Tekiro/RYU/Rexco or Distribusi/Pemasaran tile opens it directly; opening any column leaves the other five unchanged. Back returns to idle.
 7. Arrows move only the current page's photos and wrap; page tabs (column 1, Tekiro) switch photos and text together and restart the slider. Both restart only that column's timer.
-8. At 30 seconds without activity, only the inactive column returns to idle/Indonesian. R/Escape retain languages immediately and their timers still expire.
+8. At the dashboard reset time (default 30 seconds) without activity, only the inactive column returns to idle/Indonesian. R/Escape retain languages immediately and their timers still expire.
 9. Compare every visible `data-sensor-action` button with its shared logical rectangle, including tiles, Back, arrows, and page tabs. Arrows align with the photo frame's vertical midpoint; flags float inside and centered only while idle, without reducing content height. Scale x/y independently for previews.
 10. Unknown route shows the custom error page; recovery returns to the wall.
 11. Production console has no application errors. D diagnostics stay hidden by default and show actual sensor state in development.
@@ -51,4 +51,4 @@ Do not add tests that merely restate markup. Use controlled timers for behavior 
 
 ## External production checks
 
-Deploy Sensor Service v2/wall-v6, recalibrate against measured targets, and test on hardware. Validate offline font/media availability, extended memory/performance, multi-user occlusion, startup supervision, and rollback. Photos/translations need client approval separately.
+Deploy Sensor Service v2/wall-v7, recalibrate against measured targets, and test on hardware. Validate offline font/media availability, extended memory/performance, multi-user occlusion, startup supervision, and rollback. Photos/translations need client approval separately.

@@ -16,13 +16,15 @@ function read(): unknown {
  */
 export default defineNuxtPlugin(() => {
   const settings = useSettingsStore();
-  const stored = read() as { hold?: unknown } | null;
+  const stored = read() as { hold?: unknown; wall?: unknown } | null;
   if (stored?.hold)
     settings.setHold(stored.hold);
+  if (stored?.wall)
+    settings.setWall(stored.wall);
 
   settings.$subscribe((_mutation, state) => {
     try {
-      window.localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify({ hold: state.hold }));
+      window.localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify({ hold: state.hold, wall: state.wall }));
     }
     catch {
       // Private mode or full storage: settings still apply for this session.
@@ -32,7 +34,8 @@ export default defineNuxtPlugin(() => {
   window.addEventListener('storage', (event) => {
     if (event.key !== SETTINGS_STORAGE_KEY)
       return;
-    const next = read() as { hold?: unknown } | null;
+    const next = read() as { hold?: unknown; wall?: unknown } | null;
     settings.setHold(next?.hold ?? null);
+    settings.setWall(next?.wall ?? null);
   });
 });

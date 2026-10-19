@@ -41,7 +41,7 @@ Dapat dioperasikan langsung menggunakan keyboard fisik, wireless numpad, atau re
 | **`D`** | Keyboard | Menampilkan/menyembunyikan panel diagnostik sensor (mode dev) |
 | **Mouse / Touch Hold** | Layar Sentuh / Mouse | Tahan (default 1 detik, bisa diatur/dimatikan di `/dashboard`) untuk membuka kolom, tile Tekiro/RYU/Rexco/Distribusi/Pemasaran, panah foto, dan tombol halaman |
 
-*Inaktivitas*: Setiap kolom yang aktif akan otomatis kembali ke standby setelah **30 detik** tanpa interaksi. Membuka satu kolom tidak mengubah lima kolom lainnya.
+*Inaktivitas*: Setiap kolom yang aktif akan otomatis kembali ke standby setelah **30 detik** (bisa diubah di `/dashboard`) tanpa interaksi. Membuka satu kolom tidak mengubah lima kolom lainnya.
 
 ### 2. OSC Show Control (Resolume Arena, TouchDesigner, QLab)
 
@@ -74,7 +74,7 @@ bun run osc:send /altama/reset
 
 ### 3. Sensor (Hokuyo UST-10LX, Augmenta, TUIO)
 
-Sensor Service yang sama membaca satu sumber sentuh: **Hokuyo UST-10LX** (Ethernet, default `192.168.0.10:10940`), **Augmenta** (UDP `12000`), atau **TUIO 1.1** (UDP `3333`). Pilih sumber, port, Invert Y, dan kalibrasi Hokuyo di `/dashboard`; setting disimpan service di `sensor-config.json`. Input wall memakai **protocol v2 / wall-v6** lewat WebSocket port 8787 dan default-nya mati (`NUXT_PUBLIC_SENSOR_ENABLED=true` untuk menyalakan). Tanpa hardware, pakai simulator:
+Sensor Service yang sama membaca satu sumber sentuh: **Hokuyo UST-10LX** (Ethernet, default `192.168.0.10:10940`), **Augmenta** (UDP `12000`), atau **TUIO 1.1** (UDP `3333`). Pilih sumber, port, Invert Y, dan kalibrasi Hokuyo di `/dashboard`; setting disimpan service di `sensor-config.json`. Input wall memakai **protocol v2 / wall-v7** lewat WebSocket port 8787 dan default-nya mati (`NUXT_PUBLIC_SENSOR_ENABLED=true` untuk menyalakan). Tanpa hardware, pakai simulator:
 
 ```bash
 bun run sensor:sim hokuyo --tap 212,700,1.5 --loop

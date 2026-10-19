@@ -5,8 +5,10 @@ import type { WallAction } from './wall';
  * - card: idle main card and sub-item tiles (columns 2/5)
  * - page: page tabs (1960/1996, PAGE 1/PAGE 2)
  * - slider: photo arrows
+ * - language: language flags (off by default: a normal press)
+ * - back: the open card's close (✕) button (off by default)
  */
-export const HOLD_GROUPS = ['card', 'page', 'slider'] as const;
+export const HOLD_GROUPS = ['card', 'page', 'slider', 'language', 'back'] as const;
 export type HoldGroup = typeof HOLD_GROUPS[number];
 
 export interface HoldRule {
@@ -24,15 +26,19 @@ export const DEFAULT_HOLD_SETTINGS: HoldSettings = {
   card: { enabled: true, seconds: 1 },
   page: { enabled: true, seconds: 1 },
   slider: { enabled: true, seconds: 1 },
+  language: { enabled: false, seconds: 1 },
+  back: { enabled: false, seconds: 1 },
 };
 
-/** Which hold rule applies to a wall action; actions not listed (language, back) never hold. */
+/** Which hold rule applies to each wall action. */
 export const HOLD_GROUP_BY_ACTION: Partial<Record<WallAction['type'], HoldGroup>> = {
   main: 'card',
   subItem: 'card',
   page: 'page',
   previous: 'slider',
   next: 'slider',
+  language: 'language',
+  back: 'back',
 };
 
 function normalizeRule(value: unknown, fallback: HoldRule): HoldRule {

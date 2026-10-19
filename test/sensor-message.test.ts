@@ -81,6 +81,12 @@ describe('sensor protocol v2 and shared action routing', () => {
     expect(parseSensorMessage(sensorInput({ type: 'language', columnId: 1, locale: 'en' }, { x: idFlag.x })).ok).toBe(false);
   });
 
+  it('validates input against targets shifted by the dashboard card offset', () => {
+    const point = JSON.parse(sensorInput({ type: 'back', columnId: 3 }));
+    expect(parseSensorMessage(sensorInput({ type: 'back', columnId: 3 }, { y: point.y + 60 }), 60).ok).toBe(true);
+    expect(parseSensorMessage(sensorInput({ type: 'back', columnId: 3 }), 60).ok).toBe(false);
+  });
+
   it('does not route an idle language overlay contact to the underlying main action', () => {
     const flag = JSON.parse(sensorInput({ type: 'language', columnId: 1, locale: 'en' }));
     expect(parseSensorMessage(sensorInput({ type: 'main', columnId: 1 }, { x: flag.x, y: flag.y })).ok).toBe(false);

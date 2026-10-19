@@ -9,6 +9,7 @@ import { DEFAULT_HOLD_SETTINGS, normalizeHoldSettings } from '../shared/hold-set
 import { mergeSensorConfig, normalizeSensorConfig, SENSOR_ADMIN_VERSION } from '../shared/sensor-config';
 import { SENSOR_LAYOUT_VERSION, visibleTargets } from '../shared/sensor-targets';
 import { COLUMN_IDS, WALL_LOCALES } from '../shared/wall';
+import { normalizeWallSettings } from '../shared/wall-settings';
 import { buildCalibration } from './calibration';
 import { DwellEngine } from './dwell';
 import { AugmentaReceiver, normalizedToWall, TuioReceiver } from './normalized';
@@ -36,7 +37,7 @@ export interface SensorServiceOptions {
 const BACKGROUND_SCANS = 40;
 const BACKGROUND_TIMEOUT_MS = 5_000;
 
-interface WallState { columns: Partial<Record<ColumnId, PublishedColumn>>; hold: HoldSettings }
+interface WallState { columns: Partial<Record<ColumnId, PublishedColumn>>; hold: HoldSettings; cardOffsetY: number }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -184,7 +185,7 @@ export class SensorService {
     this.columns = state?.columns ?? {};
     this.hold = state?.hold ?? normalizeHoldSettings(DEFAULT_HOLD_SETTINGS);
     this.engine.setHold(this.hold);
-    this.engine.setTargets(visibleTargets(this.columns), this.now());
+    this.engine.setTargets(visibleTargets(this.columns, state?.cardOffsetY ?? 0), this.now());
   }
 
   private send(client: ServiceClient, data: string) {
@@ -249,6 +250,7 @@ export class SensorService {
       const state: WallState = {
         columns: { ...previous?.columns, ...parseColumns(data.columns) },
         hold: data.hold !== undefined ? normalizeHoldSettings(data.hold) : previous?.hold ?? normalizeHoldSettings(DEFAULT_HOLD_SETTINGS),
+        cardOffsetY: data.cardOffsetY !== undefined ? normalizeWallSettings({ cardOffsetY: data.cardOffsetY }).cardOffsetY : previous?.cardOffsetY ?? 0,
       };
       this.walls.set(client, state);
       if (this.primaryWall === client)

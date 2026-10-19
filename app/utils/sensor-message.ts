@@ -1,6 +1,6 @@
 import type { ColumnId, WallAction, WallLocale } from '../../shared/wall';
 import type { SensorMessage, SensorParseResult } from '~/types/sensor';
-import { getActionRects, installationLayout, isPointInsideCanvas, isPointInsideRect } from '~/data/installation-layout';
+import { getActionRects, installationLayout, isPointInsideCanvas, isPointInsideRect, offsetRect } from '~/data/installation-layout';
 import { WALL_CONFIG } from '~/data/wall-config';
 import { SENSOR_PROTOCOL_VERSION } from '~/types/sensor';
 import { COLUMN_IDS, WALL_LOCALES } from '../../shared/wall';
@@ -44,7 +44,8 @@ function failure(error: string): SensorParseResult {
   return { ok: false, error };
 }
 
-export function parseSensorMessage(raw: string): SensorParseResult {
+/** `cardOffsetY` is the dashboard card offset the wall is drawn with; input must hit the shifted target. */
+export function parseSensorMessage(raw: string, cardOffsetY = 0): SensorParseResult {
   let value: unknown;
   try {
     value = JSON.parse(raw);
@@ -101,10 +102,10 @@ export function parseSensorMessage(raw: string): SensorParseResult {
     return failure('coordinates are outside the logical canvas');
   const x = value.x as number;
   const y = value.y as number;
-  if (!getActionRects(action).some(rect => isPointInsideRect(x, y, rect)))
+  if (!getActionRects(action, cardOffsetY).some(rect => isPointInsideRect(x, y, rect)))
     return failure('coordinates do not match the declared target');
   const geometry = installationLayout.columns.find(column => column.id === action.columnId)!;
-  if (action.type === 'main' && isPointInsideRect(x, y, geometry.languageBar))
+  if (action.type === 'main' && isPointInsideRect(x, y, offsetRect(geometry.languageBar, cardOffsetY)))
     return failure('language overlay occludes the main target');
 
   return { ok: true, message: { ...envelope, type: 'input', action, pointerId: value.pointerId, x, y } };

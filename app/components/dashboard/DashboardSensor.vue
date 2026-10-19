@@ -2,7 +2,8 @@
 import type { SensorConfig, SensorSource } from '../../../shared/sensor-config';
 import { computed, ref, watch } from 'vue';
 import { useSensorAdmin } from '~/composables/useSensorAdmin';
-import { installationLayout } from '~/data/installation-layout';
+import { installationLayout, offsetRect } from '~/data/installation-layout';
+import { useSettingsStore } from '~/stores/settings';
 import { MAX_CALIBRATION_POINTS, normalizeSensorConfig, SENSOR_ADMIN_VERSION, SENSOR_CANVAS, SENSOR_SOURCES } from '../../../shared/sensor-config';
 
 const props = defineProps<{ url: string }>();
@@ -60,7 +61,9 @@ const calibrationText = computed(() => {
   return measured > 4 ? `± ${rms} px` : '✓';
 });
 
-const columns = installationLayout.columns.map(column => column.card);
+const settings = useSettingsStore();
+// Idle frames where the wall draws them, i.e. moved by the saved card offset.
+const columns = computed(() => installationLayout.columns.map(column => offsetRect(column.card, settings.wall.cardOffsetY)));
 const nearest = computed(() => admin.sensorPoints.value[0] ?? null);
 
 function save() {

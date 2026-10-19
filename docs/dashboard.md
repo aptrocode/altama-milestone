@@ -9,11 +9,22 @@
 | Card section (`card`) | Idle main card of columns 1/3/4/6 and the sub-item tiles of columns 2/5 | On, 1.0 s |
 | Button page (`page`) | Page tabs (1960 / 1996, PAGE 1 / PAGE 2) | On, 1.0 s |
 | Button slider (`slider`) | Photo arrows | On, 1.0 s |
+| Bahasa (`language`) | Language flags (ID / EN / 中文) | **Off** |
+| Tombol close (`back`) | The open card's ✕ button | **Off** |
 
 - **On** with a duration (0.3–5 s, 0.1 s steps): the button must be held; the border progress animation follows the duration.
 - **Off**: the button activates on a normal press.
-- Language flags and Back (✕) always activate on a normal press. Keyboard Enter/Space always activate immediately.
-- **Simpan** applies the edit, **Default** loads the defaults (save to apply), **Export/Import** download or load `altama-hold-settings.json` as a backup or to copy settings to another machine.
+- Keyboard Enter/Space always activate immediately, whatever the rule.
+- **Simpan** applies the edit, **Default** loads the defaults (save to apply), **Export/Import** download or load `altama-settings.json` (hold and wall settings; older `altama-hold-settings.json` files still import) as a backup or to copy settings to another machine.
+
+## Wall
+
+| Setting | Effect | Default |
+| --- | --- | --- |
+| Reset otomatis | Seconds without interaction before a column returns to idle/Indonesian; one value for every column (5–600 s) | 30 s |
+| Posisi Y card | Moves every column (frame, title, card, controls) up (−) or down (+) on the LED wall, −120 to 120 logical px; ↑/↓ nudge by 10. Open cards still end at y 1312 on screen; the phone/tablet layout ignores it | 0 |
+
+Both are saved with the hold rules by the same **Simpan**.
 
 ### Storage and scope
 
@@ -25,13 +36,14 @@
 ### Code
 
 - `shared/hold-settings.ts`: groups, defaults, limits, `normalizeHoldSettings`, and the action → group map (`HOLD_GROUP_BY_ACTION`).
+- `shared/wall-settings.ts`: reset seconds and card offset, limits, `normalizeWallSettings`.
 - `app/stores/settings.ts`: serializable settings state.
 - `app/components/wall/WallHoldButton.vue`: reads its `group` rule and passes `{ enabled, durationMs }` to the `v-hold` directive (`app/utils/hold.ts`).
 - `app/components/dashboard/DashboardHold.vue`: the form.
 
 To add another setting, extend the store state and normalizer, persist it through the same plugin, and add a section to the dashboard.
 
-The wall publishes the current rules as `hold` in every `clientHello`/`clientState` message, so LiDAR input follows the same configuration. See [sensor](./sensor.md).
+The wall publishes the current rules as `hold` and the card offset as `cardOffsetY` in every `clientHello`/`clientState` message, so LiDAR input follows the same configuration and targets move with the cards. See [sensor](./sensor.md).
 
 ## Sensor
 

@@ -17,9 +17,9 @@ import { useWallStore } from '~/stores/wall';
 import { COLUMN_IDS } from '../../../shared/wall';
 
 const wall = useWallStore();
-const controls = useWallController(wall);
 const system = useSystemStore();
 const settings = useSettingsStore();
+const controls = useWallController(wall, { resetDelayMs: () => settings.wall.resetSeconds * 1000 });
 const runtimeConfig = useRuntimeConfig();
 const showDiagnostics = ref(false);
 const layout = installationLayout;
@@ -76,6 +76,7 @@ const sensorSocket = useSensorSocket({
   onMessage: handleSensorMessage,
   getColumns: () => wall.publishedColumns,
   getHold: () => settings.hold,
+  getCardOffsetY: () => settings.wall.cardOffsetY,
 });
 
 wall.$subscribe(() => sensorSocket.publishState(), { flush: 'post' });
@@ -136,7 +137,7 @@ onUnmounted(() => {
       >
       <WallColumn
         v-for="column in WALL_CONFIG.columns" :key="column.id"
-        :column="column" :snapshot="wall.columns[column.id]" :copy="wall.getColumnCopy(column.id)"
+        :column="column" :snapshot="wall.columns[column.id]" :copy="wall.getColumnCopy(column.id)" :offset-y="settings.wall.cardOffsetY"
         @action="dispatch" @activity="controls.touchColumn"
       />
     </template>
