@@ -17,6 +17,8 @@ export interface SensorSocketOptions {
   getCardOffsetY?: () => number;
   /** Whether open cards show their close button (Sensor Service drops the Back target when not). */
   getShowClose?: () => boolean;
+  /** Slider arrows shown (dashboard); false drops the previous/next targets. */
+  getShowArrows?: () => boolean;
   heartbeatTimeoutMs?: number;
   maxMessageBytes?: number;
 }
@@ -224,6 +226,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
       ...(options.getHold ? { hold: options.getHold() } : {}),
       ...(options.getCardOffsetY ? { cardOffsetY: options.getCardOffsetY() } : {}),
       ...(options.getShowClose ? { showClose: options.getShowClose() } : {}),
+      ...(options.getShowArrows ? { showArrows: options.getShowArrows() } : {}),
     });
   }
 

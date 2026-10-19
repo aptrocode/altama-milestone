@@ -123,7 +123,7 @@ function act(action: WallAction) {
       <WallOpenCard
         v-if="!idle" class="absolute transition-[height] duration-300 ease-out motion-reduce:transition-none" :style="cardStyle"
         :column-id="column.id" :pages="pages" :locale="snapshot.locale" :photo="snapshot.photo" :page="snapshot.page"
-        :geometry="geometry.active" @action="act" @height="onCardHeight"
+        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" @action="act" @height="onCardHeight"
       />
     </Transition>
 

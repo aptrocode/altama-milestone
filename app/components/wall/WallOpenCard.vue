@@ -11,7 +11,8 @@ import { isVideoSrc } from '~/utils/media';
 
 /**
  * Open-card content: each page owns a photo slider and text. Arrows move photos inside the
- * current page; page tabs switch the whole page. Both are one-second hold targets.
+ * current page (or photos auto-slide when the dashboard hides the arrows); page tabs switch the
+ * whole page. Both are hold targets.
  */
 const props = defineProps<{
   columnId: ColumnId;
@@ -20,6 +21,8 @@ const props = defineProps<{
   photo: number;
   page: number;
   geometry: { card: Rect; previous: Rect; next: Rect; pages: (Rect & { page: number })[] };
+  /** Dashboard switch; when off the photos auto-slide (useWallController) instead. */
+  showArrows?: boolean;
 }>();
 const emit = defineEmits<{ action: [action: WallAction]; height: [logical: number] }>();
 
@@ -27,7 +30,7 @@ const visual = installationLayout.visual;
 const current = computed(() => props.pages[props.page] || props.pages[0]);
 // Keep the frame for every page of the card so tabs and text never jump between pages.
 const hasPhotoFrame = computed(() => props.pages.some(item => item.photos.length > 0));
-const hasSlider = computed(() => (current.value?.photos.length || 0) > 1);
+const hasSlider = computed(() => props.showArrows !== false && (current.value?.photos.length || 0) > 1);
 const hasPages = computed(() => props.pages.length > 1);
 const tabs = computed(() => props.geometry.pages.slice(0, props.pages.length));
 // Text starts below whichever of the photo frame and page tabs are present.

@@ -3,7 +3,7 @@ import type { WallSettings } from '../../../shared/wall-settings';
 import DashboardFormActions from '~/components/dashboard/DashboardFormActions.vue';
 import { useSettingsDraft } from '~/composables/useSettingsDraft';
 import { useSettingsStore } from '~/stores/settings';
-import { CARD_OFFSET_Y, DEFAULT_WALL_SETTINGS, normalizeWallSettings, RESET_SECONDS } from '../../../shared/wall-settings';
+import { AUTO_SLIDE_SECONDS, CARD_OFFSET_Y, DEFAULT_WALL_SETTINGS, normalizeWallSettings, RESET_SECONDS } from '../../../shared/wall-settings';
 
 const settings = useSettingsStore();
 const { draft, dirty, status, save, restoreDefaults } = useSettingsDraft({
@@ -87,6 +87,42 @@ function nudgeOffset(delta: number) {
         >
           <span class="inline-block size-5 rounded-full bg-white shadow transition-transform" :class="draft.showClose ? 'translate-x-6' : 'translate-x-1'" />
         </button>
+      </li>
+      <li class="flex flex-wrap items-center gap-4 px-4 py-4" data-wall-setting="showArrows">
+        <div class="min-w-0 flex-1 basis-56">
+          <p class="font-bold text-white">
+            Tombol slider
+          </p>
+          <p class="text-sm text-sky-100/60">
+            Tampilkan panah foto di card yang terbuka. Jika off, foto berganti otomatis (auto slide).
+          </p>
+        </div>
+        <button
+          type="button" role="switch" :aria-checked="draft.showArrows" aria-label="Tampilkan tombol slider"
+          class="relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors"
+          :class="draft.showArrows ? 'bg-emerald-400' : 'bg-white/20'"
+          @click="draft = normalizeWallSettings({ ...draft, showArrows: !draft.showArrows })"
+        >
+          <span class="inline-block size-5 rounded-full bg-white shadow transition-transform" :class="draft.showArrows ? 'translate-x-6' : 'translate-x-1'" />
+        </button>
+      </li>
+      <li v-if="!draft.showArrows" class="flex flex-wrap items-center gap-4 px-4 py-4" data-wall-setting="autoSlideSeconds">
+        <div class="min-w-0 flex-1 basis-56">
+          <p class="font-bold text-white">
+            Auto slide
+          </p>
+          <p class="text-sm text-sky-100/60">
+            Foto berikutnya muncul setiap sekian detik ({{ AUTO_SLIDE_SECONDS.min }}–{{ AUTO_SLIDE_SECONDS.max }} s). Hitungan mulai ulang setiap kali foto atau page berganti.
+          </p>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <input
+            type="number" inputmode="numeric" :class="field"
+            aria-label="Detik auto slide" :min="AUTO_SLIDE_SECONDS.min" :max="AUTO_SLIDE_SECONDS.max" :step="AUTO_SLIDE_SECONDS.step"
+            :value="draft.autoSlideSeconds" @change="set('autoSlideSeconds', ($event.target as HTMLInputElement).value)"
+          >
+          <span class="text-sm text-sky-100/60">s</span>
+        </div>
       </li>
     </ul>
 

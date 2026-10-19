@@ -7,17 +7,23 @@
  *   wall (negative moves them up). The stacked phone/tablet layout ignores it.
  * - showClose: whether open cards show their close (✕) button. When off, Sensor Service drops the
  *   Back touch target too; columns still close on inactivity, operator keys, and OSC.
+ * - showArrows: whether open cards show their photo slider arrows. When off, Sensor Service drops
+ *   the previous/next targets and photos advance on their own every autoSlideSeconds.
+ * - autoSlideSeconds: auto-slide interval while the arrows are off.
  */
 export interface WallSettings {
   resetSeconds: number;
   cardOffsetY: number;
   showClose: boolean;
+  showArrows: boolean;
+  autoSlideSeconds: number;
 }
 
 export const RESET_SECONDS = { min: 5, max: 600, step: 1 } as const;
 export const CARD_OFFSET_Y = { min: -120, max: 120, step: 2 } as const;
+export const AUTO_SLIDE_SECONDS = { min: 2, max: 60, step: 1 } as const;
 
-export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true };
+export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, showArrows: true, autoSlideSeconds: 5 };
 
 function clampNumber(value: unknown, fallback: number, limits: { min: number; max: number; step: number }): number {
   const raw = typeof value === 'number' && Number.isFinite(value) ? value : fallback;
@@ -32,5 +38,7 @@ export function normalizeWallSettings(value: unknown): WallSettings {
     resetSeconds: clampNumber(source.resetSeconds, DEFAULT_WALL_SETTINGS.resetSeconds, RESET_SECONDS),
     cardOffsetY: clampNumber(source.cardOffsetY, DEFAULT_WALL_SETTINGS.cardOffsetY, CARD_OFFSET_Y),
     showClose: typeof source.showClose === 'boolean' ? source.showClose : DEFAULT_WALL_SETTINGS.showClose,
+    showArrows: typeof source.showArrows === 'boolean' ? source.showArrows : DEFAULT_WALL_SETTINGS.showArrows,
+    autoSlideSeconds: clampNumber(source.autoSlideSeconds, DEFAULT_WALL_SETTINGS.autoSlideSeconds, AUTO_SLIDE_SECONDS),
   };
 }

@@ -33,12 +33,17 @@ describe('visible targets', () => {
   it('drops the Back target when the wall hides its close button', () => {
     const open = { 1: { ...idle, phase: 'active' as const, photoCount: 3, pageCount: 2 } };
     expect(visibleTargets(open).map(item => item.key)).toContain('1:back');
-    expect(visibleTargets(open, 0, false).map(item => item.key)).toEqual(['1:previous', '1:next', '1:page:1']);
+    expect(visibleTargets(open, { showClose: false }).map(item => item.key)).toEqual(['1:previous', '1:next', '1:page:1']);
+  });
+
+  it('drops the photo arrows when the wall hides them (auto slide)', () => {
+    const open = { 1: { ...idle, phase: 'active' as const, photoCount: 3, pageCount: 2 } };
+    expect(visibleTargets(open, { showArrows: false }).map(item => item.key)).toEqual(['1:back', '1:page:1']);
   });
 
   it('moves every target with the dashboard card offset', () => {
     const base = visibleTargets(allIdle);
-    const raised = visibleTargets(allIdle, -40);
+    const raised = visibleTargets(allIdle, { offsetY: -40 });
     expect(raised.map(item => item.rect.y)).toEqual(base.map(item => item.rect.y - 40));
     expect(hitTest(136, 1017 - 40, raised)?.key).toBe('1:language:id');
     expect(hitTest(212, 700 - 40, raised)?.key).toBe('1:main');
