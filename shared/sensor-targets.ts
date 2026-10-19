@@ -73,7 +73,8 @@ export function visibleTargets(snapshots: Partial<Record<ColumnId, PublishedColu
     }
     const pageCount = snapshot.pageCount ?? 0;
     if (pageCount > 1) {
-      for (const page of geometry.active.pages.filter(item => item.page < pageCount))
+      // The visible page's tab is inert, so only the other tab is a target.
+      for (const page of geometry.active.pages.filter(item => item.page < pageCount && item.page !== snapshot.page))
         targets.push(target({ type: 'page', columnId, page: page.page }, `${columnId}:page:${page.page}`, page, offsetY));
     }
   }

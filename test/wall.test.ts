@@ -94,6 +94,11 @@ describe('wall state and actions', () => {
     expect(wall.columns[2]).toMatchObject({ photo: 0, page: 1 });
     expect(wall.publishedColumns[2]).toMatchObject({ page: 1, photoCount: photoCount(2, 1, 'tekiro'), pageCount: 2 });
     expect(wall.dispatch({ type: 'page', columnId: 2, page: 2 })).toBe(false);
+    // Re-selecting the visible page is rejected and keeps the slider where it is.
+    wall.dispatch({ type: 'next', columnId: 2 });
+    const photo = wall.columns[2].photo;
+    expect(wall.dispatch({ type: 'page', columnId: 2, page: 1 })).toBe(false);
+    expect(wall.columns[2]).toMatchObject({ page: 1, photo });
     expect(wall.dispatch({ type: 'page', columnId: 3, page: 1 })).toBe(false);
   });
 

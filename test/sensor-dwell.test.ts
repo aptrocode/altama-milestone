@@ -24,14 +24,16 @@ describe('visible targets', () => {
     const open = (photoCount: number, pageCount: number) => visibleTargets({ 1: { ...idle, phase: 'active', photoCount, pageCount } }).map(item => item.key);
     expect(open(1, 1)).toEqual(['1:back']);
     expect(open(3, 1)).toEqual(['1:back', '1:previous', '1:next']);
-    expect(open(1, 2)).toEqual(['1:back', '1:page:0', '1:page:1']);
+    // The visible page's tab (page 0 here) is inert, so only the other tab is a target.
+    expect(open(1, 2)).toEqual(['1:back', '1:page:1']);
+    expect(visibleTargets({ 1: { ...idle, phase: 'active', page: 1, photoCount: 1, pageCount: 2 } }).map(item => item.key)).toEqual(['1:back', '1:page:0']);
     expect(visibleTargets({})).toEqual([]);
   });
 
   it('drops the Back target when the wall hides its close button', () => {
     const open = { 1: { ...idle, phase: 'active' as const, photoCount: 3, pageCount: 2 } };
     expect(visibleTargets(open).map(item => item.key)).toContain('1:back');
-    expect(visibleTargets(open, 0, false).map(item => item.key)).toEqual(['1:previous', '1:next', '1:page:0', '1:page:1']);
+    expect(visibleTargets(open, 0, false).map(item => item.key)).toEqual(['1:previous', '1:next', '1:page:1']);
   });
 
   it('moves every target with the dashboard card offset', () => {
