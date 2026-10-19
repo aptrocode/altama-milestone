@@ -7,6 +7,7 @@ import WallHoldButton from '~/components/wall/WallHoldButton.vue';
 import WallPageCopy from '~/components/wall/WallPageCopy.vue';
 import { installationLayout, rectStyle } from '~/data/installation-layout';
 import { WALL_COPY } from '~/data/wall-copy';
+import { isVideoSrc } from '~/utils/media';
 
 /**
  * Open-card content: each page owns a photo slider and text. Arrows move photos inside the
@@ -56,9 +57,6 @@ watch([naturals, textTop, () => props.pages, () => props.page], reportHeight);
 function onNatural(index: number, px: number) {
   naturals[index] = px;
 }
-function isVideo(src?: string) {
-  return src ? /\.(?:mp4|webm|ogg)$/i.test(src) : false;
-}
 </script>
 
 <template>
@@ -75,7 +73,7 @@ function isVideo(src?: string) {
         :class="photo === index ? 'opacity-100' : 'opacity-0'" :aria-hidden="photo !== index" :data-photo="index + 1"
       >
         <video
-          v-if="item && isVideo(item.src)"
+          v-if="item && isVideoSrc(item.src)"
           :src="item.src"
           autoplay
           loop

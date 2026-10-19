@@ -129,15 +129,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
       lastSequence = -1;
       lastSeenAt = Date.now();
       system.setSocketStatus('connected');
-      nextSocket.send(JSON.stringify({
-        version: SENSOR_PROTOCOL_VERSION,
-        type: 'clientHello',
-        layoutVersion: options.expectedLayoutVersion,
-        columns: options.getColumns(),
-        ...(options.getHold ? { hold: options.getHold() } : {}),
-        ...(options.getCardOffsetY ? { cardOffsetY: options.getCardOffsetY() } : {}),
-        ...(options.getShowClose ? { showClose: options.getShowClose() } : {}),
-      }));
+      nextSocket.send(clientMessage('clientHello'));
 
       heartbeatTimer = setInterval(() => {
         if (Date.now() - lastSeenAt <= heartbeatTimeoutMs)
@@ -222,18 +214,23 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
     start();
   }
 
-  function publishState() {
-    if (stopped || socket?.readyState !== WebSocket.OPEN)
-      return;
-    socket.send(JSON.stringify({
+  /** The wall's state and the dashboard settings that affect touch, as one protocol message. */
+  function clientMessage(type: 'clientHello' | 'clientState') {
+    return JSON.stringify({
       version: SENSOR_PROTOCOL_VERSION,
-      type: 'clientState',
+      type,
       layoutVersion: options.expectedLayoutVersion,
       columns: options.getColumns(),
       ...(options.getHold ? { hold: options.getHold() } : {}),
       ...(options.getCardOffsetY ? { cardOffsetY: options.getCardOffsetY() } : {}),
       ...(options.getShowClose ? { showClose: options.getShowClose() } : {}),
-    }));
+    });
+  }
+
+  function publishState() {
+    if (stopped || socket?.readyState !== WebSocket.OPEN)
+      return;
+    socket.send(clientMessage('clientState'));
   }
 
   return { start, stop, reconnect, publishState };

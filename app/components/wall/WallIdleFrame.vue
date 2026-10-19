@@ -5,6 +5,7 @@ import { computed, onBeforeUnmount, ref } from 'vue';
 import WallHoldButton from '~/components/wall/WallHoldButton.vue';
 import WallLanguageSwitcher from '~/components/wall/WallLanguageSwitcher.vue';
 import { getColumnLayout, rectStyle } from '~/data/installation-layout';
+import { isVideoSrc } from '~/utils/media';
 
 /**
  * Idle frame (reference mockup 1): one full-frame hold target with artwork for single columns,
@@ -28,7 +29,7 @@ const NEON_FRAME = [
   'shadow-[0_0_0_calc(0.6*var(--wall-x))_#f2f8ff,0_0_calc(1.5*var(--wall-x))_calc(2*var(--wall-x))_#1a8cff,0_0_calc(1*var(--wall-x))_calc(5.5*var(--wall-x))_#0044f2,0_0_calc(6*var(--wall-x))_calc(5*var(--wall-x))_rgba(0,60,255,0.35),inset_0_0_0_calc(1.2*var(--wall-x))_#eef6ff,inset_0_0_calc(1.5*var(--wall-x))_calc(2.6*var(--wall-x))_#3aa0ff,inset_0_0_calc(2*var(--wall-x))_calc(9.5*var(--wall-x))_#0436ff,inset_0_0_calc(8*var(--wall-x))_calc(11*var(--wall-x))_rgba(0,40,230,0.55)]',
 ].join(' ');
 
-const cardVideo = computed(() => /\.(?:webm|mp4)$/.test(props.column.illustration?.src || ''));
+const cardVideo = computed(() => isVideoSrc(props.column.illustration?.src));
 const videoElement = ref<HTMLVideoElement | null>(null);
 
 // Vue runs unmount hooks when the frame's leave transition starts (WallColumn keeps the element

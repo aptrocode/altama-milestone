@@ -12,5 +12,5 @@
     "isolatedModules": true,
     "skipLibCheck": true
   },
-  "include": ["./**/*.ts", "../shared/**/*.ts", "../scripts/send-osc.ts"]
+  "include": ["./**/*.ts", "../shared/**/*.ts", "../scripts/send-osc.ts", "../scripts/dev.ts"]
 }
