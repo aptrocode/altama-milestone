@@ -73,6 +73,8 @@ const revealStart = computed(() => {
 });
 /** An item's logos (`image` and/or `images`), shown at the right edge of its row. */
 const logos = (item: BulletItem): MediaAsset[] => [...(item.image ? [item.image] : []), ...(item.images ?? [])];
+/** A single logo sits beside the text unless the item asks for it below. */
+const logoBeside = (item: BulletItem) => logos(item).length === 1 && !item.logosBelow;
 const reveal = (blockIndex: number, itemIndex = 0) => ({ '--reveal-i': revealStart.value[blockIndex]! + itemIndex });
 
 // Restart the reveal each time this page becomes the visible one (open, page tab, language).
@@ -122,12 +124,12 @@ watch(() => [props.active, props.copy], () => {
         <li
           v-for="(item, itemIndex) in block.bullets" :key="item.lead" data-reveal :style="reveal(index, itemIndex)"
           class="grid min-w-0 items-center gap-x-[calc(10*var(--wall-x))]"
-          :class="logos(item).length === 1 ? 'grid-cols-[minmax(0,1fr)_auto]' : 'grid-cols-[minmax(0,1fr)]'"
+          :class="logoBeside(item) ? 'grid-cols-[minmax(0,1fr)_auto]' : 'grid-cols-[minmax(0,1fr)]'"
         >
           <!-- The dot belongs to the text block, so it stays on the first text line even when a
                taller logo centres the row. One logo sits in a fixed box at the right edge (so the
-               logos of a list line up); several logos (e.g. marketplaces) form a row under the text
-               that always fits the card. -->
+               logos of a list line up); several logos (e.g. marketplaces), or one wide logo marked
+               `logosBelow`, sit under the text and always fit the card. -->
           <div class="relative min-w-0 pl-[calc(13*var(--wall-x))] before:absolute before:left-0 before:top-[0.36em] before:size-[calc(6*var(--wall-u))] before:rounded-full before:bg-wall-glow before:shadow-[0_0_calc(6*var(--wall-u))_rgba(102,204,255,0.8)]">
             <!-- A lead without text is the item itself, so it reads as body text rather than a label. -->
             <span
@@ -137,10 +139,18 @@ watch(() => [props.active, props.copy], () => {
             <span v-if="item.text" class="mt-[calc(2*var(--wall-y)*var(--copy-scale,1))] block leading-[1.25] text-white">{{ item.text }}</span>
           </div>
           <div
-            v-if="logos(item).length === 1"
+            v-if="logoBeside(item)"
             class="flex w-[calc(78*var(--wall-x))] h-[calc(36*var(--wall-y))] items-center justify-center rounded-md bg-white/95 px-[calc(5*var(--wall-x))] py-[calc(3*var(--wall-y))] shadow-[0_2px_8px_rgba(0,0,0,0.35)]"
           >
             <img :src="logos(item)[0]!.src" :alt="item.lead" class="max-h-full max-w-full object-contain" @load="fit">
+          </div>
+          <div
+            v-else-if="logos(item).length === 1"
+            class="mt-[calc(5*var(--wall-y)*var(--copy-scale,1))] pl-[calc(13*var(--wall-x))]"
+          >
+            <div class="w-full rounded-md bg-white px-[calc(8*var(--wall-x))] py-[calc(6*var(--wall-y))] shadow-[0_2px_8px_rgba(0,0,0,0.35)]">
+              <img :src="logos(item)[0]!.src" :alt="item.lead" class="block h-auto w-full object-contain" @load="fit">
+            </div>
           </div>
           <div
             v-else-if="logos(item).length > 1"

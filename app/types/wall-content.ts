@@ -12,8 +12,12 @@ export type PhotoSlot = MediaAsset | null;
 export interface BulletItem {
   lead: string;
   text?: string;
+  /** One logo; shown at the right edge of the row unless `logosBelow` is set. */
   image?: MediaAsset;
+  /** Several logos; always shown in a row under the text. */
   images?: MediaAsset[];
+  /** Put a single logo under the text too (wide logos such as JIS · ANSI · DIN). */
+  logosBelow?: boolean;
 }
 
 /**
