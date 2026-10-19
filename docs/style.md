@@ -26,7 +26,7 @@ Stacked layout (phones/tablets): KioskStage redefines `--wall-x`/`--wall-y`/`--w
 All open-card text renders through `WallPageCopy`, the only place that styles it. Content files choose a block type; they never add styling.
 
 - Paragraph: white, medium weight, 1.3 line height.
-- `bullets`: a 6 px glow **dot** marks each item (never a bar or a native disc). The lead is a small uppercase glow label (0.82 em, bold, tracked) and its text sits under it in white, aligned with the label, not under the dot. A lead without text is plain white body text.
+- `bullets`: a 6 px glow **dot** marks each item (never a bar or a native disc). The lead is a small uppercase glow label (0.82 em, bold, tracked) and its text sits under it in white, aligned with the label, not under the dot. A lead without text is plain white body text. An item with an `image` (a logo, e.g. a certificate or award) becomes two columns: the text on the left and the logo in a fixed 78 × 36 white box at the right edge, so every logo in a list lines up.
 - `inline` bullets: a two-column fact table (glow label | white value) with hairline dividers; use it for short facts such as year, SKU count, or certification.
 - `numbered`: glow `01`, `02` numbers in a fixed column with the text beside them.
 - Motion: paragraphs and list items fade up one after another in reading order (70 ms apart, 460 ms each) whenever a page becomes visible: on open, page tab, and language. Scoped keyframes in `WallPageCopy`, off under reduced motion.
