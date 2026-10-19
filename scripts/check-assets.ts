@@ -38,6 +38,14 @@ function checkPages(owner: string, pages: ContentPage[] | undefined) {
     });
     for (const locale of WALL_LOCALES) {
       const copy = page.i18n[locale];
+      copy?.blocks.forEach((block) => {
+        if (typeof block === 'object' && 'bullets' in block) {
+          block.bullets.forEach((item, bIndex) => {
+            if (item.image)
+              media.push({ owner: `${owner} page ${index + 1} bullet ${bIndex + 1} image`, asset: item.image });
+          });
+        }
+      });
       const texts = copy?.blocks.flatMap(blockTexts) || [];
       if (!texts.length || texts.some(text => !text.trim()))
         errors.push(`${owner} page ${index + 1}: incomplete ${locale} copy`);

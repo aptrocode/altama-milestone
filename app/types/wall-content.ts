@@ -12,6 +12,7 @@ export type PhotoSlot = MediaAsset | null;
 export interface BulletItem {
   lead: string;
   text?: string;
+  image?: MediaAsset;
 }
 
 /**
