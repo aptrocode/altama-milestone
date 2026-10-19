@@ -128,7 +128,7 @@ function isVideo(src?: string) {
         v-for="(item, index) in pages" :key="index"
         class="absolute inset-0 overflow-hidden text-white transition-opacity duration-300 motion-reduce:transition-none"
         :class="page === index ? 'opacity-100' : 'opacity-0'"
-        :aria-hidden="page !== index" :copy="item.i18n[locale]" :locale="locale"
+        :aria-hidden="page !== index" :copy="item.i18n[locale]" :locale="locale" :active="page === index"
         @natural="onNatural(index, $event)"
       />
     </div>

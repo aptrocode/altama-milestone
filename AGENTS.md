@@ -10,7 +10,7 @@ Read only the document needed:
 - `docs/content.md`: where each column's text, pages, photos, and tiles live and how to replace them.
 - `docs/dashboard.md`: operator dashboard (`/dashboard`): hold per button group and Sensor Service source/calibration.
 - `docs/assets.md`: current assets, placeholders, and naming.
-- `docs/sensor.md`: protocol v2 / wall-v6, Sensor Service sources (Hokuyo, Augmenta, TUIO), calibration, admin contract, simulators, and rollout.
+- `docs/sensor.md`: protocol v2 / wall-v7, Sensor Service sources (Hokuyo, Augmenta, TUIO), calibration, admin contract, simulators, and rollout.
 - `docs/testing.md`: commands, regression coverage, and browser acceptance.
 - `docs/push.md`: issue, branch, commit, PR, review, merge, and cleanup.
 - `docs/release.md`: version, tag, metadata, and release notes when release is requested.
@@ -36,10 +36,11 @@ Read only the document needed:
 
 - All six columns select language while idle, content, and carousel position independently.
 - Six independent columns follow the Summit reference mockups: idle shows a glowing frame with title pill, artwork or sub-item tiles, and flags; opening a column changes only that column (pill rises, content card appears). Columns 2/5 open sub-items directly from idle tiles; there is no submenu. Do not show numeric badges. Each content page owns its photo slider and text: arrows move photos inside the page; page tabs switch the whole page (photos and text).
-- Fresh loads start idle in Indonesian. After 30 seconds without interaction, only that column returns to idle/Indonesian.
+- Fresh loads start idle in Indonesian. After the dashboard reset time (`shared/wall-settings.ts`, default 30 s, one value for every column) without interaction, only that column returns to idle/Indonesian.
 - Manual Back and R/Escape preserve languages immediately; non-default idle columns still have an inactivity timer.
 - Open-card text follows the card-copy system in `docs/style.md` (dot bullets, glow labels, fact tables, 18 px body); only `WallPageCopy` styles it. Open cards grow with their tallest page up to y 1312 before any text shrinks; never clip copy. Card artwork videos and expandable tiles must line up with the layout targets (see "Card artwork" in `docs/style.md`).
-- Hold rules come from the operator dashboard (`shared/hold-settings.ts`, default on and 1 s): group `card` (main + tiles), `page` (page tabs), `slider` (photo arrows); each can be turned off (normal press) or set to 0.3–5 s. Border progress follows the button's corners and the configured duration; release/cancel clears it. Language and Back always activate on a normal press; Enter/Space always activate directly. Never hardcode hold behaviour in components; use `WallHoldButton` with a `group`. Sensor Service receives the same rules (`hold` in client messages).
+- Hold rules come from the operator dashboard (`shared/hold-settings.ts`, default on and 1 s): group `card` (main + tiles), `page` (page tabs), `slider` (photo arrows), `language` (flags), `back` (✕); each can be turned off (normal press) or set to 0.3–5 s; language and back default off. Border progress follows the button's corners and the configured duration; release/cancel clears it. Enter/Space always activate directly. Never hardcode hold behaviour in components; use `WallHoldButton` with a `group`. Sensor Service receives the same rules (`hold` in client messages).
+- Card position is the dashboard `cardOffsetY` (−120 to 120 logical px), never a hardcoded shift: WallColumn moves the whole column by it on the LED wall, Sensor Service shifts its targets by it, and the wall validates input against the shifted rects.
 - Browser, operator, and sensor actions use `useWallController.dispatch`; UI never mutates Pinia directly.
 - Keep DOM, sockets, timers, Promises, and animation instances outside Pinia state. Dispose browser resources with their owning scope.
 - LED/wide landscape (≥ 1024 px wide and wider than tall): fill both viewport dimensions; no outer container, maximum width, fixed aspect ratio, letterboxing, or scrolling. Narrower or portrait screens use the stacked responsive layout (uniform scale per column, vertical scroll). Never let the stacked layout change wall geometry.

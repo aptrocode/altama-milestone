@@ -24,7 +24,7 @@ function toTargetAction(action: WallAction): WallAction {
   return action;
 }
 
-/** Declared target of an action, or null when wall-v6 has none (page 3, unknown sub-item), which the renderer would reject. */
+/** Declared target of an action, or null when wall-v7 has none (page 3, unknown sub-item), which the renderer would reject. */
 function targetRect(action: WallAction): Rect | null {
   const column = columns.find(col => col.id === action.columnId);
   if (!column)

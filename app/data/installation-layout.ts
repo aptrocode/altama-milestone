@@ -73,17 +73,26 @@ export function rectStyle(rect: Rect, origin: { x: number; y: number } = { x: 0,
   };
 }
 
-export function getActionRects(action: WallAction): Rect[] {
+/** A rect moved down by the dashboard card offset (negative moves it up). */
+export function offsetRect<T extends Rect>(rect: T, offsetY: number): T {
+  return offsetY ? { ...rect, y: rect.y + offsetY } : rect;
+}
+
+/** Target rects of an action on the LED wall, shifted by the dashboard card offset. */
+export function getActionRects(action: WallAction, offsetY = 0): Rect[] {
   const column = installationLayout.columns.find(item => item.id === action.columnId);
   if (!column)
     return [];
-  switch (action.type) {
-    case 'main': return column.main ? [column.main] : [];
-    case 'language': return column.languages.filter(item => item.locale === action.locale);
-    case 'subItem': return column.subItems?.filter(item => item.key === action.subItemId) || [];
-    case 'back': return [column.active.back];
-    case 'previous': return [column.active.previous];
-    case 'next': return [column.active.next];
-    case 'page': return column.active.pages.filter(item => item.page === action.page);
-  }
+  const rects = (() => {
+    switch (action.type) {
+      case 'main': return column.main ? [column.main] : [];
+      case 'language': return column.languages.filter(item => item.locale === action.locale);
+      case 'subItem': return column.subItems?.filter(item => item.key === action.subItemId) || [];
+      case 'back': return [column.active.back];
+      case 'previous': return [column.active.previous];
+      case 'next': return [column.active.next];
+      case 'page': return column.active.pages.filter(item => item.page === action.page);
+    }
+  })();
+  return rects.map(rect => offsetRect(rect, offsetY));
 }

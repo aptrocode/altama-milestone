@@ -28,6 +28,14 @@ describe('visible targets', () => {
     expect(visibleTargets({})).toEqual([]);
   });
 
+  it('moves every target with the dashboard card offset', () => {
+    const base = visibleTargets(allIdle);
+    const raised = visibleTargets(allIdle, -40);
+    expect(raised.map(item => item.rect.y)).toEqual(base.map(item => item.rect.y - 40));
+    expect(hitTest(136, 1017 - 40, raised)?.key).toBe('1:language:id');
+    expect(hitTest(212, 700 - 40, raised)?.key).toBe('1:main');
+  });
+
   it('lets flags win over main and ignores the language overlay padding', () => {
     const targets = visibleTargets(allIdle);
     expect(hitTest(136, 1017, targets)?.key).toBe('1:language:id');

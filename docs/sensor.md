@@ -96,11 +96,13 @@ NUXT_PUBLIC_SENSOR_WS_URL=ws://127.0.0.1:8787
 
 Static output embeds public runtime values; rebuild when these change. Mouse/keyboard operation works while sensor input is disabled.
 
-**Breaking migration:** current protocol is **v2**, geometry is **wall-v6**. It follows the Summit reference mockups: per-column idle frames, sub-item tiles chosen directly from idle (no submenu), and open-card Back, photo arrows, and page tabs. wall-v5 moved every target 32 px lower than wall-v4; wall-v6 fits column 5 (Distribusi & Pemasaran) to its card video: tiles 338 × 227 at y 554 and 338 × 203 at y 789, language bar 262 × 56 at y 996 with flags at y 1000. Protocol v1 / layout-v4 (three-section UI) and wall-v1 to wall-v5 are all rejected. Deploy the new renderer and matching Sensor Service contract/geometry together, recalibrate, then enable the sensor. Keep sensor input disabled until that service is ready.
+**Breaking migration:** current protocol is **v2**, geometry is **wall-v7**. It follows the Summit reference mockups: per-column idle frames, sub-item tiles chosen directly from idle (no submenu), and open-card Back, photo arrows, and page tabs. wall-v5 moved every target 32 px lower than wall-v4; wall-v6 fitted column 5 (Distribusi & Pemasaran) to its card video; wall-v7 follows the re-encoded video whose panels sit 22 source px higher: tiles 338 × 227 at y 546 and 338 × 203 at y 781, language bar 262 × 62 at y 990 with flags at y 997. Protocol v1 / layout-v4 (three-section UI) and wall-v1 to wall-v6 are all rejected. Deploy the new renderer and matching Sensor Service contract/geometry together, recalibrate, then enable the sensor. Keep sensor input disabled until that service is ready.
 
 ## Envelope and health
 
-Every service message includes `version: 2`, nonempty `sessionId`, increasing integer `seq`, `layoutVersion: "wall-v6"`, and `type`.
+`clientHello` and `clientState` also carry the dashboard settings that affect touch: `hold` (rules for the groups `card`, `page`, `slider`, `language`, `back`; language and back are off by default, i.e. only the short deliberate contact) and `cardOffsetY` (logical px, −120 to 120). The service shifts every visible target by `cardOffsetY` before hit-testing, and the wall validates input against the same shifted rectangles, so moving the cards on `/dashboard` needs no recalibration.
+
+Every service message includes `version: 2`, nonempty `sessionId`, increasing integer `seq`, `layoutVersion: "wall-v7"`, and `type`.
 
 `hello` is required once per connection and contains boolean `sensorReady`/`calibrated`. `status` updates those booleans with optional short `detail`. `heartbeat` establishes liveness. Expect heartbeat every 2 seconds; after more than 6 seconds without valid traffic the socket closes and reconnects with jittered backoff up to 10 seconds.
 
@@ -110,7 +112,7 @@ Input is forwarded only after handshake while device and calibration are ready. 
 
 On connection, the renderer sends:
 ```json
-{ "version": 2, "type": "clientHello", "layoutVersion": "wall-v6", "columns": { "1": { "phase": "idle", "locale": "id", "subItem": "", "photo": 0, "page": 0, "photoCount": 2, "pageCount": 2 } } }
+{ "version": 2, "type": "clientHello", "layoutVersion": "wall-v7", "columns": { "1": { "phase": "idle", "locale": "id", "subItem": "", "photo": 0, "page": 0, "photoCount": 2, "pageCount": 2 } } }
 ```
 Both messages also carry `hold`, the operator's dwell rules from `/dashboard`:
 ```json
@@ -138,7 +140,7 @@ Do not detect against hidden target groups. Main, sub-item tile, photo-arrow (`p
   "version": 2,
   "sessionId": "service-boot-id",
   "seq": 42,
-  "layoutVersion": "wall-v6",
+  "layoutVersion": "wall-v7",
   "type": "input",
   "pointerId": "lidar-02",
   "x": 1310,
@@ -170,11 +172,11 @@ Valid sub-items: column 2 = `tekiro`, `ryu`, `rexco`; column 5 = `distribusi`, `
 
 While **Mode kalibrasi** is on, `calibrated` is false and `detail` is `calibrating`. The renderer drops every input, OSC show control included, unless both flags are true; select source `off` for show-control-only operation.
 
-The wall-v6 idle frame is 360 × 642 logical px at y 426; the open card is 330 wide at y 512, at least 524 tall and growing with its content to y 1312 (it is not a target). The main hit rectangle of single columns covers the whole idle frame, but its languageBar occludes that area: detect a flag there or ignore padding/gaps. Main events inside languageBar are rejected. Hidden language actions while open are also rejected. Refer to each column's `card` and target rectangles in the canonical JSON; do not reuse wall-v1/wall-v2 coordinates. The bundled OSC service reads the same JSON, so it follows layout changes automatically.
+The wall-v7 idle frame is 360 × 642 logical px at y 426; the open card is 330 wide at y 512, at least 524 tall and growing with its content to y 1312 (it is not a target). The main hit rectangle of single columns covers the whole idle frame, but its languageBar occludes that area: detect a flag there or ignore padding/gaps. Main events inside languageBar are rejected. Hidden language actions while open are also rejected. Refer to each column's `card` and target rectangles in the canonical JSON; do not reuse wall-v1/wall-v2 coordinates. The bundled OSC service reads the same JSON, so it follows layout changes automatically.
 
 ## OSC Show Control (Resolume Arena & TouchDesigner)
 
-The Sensor Service always listens for OSC show control from Resolume Arena, TouchDesigner, QLab, or Bitfocus Companion and sends the matching protocol v2 input at the centre of the declared target (`sensor-service/show-control.ts`). Show control bypasses dwell and target visibility; the renderer still validates the phase. Commands without a wall-v6 target (a page that does not exist, an unknown sub-item) are dropped instead of being sent.
+The Sensor Service always listens for OSC show control from Resolume Arena, TouchDesigner, QLab, or Bitfocus Companion and sends the matching protocol v2 input at the centre of the declared target (`sensor-service/show-control.ts`). Show control bypasses dwell and target visibility; the renderer still validates the phase. Commands without a wall-v7 target (a page that does not exist, an unknown sub-item) are dropped instead of being sent.
 
 ### Ports and configuration
 

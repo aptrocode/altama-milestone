@@ -26,7 +26,7 @@ export interface SensorTarget {
   key: string;
   action: WallAction;
   rect: Rect;
-  /** Hold group (dashboard rule) or null for language/Back, which only need a short deliberate contact. */
+  /** Hold group (dashboard rule); null only for an action without one. */
   group: HoldGroup | null;
   /** Area inside rect that never triggers this target (the language overlay over main). */
   exclude?: Rect;
@@ -36,15 +36,17 @@ export function isInsideRect(x: number, y: number, rect: Rect): boolean {
   return x >= rect.x && y >= rect.y && x < rect.x + rect.width && y < rect.y + rect.height;
 }
 
-function target(action: WallAction, key: string, rect: Rect, exclude?: Rect): SensorTarget {
-  return { key, action, rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height }, group: HOLD_GROUP_BY_ACTION[action.type] ?? null, ...(exclude ? { exclude } : {}) };
+function target(action: WallAction, key: string, rect: Rect, offsetY: number, exclude?: Rect): SensorTarget {
+  const shift = (box: Rect): Rect => ({ x: box.x, y: box.y + offsetY, width: box.width, height: box.height });
+  return { key, action, rect: shift(rect), group: HOLD_GROUP_BY_ACTION[action.type] ?? null, ...(exclude ? { exclude: shift(exclude) } : {}) };
 }
 
 /**
  * Targets visible for each column's published snapshot (docs/sensor.md). Overlays come first
  * (language, Back) so they win over the frame below them. Columns without a snapshot have none.
+ * `offsetY` is the wall's dashboard card offset: every column, and so every target, moves by it.
  */
-export function visibleTargets(snapshots: Partial<Record<ColumnId, PublishedColumn>>): SensorTarget[] {
+export function visibleTargets(snapshots: Partial<Record<ColumnId, PublishedColumn>>, offsetY = 0): SensorTarget[] {
   const targets: SensorTarget[] = [];
   for (const columnId of COLUMN_IDS) {
     const snapshot = snapshots[columnId];
@@ -54,23 +56,23 @@ export function visibleTargets(snapshots: Partial<Record<ColumnId, PublishedColu
 
     if (snapshot.phase === 'idle') {
       for (const language of geometry.languages)
-        targets.push(target({ type: 'language', columnId, locale: language.locale as WallLocale }, `${columnId}:language:${language.locale}`, language));
+        targets.push(target({ type: 'language', columnId, locale: language.locale as WallLocale }, `${columnId}:language:${language.locale}`, language, offsetY));
       for (const item of geometry.subItems ?? [])
-        targets.push(target({ type: 'subItem', columnId, subItemId: item.key }, `${columnId}:subItem:${item.key}`, item));
+        targets.push(target({ type: 'subItem', columnId, subItemId: item.key }, `${columnId}:subItem:${item.key}`, item, offsetY));
       if (geometry.main)
-        targets.push(target({ type: 'main', columnId }, `${columnId}:main`, geometry.main, geometry.languageBar));
+        targets.push(target({ type: 'main', columnId }, `${columnId}:main`, geometry.main, offsetY, geometry.languageBar));
       continue;
     }
 
-    targets.push(target({ type: 'back', columnId }, `${columnId}:back`, geometry.active.back));
+    targets.push(target({ type: 'back', columnId }, `${columnId}:back`, geometry.active.back, offsetY));
     if ((snapshot.photoCount ?? 0) > 1) {
-      targets.push(target({ type: 'previous', columnId }, `${columnId}:previous`, geometry.active.previous));
-      targets.push(target({ type: 'next', columnId }, `${columnId}:next`, geometry.active.next));
+      targets.push(target({ type: 'previous', columnId }, `${columnId}:previous`, geometry.active.previous, offsetY));
+      targets.push(target({ type: 'next', columnId }, `${columnId}:next`, geometry.active.next, offsetY));
     }
     const pageCount = snapshot.pageCount ?? 0;
     if (pageCount > 1) {
       for (const page of geometry.active.pages.filter(item => item.page < pageCount))
-        targets.push(target({ type: 'page', columnId, page: page.page }, `${columnId}:page:${page.page}`, page));
+        targets.push(target({ type: 'page', columnId, page: page.page }, `${columnId}:page:${page.page}`, page, offsetY));
     }
   }
   return targets;

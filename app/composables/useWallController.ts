@@ -5,7 +5,12 @@ import { COLUMN_IDS } from '../../shared/wall';
 
 export const AUTO_RESET_DELAY_MS = 30_000;
 
-export function useWallController(wall = useWallStore()) {
+export interface WallControllerOptions {
+  /** Inactivity before a column returns to idle/Indonesian; read when each timer starts (dashboard setting). */
+  resetDelayMs?: () => number;
+}
+
+export function useWallController(wall = useWallStore(), options: WallControllerOptions = {}) {
   const timers = new Map<ColumnId, ReturnType<typeof setTimeout>>();
   let disposed = false;
 
@@ -25,7 +30,7 @@ export function useWallController(wall = useWallStore()) {
     timers.set(id, setTimeout(() => {
       timers.delete(id);
       wall.resetColumn(id);
-    }, AUTO_RESET_DELAY_MS));
+    }, options.resetDelayMs?.() ?? AUTO_RESET_DELAY_MS));
   }
 
   function dispatch(action: WallAction) {

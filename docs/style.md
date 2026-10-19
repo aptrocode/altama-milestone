@@ -29,6 +29,7 @@ All open-card text renders through `WallPageCopy`, the only place that styles it
 - `bullets`: a 6 px glow **dot** marks each item (never a bar or a native disc). The lead is a small uppercase glow label (0.82 em, bold, tracked) and its text sits under it in white, aligned with the label, not under the dot. A lead without text is plain white body text.
 - `inline` bullets: a two-column fact table (glow label | white value) with hairline dividers; use it for short facts such as year, SKU count, or certification.
 - `numbered`: glow `01`, `02` numbers in a fixed column with the text beside them.
+- Motion: paragraphs and list items fade up one after another in reading order (70 ms apart, 460 ms each) whenever a page becomes visible: on open, page tab, and language. Scoped keyframes in `WallPageCopy`, off under reduced motion.
 - Size: body text is 18 logical px (`--wall-u`). The card grows with its tallest page first (WallOpenCard reports the height, WallColumn clamps it between `active.card.height` and `openCardMaxBottom`); only a page that still overflows the tallest card shrinks, in 2 % steps down to 80 %. Never clip text, and never set per-page font sizes in content.
 - After content changes, check every column, sub-item, page, and language at 2304 × 1344 and a phone width: no page overflows and no card grows past y 1312.
 
@@ -38,7 +39,7 @@ All open-card text renders through `WallPageCopy`, the only place that styles it
 - Without artwork (Our Brand) the frame redraws the videos' neon border in code (`NEON_FRAME`). Brand tiles show a transparent logo centred on `tileBackground` with the same padding, or a full-bleed tile design.
 - Logos above the open card are square-cornered (no radius, no baked rounded frames), up to 300 × 92.
 
-The current revision uses wall-v6 geometry. Internal typography/padding may change without moving hit areas. If any interactive target changes position or size, update the canonical JSON, bump the layout version, and coordinate Sensor Service. Verify target geometry, wrapping, and column independence at both documented viewports after changes.
+The current revision uses wall-v7 geometry. Internal typography/padding may change without moving hit areas. If any interactive target changes position or size, update the canonical JSON, bump the layout version, and coordinate Sensor Service. Verify target geometry, wrapping, and column independence at both documented viewports after changes.
 
 References checked through Context7: [Tailwind arbitrary values](https://tailwindcss.com/docs/adding-custom-styles), [Tailwind variants](https://tailwindcss.com/docs/hover-focus-and-other-states), and [Vue scoped CSS](https://vuejs.org/api/sfc-css-features).
 

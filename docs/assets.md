@@ -25,13 +25,19 @@ Card videos from a PNG sequence: name the folder and frames in kebab-case after 
 ffmpeg -framerate 30 -i public/new-assets/card-button/<key>/<key>-%05d.png -c:v libvpx-vp9 -pix_fmt yuva420p -b:v 1200k -minrate 600k -maxrate 1800k -auto-alt-ref 0 -row-mt 1 -deadline good -cpu-used 2 -an public/illustrations/<key>.webm
 ```
 
+Column 5 (`distribution`) lifts its two panels 22 source px inside the frame while encoding, to leave room for the flags; its tile targets (wall-v7) match the lifted panels:
+
+```bash
+ffmpeg -framerate 30 -i public/new-assets/card-button/distribution/distribution-%05d.png -filter_complex "[0]split[base][src];[src]crop=962:1272:44:350[panels];[base][panels]overlay=44:328,format=yuva420p" -c:v libvpx-vp9 -pix_fmt yuva420p -b:v 1200k -minrate 600k -maxrate 1800k -auto-alt-ref 0 -row-mt 1 -deadline good -cpu-used 2 -an public/illustrations/distribution.webm
+```
+
 `public/new-assets/` stays out of git and out of the build output.
 
 ## Replacing assets
 
 1. Put the final file at the same path, or add a new kebab-case path and point the entry to it.
 2. Set `approved: true` for that entry in its column file under `app/data/columns/` (artwork, tiles, photos) or `app/data/wall-media.ts` (background, logo, skyline). See [content](./content.md).
-3. Each page's `photos` array is its slider; replace a `PHOTO_PLACEHOLDER` slot with a photo or add more slots. Paged content needs a tab label in every language and at most two pages (the wall-v6 tab targets).
+3. Each page's `photos` array is its slider; replace a `PHOTO_PLACEHOLDER` slot with a photo or add more slots. Paged content needs a tab label in every language and at most two pages (the wall-v7 tab targets).
 4. Run `bun run assets:check` and check both viewports.
 
 Background media: set `STAGE_MEDIA.background` to `{ kind: 'video', src, poster, approved }` or `{ kind: 'image', src, approved }`. Preferred video: 2304 × 1344, H.264 MP4 or VP9 WebM, muted seamless loop, local file. Convert image sequences to video unless alpha is required. The current background image already contains the skyline, so `skyline` is `null`; set a separate skyline only if the final video lacks one. If the video contains the logo, set `logo` to `null`. Set `waveSweeps` to `false` whenever the background changes, because its animated light paths are traced from the current image.

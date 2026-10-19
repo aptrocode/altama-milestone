@@ -13,6 +13,8 @@ export interface SensorSocketOptions {
   getColumns: () => Record<ColumnId, ColumnSnapshot>;
   /** Operator hold rules so Sensor Service applies the same dwell as pointer users. */
   getHold?: () => HoldSettings;
+  /** Dashboard card offset (logical px) so Sensor Service shifts its targets like the wall does. */
+  getCardOffsetY?: () => number;
   heartbeatTimeoutMs?: number;
   maxMessageBytes?: number;
 }
@@ -131,6 +133,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
         layoutVersion: options.expectedLayoutVersion,
         columns: options.getColumns(),
         ...(options.getHold ? { hold: options.getHold() } : {}),
+        ...(options.getCardOffsetY ? { cardOffsetY: options.getCardOffsetY() } : {}),
       }));
 
       heartbeatTimer = setInterval(() => {
@@ -152,7 +155,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
         return;
       }
 
-      const result = parseSensorMessage(event.data);
+      const result = parseSensorMessage(event.data, options.getCardOffsetY?.() ?? 0);
       if (!result.ok) {
         system.setSocketStatus('error', result.error);
         return;
@@ -225,6 +228,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
       layoutVersion: options.expectedLayoutVersion,
       columns: options.getColumns(),
       ...(options.getHold ? { hold: options.getHold() } : {}),
+      ...(options.getCardOffsetY ? { cardOffsetY: options.getCardOffsetY() } : {}),
     }));
   }
 

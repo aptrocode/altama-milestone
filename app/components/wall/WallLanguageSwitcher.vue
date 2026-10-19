@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ColumnId, WallLocale } from '../../../shared/wall';
 import type { Rect } from '~/data/installation-layout';
+import WallHoldButton from '~/components/wall/WallHoldButton.vue';
 import { rectStyle } from '~/data/installation-layout';
 import { FLAG_SOURCES, WALL_COPY } from '~/data/wall-copy';
 
@@ -13,16 +14,16 @@ defineEmits<{ select: [locale: WallLocale] }>();
     class="wall-language-bar m-0 p-0 min-w-0 rounded-full bg-[#050d4f]/90 ring-2 ring-wall-glow/70 shadow-[0_0_calc(16*var(--wall-x))_rgba(80,190,255,0.55)]"
     role="group" :aria-label="WALL_COPY[locale].language"
   >
-    <button
-      v-for="target in targets" :key="target.locale" type="button"
+    <WallHoldButton
+      v-for="target in targets" :key="target.locale" :outline="target" group="language" :radius="8"
       class="wall-flag absolute flex items-center justify-center rounded-[calc(8*var(--wall-x))] cursor-pointer transition-[box-shadow,background-color] duration-150"
       :class="locale === target.locale ? 'bg-white/15 ring-2 ring-wall-glow shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.8)]' : 'hover:bg-white/10'"
       :style="rectStyle(target, bar)"
       :aria-label="WALL_COPY[locale].languages[target.locale]" :title="WALL_COPY[locale].languages[target.locale]"
       :aria-pressed="locale === target.locale" :data-col="columnId" data-sensor-action="language"
-      :data-locale="target.locale" @click="$emit('select', target.locale)"
+      :data-locale="target.locale" @activate="$emit('select', target.locale)"
     >
       <img :src="FLAG_SOURCES[target.locale]" alt="" class="w-[calc(48*var(--wall-x))] h-[calc(32*var(--wall-y))] object-cover pointer-events-none">
-    </button>
+    </WallHoldButton>
   </fieldset>
 </template>
