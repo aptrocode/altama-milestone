@@ -16,7 +16,7 @@ export const useSettingsStore = defineStore('settings', {
     wall: normalizeWallSettings(DEFAULT_WALL_SETTINGS),
   }),
   getters: {
-    holdRule: state => (group: HoldGroup) => state.hold[group],
+    holdRule: state => (group: HoldGroup) => state.hold?.[group] ?? DEFAULT_HOLD_SETTINGS[group],
   },
   actions: {
     setHold(next: unknown) {

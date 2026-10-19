@@ -31,13 +31,19 @@ const NEON_FRAME = [
 const cardVideo = computed(() => /\.(?:webm|mp4)$/.test(props.column.illustration?.src || ''));
 const videoElement = ref<HTMLVideoElement | null>(null);
 
+// Vue runs unmount hooks when the frame's leave transition starts (WallColumn keeps the element
+// for its 200 ms fade). Releasing the video then would blank the card artwork at once while the
+// flags and captions still fade, so release it only after the fade has finished.
+const RELEASE_AFTER_LEAVE_MS = 400;
 onBeforeUnmount(() => {
   const element = videoElement.value;
   if (!element)
     return;
-  element.pause();
-  element.removeAttribute('src');
-  element.load();
+  setTimeout(() => {
+    element.pause();
+    element.removeAttribute('src');
+    element.load();
+  }, RELEASE_AFTER_LEAVE_MS);
 });
 </script>
 
