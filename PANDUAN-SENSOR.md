@@ -78,7 +78,7 @@ Di **Dashboard → Wall**:
 | Tombol slider | **Off** (auto slide 5 s) | Panah kecil tidak perlu ditekan; video tetap diputar sampai selesai |
 | Tombol page | **Off** (auto page 10 s) kalau tab sulit ditekan | Page berganti sendiri |
 | Tombol close | **Off** kalau ✕ sulit ditekan | Card tetap tertutup sendiri setelah Reset otomatis |
-| Reset otomatis | Lebih panjang dari video terpanjang (mis. 60 s) | Supaya video tidak terpotong saat card kembali ke awal |
+| Reset otomatis | Biarkan 30 s | Saat auto slide/page aktif, card otomatis menunggu sampai slide terakhir selesai (mis. video 30 s + 5 gambar × 5 s = tutup di 55 s) |
 
 Di **Dashboard → Hold**, biarkan Bahasa **off** (cukup tekan sebentar). Card section boleh tetap 1 detik supaya orang yang lewat tidak membuka card tanpa sengaja.
 

@@ -4,6 +4,8 @@ import { useWallStore } from '~/stores/wall';
 import { COLUMN_IDS } from '../../shared/wall';
 
 export const AUTO_RESET_DELAY_MS = 30_000;
+/** Longest a reset waits for an unfinished auto slideshow (a stalled video must not keep a card open). */
+export const MAX_RESET_WAIT_MS = 5 * 60_000;
 
 export interface WallControllerOptions {
   /** Inactivity before a column returns to idle/Indonesian; read when each timer starts (dashboard setting). */
@@ -22,6 +24,12 @@ export function useWallController(wall = useWallStore(), options: WallController
   const pageTimers = new Map<ColumnId, ReturnType<typeof setTimeout>>();
   // Columns whose page interval elapsed during a video slide; the page changes when it ends.
   const pagesDue = new Set<ColumnId>();
+  // Auto slideshow vs. reset: a column whose slideshow has not reached its end since the last
+  // interaction keeps its card open past the reset time (resetDue) until it does, or until the
+  // safety cap (waitTimers) runs out.
+  const cycleDone = new Set<ColumnId>();
+  const resetDue = new Set<ColumnId>();
+  const waitTimers = new Map<ColumnId, ReturnType<typeof setTimeout>>();
   let disposed = false;
 
   function clearTimer(id: ColumnId) {
@@ -31,15 +39,39 @@ export function useWallController(wall = useWallStore(), options: WallController
     timers.delete(id);
   }
 
+  function clearWait(id: ColumnId) {
+    const timer = waitTimers.get(id);
+    if (timer !== undefined)
+      clearTimeout(timer);
+    waitTimers.delete(id);
+    resetDue.delete(id);
+  }
+
+  function resetNow(id: ColumnId) {
+    clearWait(id);
+    clearTimer(id);
+    wall.resetColumn(id);
+  }
+
   function touchColumn(id: ColumnId) {
     if (disposed || !COLUMN_IDS.includes(id))
       return;
     clearTimer(id);
+    clearWait(id);
+    // Interaction starts a new viewing: the slideshow has to reach its end again.
+    cycleDone.delete(id);
     if (wall.getColumnState(id) === 'idle' && wall.getColumnLocale(id) === 'id')
       return;
     timers.set(id, setTimeout(() => {
       timers.delete(id);
-      wall.resetColumn(id);
+      // An auto slideshow that has not shown its last slide yet finishes first (e.g. a 30 s video
+      // plus 5 × 5 s images resets at 55 s, not 30 s); a shorter one has already ended by now.
+      if (autoAdvancing(id) && !cycleDone.has(id)) {
+        resetDue.add(id);
+        waitTimers.set(id, setTimeout(resetNow, MAX_RESET_WAIT_MS, id));
+        return;
+      }
+      resetNow(id);
     }, options.resetDelayMs?.() ?? AUTO_RESET_DELAY_MS));
   }
 
@@ -74,7 +106,8 @@ export function useWallController(wall = useWallStore(), options: WallController
 
   // Auto slide: an open card with several photos moves to the next one after the interval, or, for
   // a video slide, when the video ends (mediaEnded). Any photo, page, or sub-item change restarts
-  // that column's countdown. It is not visitor activity, so it never postpones the inactivity reset.
+  // that column's countdown. It is not visitor activity; the inactivity reset only waits for the
+  // slideshow to reach its end (completeCycle).
   function autoSliding(id: ColumnId) {
     const column = wall.publishedColumns[id];
     return !disposed && (options.autoSlideMs?.() ?? 0) > 0 && column?.phase === 'active' && (column.photoCount ?? 0) > 1;
@@ -85,13 +118,39 @@ export function useWallController(wall = useWallStore(), options: WallController
     return !disposed && (options.autoPageMs?.() ?? 0) > 0 && column?.phase === 'active' && (column.pageCount ?? 0) > 1;
   }
 
+  function autoAdvancing(id: ColumnId) {
+    return autoSliding(id) || autoPaging(id);
+  }
+
   /** A video slide plays once (and reports its end) whenever something advances automatically. */
   function videoPlaysOnce(id: ColumnId) {
-    return (autoSliding(id) || autoPaging(id)) && !!options.slidePlaysToEnd?.(id);
+    return autoAdvancing(id) && !!options.slidePlaysToEnd?.(id);
+  }
+
+  /**
+   * The slideshow is about to wrap (its last slide or last page has been shown): mark the viewing
+   * complete, and close the card now instead of wrapping when the reset time already passed.
+   * Returns true when the column was reset.
+   */
+  function completeCycle(id: ColumnId) {
+    cycleDone.add(id);
+    if (!resetDue.has(id))
+      return false;
+    resetNow(id);
+    return true;
+  }
+
+  function nextSlide(id: ColumnId) {
+    const column = wall.publishedColumns[id]!;
+    if (column.photo === (column.photoCount ?? 1) - 1 && completeCycle(id))
+      return;
+    wall.dispatch({ type: 'next', columnId: id });
   }
 
   function nextPage(id: ColumnId) {
     const column = wall.publishedColumns[id]!;
+    if (column.page === (column.pageCount ?? 1) - 1 && completeCycle(id))
+      return;
     wall.dispatch({ type: 'page', columnId: id, page: (column.page + 1) % (column.pageCount ?? 1) });
   }
 
@@ -116,7 +175,7 @@ export function useWallController(wall = useWallStore(), options: WallController
       return;
     slideTimers.set(id, setTimeout(() => {
       slideTimers.delete(id);
-      wall.dispatch({ type: 'next', columnId: id });
+      nextSlide(id);
     }, options.autoSlideMs?.() ?? 0));
   }
 
@@ -130,7 +189,7 @@ export function useWallController(wall = useWallStore(), options: WallController
     if (pagesDue.has(id))
       nextPage(id);
     else if (autoSliding(id))
-      wall.dispatch({ type: 'next', columnId: id });
+      nextSlide(id);
   }
 
   // A string key, so a change in another column (publishedColumns is rebuilt) does not restart this one.
@@ -143,6 +202,12 @@ export function useWallController(wall = useWallStore(), options: WallController
       const column = wall.publishedColumns[id];
       return [options.autoPageMs?.() ?? 0, column?.phase, column?.subItem, column?.page, column?.pageCount].join('|');
     }, () => schedulePage(id), { immediate: true, flush: 'sync' });
+    // A card waiting for its slideshow closes at once when nothing advances any more (the operator
+    // showed the arrows/tabs again, or the column changed).
+    watch(() => autoAdvancing(id), (advancing) => {
+      if (!advancing && resetDue.has(id))
+        resetNow(id);
+    }, { flush: 'sync' });
   }
 
   function dispose() {
@@ -150,6 +215,7 @@ export function useWallController(wall = useWallStore(), options: WallController
     COLUMN_IDS.forEach(clearTimer);
     COLUMN_IDS.forEach(clearSlide);
     COLUMN_IDS.forEach(clearPage);
+    COLUMN_IDS.forEach(clearWait);
   }
 
   COLUMN_IDS.forEach(touchColumn);
