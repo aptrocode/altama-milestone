@@ -2,7 +2,7 @@
 import type { ColumnId, WallAction, WallLocale } from '../../../shared/wall';
 import type { Rect } from '~/data/installation-layout';
 import type { ContentPage } from '~/types/wall-content';
-import { computed, nextTick, reactive, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue';
 import WallHoldButton from '~/components/wall/WallHoldButton.vue';
 import WallPageCopy from '~/components/wall/WallPageCopy.vue';
 import { installationLayout, rectStyle } from '~/data/installation-layout';
@@ -90,6 +90,40 @@ const textStyle = computed(() => ({
 // switch. A probe of 1000 logical px converts measured CSS px without being affected by the
 // height transition.
 const probe = ref<HTMLElement | null>(null);
+
+// When the page changes without a press on its tab (auto page, auto slide, OSC), the newly active
+// tab plays a quick press: its border traces round (0.6 s) and glows, so visitors see which page is
+// showing. A tab that was just held already played its own animation (hold-complete), so it is
+// skipped. Timers are cleared with the component.
+const TAB_FLASH_MS = 600;
+const flashTimers = new Set<ReturnType<typeof setTimeout>>();
+function later(fn: () => void, ms: number) {
+  const timer = setTimeout(() => {
+    flashTimers.delete(timer);
+    fn();
+  }, ms);
+  flashTimers.add(timer);
+}
+function flashTab(page: number) {
+  const tab = probe.value?.parentElement?.querySelector<HTMLElement>(`.wall-page-tab[data-page="${page}"]`);
+  if (!tab || tab.classList.contains('hold-complete') || tab.classList.contains('holding'))
+    return;
+  tab.style.setProperty('--hold-duration', `${TAB_FLASH_MS}ms`);
+  tab.classList.add('holding');
+  later(() => {
+    tab.classList.remove('holding');
+    tab.classList.add('hold-complete');
+    later(() => {
+      tab.classList.remove('hold-complete');
+      tab.style.removeProperty('--hold-duration');
+    }, 450);
+  }, TAB_FLASH_MS);
+}
+watch(() => props.page, (page, previous) => {
+  if (page !== previous && hasPages.value)
+    nextTick(() => flashTab(page));
+});
+onBeforeUnmount(() => flashTimers.forEach(clearTimeout));
 const naturals = reactive<Record<number, number>>({});
 // A page whose text fills the card (`fill`, e.g. Tekiro's rotating awards) takes the tallest card
 // (WallColumn clamps to openCardMaxBottom) so its text can grow.

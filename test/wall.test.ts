@@ -114,9 +114,10 @@ describe('wall state and actions', () => {
     expect(photoCount(6)).toBeLessThan(2);
     wall.dispatch({ type: 'main', columnId: 6 });
     expect(wall.dispatch({ type: 'next', columnId: 6 })).toBe(false);
-    expect(pagesOf(3)).toHaveLength(1);
-    wall.dispatch({ type: 'main', columnId: 3 });
-    expect(wall.dispatch({ type: 'page', columnId: 3, page: 0 })).toBe(false);
+    // Column 4 (Digital Trust) has a single page, so it has no tabs.
+    expect(pagesOf(4)).toHaveLength(1);
+    wall.dispatch({ type: 'main', columnId: 4 });
+    expect(wall.dispatch({ type: 'page', columnId: 4, page: 0 })).toBe(false);
   });
 
   it('publishes arrow and tab counts with each snapshot', () => {
