@@ -6,6 +6,7 @@ import { closeButtonRect } from './close-button';
 import { HOLD_GROUP_BY_ACTION } from './hold-settings';
 import rawLayout from './installation-layout.json';
 import { columnOffsetY, extendDown, languageGeometry } from './language-bar';
+import { pageTabRects } from './page-tabs';
 import { COLUMN_IDS } from './wall';
 
 export interface Rect { x: number; y: number; width: number; height: number }
@@ -89,7 +90,7 @@ export function visibleTargets(snapshots: Partial<Record<ColumnId, PublishedColu
     const pageCount = snapshot.pageCount ?? 0;
     if (showPages && pageCount > 1) {
       // The visible page's tab is inert, so only the other tab is a target.
-      for (const page of geometry.active.pages.filter(item => item.page < pageCount && item.page !== snapshot.page))
+      for (const page of pageTabRects(geometry.active, pageCount, snapshot.tabsTop).filter(item => item.page !== snapshot.page))
         targets.push(target({ type: 'page', columnId, page: page.page }, `${columnId}:page:${page.page}`, page, offsetY));
     }
   }

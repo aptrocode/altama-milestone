@@ -15,13 +15,15 @@ import { useSettingsStore } from '~/stores/settings';
  * Every paragraph and list item fades up in reading order (top to bottom) whenever the page
  * becomes the visible one: when the card opens and on every page switch.
  */
-const props = defineProps<{ copy: PageCopy; locale: WallLocale; active?: boolean }>();
+const props = defineProps<{ copy: PageCopy; locale: WallLocale; active?: boolean; /** Grow the text until it fills the available height. */ fill?: boolean }>();
 /** Content height at full size in CSS px; the open card grows to fit the visible page. */
 const emit = defineEmits<{ natural: [px: number] }>();
 
 // Body text is the dashboard body size (default 18 logical px). The card grows with its content first (WallOpenCard); a page that
 // still overflows the tallest card (y 1312) shrinks in small steps (down to 80%) instead of being clipped.
 const MIN_SCALE = 0.65;
+/** Upper bound when a page fills the card (`fill`): short pages grow at most this much. */
+const MAX_FILL = 2.5;
 const root = ref<HTMLElement | null>(null);
 const scale = ref(1);
 let observer: ResizeObserver | undefined;
@@ -44,6 +46,18 @@ function fit() {
   const available = element.parentElement?.clientHeight || element.clientHeight;
   while (element.scrollHeight > available + 1 && next > MIN_SCALE) {
     next = Math.max(MIN_SCALE, Math.round((next - 0.02) * 100) / 100);
+    element.style.setProperty('--copy-scale', String(next));
+  }
+  // Fill: grow in small steps while the page still fits, then keep the last size that fit. The card
+  // keeps the height of the page at full size (reported above), so growing never grows the card.
+  if (props.fill && next >= 1) {
+    while (next < MAX_FILL) {
+      const candidate = Math.min(MAX_FILL, Math.round((next + 0.02) * 100) / 100);
+      element.style.setProperty('--copy-scale', String(candidate));
+      if (element.scrollHeight > available + 1)
+        break;
+      next = candidate;
+    }
     element.style.setProperty('--copy-scale', String(next));
   }
   scale.value = next;
@@ -172,7 +186,7 @@ watch(() => [props.active, props.copy], () => {
       <ol v-else class="grid gap-[calc(8*var(--wall-y))] [counter-reset:wall-step]">
         <li
           v-for="(item, itemIndex) in block.numbered" :key="item" data-reveal :style="reveal(index, itemIndex)"
-          class="relative pl-[calc(24*var(--wall-x))] leading-[1.25] text-white [counter-increment:wall-step] before:absolute before:left-0 before:top-0 before:font-display before:font-bold before:text-wall-glow before:content-[counter(wall-step,decimal-leading-zero)]"
+          class="relative pl-[1.8em] leading-[1.25] text-white [counter-increment:wall-step] before:absolute before:left-0 before:top-0 before:font-display before:font-bold before:text-wall-glow before:content-[counter(wall-step,decimal-leading-zero)]"
         >
           {{ item }}
         </li>

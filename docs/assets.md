@@ -49,7 +49,7 @@ ffmpeg -framerate 30 -i public/new-assets/card-sequences/distribution/distributi
 
 1. Put the final file at the same path, or add a new kebab-case path and point the entry to it.
 2. Set `approved: true` for that entry in its column file under `app/data/columns/` (artwork, tiles, photos) or `app/data/wall-media.ts` (background, logo, skyline). See [content](./content.md).
-3. Each page's `photos` array is its slider; replace a `PHOTO_PLACEHOLDER` slot with a photo or add more slots. Paged content needs a tab label in every language and at most two pages (the wall-v7 tab targets).
+3. Each page's `photos` array is its slider; replace a `PHOTO_PLACEHOLDER` slot with a photo or add more slots. Paged content needs a tab label in every language and at most three pages (`MAX_PAGES` in `shared/page-tabs.ts`).
 4. Run `bun run assets:check` and check both viewports.
 
 Background media: set `STAGE_MEDIA.background` to `{ kind: 'video', src, poster, approved }` or `{ kind: 'image', src, approved }`. Preferred video: 2304 × 1344, H.264 MP4 or VP9 WebM, muted seamless loop, local file. Convert image sequences to video unless alpha is required. The current background video already contains the skyline and the wave light, so `skyline` is `null` and `waveSweeps` is `false` (the sweeps are traced from the old mockup image). If a video contains the logo, set `logo` to `null`.

@@ -71,4 +71,6 @@ export interface ColumnConfig {
   captionTiles?: boolean;
   /** Sub-item opened by the operator/OSC `main` action. */
   defaultSub?: string;
+  /** Open-card text grows, page by page, until it fills the card's height (short text-only pages). */
+  fillText?: boolean;
 }

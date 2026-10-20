@@ -37,7 +37,8 @@ export const useWallStore = defineStore('wall', {
     publishedColumns: state => Object.fromEntries(COLUMN_IDS.map((id) => {
       const snapshot = state.columns[id];
       const pageCount = getColumnPages(getColumnConfig(id), snapshot.subItem).length;
-      return [id, { ...snapshot, photoCount: photoCount(id, snapshot), pageCount }];
+      const tabsTop = !getColumnPages(getColumnConfig(id), snapshot.subItem).some(page => page.photos.length > 0);
+      return [id, { ...snapshot, photoCount: photoCount(id, snapshot), pageCount, tabsTop }];
     })) as Record<ColumnId, PublishedColumn>,
   },
   actions: {

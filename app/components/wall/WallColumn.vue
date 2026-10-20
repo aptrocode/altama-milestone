@@ -12,7 +12,7 @@ import { WALL_COPY } from '~/data/wall-copy';
 import { useSettingsStore } from '~/stores/settings';
 import { closeButtonRect } from '../../../shared/close-button';
 import { extendDown, languageGeometry } from '../../../shared/language-bar';
-import { closeButtonOptions } from '../../../shared/wall-settings';
+import { autoPageActive, closeButtonOptions } from '../../../shared/wall-settings';
 
 /**
  * One column in logical canvas units. Idle shows WallIdleFrame (mockup 1); open shows the raised
@@ -132,7 +132,7 @@ function act(action: WallAction) {
       <WallOpenCard
         v-if="!idle" class="absolute transition-[height] duration-300 ease-out motion-reduce:transition-none" :style="cardStyle"
         :column-id="column.id" :pages="pages" :locale="snapshot.locale" :photo="snapshot.photo" :page="snapshot.page"
-        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" :show-pages="settings.wall.showPages" @action="act" @height="onCardHeight"
+        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" :show-pages="settings.wall.showPages" :auto-page="autoPageActive(settings.wall)" :fill-text="column.fillText" @action="act" @height="onCardHeight"
         @media-ended="emit('slideEnded', column.id)"
       />
     </Transition>

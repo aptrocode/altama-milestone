@@ -32,7 +32,7 @@ const firstPage = onlyPage([provisional('/photos/about-altama/photo-1.png'), pro
 ```
 
 - Arrows move between the photos of the current page. Page tabs switch the whole page (photos and text) and restart its slider. Both are hold targets whose on/off and duration are set on `/dashboard` (default 1 s).
-- Tabs show only when there are two pages (the wall-v7 layout has two tab targets). Arrows show only when the current page has two or more photo slots. A page with `[]` photos shows text only; keep the photo frame consistent across pages of one card.
+- Tabs show when there are two or three pages (`shared/page-tabs.ts`: two layout tabs under the photo, or three narrower tabs; a card without any photo shows them at its top). Set `fillText: true` on a column to make each page's text grow until it fills the card (column 6). Arrows show only when the current page has two or more photo slots. A page with `[]` photos shows text only; keep the photo frame consistent across pages of one card.
 - `PHOTO_PLACEHOLDER` renders a numbered "FOTO 0n" slot until a real photo exists.
 - `blocks` accepts a paragraph string, `{ bullets: [{ lead, text, image }] }` (dot + glow label with the text under it; optional `image` shows one logo at the right edge; `images` shows several logos in a row under the text; `logosBelow: true` puts a single wide logo under the text too). Every logo file must match its exact award, brand, and years; check new logos visually before use, `{ inline: true, bullets }` (a label | value fact table for short facts), or `{ numbered: [...] }`. Styling is fixed by the card-copy rules in [style](./style.md#card-copy); the card grows with long content, so prefer complete copy over shortening it.
 - Use `onlyPage()` for a single page without a tab and `pendingPage()` for a page whose copy the client has not supplied.
@@ -43,7 +43,7 @@ const firstPage = onlyPage([provisional('/photos/about-altama/photo-1.png'), pro
 2. Point the slot to it. Use `{ src: '/photos/…', approved: true }` once the client approves it, or `provisional('/photos/…')` while it is a stand-in.
 3. Run `bun run assets:check`, then check the wall at 2304 × 1344 and a phone width.
 
-Add photos by adding slots; add text pages by adding `page(...)` entries with a tab label in every language (two pages maximum).
+Add photos by adding slots; add text pages by adding `page(...)` entries with a tab label in every language (three pages maximum; tab labels `PAGE_TABS.first/second/third`).
 
 ## Adding or renaming a sub-item
 

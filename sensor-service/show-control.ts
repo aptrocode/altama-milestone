@@ -3,6 +3,7 @@ import type { Rect } from '../shared/sensor-targets';
 import type { ColumnId, ColumnSnapshot, WallAction } from '../shared/wall';
 import rawLayout from '../shared/installation-layout.json';
 import { oscToWallActions } from '../shared/osc';
+import { MAX_PAGES, pageTabRects } from '../shared/page-tabs';
 
 interface ShowControlColumn {
   id: number;
@@ -34,7 +35,7 @@ function targetRect(action: WallAction): Rect | null {
     case 'back': return column.active.back;
     case 'previous': return column.active.previous;
     case 'next': return column.active.next;
-    case 'page': return column.active.pages.find(item => item.page === action.page) ?? null;
+    case 'page': return action.page < MAX_PAGES ? pageTabRects(column.active, Math.max(2, action.page + 1)).find(item => item.page === action.page) ?? null : null;
     case 'subItem': return column.subItems?.find(item => item.key === action.subItemId) ?? null;
     case 'language': return column.languages.find(item => item.locale === action.locale) ?? null;
   }

@@ -38,7 +38,7 @@ A title word that does not fit its pill (e.g. INFRASTRUKTUR at a large size or B
 | Group | Buttons | Default |
 | --- | --- | --- |
 | Card section (`card`) | Idle main card of columns 1/3/4/6 and the sub-item tiles of columns 2/5 | On, 1.0 s |
-| Button page (`page`) | Page tabs (1960 / 1996, PAGE 1 / PAGE 2) | On, 1.0 s |
+| Button page (`page`) | Page tabs (1960 / 1996, PAGE 1 / 2 / 3) | On, 1.0 s |
 | Button slider (`slider`) | Photo arrows | On, 1.0 s |
 | Bahasa (`language`) | Language flags (ID / EN / 中文) | **Off** |
 | Tombol close (`back`) | The open card's ✕ button | **Off** |
@@ -51,7 +51,7 @@ A title word that does not fit its pill (e.g. INFRASTRUKTUR at a large size or B
 
 ## Wall
 
-The page is grouped into four cards: **Tampilan** (language bar, card offset), **Tombol di card** (close, slider + Auto slide, page + Auto page), **Waktu** (reset), and **Diagnostik** (amber; touch dots + duration, with a "Masih menyala" badge while on). Each row has a one-line hint (number rows state their default), a **?** tooltip with the details (hover; a click or tap pins it and lights the **?**, closed by another click, a click elsewhere, or Escape), and, when the value differs from its default, a **↺ Default: …** chip that restores it. Switches show On/Off. Inputs that only matter while a switch is off (Auto slide, Auto page) or on (Durasi titik) sit indented under it. The language bar options are drawn as small card sketches.
+The page is grouped into four cards: **Tampilan** (language bar, card offset), **Tombol di card** (close + size/position, slider + Auto slide, page tabs, Auto page + duration), **Waktu** (reset), and **Diagnostik** (amber; touch dots + duration, with a "Masih menyala" badge while on). Each row has a one-line hint (number rows state their default), a **?** tooltip with the details (hover; a click or tap pins it and lights the **?**, closed by another click, a click elsewhere, or Escape), and, when the value differs from its default, a **↺ Default: …** chip that restores it. Switches show On/Off. Inputs that only matter while a switch is off (Auto slide, Auto page) or on (Durasi titik) sit indented under it. The language bar options are drawn as small card sketches.
 
 | Setting | Effect | Default |
 | --- | --- | --- |
@@ -62,20 +62,20 @@ The page is grouped into four cards: **Tampilan** (language bar, card offset), *
 | Posisi tombol close | Shown while Tombol close is on: X (− left / + right) and Y (− up / + down) shift of the badge, −60 to 60 logical px in 2 px steps | X 0 · Y 0 |
 | Tombol slider | Shows the photo arrows on open cards. Off hides them on every column, removes the previous/next touch targets from Sensor Service, and turns on auto slide | On |
 | Auto slide | Shown only while Tombol slider is off: an open card with several photos moves to the next photo (wrapping) every N seconds, 2–60 s. A **video** slide ignores the interval: it starts from the beginning when shown, plays once, and the next slide appears when it ends (e.g. video 20 s → image 5 s → image 5 s → video …; a video that fails to play is skipped). Any photo, page, or sub-item change restarts that column's countdown; auto slide is not visitor activity; the reset only waits for the slideshow to reach its last slide (see Reset otomatis). Operator ←/→ keys and OSC still change photos | 5 s |
-| Tombol page | Shows the page tabs (1960 / 1996, PAGE 1 / PAGE 2) on open cards. Off hides them on every column, removes the page touch targets from Sensor Service, and turns on auto page; the text then starts right below the photo | On |
-| Auto page | Shown only while Tombol page is off: an open card with several pages shows the next page (wrapping, photos restart at the first) every N seconds since the last page change, 3–120 s. A playing video slide finishes first. **With Tombol slider also off**, a page with several photos ignores this interval and changes right after its last photo, so every photo of every page is shown (e.g. 10 + 5 photos at 5 s: page 2 at 50 s, the card closes at 75 s); pages with one photo or none keep the interval. Not visitor activity; the reset only waits for the last page (see Reset otomatis) | 10 s |
+| Tombol page | Shows the page tabs (1960 / 1996, PAGE 1 / 2 / 3) on open cards. Off hides them on every column, removes the page touch targets from Sensor Service, and turns on auto page; the text then starts right below the photo | On |
+| Auto page | Pages change on their own, also while the tabs are shown (always on while Tombol page is off). The next page (wrapping, photos restart at the first) appears every **Durasi auto page** seconds (3–120 s) since the last page change, so pressing a tab restarts the count. A playing video slide finishes first. **With Tombol slider also off**, a page with several photos ignores this interval and changes right after its last photo, so every photo of every page is shown (e.g. 10 + 5 photos at 5 s: page 2 at 50 s, the card closes at 75 s); pages with one photo or none keep the interval. Not visitor activity; the reset only waits for the last page (see Reset otomatis) | On, 15 s |
 | Titik sentuh | Calibration overlay on the wall itself (same URL): a blue dot where a pointer pressed, a red dot and dashed line where it released if it drifted, a green dot where a Sensor Service input landed, each with logical coordinates. Never blocks input. `?dots=1` in the wall URL turns it on without the dashboard (for browsers with their own storage, such as a TouchDesigner Web Render TOP) | Off |
 | Durasi titik | Shown only while Titik sentuh is on: seconds a dot stays after its release or sensor input (1–60 s) | 5 s |
 | Tampilan bahasa | **Compact**: the flag pill in the middle of the idle frame (three 64 × 48 buttons). **Full width**: the bar spans the frame to 14 px from its edges, 76 px tall, with three equal 102 × 60 buttons and larger flags, on the same centre line. **Grid 2 + 1**: same width, ID left and EN right with 中文 centred below (155 × 60 buttons), 10 px lower than the single-row bars to leave room under the artwork; the idle frame grows 76 px downward and every column moves up 40 px (on top of Posisi Y card). Card artwork videos are redrawn on a canvas that stretches only the plain band behind the bar, so the artwork is not distorted and tiles stay aligned. Sensor Service moves the language, main, and every other target with it (`shared/language-bar.ts`) | Compact |
 
 How the switches combine on an open card:
 
-| Tombol slider | Tombol page | Photos | Pages | Card closes (reset time passed) |
+| Tombol slider | Auto page (or Tombol page off) | Photos | Pages | Card closes (reset time passed) |
 | --- | --- | --- | --- | --- |
-| On | On | Arrows | Tabs | At the reset time |
-| Off | On | Auto slide | Tabs | After the last photo of the current page |
-| On | Off | Arrows | Auto page interval | After the last page |
-| Off | Off | Auto slide | After each page's last photo | After the last photo of the last page |
+| On | Off | Arrows | Tabs | At the reset time |
+| Off | Off | Auto slide | Tabs | After the last photo of the current page |
+| On | On | Arrows | Auto page interval (tabs still work) | After the last page |
+| Off | On | Auto slide | After each page's last photo | After the last photo of the last page |
 
 Videos always play to their end while anything advances automatically, and a card never waits more than 5 minutes past the reset time.
 
