@@ -9,7 +9,7 @@ export const OUR_BRANDS: ColumnConfig = {
   icon: 'gear',
   defaultSub: 'tekiro',
   i18n: {
-    'id': { label: 'OUR BRAND' },
+    'id': { label: 'MEREK KAMI' },
     'en': { label: 'OUR BRANDS' },
     'zh-Hans': { label: '旗下品牌' },
   },

@@ -9,7 +9,7 @@ export const DIGITAL_TRUST: ColumnConfig = {
   icon: 'person',
   illustration: provisional('/illustrations/digital-partners.webm'),
   i18n: {
-    'id': { label: 'DIGITAL TRUST' },
+    'id': { label: 'KEPERCAYAAN DIGITAL' },
     'en': { label: 'DIGITAL TRUST' },
     'zh-Hans': { label: '数字信任' },
   },
