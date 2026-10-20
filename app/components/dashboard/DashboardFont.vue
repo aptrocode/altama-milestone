@@ -216,7 +216,7 @@ const stepper = 'grid size-8 place-items-center rounded-md font-bold ring-1 ring
           <span class="text-sm text-sky-100/60">px</span>
         </div>
       </DashboardSettingRow>
-      <DashboardCardFit :cards="draft.cards" :show-pages="settings.wall.showPages" :offset-y="settings.wall.cardOffsetY" @result="fits = $event" />
+      <DashboardCardFit :cards="draft.cards" :show-pages="settings.wall.showPages" :offset-y="settings.wall.cardOffsetY" :scroll-text="settings.wall.scrollText" @result="fits = $event" />
     </DashboardSection>
 
     <DashboardSection title="Tab page" icon="card" description="Tombol page di card yang terbuka.">

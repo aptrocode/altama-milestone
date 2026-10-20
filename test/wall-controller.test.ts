@@ -3,6 +3,7 @@ import { createPinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { effectScope, ref } from 'vue';
 import { MAX_RESET_WAIT_MS, useWallController } from '../app/composables/useWallController';
+import { useSettingsStore } from '../app/stores/settings';
 import { useWallStore } from '../app/stores/wall';
 
 const scopes: ReturnType<typeof effectScope>[] = [];
@@ -317,5 +318,23 @@ describe('auto slide and auto page together', () => {
     expect(wall.getColumnState(2)).toBe('active');
     vi.advanceTimersByTime(1); // 20 s + 15 s = 35 s
     expect(wall.getColumnState(2)).toBe('idle');
+  });
+});
+
+describe('scroll teks trial', () => {
+  it('shows the first page when "Scroll teks" merges the open card\'s pages', () => {
+    const wall = useWallStore(createPinia());
+    const settings = useSettingsStore();
+    const scope = effectScope();
+    scopes.push(scope);
+    const controls = scope.run(() => useWallController(wall, { resetDelayMs: () => 120_000 }))!;
+    controls.dispatch({ type: 'main', columnId: 6 });
+    controls.dispatch({ type: 'page', columnId: 6, page: 2 });
+    expect(wall.columns[6].page).toBe(2);
+    settings.setWall({ ...settings.wall, scrollText: true });
+    expect(wall.columns[6].page).toBe(0);
+    expect(wall.publishedColumns[6]!.pageCount).toBe(1);
+    settings.setWall({ ...settings.wall, scrollText: false });
+    expect(wall.publishedColumns[6]!.pageCount).toBe(3);
   });
 });

@@ -18,6 +18,15 @@ The sidebar footer acts on every browser-stored setting:
 
 Every button, switch, link, and tab (including the Sensor source tabs) shows a pointer cursor; `main.css` restores it after Tailwind's preflight reset.
 
+### Scroll teks (trial)
+
+**Scroll teks (uji coba)** under Tombol di card (`scrollText`, default **Off**) trials vertically scrolling card text on section 6 only (`scrollMerge` in `6-summit-2026.ts`):
+
+- **On:** its three pages show as one page without tabs, at the card's Font Maks size. The text scrolls up and down by touch or mouse drag, mouse wheel, or a TouchDesigner drag. A fade, a thin bar on the right, and a bouncing ⌄ show that more text follows, and the text starts at the top each time the card opens.
+- **Off:** the card has its three pages and tabs again.
+- **Switching:** an open card that was on a later page shows its first page when the pages merge (`clampPage`).
+- **Sensor Service:** it does not send drags yet, so on the LiDAR/TUIO path section 6 only takes taps while scrolling is on.
+
 ## Font
 
 Every wall text uses Roboto. The page sets the sizes (logical px on the 2304 × 1344 canvas) and the title weight, grouped as **Judul**, **Isi card per section**, and **Tab page**. Each row shows a live sample, − / + steppers, a ? tooltip, and a **↺ Default** chip; the save bar works as on Wall.
