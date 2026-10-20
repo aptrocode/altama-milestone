@@ -11,6 +11,7 @@ import { getColumnPages } from '~/data/wall-config';
 import { WALL_COPY } from '~/data/wall-copy';
 import { useSettingsStore } from '~/stores/settings';
 import { closeButtonRect } from '../../../shared/close-button';
+import { cardTextKey } from '../../../shared/font-settings';
 import { extendDown, languageGeometry } from '../../../shared/language-bar';
 import { autoPageActive, closeButtonOptions } from '../../../shared/wall-settings';
 
@@ -40,6 +41,11 @@ const idle = computed(() => props.snapshot.phase === 'idle');
 const closeRect = computed(() => closeButtonRect(geometry.value.active.back, closeButtonOptions(settings.wall)));
 const idleFrame = computed(() => extendDown(geometry.value.card, languageGeometry(geometry.value, settings.wall.languageBar).extend));
 const pages = computed(() => getColumnPages(props.column, props.snapshot.subItem));
+// Open-card text size and fill come from Dashboard → Font, per card (column or sub-item).
+const cardText = computed(() => {
+  const key = cardTextKey(props.column.key, props.column.type === 'expandable' ? props.snapshot.subItem : '');
+  return key ? settings.fonts.cards[key] : undefined;
+});
 const openSubItem = computed(() => props.column.type === 'expandable' && !idle.value
   ? props.column.subItems?.find(sub => sub.key === props.snapshot.subItem)
   : undefined);
@@ -132,7 +138,7 @@ function act(action: WallAction) {
       <WallOpenCard
         v-if="!idle" class="absolute transition-[height] duration-300 ease-out motion-reduce:transition-none" :style="cardStyle"
         :column-id="column.id" :pages="pages" :locale="snapshot.locale" :photo="snapshot.photo" :page="snapshot.page"
-        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" :show-pages="settings.wall.showPages" :auto-page="autoPageActive(settings.wall)" :fill-text="column.fillText" :text-scale="openSubItem?.textScale" @action="act" @height="onCardHeight"
+        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" :show-pages="settings.wall.showPages" :auto-page="autoPageActive(settings.wall)" :fill-text="cardText?.fill" :text-size="cardText?.size" @action="act" @height="onCardHeight"
         @media-ended="emit('slideEnded', column.id)"
       />
     </Transition>

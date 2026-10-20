@@ -8,8 +8,6 @@ export const SUMMIT_2026: ColumnConfig = {
   type: 'single',
   icon: 'people',
   illustration: provisional('/illustrations/summit-2026.webm'),
-  // Short pages: each page's text grows to fill the card.
-  fillText: true,
   i18n: {
     'id': { label: 'KTT ALTAMA 2026' },
     'en': { label: 'ALTAMA SUMMIT 2026' },

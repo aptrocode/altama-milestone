@@ -2,7 +2,7 @@
 import type { WallLocale } from '../../../shared/wall';
 import type { BulletItem, MediaAsset, PageCopy } from '~/types/wall-content';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { useSettingsStore } from '~/stores/settings';
+import { BASE_BODY_SIZE } from '../../../shared/font-settings';
 
 /**
  * Open-card text. One typographic system for every column (see docs/style.md, "Card copy"):
@@ -15,11 +15,11 @@ import { useSettingsStore } from '~/stores/settings';
  * Every paragraph and list item fades up in reading order (top to bottom) whenever the page
  * becomes the visible one: when the card opens and on every page switch.
  */
-const props = defineProps<{ copy: PageCopy; locale: WallLocale; active?: boolean; /** Grow the text until it fills the available height. */ fill?: boolean; /** Text size relative to the body size. */ base?: number }>();
+const props = defineProps<{ copy: PageCopy; locale: WallLocale; active?: boolean; /** Grow the text until it fills the available height. */ fill?: boolean; /** Body size in logical px (default 18). */ size?: number }>();
 /** Content height at full size in CSS px; the open card grows to fit the visible page. */
 const emit = defineEmits<{ natural: [px: number] }>();
 
-// Body text is the dashboard body size (default 18 logical px). The card grows with its content first (WallOpenCard); a page that
+// Body text is the card's Dashboard → Font size (default 18 logical px). The card grows with its content first (WallOpenCard); a page that
 // still overflows the tallest card (y 1312) shrinks in small steps (down to 80%) instead of being clipped.
 const MIN_SCALE = 0.65;
 /** Upper bound when a page fills the card (`fill`): short pages grow at most this much. */
@@ -85,9 +85,8 @@ onMounted(() => {
       observer.observe(root.value.parentElement);
   }
 });
-const settings = useSettingsStore();
-// A new dashboard body size changes the content height, which the ResizeObserver cannot see.
-watch(() => [props.copy, props.locale, props.base, settings.fonts.bodySize], () => {
+// A new size or fill setting changes the content height, which the ResizeObserver cannot see.
+watch(() => [props.copy, props.locale, props.size, props.fill], () => {
   partsNatural = 0;
   nextTick(fit);
 });
@@ -155,8 +154,8 @@ watch(() => [props.active, props.copy], () => {
 
 <template>
   <div
-    ref="root" class="grid content-start gap-[calc(12*var(--wall-y)*var(--copy-base,1)*var(--copy-scale,1))] font-medium text-[length:calc(var(--fs-body,18)*var(--wall-u)*var(--copy-base,1)*var(--copy-scale,1))]"
-    :style="{ '--copy-scale': scale, '--copy-base': base ?? 1 }" :data-copy-scale="scale"
+    ref="root" class="grid content-start gap-[calc(12*var(--wall-y)*var(--copy-base,1)*var(--copy-scale,1))] font-medium text-[length:calc(18*var(--wall-u)*var(--copy-base,1)*var(--copy-scale,1))]"
+    :style="{ '--copy-scale': scale, '--copy-base': (size ?? BASE_BODY_SIZE) / BASE_BODY_SIZE }" :data-copy-scale="scale"
   >
     <template v-for="(block, index) in shownBlocks" :key="`${part}-${index}`">
       <p v-if="typeof block === 'string'" class="leading-[1.3] text-white/95" data-reveal :style="reveal(index)">

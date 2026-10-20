@@ -19,8 +19,6 @@ export const OUR_BRANDS: ColumnConfig = {
       image: provisional('/brands/tekiro-wordmark.webp'),
       tileBackground: '#000000',
       wordmark: provisional('/brands/tekiro-wordmark.webp'),
-      // Section 1's text size, like RYU and Rexco.
-      textScale: 1.2,
       i18n: { 'id': { label: 'TEKIRO' }, 'en': { label: 'TEKIRO' }, 'zh-Hans': { label: 'TEKIRO' } },
       pages: [
         page(
@@ -118,8 +116,6 @@ export const OUR_BRANDS: ColumnConfig = {
       key: 'ryu',
       image: provisional('/brands/ryu-tile.webp'),
       wordmark: provisional('/brands/ryu-wordmark.webp'),
-      // Larger text on both pages, like Rexco and section 1.
-      textScale: 1.2,
       i18n: { 'id': { label: 'RYU' }, 'en': { label: 'RYU' }, 'zh-Hans': { label: 'RYU' } },
       pages: [
         page(
@@ -231,8 +227,6 @@ export const OUR_BRANDS: ColumnConfig = {
       image: provisional('/brands/rexco.webp'),
       tileBackground: '#1f1f9e',
       wordmark: provisional('/brands/rexco-wordmark.webp'),
-      // Larger text on both pages, about the size section 1 fills its card with.
-      textScale: 1.2,
       i18n: { 'id': { label: 'REXCO' }, 'en': { label: 'REXCO' }, 'zh-Hans': { label: 'REXCO' } },
       pages: [
         page(
