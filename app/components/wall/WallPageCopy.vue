@@ -28,6 +28,7 @@ const root = ref<HTMLElement | null>(null);
 const scale = ref(1);
 let observer: ResizeObserver | undefined;
 let lastNatural = -1;
+let partsNatural = 0;
 
 /** Bottom of the last block in CSS px (the content's own height, unlike scrollHeight). */
 function contentBottom(element: HTMLElement) {
@@ -43,10 +44,10 @@ function fit() {
     return;
   let next = 1;
   element.style.setProperty('--copy-scale', '1');
-  const natural = [...element.children].reduce((bottom, child) => {
-    const box = child as HTMLElement;
-    return Math.max(bottom, box.offsetTop + box.offsetHeight);
-  }, 0);
+  // Rotating parts report the tallest part seen, so the card does not jump back between parts.
+  const natural = Math.max(contentBottom(element), props.copy.parts ? partsNatural : 0);
+  if (props.copy.parts)
+    partsNatural = natural;
   if (Math.abs(natural - lastNatural) > 0.5) {
     lastNatural = natural;
     emit('natural', natural);
@@ -86,7 +87,10 @@ onMounted(() => {
 });
 const settings = useSettingsStore();
 // A new dashboard body size changes the content height, which the ResizeObserver cannot see.
-watch(() => [props.copy, props.locale, props.base, settings.fonts.bodySize], () => nextTick(fit));
+watch(() => [props.copy, props.locale, props.base, settings.fonts.bodySize], () => {
+  partsNatural = 0;
+  nextTick(fit);
+});
 
 // Rotating parts (`copy.parts`): no buttons, the next part shows every `partSeconds` while this page
 // is visible, from the first part again each time it becomes visible. The timer is this

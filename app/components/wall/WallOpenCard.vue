@@ -8,7 +8,7 @@ import WallPageCopy from '~/components/wall/WallPageCopy.vue';
 import { installationLayout, rectStyle } from '~/data/installation-layout';
 import { WALL_COPY } from '~/data/wall-copy';
 import { isVideoSrc } from '~/utils/media';
-import { pageTabRects, textTopUnderTopTabs } from '../../../shared/page-tabs';
+import { extraTabRows, pageTabRects, textTopUnderTopTabs } from '../../../shared/page-tabs';
 
 /**
  * Open-card content: each page owns a photo slider and text. Arrows move photos inside the
@@ -41,7 +41,7 @@ const current = computed(() => props.pages[props.page] || props.pages[0]);
 const hasPhotoFrame = computed(() => props.pages.some(item => item.photos.length > 0));
 const hasSlider = computed(() => props.showArrows !== false && (current.value?.photos.length || 0) > 1);
 const hasPages = computed(() => props.showPages !== false && props.pages.length > 1);
-// Two tabs from the layout, three narrower ones, and at the top when the card has no photo frame.
+// Two tabs from the layout (a third one centred under them), at the top when the card has no photo frame.
 const tabs = computed(() => pageTabRects(props.geometry, props.pages.length, !hasPhotoFrame.value));
 // Auto slide (arrows hidden) or auto page (tabs hidden): a video slide restarts when shown, plays
 // once, and reports its end (or a playback error) so the controller moves on; others pause.
@@ -74,8 +74,10 @@ function onVideoDone(index: number) {
 }
 // Text starts below whichever of the photo frame and page tabs are present.
 const textTop = computed(() => {
-  if (hasPages.value)
-    return hasPhotoFrame.value ? visual.textTop.tabs : textTopUnderTopTabs(props.geometry.pages[0]!.height);
+  if (hasPages.value) {
+    const tabHeight = props.geometry.pages[0]!.height;
+    return hasPhotoFrame.value ? visual.textTop.tabs + extraTabRows(props.pages.length, tabHeight) : textTopUnderTopTabs(tabHeight, props.pages.length);
+  }
   return hasPhotoFrame.value ? visual.textTop.photo : visual.textTop.plain;
 });
 const TEXT_BOTTOM = 20;
@@ -208,9 +210,9 @@ function onNatural(index: number, px: number) {
     <template v-if="hasPages">
       <WallHoldButton
         v-for="target in tabs" :key="target.page"
-        class="wall-page-tab absolute flex items-center justify-center [border-radius:calc(7*var(--wall-x))/calc(7*var(--wall-y))] font-display text-[length:calc(var(--fs-tab,24)*var(--wall-u)*var(--tab-fit,1))] font-bold uppercase tracking-wide"
+        class="wall-page-tab absolute flex items-center justify-center [border-radius:calc(7*var(--wall-x))/calc(7*var(--wall-y))] font-display text-[length:calc(var(--fs-tab,24)*var(--wall-u))] font-bold uppercase tracking-wide"
         :class="page === target.page ? 'pointer-events-none !cursor-default bg-[#0b1a78] text-white ring-2 ring-[#9fdcff] shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.8)]' : 'bg-white text-[#0b1a78] ring-2 ring-white/80 hover:bg-sky-100'"
-        :style="{ ...rectStyle(target, geometry.card), '--tab-fit': tabs.length > 2 ? 0.85 : 1 }" :outline="target" group="page" :radius="7"
+        :style="rectStyle(target, geometry.card)" :outline="target" group="page" :radius="7"
         :disabled="page === target.page" :aria-current="page === target.page ? 'page' : undefined" data-sensor-action="page" :data-page="target.page"
         @activate="$emit('action', { type: 'page', columnId, page: target.page })"
       >
