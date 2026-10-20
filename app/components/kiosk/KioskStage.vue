@@ -19,6 +19,7 @@ import { useWallStore } from '~/stores/wall';
 import { isVideoSrc } from '~/utils/media';
 import { columnOffsetY, languageGeometry } from '../../../shared/language-bar';
 import { COLUMN_IDS } from '../../../shared/wall';
+import { closeButtonOptions } from '../../../shared/wall-settings';
 
 const wall = useWallStore();
 const system = useSystemStore();
@@ -130,6 +131,7 @@ const sensorSocket = useSensorSocket({
   getShowArrows: () => settings.wall.showArrows,
   getShowPages: () => settings.wall.showPages,
   getLanguageBar: () => settings.wall.languageBar,
+  getClose: () => closeButtonOptions(settings.wall),
 });
 
 wall.$subscribe(() => sensorSocket.publishState(), { flush: 'post' });

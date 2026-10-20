@@ -1,5 +1,7 @@
+import type { CloseButtonOptions } from '../../shared/close-button';
 import type { LanguageBarMode } from '../../shared/language-bar';
 import type { ColumnId, WallAction, WallLocale } from '../../shared/wall';
+import { closeButtonRect } from '../../shared/close-button';
 import rawLayout from '../../shared/installation-layout.json';
 import { columnOffsetY, extendDown, languageGeometry } from '../../shared/language-bar';
 
@@ -81,7 +83,7 @@ export function offsetRect<T extends Rect>(rect: T, offsetY: number): T {
 }
 
 /** Target rects of an action on the LED wall, shifted by the dashboard card offset (plus the language bar mode's raise), with that mode's language geometry. */
-export function getActionRects(action: WallAction, offsetY = 0, languageBar: LanguageBarMode = 'compact'): Rect[] {
+export function getActionRects(action: WallAction, offsetY = 0, languageBar: LanguageBarMode = 'compact', close?: CloseButtonOptions): Rect[] {
   const column = installationLayout.columns.find(item => item.id === action.columnId);
   if (!column)
     return [];
@@ -90,7 +92,7 @@ export function getActionRects(action: WallAction, offsetY = 0, languageBar: Lan
       case 'main': return column.main ? [extendDown(column.main, languageGeometry(column, languageBar).extend)] : [];
       case 'language': return languageGeometry(column, languageBar).languages.filter(item => item.locale === action.locale);
       case 'subItem': return column.subItems?.filter(item => item.key === action.subItemId) || [];
-      case 'back': return [column.active.back];
+      case 'back': return [closeButtonRect(column.active.back, close)];
       case 'previous': return [column.active.previous];
       case 'next': return [column.active.next];
       case 'page': return column.active.pages.filter(item => item.page === action.page);

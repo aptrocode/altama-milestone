@@ -1,3 +1,4 @@
+import type { CloseButtonOptions } from '../../shared/close-button';
 import type { LanguageBarMode } from '../../shared/language-bar';
 import type { ColumnId, WallAction, WallLocale } from '../../shared/wall';
 import type { SensorMessage, SensorParseResult } from '~/types/sensor';
@@ -48,9 +49,9 @@ function failure(error: string): SensorParseResult {
 
 /**
  * `cardOffsetY` is the dashboard card offset the wall is drawn with and `languageBar` its language
- * bar mode; input must hit the target as drawn.
+ * bar mode, and `close` its close button size and position; input must hit the target as drawn.
  */
-export function parseSensorMessage(raw: string, cardOffsetY = 0, languageBar: LanguageBarMode = 'compact'): SensorParseResult {
+export function parseSensorMessage(raw: string, cardOffsetY = 0, languageBar: LanguageBarMode = 'compact', close?: CloseButtonOptions): SensorParseResult {
   let value: unknown;
   try {
     value = JSON.parse(raw);
@@ -107,7 +108,7 @@ export function parseSensorMessage(raw: string, cardOffsetY = 0, languageBar: La
     return failure('coordinates are outside the logical canvas');
   const x = value.x as number;
   const y = value.y as number;
-  if (!getActionRects(action, cardOffsetY, languageBar).some(rect => isPointInsideRect(x, y, rect)))
+  if (!getActionRects(action, cardOffsetY, languageBar, close).some(rect => isPointInsideRect(x, y, rect)))
     return failure('coordinates do not match the declared target');
   const geometry = installationLayout.columns.find(column => column.id === action.columnId)!;
   if (action.type === 'main' && isPointInsideRect(x, y, offsetRect(languageGeometry(geometry, languageBar).languageBar, columnOffsetY(cardOffsetY, languageBar))))

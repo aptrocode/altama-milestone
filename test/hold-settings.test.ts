@@ -29,12 +29,15 @@ describe('hold settings', () => {
 
   it('clamps wall settings: reset seconds and card offset', () => {
     expect(normalizeWallSettings(null)).toEqual(DEFAULT_WALL_SETTINGS);
-    expect(DEFAULT_WALL_SETTINGS).toEqual({ resetSeconds: 30, cardOffsetY: 0, showClose: true, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPageSeconds: 10, languageBar: 'compact', showTouchDots: false, touchDotSeconds: 5 });
+    expect(DEFAULT_WALL_SETTINGS).toEqual({ resetSeconds: 30, cardOffsetY: 0, showClose: true, closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPageSeconds: 10, languageBar: 'compact', showTouchDots: false, touchDotSeconds: 5 });
     expect(normalizeWallSettings({ resetSeconds: 2, cardOffsetY: 999, autoSlideSeconds: 0 }))
       .toEqual({ ...DEFAULT_WALL_SETTINGS, resetSeconds: 5, cardOffsetY: 120, autoSlideSeconds: 2 });
     expect(normalizeWallSettings({ resetSeconds: 45.4, cardOffsetY: -31, showClose: false, showArrows: false, autoSlideSeconds: 7.6, showPages: false, autoPageSeconds: 500, languageBar: 'full', showTouchDots: true, touchDotSeconds: 99 }))
-      .toEqual({ resetSeconds: 45, cardOffsetY: -30, showClose: false, showArrows: false, autoSlideSeconds: 8, showPages: false, autoPageSeconds: 120, languageBar: 'full', showTouchDots: true, touchDotSeconds: 60 });
+      .toEqual({ resetSeconds: 45, cardOffsetY: -30, showClose: false, closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: false, autoSlideSeconds: 8, showPages: false, autoPageSeconds: 120, languageBar: 'full', showTouchDots: true, touchDotSeconds: 60 });
     expect(normalizeWallSettings({ languageBar: 'huge' }).languageBar).toBe('compact');
+    expect(normalizeWallSettings({ closeScale: 1.26 }).closeScale).toBe(1.3);
+    expect(normalizeWallSettings({ closeScale: 9 }).closeScale).toBe(2);
+    expect(normalizeWallSettings({ closeOffsetX: -99, closeOffsetY: 7 })).toMatchObject({ closeOffsetX: -60, closeOffsetY: 8 });
     expect(normalizeWallSettings({ languageBar: 'grid' }).languageBar).toBe('grid');
     expect(normalizeWallSettings({ showClose: 'no', showArrows: 1 })).toMatchObject({ showClose: true, showArrows: true });
   });

@@ -9,6 +9,7 @@ import DashboardSettingRow from '~/components/dashboard/DashboardSettingRow.vue'
 import DashboardSwitch from '~/components/dashboard/DashboardSwitch.vue';
 import { useSettingsDraft } from '~/composables/useSettingsDraft';
 import { useSettingsStore } from '~/stores/settings';
+import { CLOSE_OFFSET, CLOSE_SCALE } from '../../../shared/close-button';
 import { AUTO_PAGE_SECONDS, AUTO_SLIDE_SECONDS, CARD_OFFSET_Y, DEFAULT_WALL_SETTINGS, normalizeWallSettings, RESET_SECONDS, TOUCH_DOT_SECONDS } from '../../../shared/wall-settings';
 
 const settings = useSettingsStore();
@@ -40,6 +41,8 @@ function defaultLabel(key: keyof WallSettings) {
     return value ? 'On' : 'Off';
   if (key === 'languageBar')
     return LANGUAGE_BAR_OPTIONS.find(option => option.value === value)?.label ?? String(value);
+  if (key === 'closeScale')
+    return `${value}×`;
   return key === 'cardOffsetY' ? String(value) : `${value} detik`;
 }
 
@@ -69,6 +72,16 @@ const HELP: Record<string, HelpLine[]> = {
     { term: 'Off', text: 'Tombol ✕ hilang, area sentuhnya di sensor ikut dihapus.' },
     'Card tetap tertutup sendiri setelah Reset otomatis, atau lewat tombol operator 1–6, R/Escape, dan OSC.',
   ],
+  closeScale: [
+    'Memperbesar tombol ✕ di sudut kanan atas card yang terbuka, dari titik tengahnya.',
+    { term: 'Sensor', text: 'Area sentuh tombol close di Sensor Service ikut membesar, jadi lebih mudah ditekan dengan LiDAR.' },
+  ],
+  closeOffset: [
+    'Menggeser tombol ✕ dari posisi bawaannya di sudut kanan atas card.',
+    { term: 'X', text: 'Minus = ke kiri, plus = ke kanan.' },
+    { term: 'Y', text: 'Minus = ke atas, plus = ke bawah.' },
+    'Area sentuh sensor dan perintah OSC ikut bergeser.',
+  ],
   showArrows: [
     { term: 'Off', text: 'Panah hilang; foto berganti sendiri setiap Auto slide detik.' },
     { term: 'Video', text: 'Diputar sampai selesai dulu, baru lanjut.' },
@@ -90,6 +103,12 @@ const HELP: Record<string, HelpLine[]> = {
     'Di browser lain (mis. TouchDesigner) buka wall dengan ?dots=1.',
   ],
 };
+
+/** X / Y rows of the close position: steppers of 2 px with arrows that show the direction. */
+const CLOSE_AXES = [
+  { key: 'closeOffsetX', label: 'X', less: '←', more: '→', lessLabel: 'Geser tombol close ke kiri', moreLabel: 'Geser tombol close ke kanan', inputLabel: 'Posisi X tombol close dalam px' },
+  { key: 'closeOffsetY', label: 'Y', less: '↑', more: '↓', lessLabel: 'Geser tombol close ke atas', moreLabel: 'Geser tombol close ke bawah', inputLabel: 'Posisi Y tombol close dalam px' },
+] as const;
 
 const field = 'w-20 rounded-md bg-white/10 px-2 py-1.5 text-right font-bold text-white ring-1 ring-white/15 focus:outline-none focus:ring-2 focus:ring-wall-glow';
 const unit = 'text-sm text-sky-100/60';
@@ -158,13 +177,76 @@ const unit = 'text-sm text-sky-100/60';
     </DashboardSection>
 
     <DashboardSection title="Tombol di card" icon="buttons" description="Tombol yang terlihat saat card dibuka. Yang dimatikan berjalan otomatis.">
-      <DashboardSettingRow
-        data-wall-setting="showClose" title="Tombol close" hint="Tombol ✕ di card yang terbuka."
-        :help="HELP.showClose"
-        :changed="changed('showClose')" :default-label="defaultLabel('showClose')" @reset="reset('showClose')"
-      >
-        <DashboardSwitch :model-value="draft.showClose" label="Tampilkan tombol close" @update:model-value="update({ showClose: $event })" />
-      </DashboardSettingRow>
+      <div>
+        <DashboardSettingRow
+          data-wall-setting="showClose" title="Tombol close" hint="Tombol ✕ di card yang terbuka."
+          :help="HELP.showClose"
+          :changed="changed('showClose')" :default-label="defaultLabel('showClose')" @reset="reset('showClose')"
+        >
+          <DashboardSwitch :model-value="draft.showClose" label="Tampilkan tombol close" @update:model-value="update({ showClose: $event })" />
+        </DashboardSettingRow>
+        <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-1" leave-active-class="transition duration-150 ease-in" leave-to-class="opacity-0 -translate-y-1">
+          <DashboardSettingRow
+            v-if="draft.showClose" nested data-wall-setting="closeScale" title="Ukuran tombol close"
+            :hint="`1× = ukuran sekarang, 2× = dua kali lebih besar, atau isi manual (${CLOSE_SCALE.min}–${CLOSE_SCALE.max}×).`"
+            :help="HELP.closeScale"
+            :changed="changed('closeScale')" :default-label="defaultLabel('closeScale')" @reset="reset('closeScale')"
+          >
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="flex rounded-lg bg-white/10 p-1 ring-1 ring-white/15" role="radiogroup" aria-label="Ukuran cepat tombol close">
+                <button
+                  v-for="preset in [1, 2]" :key="preset" type="button" role="radio" :aria-checked="draft.closeScale === preset"
+                  class="rounded-md px-3 py-1.5 text-sm font-bold transition-colors"
+                  :class="draft.closeScale === preset ? 'bg-wall-glow text-[#050d4f]' : 'text-sky-100/70 hover:bg-white/10'"
+                  @click="update({ closeScale: preset })"
+                >
+                  {{ preset }}×
+                </button>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <input
+                  type="number" inputmode="decimal" :class="field" aria-label="Ukuran tombol close manual"
+                  :min="CLOSE_SCALE.min" :max="CLOSE_SCALE.max" :step="CLOSE_SCALE.step"
+                  :value="draft.closeScale" @change="setNumber('closeScale', ($event.target as HTMLInputElement).value)"
+                >
+                <span :class="unit">×</span>
+              </div>
+              <!-- Sketch of the badge at this size (44 px at 1×, drawn half-size). -->
+              <span
+                class="grid shrink-0 place-items-center rounded-full bg-[#0b1a78] font-bold text-white ring-2 ring-[#bfe8ff]" aria-hidden="true"
+                :style="{ width: `${22 * draft.closeScale}px`, height: `${22 * draft.closeScale}px`, fontSize: `${10 * draft.closeScale}px` }"
+              >✕</span>
+            </div>
+          </DashboardSettingRow>
+        </Transition>
+        <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-1" leave-active-class="transition duration-150 ease-in" leave-to-class="opacity-0 -translate-y-1">
+          <DashboardSettingRow
+            v-if="draft.showClose" nested data-wall-setting="closeOffset" title="Posisi tombol close"
+            :hint="`Geser ✕ ke kiri/kanan (X) dan atas/bawah (Y), ${CLOSE_OFFSET.min} s.d. ${CLOSE_OFFSET.max} px. Default 0.`"
+            :help="HELP.closeOffset"
+            :changed="changed('closeOffsetX') || changed('closeOffsetY')" default-label="X 0 · Y 0"
+            @reset="update({ closeOffsetX: 0, closeOffsetY: 0 })"
+          >
+            <div class="flex flex-wrap items-center gap-3">
+              <div v-for="axis in CLOSE_AXES" :key="axis.key" class="flex items-center gap-1.5">
+                <span class="w-3 text-sm font-bold text-sky-100/70">{{ axis.label }}</span>
+                <button type="button" class="size-8 rounded-md font-bold ring-1 ring-white/20 hover:bg-white/10" :aria-label="axis.lessLabel" @click="update({ [axis.key]: draft[axis.key] - 2 })">
+                  {{ axis.less }}
+                </button>
+                <input
+                  type="number" inputmode="numeric" :class="field" :aria-label="axis.inputLabel"
+                  :min="CLOSE_OFFSET.min" :max="CLOSE_OFFSET.max" :step="CLOSE_OFFSET.step"
+                  :value="draft[axis.key]" @change="setNumber(axis.key, ($event.target as HTMLInputElement).value)"
+                >
+                <button type="button" class="size-8 rounded-md font-bold ring-1 ring-white/20 hover:bg-white/10" :aria-label="axis.moreLabel" @click="update({ [axis.key]: draft[axis.key] + 2 })">
+                  {{ axis.more }}
+                </button>
+              </div>
+              <span :class="unit">px</span>
+            </div>
+          </DashboardSettingRow>
+        </Transition>
+      </div>
 
       <div>
         <DashboardSettingRow
