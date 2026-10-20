@@ -24,16 +24,9 @@ export default defineNuxtConfig({
   fonts: {
     families: [
       {
-        name: 'Roboto Condensed',
+        name: 'Roboto',
         provider: 'google',
-        weights: [400, 500, 600, 700, 800],
-        styles: ['normal'],
-        global: true,
-      },
-      {
-        name: 'Oswald',
-        provider: 'google',
-        weights: [400, 500, 600, 700],
+        weights: [400, 500, 600, 700, 800, 900],
         styles: ['normal'],
         global: true,
       },

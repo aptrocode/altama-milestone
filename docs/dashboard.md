@@ -1,21 +1,37 @@
 # Operator dashboard
 
-`/dashboard` is the operator configuration UI: a sidebar (a darker navy than the wall-blue content, same hue) links three pages (Wall, Hold, Sensor: the wall configuration comes first), and `/dashboard` redirects to Wall. From `lg` (1024 px) the sidebar is fixed; below it is an off-canvas drawer opened from the ☰ top bar and closed by ✕, the backdrop, Escape, or navigating. The content column uses the full width and scrolls on its own (the document itself never scrolls; see `main.css`).
+`/dashboard` is the operator configuration UI: a sidebar (a darker navy than the wall-blue content, same hue) links four pages (Wall, Hold, Font, Sensor: the wall configuration comes first), and `/dashboard` redirects to Wall. From `lg` (1024 px) the sidebar is fixed; below it is an off-canvas drawer opened from the ☰ top bar and closed by ✕, the backdrop, Escape, or navigating. The content column uses the full width and scrolls on its own (the document itself never scrolls; see `main.css`).
 
 | Page | Route | Stored in |
 | --- | --- | --- |
 | Wall | `/dashboard/wall` | this browser (`localStorage`) |
 | Hold | `/dashboard/hold` | this browser (`localStorage`) |
+| Font | `/dashboard/font` | this browser (`localStorage`) |
 | Sensor | `/dashboard/sensor` | Sensor Service (`sensor-config.json` on the event PC) |
 
 The sidebar footer acts on every browser-stored setting:
 
-- **Export pengaturan** downloads `altama-settings.json` (hold and wall settings).
+- **Export pengaturan** downloads `altama-settings.json` (wall, hold, and font settings).
 - **Import pengaturan** applies a backup immediately (older `altama-hold-settings.json` files with only `hold` still import).
 - **Fullscreen** toggles browser fullscreen.
-- **Reset ke default** opens a confirmation dialog (centred on wide screens, a bottom sheet with full-width buttons on phones; Batal, the backdrop, or Escape cancel) and restores Hold and Wall defaults on **Ya, reset**.
+- **Reset ke default** opens a confirmation dialog (centred on wide screens, a bottom sheet with full-width buttons on phones; Batal, the backdrop, or Escape cancel) and restores Wall, Hold, and Font defaults on **Ya, reset**.
 
 Every button, switch, link, and tab (including the Sensor source tabs) shows a pointer cursor; `main.css` restores it after Tailwind's preflight reset.
+
+## Font
+
+Every wall text uses Roboto. The page sets the sizes (logical px on the 2304 × 1344 canvas) and the title weight, grouped as **Judul** and **Card terbuka**. Each row shows a live sample, − / + steppers, a ? tooltip, and a **↺ Default** chip; the save bar works as on Wall.
+
+| Setting | Text | Default | Range |
+| --- | --- | --- | --- |
+| Judul section | Column title in the pill | 27 | 20–34 |
+| Ketebalan judul | Title weight: Regular 400, Medium 500, Bold 700, Extra 800, Black 900 | Bold | – |
+| Nama sub-item | Open sub-item name above the card (when it has no logo) | 32 | 24–40 |
+| Caption tile | Tile labels of column 5 (Distribusi / Pemasaran) | 30 | 22–36 |
+| Tab page | Page tab labels | 24 | 16–28 |
+| Isi konten | Open-card copy; glow labels stay 0.82 × | 18 | 14–24 |
+
+A title word that does not fit its pill (e.g. INFRASTRUKTUR at a large size or Black) shrinks just that title (down to 60 %); long open-card pages still grow the card first and then shrink, so no setting clips text.
 
 ## Hold
 

@@ -1,12 +1,14 @@
 <script setup lang="ts">
 /** A titled group of dashboard settings; `warning` marks diagnostics that must be off at the event. */
-defineProps<{ title: string; description?: string; icon: 'display' | 'buttons' | 'timer' | 'diagnostic'; warning?: boolean }>();
+defineProps<{ title: string; description?: string; icon: 'display' | 'buttons' | 'timer' | 'diagnostic' | 'font' | 'card'; warning?: boolean }>();
 
 const ICONS = {
   display: 'M3 5h18v11H3zM8 20h8M12 16v4',
   buttons: 'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM15 16.5h4M17 14.5v4',
   timer: 'M12 8v5l3 2M9 2h6M12 22a8 8 0 1 0 0-16 8 8 0 0 0 0 16z',
   diagnostic: 'M12 3v3M12 18v3M3 12h3M18 12h3M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+  font: 'M4 20 10 4h1l6 16M6.5 14h8M17 20h4',
+  card: 'M4 3h16v18H4zM8 8h8M8 12h8M8 16h5',
 } as const;
 </script>
 

@@ -2,6 +2,7 @@
 import type { WallLocale } from '../../../shared/wall';
 import type { BulletItem, MediaAsset, PageCopy } from '~/types/wall-content';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useSettingsStore } from '~/stores/settings';
 
 /**
  * Open-card text. One typographic system for every column (see docs/style.md, "Card copy"):
@@ -18,7 +19,7 @@ const props = defineProps<{ copy: PageCopy; locale: WallLocale; active?: boolean
 /** Content height at full size in CSS px; the open card grows to fit the visible page. */
 const emit = defineEmits<{ natural: [px: number] }>();
 
-// Body text is 18 logical px. The card grows with its content first (WallOpenCard); a page that
+// Body text is the dashboard body size (default 18 logical px). The card grows with its content first (WallOpenCard); a page that
 // still overflows the tallest card (y 1312) shrinks in small steps (down to 80%) instead of being clipped.
 const MIN_SCALE = 0.65;
 const root = ref<HTMLElement | null>(null);
@@ -59,7 +60,9 @@ onMounted(() => {
       observer.observe(root.value.parentElement);
   }
 });
-watch(() => [props.copy, props.locale], () => nextTick(fit));
+const settings = useSettingsStore();
+// A new dashboard body size changes the content height, which the ResizeObserver cannot see.
+watch(() => [props.copy, props.locale, settings.fonts.bodySize], () => nextTick(fit));
 onBeforeUnmount(() => observer?.disconnect());
 
 // Reading-order index of every paragraph / list item, so delays run top to bottom across blocks.
@@ -98,7 +101,7 @@ watch(() => [props.active, props.copy], () => {
 
 <template>
   <div
-    ref="root" class="grid content-start gap-[calc(12*var(--wall-y)*var(--copy-scale,1))] font-medium text-[length:calc(18*var(--wall-u)*var(--copy-scale,1))]"
+    ref="root" class="grid content-start gap-[calc(12*var(--wall-y)*var(--copy-scale,1))] font-medium text-[length:calc(var(--fs-body,18)*var(--wall-u)*var(--copy-scale,1))]"
     :style="{ '--copy-scale': scale }" :data-copy-scale="scale"
   >
     <template v-for="(block, index) in copy.blocks" :key="index">

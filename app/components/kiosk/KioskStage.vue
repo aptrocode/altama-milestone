@@ -62,6 +62,16 @@ const wallStyle = {
 const stacked = useStackedLayout();
 const stackedView = layout.visual.stacked;
 
+// Dashboard font sizes (logical px) and title weight, read by the wall components as CSS variables.
+const fontVars = computed(() => ({
+  '--fs-title': settings.fonts.titleSize,
+  '--fw-title': settings.fonts.titleWeight,
+  '--fs-subitem': settings.fonts.subItemSize,
+  '--fs-caption': settings.fonts.captionSize,
+  '--fs-tab': settings.fonts.tabSize,
+  '--fs-body': settings.fonts.bodySize,
+}));
+
 // Phones/tablets: each column is drawn in its own box with a uniform scale (container width),
 // showing only the logical rows its idle frame or open layout uses.
 function stackedWindow(id: ColumnId) {
@@ -178,7 +188,7 @@ onUnmounted(() => {
   <main
     id="wall-container" class="relative isolate w-screen h-dvh bg-wall-night text-wall-ink select-none font-sans"
     :class="stacked ? 'overflow-y-auto overscroll-contain touch-pan-y' : 'overflow-hidden touch-none'"
-    :style="stacked ? undefined : wallStyle" :data-layout="stacked ? 'stacked' : 'wall'"
+    :style="[stacked ? {} : wallStyle, fontVars]" :data-layout="stacked ? 'stacked' : 'wall'"
   >
     <KioskBackground class="-z-10" />
 

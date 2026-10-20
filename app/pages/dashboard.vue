@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useSettingsBackup } from '~/composables/useSettingsBackup';
 import { useSettingsStore } from '~/stores/settings';
+import { DEFAULT_FONT_SETTINGS } from '../../shared/font-settings';
 import { DEFAULT_WALL_SETTINGS } from '../../shared/wall-settings';
 
 /**
@@ -13,6 +14,7 @@ const NAV = [
   { section: 'Pengaturan', items: [
     { to: '/dashboard/wall', label: 'Wall', hint: 'Tampilan, reset & auto slide', icon: 'wall' },
     { to: '/dashboard/hold', label: 'Hold', hint: 'Durasi tahan tombol', icon: 'hold' },
+    { to: '/dashboard/font', label: 'Font', hint: 'Ukuran & ketebalan teks', icon: 'font' },
   ] },
   { section: 'Perangkat', items: [
     { to: '/dashboard/sensor', label: 'Sensor', hint: 'Sumber & kalibrasi', icon: 'sensor' },
@@ -86,7 +88,8 @@ function confirmReset() {
   resetDialog.value = false;
   settings.resetHold();
   settings.setWall(DEFAULT_WALL_SETTINGS);
-  showNotice('Hold & Wall kembali ke default');
+  settings.setFonts(DEFAULT_FONT_SETTINGS);
+  showNotice('Wall, Hold & Font kembali ke default');
 }
 
 onBeforeUnmount(() => {
@@ -147,6 +150,9 @@ const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0
                 <svg viewBox="0 0 24 24" class="size-[1.15rem]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <template v-if="item.icon === 'hold'">
                     <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
+                  </template>
+                  <template v-else-if="item.icon === 'font'">
+                    <path d="M4 20 10 4h1l6 16M6.5 14h8" /><path d="M17 20h4" />
                   </template>
                   <template v-else-if="item.icon === 'wall'">
                     <rect x="3" y="4" width="5" height="16" rx="1" /><rect x="10" y="4" width="5" height="16" rx="1" /><rect x="17" y="4" width="4" height="16" rx="1" />
@@ -250,7 +256,7 @@ const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0
               Reset ke default?
             </h2>
             <p id="reset-text" class="mt-1.5 text-sm leading-relaxed text-sky-100/70">
-              Semua pengaturan <b class="text-white">Hold</b> dan <b class="text-white">Wall</b> di browser ini kembali ke nilai awal dan langsung berlaku di wall. Pengaturan Sensor tidak berubah.
+              Semua pengaturan <b class="text-white">Wall</b>, <b class="text-white">Hold</b>, dan <b class="text-white">Font</b> di browser ini kembali ke nilai awal dan langsung berlaku di wall. Pengaturan Sensor tidak berubah.
             </p>
           </div>
         </div>

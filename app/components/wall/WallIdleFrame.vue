@@ -148,7 +148,7 @@ onBeforeUnmount(() => {
       data-sensor-action="subItem" :data-sub-item="tile.key"
       @activate="emit('action', { type: 'subItem', columnId: column.id, subItemId: tile.key })"
     >
-      <span v-if="column.captionTiles" class="absolute inset-x-0 top-[calc(8*var(--wall-y))] z-10 text-[length:calc(30*var(--wall-u))] font-extrabold uppercase tracking-wide text-white text-center leading-none drop-shadow-[0_0_calc(8*var(--wall-x))_rgba(0,0,60,0.8)]">
+      <span v-if="column.captionTiles" class="absolute inset-x-0 top-[calc(8*var(--wall-y))] z-10 text-[length:calc(var(--fs-caption,30)*var(--wall-u))] font-extrabold uppercase tracking-wide text-white text-center leading-none drop-shadow-[0_0_calc(8*var(--wall-x))_rgba(0,0,60,0.8)]">
         {{ sub.i18n[locale].label }}
       </span>
       <img
