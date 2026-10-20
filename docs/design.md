@@ -28,7 +28,9 @@ The Summit logo is shared. Idle it is 278 px tall at y 70, narrow enough to stay
 | 5 | Distribusi & Pemasaran | Captioned Distribusi / Pemasaran tiles; each opens directly | Sub-item name above the card, photo slider, bullets |
 | 6 | Altama Summit 2026 | Flag ceremony illustration | Text-only Summit message |
 
-There is no submenu: brand and distribution tiles are hold targets on the idle frame. The reference shows no visible "hold" cue, so none is drawn; the hold border animation shows progress.
+There is no submenu: brand and distribution tiles are hold targets on the idle frame. The hold border animation shows progress.
+
+**Idle touch hint.** So visitors notice what can be pressed, one idle target at a time (the main card of columns 1/3/4/6, each tile of columns 2/5), column by column across the wall, plays a light sweep plus a border trace that previews the hold, about 1.6 s with 0.7 s between targets (one round takes about 20 s). A touch on a column ends its hint at once and keeps that column quiet for 8 s; an open column has none, and the cue hides while a button is held. Reduced motion shows no hint (`useTouchHints`, `WallHoldButton` `hint`).
 
 ## Open card
 

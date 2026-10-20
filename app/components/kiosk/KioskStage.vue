@@ -8,6 +8,7 @@ import KioskTouchDots from '~/components/kiosk/KioskTouchDots.vue';
 import WallColumn from '~/components/wall/WallColumn.vue';
 import { useSensorSocket } from '~/composables/useSensorSocket';
 import { useStackedLayout } from '~/composables/useStackedLayout';
+import { useTouchHints } from '~/composables/useTouchHints';
 import { useWallController } from '~/composables/useWallController';
 import { getColumnLayout, installationLayout } from '~/data/installation-layout';
 import { getColumnConfig, getColumnPages, WALL_CONFIG } from '~/data/wall-config';
@@ -33,6 +34,22 @@ const controls = useWallController(wall, {
   },
 });
 const runtimeConfig = useRuntimeConfig();
+// Idle "press me" cue, one card or tile at a time across the wall; a touch silences that column.
+const touchHints = useTouchHints({
+  targets: (id) => {
+    if (wall.getColumnState(id) !== 'idle')
+      return [];
+    const geometry = getColumnLayout(id);
+    return geometry.main ? ['main'] : (geometry.subItems ?? []).map(tile => tile.key);
+  },
+});
+function onActivity(id: ColumnId) {
+  touchHints.activity(id);
+  controls.touchColumn(id);
+}
+function hintKey(id: ColumnId) {
+  return touchHints.hint.value?.columnId === id ? touchHints.hint.value.key : null;
+}
 const showDiagnostics = ref(false);
 const layout = installationLayout;
 // LED wall: one logical pixel per axis, scaled independently to fill the viewport.
@@ -164,7 +181,7 @@ onUnmounted(() => {
       <WallColumn
         v-for="column in WALL_CONFIG.columns" :key="column.id"
         :column="column" :snapshot="wall.columns[column.id]" :copy="wall.getColumnCopy(column.id)" :offset-y="columnOffsetY(settings.wall.cardOffsetY, settings.wall.languageBar)"
-        @action="dispatch" @activity="controls.touchColumn" @slide-ended="controls.mediaEnded"
+        :hint-key="hintKey(column.id)" @action="dispatch" @activity="onActivity" @slide-ended="controls.mediaEnded"
       />
     </template>
 
@@ -178,7 +195,7 @@ onUnmounted(() => {
           <div class="relative overflow-hidden transition-[height] duration-500 ease-out motion-reduce:transition-none" :style="stackedBox(column.id)">
             <WallColumn
               :column="column" :snapshot="wall.columns[column.id]" :copy="wall.getColumnCopy(column.id)" :origin="stackedOrigin(column.id)"
-              @action="dispatch" @activity="controls.touchColumn" @slide-ended="controls.mediaEnded" @card-bottom="cardBottoms[column.id] = $event"
+              :hint-key="hintKey(column.id)" @action="dispatch" @activity="onActivity" @slide-ended="controls.mediaEnded" @card-bottom="cardBottoms[column.id] = $event"
             />
           </div>
         </div>
