@@ -154,12 +154,22 @@ function dispatch(action: WallAction) {
   controls.dispatch(action);
 }
 
+// Visitors must never see the browser's right-click / long-press menu (Reload, Inspect, Save
+// image…) or drag images off the wall. Only the wall page does this; the dashboard stays normal.
+function blockBrowserUi(event: Event) {
+  event.preventDefault();
+}
+
 onMounted(() => {
   window.addEventListener('keydown', handleKeyboard);
+  window.addEventListener('contextmenu', blockBrowserUi);
+  window.addEventListener('dragstart', blockBrowserUi);
   sensorSocket.start();
 });
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyboard);
+  window.removeEventListener('contextmenu', blockBrowserUi);
+  window.removeEventListener('dragstart', blockBrowserUi);
   sensorSocket.stop();
 });
 </script>
