@@ -15,7 +15,7 @@ import { useSettingsStore } from '~/stores/settings';
  * Every paragraph and list item fades up in reading order (top to bottom) whenever the page
  * becomes the visible one: when the card opens and on every page switch.
  */
-const props = defineProps<{ copy: PageCopy; locale: WallLocale; active?: boolean; /** Grow the text until it fills the available height. */ fill?: boolean }>();
+const props = defineProps<{ copy: PageCopy; locale: WallLocale; active?: boolean; /** Grow the text until it fills the available height. */ fill?: boolean; /** Text size relative to the body size. */ base?: number }>();
 /** Content height at full size in CSS px; the open card grows to fit the visible page. */
 const emit = defineEmits<{ natural: [px: number] }>();
 
@@ -86,7 +86,7 @@ onMounted(() => {
 });
 const settings = useSettingsStore();
 // A new dashboard body size changes the content height, which the ResizeObserver cannot see.
-watch(() => [props.copy, props.locale, settings.fonts.bodySize], () => nextTick(fit));
+watch(() => [props.copy, props.locale, props.base, settings.fonts.bodySize], () => nextTick(fit));
 
 // Rotating parts (`copy.parts`): no buttons, the next part shows every `partSeconds` while this page
 // is visible, from the first part again each time it becomes visible. The timer is this
@@ -151,8 +151,8 @@ watch(() => [props.active, props.copy], () => {
 
 <template>
   <div
-    ref="root" class="grid content-start gap-[calc(12*var(--wall-y)*var(--copy-scale,1))] font-medium text-[length:calc(var(--fs-body,18)*var(--wall-u)*var(--copy-scale,1))]"
-    :style="{ '--copy-scale': scale }" :data-copy-scale="scale"
+    ref="root" class="grid content-start gap-[calc(12*var(--wall-y)*var(--copy-base,1)*var(--copy-scale,1))] font-medium text-[length:calc(var(--fs-body,18)*var(--wall-u)*var(--copy-base,1)*var(--copy-scale,1))]"
+    :style="{ '--copy-scale': scale, '--copy-base': base ?? 1 }" :data-copy-scale="scale"
   >
     <template v-for="(block, index) in shownBlocks" :key="`${part}-${index}`">
       <p v-if="typeof block === 'string'" class="leading-[1.3] text-white/95" data-reveal :style="reveal(index)">
