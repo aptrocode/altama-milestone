@@ -1,7 +1,7 @@
 import type { ColumnId } from '../shared/wall';
 import { createPinia } from 'pinia';
 import { describe, expect, it } from 'vitest';
-import { getColumnConfig, getColumnPages } from '../app/data/wall-config';
+import { getColumnConfig, getColumnPages, WALL_CONFIG } from '../app/data/wall-config';
 import { useWallStore } from '../app/stores/wall';
 import { COLUMN_IDS } from '../shared/wall';
 
@@ -37,6 +37,13 @@ describe('wall state and actions', () => {
     expect(wall.getColumnCopy(1).label).toBe('关于 ALTAMA');
     wall.dispatch({ type: 'language', columnId: 6, locale: 'en' });
     expect(wall.getColumnCopy(6).label).toBe('ALTAMA SUMMIT 2026');
+  });
+
+  it('gives every section title a different text in each language', () => {
+    for (const column of WALL_CONFIG.columns) {
+      const labels = (['id', 'en', 'zh-Hans'] as const).map(locale => column.i18n[locale].label);
+      expect(new Set(labels).size, labels.join(' / ')).toBe(3);
+    }
   });
 
   it('opens a brand directly from its idle tile and returns to idle on Back', () => {

@@ -9,7 +9,7 @@ export const SUMMIT_2026: ColumnConfig = {
   icon: 'people',
   illustration: provisional('/illustrations/summit-2026.webm'),
   i18n: {
-    'id': { label: 'ALTAMA SUMMIT 2026' },
+    'id': { label: 'KTT ALTAMA 2026' },
     'en': { label: 'ALTAMA SUMMIT 2026' },
     'zh-Hans': { label: 'ALTAMA 2026 峰会' },
   },
