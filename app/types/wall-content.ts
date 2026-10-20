@@ -58,6 +58,8 @@ export interface SubItem {
   wordmark?: MediaAsset;
   i18n: Record<WallLocale, { label: string }>;
   pages: ContentPage[];
+  /** Scroll mode (Dashboard → Wall "Scroll teks"): pages per scrolling page, e.g. [2, 2]; default all in one. */
+  scrollPages?: number[];
 }
 
 export type ColumnIcon = 'building' | 'gear' | 'warehouse' | 'person' | 'pin' | 'people';
@@ -78,6 +80,6 @@ export interface ColumnConfig {
   captionTiles?: boolean;
   /** Sub-item opened by the operator/OSC `main` action. */
   defaultSub?: string;
-  /** With Dashboard → Wall "Scroll teks" on, the open card's text scrolls vertically (several pages merge into one). */
-  scrollMerge?: boolean;
+  /** Scroll mode (Dashboard → Wall "Scroll teks"): pages per scrolling page, e.g. [2, 2]; default all in one. */
+  scrollPages?: number[];
 }

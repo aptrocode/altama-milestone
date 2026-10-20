@@ -5,8 +5,6 @@ import { page, PAGE_TABS, provisional } from './helpers';
 export const SUMMIT_2026: ColumnConfig = {
   id: 6,
   key: 'summit-2026',
-  // Trial: with Dashboard → Wall "Scroll teks" on, the three pages show as one scrolling page.
-  scrollMerge: true,
   type: 'single',
   icon: 'people',
   illustration: provisional('/illustrations/summit-2026.webm'),

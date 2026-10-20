@@ -22,9 +22,9 @@ import { LANGUAGE_BAR_MODES } from './language-bar';
  * - autoPage: pages also change on their own while the tabs are shown (default on); with the
  *   tabs off they always do (autoPageActive).
  * - autoPageSeconds: auto-page interval (default 15 s).
- * - scrollText: trial of vertically scrolling card text (default off). Columns marked
- *   `scrollMerge` (section 6) show all their pages as one page whose text scrolls up and down;
- *   off restores their pages and tabs.
+ * - scrollText: trial of vertically scrolling card text (default off). Every card keeps its Font
+ *   Maks size and scrolls; its pages are grouped by `scrollPages` (default one page: Tekiro 2, RYU
+ *   and Rexco keep 2); off restores the pages and tabs.
  * - languageBar: `compact` flag pill (default) or `full` width with larger buttons
  *   (shared/language-bar.ts); Sensor Service moves the language targets with it.
  * - showTouchDots: calibration overlay on the wall (press/release/sensor dots with coordinates).

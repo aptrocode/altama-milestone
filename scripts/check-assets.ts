@@ -28,6 +28,16 @@ function blockTexts(block: ContentBlock): string[] {
   return block.numbered;
 }
 
+/** Scroll mode groups must cover every page exactly, with no more groups than tab targets. */
+function checkScrollPages(owner: string, pages: ContentPage[] | undefined, groups: number[] | undefined) {
+  if (!groups)
+    return;
+  if (groups.some(size => !Number.isInteger(size) || size < 1) || groups.reduce((sum, size) => sum + size, 0) !== (pages?.length ?? 0))
+    errors.push(`${owner}: scrollPages ${JSON.stringify(groups)} must add up to its ${pages?.length ?? 0} pages`);
+  if (groups.length > maxPageTabs)
+    errors.push(`${owner}: scrollPages makes ${groups.length} pages but only ${maxPageTabs} tab targets`);
+}
+
 function checkPages(owner: string, pages: ContentPage[] | undefined) {
   if (!pages?.length) {
     errors.push(`${owner}: needs at least one page`);
@@ -83,6 +93,7 @@ for (const column of WALL_CONFIG.columns) {
     if (!geometry?.main)
       errors.push(`${owner}: single columns need a main target`);
     checkPages(owner, column.pages);
+    checkScrollPages(owner, column.pages, column.scrollPages);
   }
   else {
     if (!column.subItems?.length || !column.subItems.some(sub => sub.key === column.defaultSub))
@@ -97,6 +108,7 @@ for (const column of WALL_CONFIG.columns) {
       if (sub.wordmark)
         media.push({ owner: `${subOwner} wordmark`, asset: sub.wordmark });
       checkPages(subOwner, sub.pages);
+      checkScrollPages(subOwner, sub.pages, sub.scrollPages);
     }
   }
 

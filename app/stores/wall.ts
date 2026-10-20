@@ -8,7 +8,7 @@ function initialColumn(columnId: ColumnId): ColumnSnapshot {
   return { phase: 'idle', locale: 'id', subItem: getColumnConfig(columnId).defaultSub || '', photo: 0, page: 0 };
 }
 
-/** The pages a column shows now (merged while Dashboard → Wall "Scroll teks" is on, for `scrollMerge` columns). */
+/** The pages a column shows now (grouped by `scrollPages` while Dashboard → Wall "Scroll teks" is on). */
 function pagesOf(columnId: ColumnId, subItem: string) {
   return getColumnPages(getColumnConfig(columnId), subItem, useSettingsStore().wall.scrollText);
 }

@@ -30,6 +30,8 @@ export const OUR_BRANDS: ColumnConfig = {
       tileBackground: '#000000',
       wordmark: provisional('/brands/tekiro-wordmark.webp'),
       i18n: { 'id': { label: 'TEKIRO' }, 'en': { label: 'TEKIRO' }, 'zh-Hans': { label: 'TEKIRO' } },
+      // Scroll mode: two pages, profile + products and all awards.
+      scrollPages: [2, 2],
       // Four pages with tabs (no rotating text): profile, products, then the awards (5 + 6, in their original order).
       pages: [
         page(TEKIRO_PROFILE_PHOTOS, {
@@ -119,6 +121,8 @@ export const OUR_BRANDS: ColumnConfig = {
       image: provisional('/brands/ryu-tile.webp'),
       wordmark: provisional('/brands/ryu-wordmark.webp'),
       i18n: { 'id': { label: 'RYU' }, 'en': { label: 'RYU' }, 'zh-Hans': { label: 'RYU' } },
+      // Scroll mode: keeps its two pages.
+      scrollPages: [1, 1],
       pages: [
         page(
           [
@@ -226,6 +230,8 @@ export const OUR_BRANDS: ColumnConfig = {
       tileBackground: '#1f1f9e',
       wordmark: provisional('/brands/rexco-wordmark.webp'),
       i18n: { 'id': { label: 'REXCO' }, 'en': { label: 'REXCO' }, 'zh-Hans': { label: 'REXCO' } },
+      // Scroll mode: keeps its two pages.
+      scrollPages: [1, 1],
       pages: [
         page(
           [

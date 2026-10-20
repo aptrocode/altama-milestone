@@ -7,7 +7,7 @@ import WallHoldButton from '~/components/wall/WallHoldButton.vue';
 import WallIdleFrame from '~/components/wall/WallIdleFrame.vue';
 import WallOpenCard from '~/components/wall/WallOpenCard.vue';
 import { getColumnLayout, installationLayout, rectStyle } from '~/data/installation-layout';
-import { getColumnPages, scrollsText } from '~/data/wall-config';
+import { getColumnPages } from '~/data/wall-config';
 import { WALL_COPY } from '~/data/wall-copy';
 import { useSettingsStore } from '~/stores/settings';
 import { closeButtonRect } from '../../../shared/close-button';
@@ -41,8 +41,8 @@ const idle = computed(() => props.snapshot.phase === 'idle');
 const closeRect = computed(() => closeButtonRect(geometry.value.active.back, closeButtonOptions(settings.wall)));
 const idleFrame = computed(() => extendDown(geometry.value.card, languageGeometry(geometry.value, settings.wall.languageBar).extend));
 const pages = computed(() => getColumnPages(props.column, props.snapshot.subItem, settings.wall.scrollText));
-// Trial: sections 1 and 6 scroll their text vertically (Dashboard → Wall "Scroll teks").
-const scroll = computed(() => scrollsText(props.column, settings.wall.scrollText));
+// Trial: every card's text scrolls vertically (Dashboard → Wall "Scroll teks").
+const scroll = computed(() => settings.wall.scrollText);
 // Open-card text size and fill come from Dashboard → Font, per card (column or sub-item).
 const cardText = computed(() => {
   const key = cardTextKey(props.column.key, props.column.type === 'expandable' ? props.snapshot.subItem : '');
