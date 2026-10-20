@@ -10,6 +10,7 @@ Read only the document needed:
 - `docs/content.md`: where each column's text, pages, photos, and tiles live and how to replace them.
 - `docs/dashboard.md`: operator dashboard (`/dashboard`): sidebar with Wall (reset time, card offset, close, slider, and page switches, auto slide/page, language bar mode), Hold, and Sensor pages; backup/reset.
 - `docs/assets.md`: deployed media, the `public/new-assets/` master-file layout, encoding commands, and naming.
+- `PANDUAN-SENSOR.md` (root, Indonesian): operator guide for connecting the LiDAR (OptiTUIO → TUIO → Sensor Service recommended over TouchDesigner mouse clicks), checking with the Sensor preview, and LiDAR-friendly dashboard settings.
 - `docs/sensor.md`: protocol v2 / wall-v7, Sensor Service sources (Hokuyo, Augmenta, TUIO), calibration, admin contract, simulators, and rollout.
 - `docs/testing.md`: commands, regression coverage, and browser acceptance.
 - `docs/push.md`: issue, branch, commit, PR, review, merge, and cleanup.

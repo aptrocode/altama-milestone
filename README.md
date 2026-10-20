@@ -48,7 +48,7 @@ Sidebar: export/import pengaturan, fullscreen, reset ke default. Detail: [docs/d
 | `Enter` / `Space` | Aktifkan tombol yang fokus tanpa hold |
 | `Ctrl+Shift+D` | Buka dashboard / kembali ke wall |
 
-Sensor dan show control: Hokuyo UST-10LX (Ethernet), Augmenta (UDP `12000`), TUIO 1.1 dari TouchDesigner (UDP `3333`), semuanya multitouch; perintah OSC `/altama/*` di UDP `9000`. Simulator dan detail protokol: [docs/sensor.md](docs/sensor.md).
+Sensor dan show control: Hokuyo UST-10LX (Ethernet), Augmenta (UDP `12000`), TUIO 1.1 dari OptiTUIO/TouchDesigner (UDP `3333`), semuanya multitouch; perintah OSC `/altama/*` di UDP `9000`. **Cara menyambungkan sensor, langkah demi langkah: [PANDUAN-SENSOR.md](PANDUAN-SENSOR.md).** Simulator dan detail protokol: [docs/sensor.md](docs/sensor.md).
 
 ## Struktur & dokumentasi
 
