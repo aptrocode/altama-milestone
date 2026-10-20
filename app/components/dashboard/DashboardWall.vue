@@ -3,7 +3,7 @@ import type { WallSettings } from '../../../shared/wall-settings';
 import DashboardFormActions from '~/components/dashboard/DashboardFormActions.vue';
 import { useSettingsDraft } from '~/composables/useSettingsDraft';
 import { useSettingsStore } from '~/stores/settings';
-import { AUTO_PAGE_SECONDS, AUTO_SLIDE_SECONDS, CARD_OFFSET_Y, DEFAULT_WALL_SETTINGS, normalizeWallSettings, RESET_SECONDS } from '../../../shared/wall-settings';
+import { AUTO_PAGE_SECONDS, AUTO_SLIDE_SECONDS, CARD_OFFSET_Y, DEFAULT_WALL_SETTINGS, normalizeWallSettings, RESET_SECONDS, TOUCH_DOT_SECONDS } from '../../../shared/wall-settings';
 
 const settings = useSettingsStore();
 const { draft, dirty, status, save, restoreDefaults } = useSettingsDraft({
@@ -198,6 +198,24 @@ function nudgeOffset(delta: number) {
         >
           <span class="inline-block size-5 rounded-full bg-white shadow transition-transform" :class="draft.showTouchDots ? 'translate-x-6' : 'translate-x-1'" />
         </button>
+      </li>
+      <li v-if="draft.showTouchDots" class="flex flex-wrap items-center gap-4 px-4 py-4" data-wall-setting="touchDotSeconds">
+        <div class="min-w-0 flex-1 basis-56">
+          <p class="font-bold text-white">
+            Durasi titik
+          </p>
+          <p class="text-sm text-sky-100/60">
+            Berapa lama titik tetap terlihat setelah tangan dilepas ({{ TOUCH_DOT_SECONDS.min }}–{{ TOUCH_DOT_SECONDS.max }} s).
+          </p>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <input
+            type="number" inputmode="numeric" :class="field"
+            aria-label="Detik titik sentuh" :min="TOUCH_DOT_SECONDS.min" :max="TOUCH_DOT_SECONDS.max" :step="TOUCH_DOT_SECONDS.step"
+            :value="draft.touchDotSeconds" @change="set('touchDotSeconds', ($event.target as HTMLInputElement).value)"
+          >
+          <span class="text-sm text-sky-100/60">s</span>
+        </div>
       </li>
     </ul>
 
