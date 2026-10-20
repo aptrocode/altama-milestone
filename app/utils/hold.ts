@@ -30,6 +30,31 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
   const holdEnabled = () => options.enabled !== false;
   const delayed = () => options.mode === 'delay';
   let delayTimer: ReturnType<typeof setTimeout> | undefined;
+  /** The duration has passed; activation waits only for the border animation to finish drawing. */
+  let completing = false;
+  let disposed = false;
+
+  /**
+   * Activate once the border has visibly finished. The timer starts on the press, but the CSS
+   * animation only starts at the next rendered frame, which a busy wall (videos, canvases) can
+   * delay; without this the card would open with the border still unfinished.
+   */
+  function complete() {
+    completing = true;
+    const borders = (element.getAnimations?.({ subtree: true }) ?? [])
+      .filter(animation => (animation as CSSAnimation).animationName?.includes('hold-border') && animation.playState === 'running');
+    if (!borders.length) {
+      finish();
+      return;
+    }
+    Promise.all(borders.map(animation => animation.finished)).then(() => {
+      if (completing && !disposed)
+        finish();
+    }, () => {
+      if (completing && !disposed)
+        finish();
+    });
+  }
 
   function startDelay() {
     if (delayTimer !== undefined)
@@ -39,11 +64,13 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
     element.classList.add('holding');
     delayTimer = setTimeout(() => {
       delayTimer = undefined;
-      finish();
+      complete();
     }, options.durationMs ?? HOLD_DURATION_MS);
   }
 
   function cancelDelay() {
+    if (completing)
+      return;
     clearTimeout(delayTimer);
     delayTimer = undefined;
     element.classList.remove('holding');
@@ -51,6 +78,8 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
 
   /** A press from outside the pointer path (sensor input): delay mode animates first. */
   function press() {
+    if (completing)
+      return;
     if (delayed())
       startDelay();
     else
@@ -58,6 +87,9 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
   }
 
   function cancel() {
+    // A completed hold is no longer cancelled by its release; it only waits for the border.
+    if (completing)
+      return;
     clearTimeout(holdTimer);
     holdTimer = undefined;
     if (pointerId !== null)
@@ -67,6 +99,7 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
   }
 
   function finish() {
+    completing = false;
     cancel();
     clearTimeout(completionTimer);
     element.classList.add('hold-complete');
@@ -76,6 +109,8 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
 
   function start(event: Event) {
     const pointer = event as PointerEvent;
+    if (completing)
+      return;
     if (delayed()) {
       if (pointer.button === 0)
         startDelay();
@@ -88,7 +123,7 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
     pointerId = pointer.pointerId;
     heldPointers.add(pointerId);
     element.classList.add('holding');
-    holdTimer = setTimeout(finish, options.durationMs ?? HOLD_DURATION_MS);
+    holdTimer = setTimeout(complete, options.durationMs ?? HOLD_DURATION_MS);
   }
 
   function release(event: Event) {
@@ -137,6 +172,8 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
         cancelDelay();
     },
     dispose() {
+      disposed = true;
+      completing = false;
       cancel();
       cancelDelay();
       clearTimeout(completionTimer);

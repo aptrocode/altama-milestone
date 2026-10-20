@@ -193,4 +193,26 @@ describe('hold input lifecycle', () => {
     tap.button.dispatchEvent(new Event('wall:press'));
     expect(tap.activate).toHaveBeenCalledTimes(1);
   });
+
+  it('waits for a border animation that started late before activating, even if released meanwhile', async () => {
+    const { button, activate } = setup({ mode: 'hold', durationMs: 1000 });
+    let done!: () => void;
+    const finished = new Promise<void>((resolve) => {
+      done = resolve;
+    });
+    (button as unknown as { getAnimations: () => unknown[] }).getAnimations = () => button.classes.has('holding')
+      ? [{ animationName: 'hold-border-abc123', playState: 'running', finished }]
+      : [];
+    button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 1, isPrimary: true }));
+    vi.advanceTimersByTime(1000);
+    // The duration passed but the border is still drawing: not yet, and a release does not cancel.
+    expect(activate).not.toHaveBeenCalled();
+    button.view.dispatchEvent(event('pointerup', { pointerId: 1 }));
+    expect(button.classes.has('holding')).toBe(true);
+    done();
+    await finished;
+    await Promise.resolve();
+    expect(activate).toHaveBeenCalledTimes(1);
+    expect(button.classes.has('hold-complete')).toBe(true);
+  });
 });
