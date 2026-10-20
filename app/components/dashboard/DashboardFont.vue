@@ -7,7 +7,6 @@ import DashboardCardFit from '~/components/dashboard/DashboardCardFit.vue';
 import DashboardFormActions from '~/components/dashboard/DashboardFormActions.vue';
 import DashboardSection from '~/components/dashboard/DashboardSection.vue';
 import DashboardSettingRow from '~/components/dashboard/DashboardSettingRow.vue';
-import DashboardSwitch from '~/components/dashboard/DashboardSwitch.vue';
 import { useSettingsDraft } from '~/composables/useSettingsDraft';
 import { useSettingsStore } from '~/stores/settings';
 import { CARD_TEXT_KEYS, CARD_TEXT_LIMITS, DEFAULT_FONT_SETTINGS, FONT_SIZE_LIMITS, FONT_WEIGHTS, normalizeFontSettings } from '../../../shared/font-settings';
@@ -23,7 +22,7 @@ const { draft, dirty, status, save, discard, restoreDefaults } = useSettingsDraf
 });
 
 const KEYS = (Object.keys(DEFAULT_FONT_SETTINGS) as (keyof FontSettings)[]).filter(key => key !== 'cards');
-const sameCard = (a: CardText, b: CardText) => a.size === b.size && a.fill === b.fill;
+const sameCard = (a: CardText, b: CardText) => a.min === b.min && a.max === b.max;
 const changes = computed(() => KEYS.filter(key => draft.value[key] !== settings.fonts[key]).length
   + CARD_TEXT_KEYS.filter(key => !sameCard(draft.value.cards[key], settings.fonts.cards[key])).length);
 const changed = (key: keyof FontSettings) => draft.value[key] !== DEFAULT_FONT_SETTINGS[key];
@@ -47,13 +46,16 @@ function nudge(key: SizeKey, delta: number) {
 function updateCard(key: CardTextKey, patch: Partial<CardText>) {
   update({ cards: { ...draft.value.cards, [key]: { ...draft.value.cards[key], ...patch } } });
 }
-function setCardSize(key: CardTextKey, value: string) {
+function setCardSize(key: CardTextKey, edge: keyof CardText, value: string) {
   const number = Number.parseFloat(value);
-  if (Number.isFinite(number))
-    updateCard(key, { size: number });
+  if (!Number.isFinite(number))
+    return;
+  // Moving one edge past the other moves both, so min ≤ max always holds.
+  const card = { ...draft.value.cards[key], [edge]: number };
+  updateCard(key, edge === 'min' ? { min: number, max: Math.max(number, card.max) } : { max: number, min: Math.min(number, card.min) });
 }
 const cardChanged = (key: CardTextKey) => !sameCard(draft.value.cards[key], DEFAULT_FONT_SETTINGS.cards[key]);
-const cardDefault = (key: CardTextKey) => `${DEFAULT_FONT_SETTINGS.cards[key].size} px${DEFAULT_FONT_SETTINGS.cards[key].fill ? ' · penuh' : ''}`;
+const cardDefault = (key: CardTextKey) => `${DEFAULT_FONT_SETTINGS.cards[key].min}–${DEFAULT_FONT_SETTINGS.cards[key].max} px`;
 
 const CARDS: { key: CardTextKey; title: string; hint: string }[] = [
   { key: 'about-altama', title: 'Tentang Altama', hint: 'Kolom 1' },
@@ -68,9 +70,11 @@ const CARDS: { key: CardTextKey; title: string; hint: string }[] = [
 ];
 const CARD_HELP: HelpLine[] = [
   'Ukuran teks isi card saat kolom ini dibuka, untuk semua page dan bahasa. Label biru (mis. "Lahir") ikut proporsional.',
-  { term: 'Penuhi card', text: 'On: teks mulai dari ukuran ini lalu membesar sendiri sampai card penuh. Off: teks tetap di ukuran ini dan card memanjang mengikuti teks.' },
-  { term: 'Status', text: 'Dicek di semua page dan bahasa. "Terlalu besar" berarti teks tidak muat di card tertinggi, jadi wall mengecilkannya ke persen yang tertulis. Kecilkan ukurannya, atau minta isi card dipecah jadi page tambahan.' },
+  { term: 'Min – Maks', text: 'Tiap page memakai ukuran terbesar sampai Maks yang masih muat di card tertinggi, dan tidak lebih kecil dari Min. Card memanjang mengikuti teksnya.' },
+  { term: 'Status', text: 'Ukuran yang benar-benar dipakai di semua page dan bahasa. "Di bawah Min" berarti ada page yang tidak muat walau di ukuran Min, jadi wall mengecilkannya lagi supaya tidak terpotong. Kecilkan Min, atau minta isi card dipecah jadi page tambahan.' },
 ];
+
+const EDGES = [{ key: 'min', label: 'Min' }, { key: 'max', label: 'Maks' }] as const;
 
 const fits = ref<Partial<Record<CardTextKey, CardFit>>>({});
 const LOCALE_LABEL = { 'id': 'ID', 'en': 'EN', 'zh-Hans': '中文' } as const;
@@ -78,9 +82,10 @@ function fitLabel(key: CardTextKey) {
   const fit = fits.value[key];
   if (!fit)
     return null;
-  if (fit.scale >= 0.995)
-    return { ok: true, text: '✓ Muat' };
-  return { ok: false, text: `⚠ Terlalu besar · dikecilkan ke ${Math.round(fit.scale * 100)}% (PAGE ${fit.page + 1}, ${LOCALE_LABEL[fit.locale]})` };
+  const px = (value: number) => `${Number.isInteger(value) ? value : value.toFixed(1)} px`;
+  if (fit.low < draft.value.cards[key].min - 0.05)
+    return { ok: false, text: `⚠ Di bawah Min · ${px(fit.low)} (PAGE ${fit.page + 1}, ${LOCALE_LABEL[fit.locale]})` };
+  return { ok: true, text: `✓ ${fit.low === fit.high ? px(fit.high) : `${px(fit.low)}–${px(fit.high)}`}` };
 }
 
 const WEIGHT_LABEL: Record<number, string> = { 400: 'Regular', 500: 'Medium', 700: 'Bold', 800: 'Extra', 900: 'Black' };
@@ -182,7 +187,7 @@ const stepper = 'grid size-8 place-items-center rounded-md font-bold ring-1 ring
       </template>
     </DashboardSection>
 
-    <DashboardSection title="Isi card per section" icon="card" description="Ukuran teks di dalam card yang terbuka, diatur per card. Status di kanan menunjukkan apakah teks muat.">
+    <DashboardSection title="Isi card per section" icon="card" description="Rentang ukuran teks di dalam card yang terbuka, per card. Status menunjukkan ukuran yang benar-benar dipakai.">
       <DashboardSettingRow
         v-for="row in CARDS" :key="row.key"
         :data-card-text="row.key" :title="row.title" :hint="row.hint" :help="CARD_HELP"
@@ -194,24 +199,21 @@ const stepper = 'grid size-8 place-items-center rounded-md font-bold ring-1 ring
             class="rounded-full px-2.5 py-1 text-xs font-bold"
             :class="fitLabel(row.key)!.ok ? 'bg-emerald-400/15 text-emerald-300' : 'bg-amber-400/15 text-amber-200'"
           >{{ fitLabel(row.key)!.text }}</span>
-          <div class="flex items-center gap-1.5">
-            <button type="button" :class="stepper" :aria-label="`Perkecil teks ${row.title}`" :disabled="draft.cards[row.key].size <= CARD_TEXT_LIMITS.min" @click="updateCard(row.key, { size: draft.cards[row.key].size - 1 })">
+          <div v-for="edge in EDGES" :key="edge.key" class="flex items-center gap-1.5">
+            <span class="w-9 text-right text-sm text-sky-100/70">{{ edge.label }}</span>
+            <button type="button" :class="stepper" :aria-label="`Perkecil ${edge.label} teks ${row.title}`" :disabled="draft.cards[row.key][edge.key] <= CARD_TEXT_LIMITS.min" @click="setCardSize(row.key, edge.key, String(draft.cards[row.key][edge.key] - 1))">
               −
             </button>
             <input
-              type="number" inputmode="numeric" :class="field" :aria-label="`Ukuran teks ${row.title} dalam px`"
+              type="number" inputmode="numeric" :class="field" :aria-label="`${edge.label} teks ${row.title} dalam px`" :data-edge="edge.key"
               :min="CARD_TEXT_LIMITS.min" :max="CARD_TEXT_LIMITS.max" :step="CARD_TEXT_LIMITS.step"
-              :value="draft.cards[row.key].size" @change="setCardSize(row.key, ($event.target as HTMLInputElement).value)"
+              :value="draft.cards[row.key][edge.key]" @change="setCardSize(row.key, edge.key, ($event.target as HTMLInputElement).value)"
             >
-            <button type="button" :class="stepper" :aria-label="`Perbesar teks ${row.title}`" :disabled="draft.cards[row.key].size >= CARD_TEXT_LIMITS.max" @click="updateCard(row.key, { size: draft.cards[row.key].size + 1 })">
+            <button type="button" :class="stepper" :aria-label="`Perbesar ${edge.label} teks ${row.title}`" :disabled="draft.cards[row.key][edge.key] >= CARD_TEXT_LIMITS.max" @click="setCardSize(row.key, edge.key, String(draft.cards[row.key][edge.key] + 1))">
               +
             </button>
-            <span class="w-5 text-sm text-sky-100/60">px</span>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="text-sm text-sky-100/70">Penuhi card</span>
-            <DashboardSwitch :model-value="draft.cards[row.key].fill" :label="`Penuhi card ${row.title}`" @update:model-value="updateCard(row.key, { fill: $event })" />
-          </div>
+          <span class="text-sm text-sky-100/60">px</span>
         </div>
       </DashboardSettingRow>
       <DashboardCardFit :cards="draft.cards" :show-pages="settings.wall.showPages" :offset-y="settings.wall.cardOffsetY" @result="fits = $event" />

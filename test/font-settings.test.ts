@@ -11,17 +11,17 @@ describe('font settings', () => {
     expect(normalizeFontSettings({ titleWeight: 900, captionSize: 'x' })).toEqual({ ...DEFAULT_FONT_SETTINGS, titleWeight: 900 });
   });
 
-  it('keeps the previous look by default: brands at 22 px, other cards filling', () => {
+  it('gives every card 24 to 26 px by default', () => {
     const { cards } = DEFAULT_FONT_SETTINGS;
     expect(Object.keys(cards)).toEqual([...CARD_TEXT_KEYS]);
-    expect(['tekiro', 'ryu', 'rexco'].map(key => cards[key as 'tekiro'])).toEqual(Array.from({ length: 3 }, () => ({ size: 22, fill: false })));
-    expect(cards['about-altama']).toEqual({ size: 18, fill: true });
+    expect(Object.values(cards).every(card => card.min === 24 && card.max === 26)).toBe(true);
   });
 
-  it('clamps per-card sizes, keeps valid fills, and ignores unknown cards or the old body size', () => {
-    const fonts = normalizeFontSettings({ bodySize: 22, cards: { ryu: { size: 99, fill: true }, tekiro: { size: 20.4, fill: 'yes' }, nope: { size: 30 } } });
-    expect(fonts.cards.ryu).toEqual({ size: 40, fill: true });
-    expect(fonts.cards.tekiro).toEqual({ size: 20, fill: false });
+  it('clamps per-card ranges, keeps min ≤ max, and ignores unknown cards or older fields', () => {
+    const fonts = normalizeFontSettings({ bodySize: 22, cards: { ryu: { min: 99, max: 30 }, tekiro: { min: 20.4, max: 'x' }, rexco: { size: 30, fill: true }, nope: { min: 30 } } });
+    expect(fonts.cards.ryu).toEqual({ min: 40, max: 40 });
+    expect(fonts.cards.tekiro).toEqual({ min: 20, max: 26 });
+    expect(fonts.cards.rexco).toEqual({ min: 24, max: 26 });
     expect('bodySize' in fonts).toBe(false);
     expect(Object.keys(fonts.cards)).toEqual([...CARD_TEXT_KEYS]);
   });
@@ -35,8 +35,8 @@ describe('font settings', () => {
   it('is part of the settings store', () => {
     const settings = useSettingsStore(createPinia());
     expect(settings.fonts).toEqual(DEFAULT_FONT_SETTINGS);
-    settings.setFonts({ cards: { pemasaran: { size: 24, fill: false } } });
-    expect(settings.fonts.cards.pemasaran).toEqual({ size: 24, fill: false });
+    settings.setFonts({ cards: { pemasaran: { min: 22, max: 24 } } });
+    expect(settings.fonts.cards.pemasaran).toEqual({ min: 22, max: 24 });
     expect(settings.fonts.cards.distribusi).toEqual(DEFAULT_FONT_SETTINGS.cards.distribusi);
   });
 });

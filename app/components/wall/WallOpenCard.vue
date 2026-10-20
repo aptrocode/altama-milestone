@@ -2,7 +2,7 @@
 import type { ColumnId, WallAction, WallLocale } from '../../../shared/wall';
 import type { Rect } from '~/data/installation-layout';
 import type { ContentPage } from '~/types/wall-content';
-import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import WallHoldButton from '~/components/wall/WallHoldButton.vue';
 import WallPageCopy from '~/components/wall/WallPageCopy.vue';
 import { installationLayout, rectStyle } from '~/data/installation-layout';
@@ -29,10 +29,11 @@ const props = defineProps<{
   showPages?: boolean;
   /** Pages change on their own (dashboard Auto page, or tabs hidden). */
   autoPage?: boolean;
-  /** Each page's text grows until it fills the card (Dashboard → Font, per card). */
-  fillText?: boolean;
-  /** Body text size in logical px (Dashboard → Font, per card). */
-  textSize?: number;
+  /** Body size range in logical px (Dashboard → Font, per card). */
+  textMin?: number;
+  textMax?: number;
+  /** Tallest card height in logical px (WallColumn's clamp); the text sizes itself to fit it. */
+  maxHeight?: number;
 }>();
 const emit = defineEmits<{ action: [action: WallAction]; height: [logical: number]; mediaEnded: [] }>();
 
@@ -124,20 +125,29 @@ watch(() => props.page, (page, previous) => {
 });
 onBeforeUnmount(() => flashTimers.forEach(clearTimeout));
 const naturals = reactive<Record<number, number>>({});
-// A page whose text fills the card (`fill`, e.g. Tekiro's rotating awards) takes the tallest card
-// (WallColumn clamps to openCardMaxBottom) so its text can grow.
-const FILL_HEIGHT = 10_000;
+// CSS px per logical px (the probe), kept current on resize.
+const pxPerUnit = ref(0);
+let probeObserver: ResizeObserver | undefined;
+onMounted(() => {
+  const measure = () => {
+    pxPerUnit.value = (probe.value?.offsetHeight || 0) / 1000;
+  };
+  measure();
+  probeObserver = new ResizeObserver(measure);
+  if (probe.value)
+    probeObserver.observe(probe.value);
+});
+onBeforeUnmount(() => probeObserver?.disconnect());
+/** Height of the text box in the tallest card, in CSS px: each page sizes its text to fit it. */
+const textLimit = computed(() => props.maxHeight && pxPerUnit.value > 0
+  ? (props.maxHeight - textTop.value - TEXT_BOTTOM) * pxPerUnit.value
+  : undefined);
 function reportHeight() {
-  if (current.value?.i18n[props.locale].fill) {
-    emit('height', FILL_HEIGHT);
-    return;
-  }
-  const pxPerUnit = (probe.value?.offsetHeight || 0) / 1000;
   const visible = naturals[props.page] || 0;
-  if (pxPerUnit > 0 && visible > 0)
-    emit('height', Math.ceil(textTop.value + visible / pxPerUnit + TEXT_BOTTOM));
+  if (pxPerUnit.value > 0 && visible > 0)
+    emit('height', Math.ceil(textTop.value + visible / pxPerUnit.value + TEXT_BOTTOM));
 }
-watch([naturals, textTop, () => props.pages, () => props.page, () => props.locale], reportHeight);
+watch([naturals, textTop, pxPerUnit, () => props.pages, () => props.page, () => props.locale], reportHeight);
 function onNatural(index: number, px: number) {
   naturals[index] = px;
 }
@@ -220,7 +230,7 @@ function onNatural(index: number, px: number) {
         v-for="(item, index) in pages" :key="index"
         class="absolute inset-0 overflow-hidden text-white transition-opacity duration-300 motion-reduce:transition-none"
         :class="page === index ? 'opacity-100' : 'opacity-0'"
-        :aria-hidden="page !== index" :copy="item.i18n[locale]" :locale="locale" :active="page === index" :fill="fillText" :size="textSize"
+        :aria-hidden="page !== index" :copy="item.i18n[locale]" :locale="locale" :active="page === index" :min="textMin" :max="textMax" :limit="textLimit"
         @natural="onNatural(index, $event)"
       />
     </div>

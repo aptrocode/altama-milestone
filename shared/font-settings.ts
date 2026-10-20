@@ -6,18 +6,19 @@
  * - subItemSize: the open sub-item's name above the card when it has no wordmark.
  * - captionSize: tile captions on the idle frame (DISTRIBUSI / PEMASARAN).
  * - tabSize: page tabs (1960 / 1996, PAGE 1 / PAGE 2).
- * - cards: open-card copy per card (a single column, or a sub-item of columns 2 and 5): its body
- *   size and whether it grows to fill the card. Glow labels stay 0.82 × the size, and a page that
- *   does not fit even the tallest card still shrinks instead of being clipped.
+ * - cards: open-card copy per card (a single column, or a sub-item of columns 2 and 5): the body
+ *   size range. Each page uses the largest size up to `max` that fits the tallest card, never less
+ *   than `min`; only a page that does not fit even at `min` shrinks further (never clipped), which
+ *   the dashboard flags. Glow labels stay 0.82 × the size.
  */
 export const CARD_TEXT_KEYS = ['about-altama', 'tekiro', 'ryu', 'rexco', 'infrastructure', 'digital-partners', 'distribusi', 'pemasaran', 'summit-2026'] as const;
 export type CardTextKey = typeof CARD_TEXT_KEYS[number];
 
 export interface CardText {
-  /** Body size in logical px. */
-  size: number;
-  /** Grow the text (from `size`) until it fills the card. */
-  fill: boolean;
+  /** Smallest body size in logical px (used when the text is long). */
+  min: number;
+  /** Largest body size in logical px (used when the card has room). */
+  max: number;
 }
 
 export interface FontSettings {
@@ -45,9 +46,8 @@ export const BASE_BODY_SIZE = 18;
 /** Roboto weights loaded by @nuxt/fonts (nuxt.config.ts). */
 export const FONT_WEIGHTS = [400, 500, 700, 800, 900] as const;
 
-/** The wall's look before per-card settings: brands at 1.2 × 18 px, the other cards filling theirs. */
-const FILL: CardText = { size: BASE_BODY_SIZE, fill: true };
-const BRAND: CardText = { size: 22, fill: false };
+/** Every card: 24 px at least, up to 26 px when the card has room (client request). */
+const RANGE: CardText = { min: 24, max: 26 };
 
 export const DEFAULT_FONT_SETTINGS: FontSettings = {
   titleSize: 27,
@@ -56,15 +56,15 @@ export const DEFAULT_FONT_SETTINGS: FontSettings = {
   captionSize: 30,
   tabSize: 24,
   cards: {
-    'about-altama': FILL,
-    'tekiro': BRAND,
-    'ryu': BRAND,
-    'rexco': BRAND,
-    'infrastructure': FILL,
-    'digital-partners': FILL,
-    'distribusi': FILL,
-    'pemasaran': FILL,
-    'summit-2026': FILL,
+    'about-altama': RANGE,
+    'tekiro': RANGE,
+    'ryu': RANGE,
+    'rexco': RANGE,
+    'infrastructure': RANGE,
+    'digital-partners': RANGE,
+    'distribusi': RANGE,
+    'pemasaran': RANGE,
+    'summit-2026': RANGE,
   },
 };
 
@@ -78,10 +78,8 @@ function normalizeCards(value: unknown): Record<CardTextKey, CardText> {
   return Object.fromEntries(CARD_TEXT_KEYS.map((key) => {
     const fallback = DEFAULT_FONT_SETTINGS.cards[key];
     const card = source[key] ?? {};
-    return [key, {
-      size: clamp(card.size, fallback.size, CARD_TEXT_LIMITS),
-      fill: typeof card.fill === 'boolean' ? card.fill : fallback.fill,
-    }];
+    const min = clamp(card.min, fallback.min, CARD_TEXT_LIMITS);
+    return [key, { min, max: Math.max(min, clamp(card.max, fallback.max, CARD_TEXT_LIMITS)) }];
   })) as Record<CardTextKey, CardText>;
 }
 

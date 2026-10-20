@@ -13,10 +13,10 @@ import { WALL_LOCALES } from '../../../shared/wall';
 /**
  * Fit check for Dashboard → Font: renders every page (and rotating part) of every card in every
  * language, invisibly, in the text box of the tallest open card (logical px at 1 px), with the
- * draft size and fill. A page whose text still shrinks there (`data-copy-scale` < 1) is too large
- * for its card: the wall would show it smaller than set. Reports the smallest scale per card.
+ * draft size range, exactly as the wall sizes it. Reports per card the smallest size used (and
+ * where) and the largest; a smallest size below `min` means a page does not fit even at `min`.
  */
-export interface CardFit { scale: number; page: number; locale: WallLocale }
+export interface CardFit { low: number; page: number; locale: WallLocale; high: number }
 
 const props = defineProps<{ cards: Record<CardTextKey, CardText>; showPages: boolean; offsetY: number }>();
 const emit = defineEmits<{ result: [fits: Partial<Record<CardTextKey, CardFit>>] }>();
@@ -54,9 +54,14 @@ function measure() {
     const scale = Number(box.querySelector<HTMLElement>('[data-copy-scale]')?.dataset.copyScale ?? 1);
     if (!probe)
       return;
-    const best = fits[probe.key];
-    if (!best || scale < best.scale)
-      fits[probe.key] = { scale, page: probe.page, locale: probe.locale };
+    const size = Math.round(scale * props.cards[probe.key].min * 10) / 10;
+    const fit = fits[probe.key];
+    if (!fit)
+      fits[probe.key] = { low: size, page: probe.page, locale: probe.locale, high: size };
+    else if (size < fit.low)
+      Object.assign(fit, { low: size, page: probe.page, locale: probe.locale });
+    if (fit && size > fit.high)
+      fit.high = size;
   });
   emit('result', fits);
 }
@@ -88,7 +93,7 @@ onBeforeUnmount(() => {
     <div v-for="probe in probes" :key="probe.id" class="absolute left-0 top-0" :data-probe="probe.id" :style="{ width: `${probe.width}px`, height: `${probe.height}px` }">
       <WallPageCopy
         class="absolute inset-0 overflow-hidden" :copy="probe.copy" :locale="probe.locale"
-        :fill="cards[probe.key].fill" :size="cards[probe.key].size"
+        :min="cards[probe.key].min" :max="cards[probe.key].max" :limit="probe.height"
       />
     </div>
   </div>

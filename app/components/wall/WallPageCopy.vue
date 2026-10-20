@@ -15,17 +15,28 @@ import { BASE_BODY_SIZE } from '../../../shared/font-settings';
  * Every paragraph and list item fades up in reading order (top to bottom) whenever the page
  * becomes the visible one: when the card opens and on every page switch.
  */
-const props = defineProps<{ copy: PageCopy; locale: WallLocale; active?: boolean; /** Grow the text until it fills the available height. */ fill?: boolean; /** Body size in logical px (default 18). */ size?: number }>();
-/** Content height at full size in CSS px; the open card grows to fit the visible page. */
+const props = defineProps<{
+  copy: PageCopy;
+  locale: WallLocale;
+  active?: boolean;
+  /** Body size range in logical px (Dashboard → Font, per card); default 18. */
+  min?: number;
+  max?: number;
+  /** Height of the tallest text box in CSS px (the open card's limit); default: the parent's height. */
+  limit?: number;
+}>();
+/** Content height at the chosen size in CSS px; the open card grows to fit the visible page. */
 const emit = defineEmits<{ natural: [px: number] }>();
 
-// Body text is the card's Dashboard → Font size (default 18 logical px). The card grows with its content first (WallOpenCard); a page that
-// still overflows the tallest card (y 1312) shrinks in small steps (down to 80%) instead of being clipped.
+// Size: the largest size from `max` down to `min` (1 % steps) whose content fits the tallest text
+// box; the card then grows to that content. Only a page that does not fit even at `min` keeps
+// shrinking (down to 65 % of `min`) instead of being clipped; Dashboard → Font flags it.
 const MIN_SCALE = 0.65;
-/** Upper bound when a page fills the card (`fill`): short pages grow at most this much. */
-const MAX_FILL = 2.5;
 const root = ref<HTMLElement | null>(null);
+/** Size relative to `min` (`--copy-base` is `min`, so `max` is a scale above 1). */
 const scale = ref(1);
+const minSize = computed(() => props.min ?? BASE_BODY_SIZE);
+const maxScale = computed(() => Math.max(1, (props.max ?? minSize.value) / minSize.value));
 let observer: ResizeObserver | undefined;
 let lastNatural = -1;
 let partsNatural = 0;
@@ -42,8 +53,15 @@ function fit() {
   const element = root.value;
   if (!element)
     return;
-  let next = 1;
-  element.style.setProperty('--copy-scale', '1');
+  const limit = props.limit || element.parentElement?.clientHeight || element.clientHeight;
+  let next = maxScale.value;
+  element.style.setProperty('--copy-scale', String(next));
+  // Measured strictly, so the text never touches or crosses the card edge.
+  while (contentBottom(element) > limit - 1 && next > MIN_SCALE) {
+    next = Math.max(MIN_SCALE, Math.ceil(next * 100 - 1.000001) / 100);
+    element.style.setProperty('--copy-scale', String(next));
+  }
+  scale.value = next;
   // Rotating parts report the tallest part seen, so the card does not jump back between parts.
   const natural = Math.max(contentBottom(element), props.copy.parts ? partsNatural : 0);
   if (props.copy.parts)
@@ -52,26 +70,6 @@ function fit() {
     lastNatural = natural;
     emit('natural', natural);
   }
-  const available = element.parentElement?.clientHeight || element.clientHeight;
-  while (element.scrollHeight > available + 1 && next > MIN_SCALE) {
-    next = Math.max(MIN_SCALE, Math.round((next - 0.02) * 100) / 100);
-    element.style.setProperty('--copy-scale', String(next));
-  }
-  // Fill: grow in 1 % steps while the page still fits, then keep the last size that fit. The card
-  // keeps the height of the page at full size (reported above), so growing never grows the card.
-  if ((props.fill || props.copy.fill) && next >= 1) {
-    while (next < MAX_FILL) {
-      const candidate = Math.min(MAX_FILL, Math.round((next + 0.01) * 100) / 100);
-      element.style.setProperty('--copy-scale', String(candidate));
-      // Measure the content itself (scrollHeight never drops below the box), strictly, so a filled
-      // page never touches or crosses the card edge.
-      if (contentBottom(element) > available - 1)
-        break;
-      next = candidate;
-    }
-    element.style.setProperty('--copy-scale', String(next));
-  }
-  scale.value = next;
 }
 
 // Measured synchronously after render (not in requestAnimationFrame, which a hidden tab skips).
@@ -85,8 +83,8 @@ onMounted(() => {
       observer.observe(root.value.parentElement);
   }
 });
-// A new size or fill setting changes the content height, which the ResizeObserver cannot see.
-watch(() => [props.copy, props.locale, props.size, props.fill], () => {
+// A new size range or limit changes the content height, which the ResizeObserver cannot see.
+watch(() => [props.copy, props.locale, props.min, props.max, props.limit], () => {
   partsNatural = 0;
   nextTick(fit);
 });
@@ -155,7 +153,7 @@ watch(() => [props.active, props.copy], () => {
 <template>
   <div
     ref="root" class="grid content-start gap-[calc(12*var(--wall-y)*var(--copy-base,1)*var(--copy-scale,1))] font-medium text-[length:calc(18*var(--wall-u)*var(--copy-base,1)*var(--copy-scale,1))]"
-    :style="{ '--copy-scale': scale, '--copy-base': (size ?? BASE_BODY_SIZE) / BASE_BODY_SIZE }" :data-copy-scale="scale"
+    :style="{ '--copy-scale': scale, '--copy-base': minSize / BASE_BODY_SIZE }" :data-copy-scale="scale"
   >
     <template v-for="(block, index) in shownBlocks" :key="`${part}-${index}`">
       <p v-if="typeof block === 'string'" class="leading-[1.3] text-white/95" data-reveal :style="reveal(index)">

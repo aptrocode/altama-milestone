@@ -58,10 +58,10 @@ const pillStyle = computed(() => rectStyle(idle.value
 // The open card grows with its content (WallOpenCard reports the height it needs) between the
 // layout's card height and visual.openCardMaxBottom; the glow rails end 22 px below it.
 const cardHeight = ref(geometry.value.active.card.height);
+// The on-screen bottom limit stays at openCardMaxBottom whatever the dashboard offset is.
+const maxCardHeight = computed(() => visual.openCardMaxBottom - props.offsetY - geometry.value.active.card.y);
 function onCardHeight(needed: number) {
-  const card = geometry.value.active.card;
-  // The on-screen bottom limit stays at openCardMaxBottom whatever the dashboard offset is.
-  cardHeight.value = Math.min(visual.openCardMaxBottom - props.offsetY - card.y, Math.max(card.height, needed));
+  cardHeight.value = Math.min(maxCardHeight.value, Math.max(geometry.value.active.card.height, needed));
 }
 watch([idle, () => props.snapshot.subItem, () => props.offsetY], () => {
   cardHeight.value = geometry.value.active.card.height;
@@ -138,7 +138,7 @@ function act(action: WallAction) {
       <WallOpenCard
         v-if="!idle" class="absolute transition-[height] duration-300 ease-out motion-reduce:transition-none" :style="cardStyle"
         :column-id="column.id" :pages="pages" :locale="snapshot.locale" :photo="snapshot.photo" :page="snapshot.page"
-        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" :show-pages="settings.wall.showPages" :auto-page="autoPageActive(settings.wall)" :fill-text="cardText?.fill" :text-size="cardText?.size" @action="act" @height="onCardHeight"
+        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" :show-pages="settings.wall.showPages" :auto-page="autoPageActive(settings.wall)" :text-min="cardText?.min" :text-max="cardText?.max" :max-height="maxCardHeight" @action="act" @height="onCardHeight"
         @media-ended="emit('slideEnded', column.id)"
       />
     </Transition>
