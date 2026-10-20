@@ -4,6 +4,7 @@ import type { SensorMessage } from '~/types/sensor';
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 import KioskBackground from '~/components/kiosk/KioskBackground.vue';
 import KioskStatus from '~/components/kiosk/KioskStatus.vue';
+import KioskTouchDots from '~/components/kiosk/KioskTouchDots.vue';
 import WallColumn from '~/components/wall/WallColumn.vue';
 import { useSensorSocket } from '~/composables/useSensorSocket';
 import { useStackedLayout } from '~/composables/useStackedLayout';
@@ -77,9 +78,17 @@ function stackedOrigin(id: ColumnId) {
 const compactLogo = computed(() => wall.getColumnState(3) !== 'idle' || wall.getColumnState(4) !== 'idle');
 const logoBox = computed(() => compactLogo.value ? layout.visual.logo.compact : layout.visual.logo.idle);
 
+// Calibration overlay: the dashboard switch, or `?dots=1` in the URL (handy where the wall runs in
+// a browser without the dashboard's storage, e.g. a TouchDesigner Web Render TOP).
+const route = useRoute();
+const showTouchDots = computed(() => settings.wall.showTouchDots || route.query.dots === '1');
+const touchDots = ref<InstanceType<typeof KioskTouchDots> | null>(null);
+
 function handleSensorMessage(message: SensorMessage) {
-  if (message.type === 'input')
-    controls.dispatch(message.action);
+  if (message.type !== 'input')
+    return;
+  touchDots.value?.addSensor(message.x, message.y);
+  controls.dispatch(message.action);
 }
 
 const sensorSocket = useSensorSocket({
@@ -175,6 +184,8 @@ onUnmounted(() => {
         </div>
       </div>
     </div>
+
+    <KioskTouchDots v-if="showTouchDots" ref="touchDots" :wall-layout="!stacked" />
 
     <KioskStatus
       v-if="showDiagnostics" :socket-status="system.socketStatus" :sensor-ready="system.sensorReady"

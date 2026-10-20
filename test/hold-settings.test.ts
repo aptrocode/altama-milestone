@@ -29,11 +29,11 @@ describe('hold settings', () => {
 
   it('clamps wall settings: reset seconds and card offset', () => {
     expect(normalizeWallSettings(null)).toEqual(DEFAULT_WALL_SETTINGS);
-    expect(DEFAULT_WALL_SETTINGS).toEqual({ resetSeconds: 30, cardOffsetY: 0, showClose: true, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPageSeconds: 10, languageBar: 'compact' });
+    expect(DEFAULT_WALL_SETTINGS).toEqual({ resetSeconds: 30, cardOffsetY: 0, showClose: true, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPageSeconds: 10, languageBar: 'compact', showTouchDots: false });
     expect(normalizeWallSettings({ resetSeconds: 2, cardOffsetY: 999, autoSlideSeconds: 0 }))
       .toEqual({ ...DEFAULT_WALL_SETTINGS, resetSeconds: 5, cardOffsetY: 120, autoSlideSeconds: 2 });
-    expect(normalizeWallSettings({ resetSeconds: 45.4, cardOffsetY: -31, showClose: false, showArrows: false, autoSlideSeconds: 7.6, showPages: false, autoPageSeconds: 500, languageBar: 'full' }))
-      .toEqual({ resetSeconds: 45, cardOffsetY: -30, showClose: false, showArrows: false, autoSlideSeconds: 8, showPages: false, autoPageSeconds: 120, languageBar: 'full' });
+    expect(normalizeWallSettings({ resetSeconds: 45.4, cardOffsetY: -31, showClose: false, showArrows: false, autoSlideSeconds: 7.6, showPages: false, autoPageSeconds: 500, languageBar: 'full', showTouchDots: true }))
+      .toEqual({ resetSeconds: 45, cardOffsetY: -30, showClose: false, showArrows: false, autoSlideSeconds: 8, showPages: false, autoPageSeconds: 120, languageBar: 'full', showTouchDots: true });
     expect(normalizeWallSettings({ languageBar: 'huge' }).languageBar).toBe('compact');
     expect(normalizeWallSettings({ languageBar: 'grid' }).languageBar).toBe('grid');
     expect(normalizeWallSettings({ showClose: 'no', showArrows: 1 })).toMatchObject({ showClose: true, showArrows: true });
