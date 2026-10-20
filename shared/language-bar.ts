@@ -15,6 +15,8 @@ interface Rect { x: number; y: number; width: number; height: number }
 
 /** Logical px between the frame edge and the wide bar, button height, and spacing. */
 const WIDE = { inset: 14, button: 60, padding: 8, gap: 6 } as const;
+/** The 2 + 1 grid sits this much lower than the single-row bars, leaving room under the artwork; the frame grows by it too. */
+const GRID_DROP = 10;
 
 export interface LanguageGeometry<L> {
   languageBar: Rect;
@@ -53,7 +55,8 @@ export function languageGeometry<L extends Rect & { locale: string }>(
     };
   }
 
-  // grid: two per row, the last row centred (ID | EN, then 中文).
+  // grid: two per row, the last row centred (ID | EN, then 中文), a little lower than one row.
+  const top = y + GRID_DROP;
   const buttonWidth = (inner - WIDE.gap) / 2;
   const rows = Math.ceil(column.languages.length / 2);
   const height = WIDE.padding * 2 + rows * WIDE.button + (rows - 1) * WIDE.gap;
@@ -61,9 +64,9 @@ export function languageGeometry<L extends Rect & { locale: string }>(
     const row = Math.floor(index / 2);
     const alone = row === rows - 1 && column.languages.length % 2 === 1;
     const left = alone ? x + (width - buttonWidth) / 2 : x + WIDE.padding + (index % 2) * (buttonWidth + WIDE.gap);
-    return { ...item, x: left, y: y + WIDE.padding + row * (WIDE.button + WIDE.gap), width: buttonWidth, height: WIDE.button };
+    return { ...item, x: left, y: top + WIDE.padding + row * (WIDE.button + WIDE.gap), width: buttonWidth, height: WIDE.button };
   });
-  return { languageBar: { x, y, width, height }, languages, extend: height - singleRow };
+  return { languageBar: { x, y: top, width, height }, languages, extend: height - singleRow + GRID_DROP };
 }
 
 /**
