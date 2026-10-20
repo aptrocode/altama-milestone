@@ -19,7 +19,7 @@ import { useWallStore } from '~/stores/wall';
 import { isVideoSrc } from '~/utils/media';
 import { columnOffsetY, languageGeometry } from '../../../shared/language-bar';
 import { COLUMN_IDS } from '../../../shared/wall';
-import { closeButtonOptions } from '../../../shared/wall-settings';
+import { autoPageActive, closeButtonOptions } from '../../../shared/wall-settings';
 
 const wall = useWallStore();
 const system = useSystemStore();
@@ -27,7 +27,7 @@ const settings = useSettingsStore();
 const controls = useWallController(wall, {
   resetDelayMs: () => settings.wall.resetSeconds * 1000,
   autoSlideMs: () => settings.wall.showArrows ? 0 : settings.wall.autoSlideSeconds * 1000,
-  autoPageMs: () => settings.wall.showPages ? 0 : settings.wall.autoPageSeconds * 1000,
+  autoPageMs: () => autoPageActive(settings.wall) ? settings.wall.autoPageSeconds * 1000 : 0,
   // Video slides play to their end (client request); images use the interval.
   slidePlaysToEnd: (id) => {
     const snapshot = wall.columns[id];

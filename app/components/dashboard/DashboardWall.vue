@@ -10,7 +10,7 @@ import DashboardSwitch from '~/components/dashboard/DashboardSwitch.vue';
 import { useSettingsDraft } from '~/composables/useSettingsDraft';
 import { useSettingsStore } from '~/stores/settings';
 import { CLOSE_OFFSET, CLOSE_SCALE } from '../../../shared/close-button';
-import { AUTO_PAGE_SECONDS, AUTO_SLIDE_SECONDS, CARD_OFFSET_Y, DEFAULT_WALL_SETTINGS, normalizeWallSettings, RESET_SECONDS, TOUCH_DOT_SECONDS } from '../../../shared/wall-settings';
+import { AUTO_PAGE_SECONDS, AUTO_SLIDE_SECONDS, autoPageActive, CARD_OFFSET_Y, DEFAULT_WALL_SETTINGS, normalizeWallSettings, RESET_SECONDS, TOUCH_DOT_SECONDS } from '../../../shared/wall-settings';
 
 const settings = useSettingsStore();
 const { draft, dirty, status, save, discard, restoreDefaults } = useSettingsDraft({
@@ -82,6 +82,12 @@ const HELP: Record<string, HelpLine[]> = {
     { term: 'Y', text: 'Minus = ke atas, plus = ke bawah.' },
     'Area sentuh sensor dan perintah OSC ikut bergeser.',
   ],
+  autoPage: [
+    { term: 'On', text: 'Page berikutnya muncul sendiri setiap Durasi auto page, dihitung sejak page terakhir berganti. Menekan tab memulai hitungan lagi.' },
+    { term: 'Off', text: 'Page hanya berganti lewat tab.' },
+    { term: 'Dengan Tombol slider off', text: 'Page berganti setelah foto terakhirnya. Video diputar sampai selesai dulu.' },
+    'Saat Tombol page off, auto page selalu jalan supaya semua page tetap terlihat.',
+  ],
   showArrows: [
     { term: 'Off', text: 'Panah hilang; foto berganti sendiri setiap Auto slide detik.' },
     { term: 'Video', text: 'Diputar sampai selesai dulu, baru lanjut.' },
@@ -109,6 +115,9 @@ const CLOSE_AXES = [
   { key: 'closeOffsetX', label: 'X', less: '←', more: '→', lessLabel: 'Geser tombol close ke kiri', moreLabel: 'Geser tombol close ke kanan', inputLabel: 'Posisi X tombol close dalam px' },
   { key: 'closeOffsetY', label: 'Y', less: '↑', more: '↓', lessLabel: 'Geser tombol close ke atas', moreLabel: 'Geser tombol close ke bawah', inputLabel: 'Posisi Y tombol close dalam px' },
 ] as const;
+
+// Auto page runs when switched on, and always while the page tabs are hidden.
+const autoPageOn = computed(() => autoPageActive(draft.value));
 
 const field = 'w-20 rounded-md bg-white/10 px-2 py-1.5 text-right font-bold text-white ring-1 ring-white/15 focus:outline-none focus:ring-2 focus:ring-wall-glow';
 const unit = 'text-sm text-sky-100/60';
@@ -276,15 +285,25 @@ const unit = 'text-sm text-sky-100/60';
 
       <div>
         <DashboardSettingRow
-          data-wall-setting="showPages" title="Tombol page" hint="Tab page (1960/1996, PAGE 1/2). Off = page berganti otomatis."
+          data-wall-setting="showPages" title="Tombol page" hint="Tab page (1960/1996, PAGE 1/2/3). Off = tab hilang, page berganti otomatis."
           :help="HELP.showPages"
           :changed="changed('showPages')" :default-label="defaultLabel('showPages')" @reset="reset('showPages')"
         >
           <DashboardSwitch :model-value="draft.showPages" label="Tampilkan tombol page" @update:model-value="update({ showPages: $event })" />
         </DashboardSettingRow>
+        <DashboardSettingRow
+          data-wall-setting="autoPage" title="Auto page" hint="Page berganti sendiri, juga saat tab page tampil."
+          :help="HELP.autoPage"
+          :changed="changed('autoPage')" :default-label="defaultLabel('autoPage')" @reset="reset('autoPage')"
+        >
+          <div class="flex flex-col items-end gap-1">
+            <DashboardSwitch :model-value="autoPageOn" label="Auto page" @update:model-value="update({ autoPage: $event })" />
+            <span v-if="!draft.showPages" class="text-xs text-sky-100/50">Selalu on saat Tombol page off</span>
+          </div>
+        </DashboardSettingRow>
         <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-1" leave-active-class="transition duration-150 ease-in" leave-to-class="opacity-0 -translate-y-1">
           <DashboardSettingRow
-            v-if="!draft.showPages" nested data-wall-setting="autoPageSeconds" title="Auto page"
+            v-if="autoPageOn" nested data-wall-setting="autoPageSeconds" title="Durasi auto page"
             :hint="`Page berikutnya tiap sekian detik (${AUTO_PAGE_SECONDS.min}–${AUTO_PAGE_SECONDS.max} s). Default ${DEFAULT_WALL_SETTINGS.autoPageSeconds} detik.`"
             :changed="changed('autoPageSeconds')" :default-label="defaultLabel('autoPageSeconds')" @reset="reset('autoPageSeconds')"
           >

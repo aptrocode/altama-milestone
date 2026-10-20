@@ -19,7 +19,9 @@ import { LANGUAGE_BAR_MODES } from './language-bar';
  * - autoSlideSeconds: auto-slide interval while the arrows are off.
  * - showPages: whether open cards show their page tabs. When off, Sensor Service drops the page
  *   targets and pages change on their own every autoPageSeconds.
- * - autoPageSeconds: auto-page interval while the page tabs are off.
+ * - autoPage: pages also change on their own while the tabs are shown (default on); with the
+ *   tabs off they always do (autoPageActive).
+ * - autoPageSeconds: auto-page interval (default 15 s).
  * - languageBar: `compact` flag pill (default) or `full` width with larger buttons
  *   (shared/language-bar.ts); Sensor Service moves the language targets with it.
  * - showTouchDots: calibration overlay on the wall (press/release/sensor dots with coordinates).
@@ -35,6 +37,7 @@ export interface WallSettings {
   showArrows: boolean;
   autoSlideSeconds: number;
   showPages: boolean;
+  autoPage: boolean;
   autoPageSeconds: number;
   languageBar: LanguageBarMode;
   showTouchDots: boolean;
@@ -47,7 +50,7 @@ export const AUTO_SLIDE_SECONDS = { min: 2, max: 60, step: 1 } as const;
 export const AUTO_PAGE_SECONDS = { min: 3, max: 120, step: 1 } as const;
 export const TOUCH_DOT_SECONDS = { min: 1, max: 60, step: 1 } as const;
 
-export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPageSeconds: 10, languageBar: 'compact', showTouchDots: false, touchDotSeconds: 5 };
+export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPage: true, autoPageSeconds: 15, languageBar: 'compact', showTouchDots: false, touchDotSeconds: 5 };
 
 function clampNumber(value: unknown, fallback: number, limits: { min: number; max: number; step: number }): number {
   const raw = typeof value === 'number' && Number.isFinite(value) ? value : fallback;
@@ -68,6 +71,7 @@ export function normalizeWallSettings(value: unknown): WallSettings {
     showArrows: typeof source.showArrows === 'boolean' ? source.showArrows : DEFAULT_WALL_SETTINGS.showArrows,
     autoSlideSeconds: clampNumber(source.autoSlideSeconds, DEFAULT_WALL_SETTINGS.autoSlideSeconds, AUTO_SLIDE_SECONDS),
     showPages: typeof source.showPages === 'boolean' ? source.showPages : DEFAULT_WALL_SETTINGS.showPages,
+    autoPage: typeof source.autoPage === 'boolean' ? source.autoPage : DEFAULT_WALL_SETTINGS.autoPage,
     autoPageSeconds: clampNumber(source.autoPageSeconds, DEFAULT_WALL_SETTINGS.autoPageSeconds, AUTO_PAGE_SECONDS),
     languageBar: LANGUAGE_BAR_MODES.includes(source.languageBar as LanguageBarMode) ? source.languageBar as LanguageBarMode : DEFAULT_WALL_SETTINGS.languageBar,
     showTouchDots: typeof source.showTouchDots === 'boolean' ? source.showTouchDots : DEFAULT_WALL_SETTINGS.showTouchDots,
@@ -78,4 +82,9 @@ export function normalizeWallSettings(value: unknown): WallSettings {
 /** The close button options of wall settings, as shared/close-button.ts takes them. */
 export function closeButtonOptions(settings: Pick<WallSettings, 'closeScale' | 'closeOffsetX' | 'closeOffsetY'>): CloseButtonOptions {
   return { scale: settings.closeScale, x: settings.closeOffsetX, y: settings.closeOffsetY };
+}
+
+/** Pages advance on their own when the operator turned auto page on, or hid the page tabs. */
+export function autoPageActive(settings: Pick<WallSettings, 'autoPage' | 'showPages'>): boolean {
+  return settings.autoPage || !settings.showPages;
 }

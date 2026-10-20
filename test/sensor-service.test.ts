@@ -182,9 +182,9 @@ describe('sensor Service protocol v2', () => {
     expect(phoneFrames.filter(frame => frame.includes('"input"'))).toHaveLength(1);
   });
 
-  it('drops show-control actions without a wall-v7 target', () => {
+  it('drops show-control actions without a target (page 4 of at most 3, unknown sub-item)', () => {
     const { service, parsed } = setup();
-    service.handleShowControl(parseOscPacket(createOscMessage('/altama/page', [1, 3])));
+    service.handleShowControl(parseOscPacket(createOscMessage('/altama/page', [1, 4])));
     service.handleShowControl(parseOscPacket(createOscMessage('/altama/subItem', [1, 'foo'])));
     service.handleShowControl(parseOscPacket(createOscMessage('/altama/page', [1, 2])));
     const actions = parsed().flatMap(result => result.ok && result.message.type === 'input' ? [result.message.action] : []);

@@ -6,12 +6,14 @@ import { installationLayout, isPointInsideCanvas } from '../app/data/installatio
 import { WALL_CONFIG } from '../app/data/wall-config';
 import { FLAG_SOURCES } from '../app/data/wall-copy';
 import { STAGE_MEDIA } from '../app/data/wall-media';
+import { MAX_PAGES } from '../shared/page-tabs';
 import { COLUMN_IDS, WALL_LOCALES } from '../shared/wall';
 
 const errors: string[] = [];
 const root = new URL('../', import.meta.url);
 const media: { owner: string; asset: MediaAsset }[] = [];
-const maxPageTabs = Math.min(...installationLayout.columns.map(column => column.active.pages.length));
+// Two layout tabs, or three derived ones (shared/page-tabs.ts).
+const maxPageTabs = MAX_PAGES;
 const ids = WALL_CONFIG.columns.map(column => column.id);
 if (JSON.stringify(ids) !== JSON.stringify(COLUMN_IDS))
   errors.push('Wall config must define columns 1–6 in order');

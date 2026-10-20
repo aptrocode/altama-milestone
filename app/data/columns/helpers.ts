@@ -31,4 +31,5 @@ export function pendingPage(photos: PhotoSlot[], tabs: Record<WallLocale, string
 export const PAGE_TABS = {
   first: { 'id': 'PAGE 1', 'en': 'PAGE 1', 'zh-Hans': '第 1 页' },
   second: { 'id': 'PAGE 2', 'en': 'PAGE 2', 'zh-Hans': '第 2 页' },
+  third: { 'id': 'PAGE 3', 'en': 'PAGE 3', 'zh-Hans': '第 3 页' },
 } as const satisfies Record<string, Record<WallLocale, string>>;

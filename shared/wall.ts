@@ -20,6 +20,8 @@ export interface ColumnSnapshot {
 export interface PublishedColumn extends ColumnSnapshot {
   photoCount: number;
   pageCount: number;
+  /** The open card has no photo frame, so its page tabs sit at the top (shared/page-tabs.ts). */
+  tabsTop?: boolean;
 }
 
 export type WallAction
