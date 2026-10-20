@@ -206,7 +206,6 @@ export const OUR_BRANDS: ColumnConfig = {
           [
             provisional('/photos/our-brands/ryu/page-2-photo-1.webp'),
             provisional('/photos/our-brands/ryu/page-2-photo-2.webp'),
-            provisional('/photos/our-brands/ryu/page-2-photo-3.webp'),
           ],
           {
             'id': {
