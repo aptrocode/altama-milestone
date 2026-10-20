@@ -34,6 +34,13 @@ const controls = useWallController(wall, {
     const snapshot = wall.columns[id];
     return isVideoSrc(getColumnPages(getColumnConfig(id), snapshot.subItem)[snapshot.page]?.photos[snapshot.photo]?.src);
   },
+  // Text that rotates in parts (WallPageCopy) shows every part before an automatic page change.
+  pageMinMs: (id) => {
+    const snapshot = wall.columns[id];
+    const copy = getColumnPages(getColumnConfig(id), snapshot.subItem)[snapshot.page]?.i18n[snapshot.locale];
+    const parts = copy?.parts?.length ?? 0;
+    return parts > 1 ? parts * (copy?.partSeconds ?? 10) * 1000 : 0;
+  },
 });
 const runtimeConfig = useRuntimeConfig();
 // Idle "press me" cue, one card or tile at a time across the wall; a touch silences that column.

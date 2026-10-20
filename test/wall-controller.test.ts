@@ -181,7 +181,7 @@ describe('photo auto slide', () => {
 });
 
 describe('page auto change', () => {
-  function open(options: { autoPageMs: () => number; autoSlideMs?: () => number; slidePlaysToEnd?: (id: ColumnId) => boolean }) {
+  function open(options: { autoPageMs: () => number; autoSlideMs?: () => number; slidePlaysToEnd?: (id: ColumnId) => boolean; pageMinMs?: (id: ColumnId) => number }) {
     const wall = useWallStore(createPinia());
     const scope = effectScope();
     scopes.push(scope);
@@ -212,6 +212,14 @@ describe('page auto change', () => {
     controls.touchColumn(2);
     video = true;
     controls.mediaEnded(2);
+    expect(wall.publishedColumns[2]!.page).toBe(1);
+  });
+
+  it('keeps a page with rotating text parts until every part was shown', () => {
+    const { wall } = open({ autoPageMs: () => 15_000, pageMinMs: () => 20_000 });
+    vi.advanceTimersByTime(19_999);
+    expect(wall.publishedColumns[2]!.page).toBe(0);
+    vi.advanceTimersByTime(1);
     expect(wall.publishedColumns[2]!.page).toBe(1);
   });
 
