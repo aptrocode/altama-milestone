@@ -24,7 +24,7 @@ The Summit logo is shared. Idle it is 278 px tall at y 70, narrow enough to stay
 | 1 | Tentang Altama | Building illustration | 1960 / 1996 pages, each with its own photo slider and text |
 | 2 | Our Brand | Tekiro, RYU, Rexco tiles; each tile opens that brand directly | Brand logo above the card; Tekiro has PAGE 1 / PAGE 2, each with its own photos and text; Tekiro's PAGE 2 awards show in two parts that change every 10 s without buttons, text grown to fill the tallest card |
 | 3 | Infrastruktur | Warehouse illustration | Photo slider and bullets in two pages (PAGE 1/2, same slider); text grows to fill the card |
-| 4 | Digital Trust | Phone illustration | Photo slider (ODP) and bullets |
+| 4 | Digital Trust | Phone illustration | Photo slider (ODP) and bullets in two pages (PAGE 1/2, same slider); text grows to fill the card |
 | 5 | Distribusi & Pemasaran | Captioned Distribusi / Pemasaran tiles; each opens directly | Sub-item name above the card, photo slider, bullets |
 | 6 | Altama Summit 2026 | Flag ceremony illustration | Text-only Summit message in three pages (PAGE 1/2/3 tabs at the top of the card); each page's text grows to fill the card |
 
