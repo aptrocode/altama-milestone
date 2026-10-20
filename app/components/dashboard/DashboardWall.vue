@@ -99,9 +99,9 @@ const HELP: Record<string, HelpLine[]> = {
     { term: 'Dengan Tombol slider off', text: 'Page berganti setelah foto terakhirnya, bukan per Auto page.' },
   ],
   scrollText: [
-    'Uji coba: hanya section 6 (KTT Altama 2026).',
-    { term: 'On', text: 'Ketiga page digabung jadi satu tanpa tab. Teks memakai ukuran Maks dari Font dan bisa digeser ke atas/bawah (sentuh-geser, drag mouse, atau scroll wheel). Fade di bawah, scrollbar tipis, dan panah ⌄ menandakan masih ada teks.' },
-    { term: 'Off', text: 'Kembali 3 page dengan tab seperti biasa.' },
+    'Uji coba: hanya section 1 (Tentang Altama) dan section 6 (KTT Altama 2026).',
+    { term: 'On', text: 'Section 6: ketiga page digabung jadi satu tanpa tab. Di kedua section teks memakai ukuran Maks dari Font dan bisa digeser ke atas/bawah (sentuh-geser, drag mouse, atau scroll wheel). Fade di bawah, scrollbar tipis, dan panah ⌄ menandakan masih ada teks.' },
+    { term: 'Off', text: 'Section 6 kembali 3 page dengan tab; teks section 1 kembali menyesuaikan card seperti biasa.' },
     { term: 'Sensor', text: 'Geser lewat touchscreen, mouse, atau TD yang mengirim drag. Sensor Service (LiDAR/TUIO) belum mengirim geser; di jalur itu hanya tap.' },
   ],
   resetSeconds: [
@@ -324,7 +324,7 @@ const unit = 'text-sm text-sky-100/60';
           </DashboardSettingRow>
         </Transition>
         <DashboardSettingRow
-          data-wall-setting="scrollText" title="Scroll teks (uji coba)" hint="Section 6: page digabung, teks digeser ke atas/bawah."
+          data-wall-setting="scrollText" title="Scroll teks (uji coba)" hint="Section 1 dan 6: teks digeser ke atas/bawah (section 6 jadi satu page)."
           :help="HELP.scrollText"
           :changed="changed('scrollText')" :default-label="defaultLabel('scrollText')" @reset="reset('scrollText')"
         >

@@ -12,7 +12,7 @@ Panduan praktis menyambungkan sensor ke wall, dari nol sampai bisa disentuh. Det
 | Tombol kecil (bendera, ✕, panah) | Sering gagal | Lebih stabil (lihat bagian 2) |
 | Aturan hold dashboard | Ikut, tapi lewat kursor | Ikut, dihitung per tangan |
 | Lihat titik sentuh secara live | Tidak | Ya, di **Dashboard → Sensor → Preview** |
-| Scroll teks (uji coba, section 6) | Hanya jika TD mengirim **drag** (tekan → geser → lepas), bukan klik | Belum (hanya tap) |
+| Scroll teks (uji coba, section 1 & 6) | Hanya jika TD mengirim **drag** (tekan → geser → lepas), bukan klik | Belum (hanya tap) |
 
 **Rekomendasi:** pakai **B**. Kalibrasi tetap di **OptiTUIO**, karena sudah kalian setel dengan objek pembatas dan tidak perlu diulang. Yang diubah hanya tujuan kirimnya: OptiTUIO mengirim TUIO langsung ke Sensor Service, dan TouchDesigner tidak dipakai lagi untuk klik.
 

@@ -78,6 +78,6 @@ export interface ColumnConfig {
   captionTiles?: boolean;
   /** Sub-item opened by the operator/OSC `main` action. */
   defaultSub?: string;
-  /** With Dashboard → Wall "Scroll teks" on, show all pages as one page whose text scrolls vertically. */
+  /** With Dashboard → Wall "Scroll teks" on, the open card's text scrolls vertically (several pages merge into one). */
   scrollMerge?: boolean;
 }

@@ -107,7 +107,9 @@ function updateScroll() {
     return;
   view.top = box.scrollTop;
   view.height = box.clientHeight;
-  view.content = box.scrollHeight;
+  // The content's own bottom: scrollHeight also counts glyph and animation overflow, which would
+  // show the scroll cue for text that already fits.
+  view.content = root.value ? contentBottom(root.value) : box.scrollHeight;
 }
 let drag: { id: number; y: number; top: number } | undefined;
 function dragStart(event: PointerEvent) {
