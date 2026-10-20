@@ -1,5 +1,15 @@
 import type { ColumnConfig } from '~/types/wall-content';
-import { page, PAGE_TABS, provisional, rotatingList, rotatingParts } from './helpers';
+import { page, PAGE_TABS, provisional } from './helpers';
+
+const TEKIRO_PROFILE_PHOTOS = [
+  provisional('/photos/our-brands/tekiro/page-1-photo-1.webp'),
+  provisional('/photos/our-brands/tekiro/page-1-photo-2.webp'),
+  provisional('/photos/our-brands/tekiro/page-1-photo-3.webp'),
+];
+const TEKIRO_AWARD_PHOTOS = [
+  provisional('/photos/our-brands/tekiro/page-2-photo-1.webp'),
+  provisional('/photos/our-brands/tekiro/page-2-photo-2.webp'),
+];
 
 /** Column 2 — Our Brand. Idle tiles open Tekiro, RYU, or Rexco directly. */
 export const OUR_BRANDS: ColumnConfig = {
@@ -20,96 +30,88 @@ export const OUR_BRANDS: ColumnConfig = {
       tileBackground: '#000000',
       wordmark: provisional('/brands/tekiro-wordmark.webp'),
       i18n: { 'id': { label: 'TEKIRO' }, 'en': { label: 'TEKIRO' }, 'zh-Hans': { label: 'TEKIRO' } },
+      // Four pages with tabs (no rotating text): profile, products, then the awards in two halves.
       pages: [
-        page(
-          [
-            provisional('/photos/our-brands/tekiro/page-1-photo-1.webp'),
-            provisional('/photos/our-brands/tekiro/page-1-photo-2.webp'),
-            provisional('/photos/our-brands/tekiro/page-1-photo-3.webp'),
-          ],
-          {
-            'id': rotatingParts(PAGE_TABS.first.id, [
-              [{ bullets: [
-                { lead: 'Lahir: 1999' },
-                { lead: 'Standar kualitas', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
-                { lead: 'Jumlah SKU: 2.183 SKU' },
-              ] }],
-              [{ bullets: [
-                { lead: 'Market segment:', text: 'Industri, Rumah Tangga/DIY, Oil & Gas, Otomotif, Bangunan, Mining, Perkebunan, Kelistrikan.' },
-                { lead: 'Kategori Produk:', text: 'Wrench, Pliers, Measurement, Automotive, Hex Key, Screwdriver, General Tools, Gardening, Torque, Air Tools, Storage, Tray, Insulation, Impact Socket, Welding, Special Tools, dan Cordless.' },
-              ] }],
-            ], 10, false),
-            'en': rotatingParts(PAGE_TABS.first.en, [
-              [{ bullets: [
-                { lead: 'Founded: 1999' },
-                { lead: 'Quality standards', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
-                { lead: 'SKU count: 2,183 SKUs' },
-              ] }],
-              [{ bullets: [
-                { lead: 'Market segments:', text: 'Industry, Household/DIY, Oil & Gas, Automotive, Construction, Mining, Plantation, Electrical.' },
-                { lead: 'Product categories:', text: 'Wrench, Pliers, Measurement, Automotive, Hex Key, Screwdriver, General Tools, Gardening, Torque, Air Tools, Storage, Tray, Insulation, Impact Socket, Welding, Special Tools, and Cordless.' },
-              ] }],
-            ], 10, false),
-            'zh-Hans': rotatingParts(PAGE_TABS.first['zh-Hans'], [
-              [{ bullets: [
-                { lead: '创立：1999 年' },
-                { lead: '质量标准', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
-                { lead: 'SKU 数量：2,183 个' },
-              ] }],
-              [{ bullets: [
-                { lead: '市场领域：', text: '工业、家用/DIY、石油天然气、汽车、建筑、采矿、种植园、电气。' },
-                { lead: '产品类别：', text: '扳手、钳子、测量工具、汽车工具、内六角扳手、螺丝刀、通用工具、园艺工具、扭力工具、气动工具、收纳、托盘、绝缘工具、冲击套筒、焊接、专用工具及无绳工具。' },
-              ] }],
-            ], 10, false),
-          },
-        ),
-        page(
-          [
-            provisional('/photos/our-brands/tekiro/page-2-photo-1.webp'),
-            provisional('/photos/our-brands/tekiro/page-2-photo-2.webp'),
-          ],
-          {
-            'id': rotatingList(PAGE_TABS.second.id, 'Penghargaan:', [
-              { lead: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
-              { lead: 'Museum Rekor Indonesia - MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
-              { lead: '12x TOP Brand Award', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
-              { lead: '7x Indonesia Digital Popular Brand Award' },
-              { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
-              { lead: '5x SUPERBRANDS', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
-              { lead: '2x INDONESIA BRAND CHAMPION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
-              { lead: '2x INDONESIA BRAND CHOICE AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
-              { lead: '2x CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
-              { lead: 'Golden Brand Of The Year' },
-              { lead: 'Indonesia Best Brand Awards' },
-            ], 6),
-            'en': rotatingList(PAGE_TABS.second.en, 'Awards & Accolades:', [
-              { lead: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
-              { lead: 'Museum Rekor Indonesia - MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
-              { lead: '12x TOP Brand Award', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
-              { lead: '7x Indonesia Digital Popular Brand Award' },
-              { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
-              { lead: '5x SUPERBRANDS', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
-              { lead: '2x INDONESIA BRAND CHAMPION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
-              { lead: '2x INDONESIA BRAND CHOICE AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
-              { lead: '2x CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
-              { lead: 'Golden Brand Of The Year' },
-              { lead: 'Indonesia Best Brand Awards' },
-            ], 6),
-            'zh-Hans': rotatingList(PAGE_TABS.second['zh-Hans'], '所获荣誉：', [
-              { lead: '吉尼斯世界纪录 (Guinness World Records)', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
-              { lead: '印尼纪录博物馆纪录 - MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
-              { lead: '12届 TOP Brand Award 顶级品牌奖', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
-              { lead: '7届 印尼数字大众品牌大奖' },
-              { lead: '5届 顶级数字公关大奖 TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
-              { lead: '5届 SUPERBRANDS 超级品牌大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
-              { lead: '2届 印尼品牌冠军大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
-              { lead: '2届 印尼品牌之选大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
-              { lead: '2届 CNN 印尼大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
-              { lead: '年度金牌品牌 Golden Brand Of The Year' },
-              { lead: '印尼最佳品牌奖 Indonesia Best Brand Awards' },
-            ], 6),
-          },
-        ),
+        page(TEKIRO_PROFILE_PHOTOS, {
+          'id': { tab: PAGE_TABS.first.id, blocks: [{ bullets: [
+            { lead: 'Lahir: 1999' },
+            { lead: 'Standar kualitas', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
+            { lead: 'Jumlah SKU: 2.183 SKU' },
+          ] }] },
+          'en': { tab: PAGE_TABS.first.en, blocks: [{ bullets: [
+            { lead: 'Founded: 1999' },
+            { lead: 'Quality standards', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
+            { lead: 'SKU count: 2,183 SKUs' },
+          ] }] },
+          'zh-Hans': { tab: PAGE_TABS.first['zh-Hans'], blocks: [{ bullets: [
+            { lead: '创立：1999 年' },
+            { lead: '质量标准', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
+            { lead: 'SKU 数量：2,183 个' },
+          ] }] },
+        }),
+        page(TEKIRO_PROFILE_PHOTOS, {
+          'id': { tab: PAGE_TABS.second.id, blocks: [{ bullets: [
+            { lead: 'Market segment:', text: 'Industri, Rumah Tangga/DIY, Oil & Gas, Otomotif, Bangunan, Mining, Perkebunan, Kelistrikan.' },
+            { lead: 'Kategori Produk:', text: 'Wrench, Pliers, Measurement, Automotive, Hex Key, Screwdriver, General Tools, Gardening, Torque, Air Tools, Storage, Tray, Insulation, Impact Socket, Welding, Special Tools, dan Cordless.' },
+          ] }] },
+          'en': { tab: PAGE_TABS.second.en, blocks: [{ bullets: [
+            { lead: 'Market segments:', text: 'Industry, Household/DIY, Oil & Gas, Automotive, Construction, Mining, Plantation, Electrical.' },
+            { lead: 'Product categories:', text: 'Wrench, Pliers, Measurement, Automotive, Hex Key, Screwdriver, General Tools, Gardening, Torque, Air Tools, Storage, Tray, Insulation, Impact Socket, Welding, Special Tools, and Cordless.' },
+          ] }] },
+          'zh-Hans': { tab: PAGE_TABS.second['zh-Hans'], blocks: [{ bullets: [
+            { lead: '市场领域：', text: '工业、家用/DIY、石油天然气、汽车、建筑、采矿、种植园、电气。' },
+            { lead: '产品类别：', text: '扳手、钳子、测量工具、汽车工具、内六角扳手、螺丝刀、通用工具、园艺工具、扭力工具、气动工具、收纳、托盘、绝缘工具、冲击套筒、焊接、专用工具及无绳工具。' },
+          ] }] },
+        }),
+        page(TEKIRO_AWARD_PHOTOS, {
+          'id': { tab: PAGE_TABS.third.id, blocks: ['Penghargaan:', { bullets: [
+            { lead: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
+            { lead: 'Museum Rekor Indonesia - MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
+            { lead: '12x TOP Brand Award', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
+            { lead: '7x Indonesia Digital Popular Brand Award' },
+            { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
+            { lead: '5x SUPERBRANDS', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
+          ] }] },
+          'en': { tab: PAGE_TABS.third.en, blocks: ['Awards & Accolades:', { bullets: [
+            { lead: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
+            { lead: 'Museum Rekor Indonesia - MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
+            { lead: '12x TOP Brand Award', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
+            { lead: '7x Indonesia Digital Popular Brand Award' },
+            { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
+            { lead: '5x SUPERBRANDS', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
+          ] }] },
+          'zh-Hans': { tab: PAGE_TABS.third['zh-Hans'], blocks: ['所获荣誉：', { bullets: [
+            { lead: '吉尼斯世界纪录 (Guinness World Records)', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
+            { lead: '印尼纪录博物馆纪录 - MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
+            { lead: '12届 TOP Brand Award 顶级品牌奖', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
+            { lead: '7届 印尼数字大众品牌大奖' },
+            { lead: '5届 顶级数字公关大奖 TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
+            { lead: '5届 SUPERBRANDS 超级品牌大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
+          ] }] },
+        }),
+        page(TEKIRO_AWARD_PHOTOS, {
+          'id': { tab: PAGE_TABS.fourth.id, blocks: ['Penghargaan:', { bullets: [
+            { lead: '2x INDONESIA BRAND CHAMPION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
+            { lead: '2x INDONESIA BRAND CHOICE AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
+            { lead: '2x CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
+            { lead: 'Golden Brand Of The Year' },
+            { lead: 'Indonesia Best Brand Awards' },
+          ] }] },
+          'en': { tab: PAGE_TABS.fourth.en, blocks: ['Awards & Accolades:', { bullets: [
+            { lead: '2x INDONESIA BRAND CHAMPION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
+            { lead: '2x INDONESIA BRAND CHOICE AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
+            { lead: '2x CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
+            { lead: 'Golden Brand Of The Year' },
+            { lead: 'Indonesia Best Brand Awards' },
+          ] }] },
+          'zh-Hans': { tab: PAGE_TABS.fourth['zh-Hans'], blocks: ['所获荣誉：', { bullets: [
+            { lead: '2届 印尼品牌冠军大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
+            { lead: '2届 印尼品牌之选大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
+            { lead: '2届 CNN 印尼大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
+            { lead: '年度金牌品牌 Golden Brand Of The Year' },
+            { lead: '印尼最佳品牌奖 Indonesia Best Brand Awards' },
+          ] }] },
+        }),
       ],
     },
     {
@@ -177,8 +179,6 @@ export const OUR_BRANDS: ColumnConfig = {
           {
             'id': {
               tab: PAGE_TABS.second.id,
-              // The awards grow to fill the tallest card.
-              fill: true,
               blocks: [
                 'Penghargaan:',
                 {
@@ -192,7 +192,6 @@ export const OUR_BRANDS: ColumnConfig = {
             },
             'en': {
               tab: PAGE_TABS.second.en,
-              fill: true,
               blocks: [
                 'Awards & Accolades:',
                 {
@@ -206,7 +205,6 @@ export const OUR_BRANDS: ColumnConfig = {
             },
             'zh-Hans': {
               tab: PAGE_TABS.second['zh-Hans'],
-              fill: true,
               blocks: [
                 '所获荣誉：',
                 {

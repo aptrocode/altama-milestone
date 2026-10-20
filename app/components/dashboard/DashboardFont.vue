@@ -70,7 +70,6 @@ const CARD_HELP: HelpLine[] = [
   'Ukuran teks isi card saat kolom ini dibuka, untuk semua page dan bahasa. Label biru (mis. "Lahir") ikut proporsional.',
   { term: 'Penuhi card', text: 'On: teks mulai dari ukuran ini lalu membesar sendiri sampai card penuh. Off: teks tetap di ukuran ini dan card memanjang mengikuti teks.' },
   { term: 'Status', text: 'Dicek di semua page dan bahasa. "Terlalu besar" berarti teks tidak muat di card tertinggi, jadi wall mengecilkannya ke persen yang tertulis. Kecilkan ukurannya, atau minta isi card dipecah jadi page tambahan.' },
-  { term: 'Selalu penuh', text: 'Page yang memang dibuat untuk memenuhi card (penghargaan Tekiro dan RYU) tetap membesar walau Penuhi card Off.' },
 ];
 
 const fits = ref<Partial<Record<CardTextKey, CardFit>>>({});

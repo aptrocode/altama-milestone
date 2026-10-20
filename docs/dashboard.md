@@ -30,9 +30,9 @@ Every wall text uses Roboto. The page sets the sizes (logical px on the 2304 × 
 | Caption tile | Tile labels of column 5 (Distribusi / Pemasaran) | 30 | 22–36 |
 | Tab page | Page tab labels | 24 | 16–28 |
 
-**Isi card per section** has one row per open card (`cards` in `shared/font-settings.ts`): Tentang Altama, Tekiro, RYU, Rexco, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, and KTT Altama 2026. Each row sets the body size (14–40 px; glow labels stay 0.82 ×) and a **Penuhi card** switch (on: the text starts at that size and grows until the card is full; off: it stays at that size and the card grows to fit it). The defaults keep the earlier look: Tekiro, RYU, and Rexco at 22 px without fill, the other cards at 18 px with fill. Pages built to fill the tallest card (Tekiro and RYU awards) always fill.
+**Isi card per section** has one row per open card (`cards` in `shared/font-settings.ts`): Tentang Altama, Tekiro, RYU, Rexco, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, and KTT Altama 2026. Each row sets the body size (14–40 px; glow labels stay 0.82 ×) and a **Penuhi card** switch (on: the text starts at that size and grows until the card is full; off: it stays at that size and the card grows to fit it). The defaults keep the earlier look: Tekiro, RYU, and Rexco at 22 px without fill, the other cards at 18 px with fill.
 
-Each row also shows a fit status, checked on every page, rotating part, and language at once (`DashboardCardFit` renders them invisibly in the tallest card's text box): **✓ Muat**, or **⚠ Terlalu besar · dikecilkan ke N% (PAGE p, language)** when the wall would have to shrink that text. Pages are never added automatically; a card that needs a larger size than fits is split into more pages in its content file.
+Each row also shows a fit status, checked on every page and language at once (`DashboardCardFit` renders them invisibly in the tallest card's text box): **✓ Muat**, or **⚠ Terlalu besar · dikecilkan ke N% (PAGE p, language)** when the wall would have to shrink that text. Pages are never added automatically; a card that needs a larger size than fits is split into more pages in its content file.
 
 A title word that does not fit its pill (e.g. INFRASTRUKTUR at a large size or Black) shrinks just that title (down to 60 %); long open-card pages still grow the card first and then shrink, so no setting clips text.
 
@@ -41,7 +41,7 @@ A title word that does not fit its pill (e.g. INFRASTRUKTUR at a large size or B
 | Group | Buttons | Default |
 | --- | --- | --- |
 | Card section (`card`) | Idle main card of columns 1/3/4/6 and the sub-item tiles of columns 2/5 | On, 1.0 s |
-| Button page (`page`) | Page tabs (1960 / 1996, PAGE 1 / 2 / 3) | On, 1.0 s |
+| Button page (`page`) | Page tabs (1960 / 1996, PAGE 1–4) | On, 1.0 s |
 | Button slider (`slider`) | Photo arrows | On, 1.0 s |
 | Bahasa (`language`) | Language flags (ID / EN / 中文) | **Off** |
 | Tombol close (`back`) | The open card's ✕ button | **Off** |
@@ -68,7 +68,7 @@ The page is grouped into four cards: **Tampilan** (language bar, card offset), *
 | Posisi tombol close | Shown while Tombol close is on: X (− left / + right) and Y (− up / + down) shift of the badge, −60 to 60 logical px in 2 px steps | X 0 · Y 0 |
 | Tombol slider | Shows the photo arrows on open cards. Off hides them on every column, removes the previous/next touch targets from Sensor Service, and turns on auto slide | On |
 | Auto slide | Shown only while Tombol slider is off: an open card with several photos moves to the next photo (wrapping) every N seconds, 2–60 s. A **video** slide ignores the interval: it starts from the beginning when shown, plays once, and the next slide appears when it ends (e.g. video 20 s → image 5 s → image 5 s → video …; a video that fails to play is skipped). Any photo, page, or sub-item change restarts that column's countdown; auto slide is not visitor activity; the reset only waits for the slideshow to reach its last slide (see Reset otomatis). Operator ←/→ keys and OSC still change photos | 5 s |
-| Tombol page | Shows the page tabs (1960 / 1996, PAGE 1 / 2 / 3) on open cards. Off hides them on every column, removes the page touch targets from Sensor Service, and turns on auto page; the text then starts right below the photo | On |
+| Tombol page | Shows the page tabs (1960 / 1996, PAGE 1–4) on open cards. Off hides them on every column, removes the page touch targets from Sensor Service, and turns on auto page; the text then starts right below the photo | On |
 | Auto page | Pages change on their own, also while the tabs are shown (always on while Tombol page is off). The next page (wrapping, photos restart at the first) appears every **Durasi auto page** seconds (3–120 s) since the last page change, so pressing a tab restarts the count. A playing video slide finishes first. **With Tombol slider also off**, a page with several photos ignores this interval and changes right after its last photo, so every photo of every page is shown (e.g. 10 + 5 photos at 5 s: page 2 at 50 s, the card closes at 75 s); pages with one photo or none keep the interval. Not visitor activity; the reset only waits for the last page (see Reset otomatis) | On, 15 s |
 | Titik sentuh | Calibration overlay on the wall itself (same URL): a blue dot where a pointer pressed, a red dot and dashed line where it released if it drifted, a green dot where a Sensor Service input landed, each with logical coordinates. Never blocks input. `?dots=1` in the wall URL turns it on without the dashboard (for browsers with their own storage, such as a TouchDesigner Web Render TOP) | Off |
 | Durasi titik | Shown only while Titik sentuh is on: seconds a dot stays after its release or sensor input (1–60 s) | 5 s |

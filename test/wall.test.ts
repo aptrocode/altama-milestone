@@ -99,8 +99,8 @@ describe('wall state and actions', () => {
     expect(wall.columns[2]).toMatchObject({ photo: 1, page: 0 });
     expect(wall.dispatch({ type: 'page', columnId: 2, page: 1 })).toBe(true);
     expect(wall.columns[2]).toMatchObject({ photo: 0, page: 1 });
-    expect(wall.publishedColumns[2]).toMatchObject({ page: 1, photoCount: photoCount(2, 1, 'tekiro'), pageCount: 2 });
-    expect(wall.dispatch({ type: 'page', columnId: 2, page: 2 })).toBe(false);
+    expect(wall.publishedColumns[2]).toMatchObject({ page: 1, photoCount: photoCount(2, 1, 'tekiro'), pageCount: 4 });
+    expect(wall.dispatch({ type: 'page', columnId: 2, page: 4 })).toBe(false);
     // Re-selecting the visible page is rejected and keeps the slider where it is.
     wall.dispatch({ type: 'next', columnId: 2 });
     const photo = wall.columns[2].photo;
@@ -124,7 +124,7 @@ describe('wall state and actions', () => {
     const wall = store();
     for (const id of COLUMN_IDS)
       expect(wall.publishedColumns[id]).toMatchObject({ photoCount: photoCount(id), pageCount: pagesOf(id).length });
-    expect(wall.publishedColumns[2]).toMatchObject({ subItem: 'tekiro', pageCount: 2 });
+    expect(wall.publishedColumns[2]).toMatchObject({ subItem: 'tekiro', pageCount: 4 });
   });
 
   it('operator reset preserves languages; inactivity reset restores Indonesian', () => {
