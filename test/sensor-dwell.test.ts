@@ -63,8 +63,8 @@ describe('visible targets', () => {
     expect(flag('zh-Hans').y).toBe(flag('id').y + flag('id').height + 6);
     expect(flag('zh-Hans').x + flag('zh-Hans').width / 2).toBeCloseTo(main.rect.x + main.rect.width / 2);
     expect(flag('id').width).toBeGreaterThan(150);
-    // The frame grows by one button row plus the gap; every flag stays inside it and excluded from main.
-    expect(main.rect.height).toBe(compactMain.rect.height + 66);
+    // The frame grows by one button row, the gap, and the 10 px drop; every flag stays inside it and excluded from main.
+    expect(main.rect.height).toBe(compactMain.rect.height + 76);
     // The whole column moves up by the grid raise (on top of the card offset).
     expect(main.rect.y).toBe(compactMain.rect.y - 40);
     expect(flag('zh-Hans').y + flag('zh-Hans').height).toBeLessThan(main.rect.y + main.rect.height);
