@@ -12,13 +12,14 @@ Panduan praktis menyambungkan sensor ke wall, dari nol sampai bisa disentuh. Det
 | Tombol kecil (bendera, ✕, panah) | Sering gagal | Lebih stabil (lihat bagian 2) |
 | Aturan hold dashboard | Ikut, tapi lewat kursor | Ikut, dihitung per tangan |
 | Lihat titik sentuh secara live | Tidak | Ya, di **Dashboard → Sensor → Preview** |
+| Scroll teks (uji coba, section 6) | Hanya jika TD mengirim **drag** (tekan → geser → lepas), bukan klik | Belum (hanya tap) |
 
 **Rekomendasi:** pakai **B**. Kalibrasi tetap di **OptiTUIO**, karena sudah kalian setel dengan objek pembatas dan tidak perlu diulang. Yang diubah hanya tujuan kirimnya: OptiTUIO mengirim TUIO langsung ke Sensor Service, dan TouchDesigner tidak dipakai lagi untuk klik.
 
 ## 2. Kenapa bendera bahasa susah ditekan di cara A
 
 1. **Bendera kecil.** Di mode Compact, bendera berukuran 64 × 48 px, sedangkan card 360 × 642 px. Kalau satu pixel di layar kira-kira 2–3 mm, bendera cuma sekitar 13–19 cm × 10–14 cm. Titik dari LiDAR adalah *tengah tangan*, bukan ujung jari, dan bisa meleset beberapa cm.
-2. **Klik mouse butuh tekan dan lepas di tombol yang sama.** Bendera aktif dengan "tekan biasa" (hold bahasa default off). Browser baru menganggap itu klik kalau mouse ditekan *dan* dilepas di atas elemen yang sama. Tangan di depan LiDAR selalu bergeser sedikit. Kalau saat dilepas posisinya sudah di luar bendera, kliknya hilang.
+2. **Klik mouse butuh tekan dan lepas di tombol yang sama.** Bendera aktif dengan "tekan biasa" (Hold → Bahasa default **Tap**). Browser baru menganggap itu klik kalau mouse ditekan *dan* dilepas di atas elemen yang sama. Tangan di depan LiDAR selalu bergeser sedikit. Kalau saat dilepas posisinya sudah di luar bendera, kliknya hilang.
 3. **Meleset sedikit, kena card di belakangnya.** Bar bendera ada di atas card. Kalau titiknya jatuh di luar bendera, yang tersentuh adalah card (yang punya hold 1 detik), bukan bahasa.
 4. **Satu kursor untuk semua orang.** Kalau ada dua tangan, kursornya lompat-lompat.
 
@@ -83,7 +84,7 @@ Cara membaca:
 | Yang terlihat | Artinya | Solusi |
 | --- | --- | --- |
 | Biru dan merah sama-sama di luar bendera, selalu bergeser ke arah yang sama | Kalibrasi OptiTUIO atau posisi proyektor meleset | Rapikan kalibrasi di OptiTUIO, atau geser card dengan **Posisi Y card** |
-| Biru tepat di bendera, merah jauh | Saat tangan dilepas, posisinya bergeser | Nyalakan **Hold → Bahasa** 0,3–0,5 detik (bagian 5) |
+| Biru tepat di bendera, merah jauh | Saat tangan dilepas, posisinya bergeser | Set **Hold → Bahasa** ke Hold 0,3–0,5 detik (bagian 5) |
 | Tidak muncul titik sama sekali | Klik tidak sampai ke halaman | Cek pengiriman klik di TouchDesigner, atau output OptiTUIO |
 
 Matikan lagi (hapus `?dots=1`) sebelum acara.
@@ -98,14 +99,14 @@ Di **Dashboard → Wall**:
 | --- | --- | --- |
 | Tampilan bahasa | **Full width** atau **Grid 2 + 1** | Bendera jadi 102 × 60 atau 155 × 60 px, sekitar 2–3 kali lebih besar dari Compact |
 | Tombol slider | **Off** (auto slide 5 s) | Panah kecil tidak perlu ditekan; video tetap diputar sampai selesai |
-| Tombol page | **Off** (auto page 10 s) kalau tab sulit ditekan | Page berganti sendiri |
+| Tombol page | **Off** (auto page 15 s) kalau tab sulit ditekan | Page berganti sendiri |
 | Tombol close | **Off** kalau ✕ sulit ditekan | Card tetap tertutup sendiri setelah Reset otomatis |
 | Reset otomatis | Biarkan 30 s | Saat auto slide/page aktif, card otomatis menunggu sampai slide terakhir selesai (mis. video 30 s + 5 gambar × 5 s = tutup di 55 s) |
 
 Di **Dashboard → Hold**:
 
-- **Cara A (klik dari TouchDesigner): nyalakan Bahasa, 0,3–0,5 detik.** Dengan hold off, bendera baru aktif saat tangan *dilepas*, dan posisi lepas dari LiDAR sering bergeser keluar bendera. Dengan hold, bendera aktif selama tangan diam sebentar di atasnya, sama seperti card. Lakukan hal yang sama untuk Tombol close kalau ✕ dipakai.
-- **Cara B (Sensor Service):** Bahasa boleh off, karena Sensor Service sudah menunggu tangan diam 250 ms.
+- **Cara A (klik dari TouchDesigner): set Bahasa ke Hold, 0,3–0,5 detik.** Dengan Tap, bendera baru aktif saat tangan *dilepas*, dan posisi lepas dari LiDAR sering bergeser keluar bendera. Dengan hold, bendera aktif selama tangan diam sebentar di atasnya, sama seperti card. Lakukan hal yang sama untuk Tombol close kalau ✕ dipakai.
+- **Cara B (Sensor Service):** Bahasa boleh tetap Tap, karena Sensor Service sudah menunggu tangan diam 250 ms.
 - Card section boleh tetap 1 detik, supaya orang yang lewat tidak membuka card tanpa sengaja.
 
 ## 6. Kalau ada masalah

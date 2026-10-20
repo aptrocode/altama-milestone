@@ -126,7 +126,7 @@ const SIZES: { key: SizeKey; title: string; hint: string; sample: string; weight
   {
     key: 'tabSize',
     title: 'Tab page',
-    hint: 'Tombol page di card terbuka (1960/1996, PAGE 1/2).',
+    hint: 'Tombol page di card terbuka (PAGE 1–4).',
     sample: 'Page 1',
     weight: 700,
     upper: true,

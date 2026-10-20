@@ -18,15 +18,6 @@ The sidebar footer acts on every browser-stored setting:
 
 Every button, switch, link, and tab (including the Sensor source tabs) shows a pointer cursor; `main.css` restores it after Tailwind's preflight reset.
 
-### Scroll teks (trial)
-
-**Scroll teks (uji coba)** under Tombol di card (`scrollText`, default **Off**) trials vertically scrolling card text on section 6 only (`scrollMerge` in `6-summit-2026.ts`):
-
-- **On:** its three pages show as one page without tabs, at the card's Font Maks size. The text scrolls up and down by touch or mouse drag, mouse wheel, or a TouchDesigner drag. A fade, a thin bar on the right, and a bouncing ⌄ show that more text follows, and the text starts at the top each time the card opens.
-- **Off:** the card has its three pages and tabs again.
-- **Switching:** an open card that was on a later page shows its first page when the pages merge (`clampPage`).
-- **Sensor Service:** it does not send drags yet, so on the LiDAR/TUIO path section 6 only takes taps while scrolling is on.
-
 ## Font
 
 Every wall text uses Roboto. The page sets the sizes (logical px on the 2304 × 1344 canvas) and the title weight, grouped as **Judul**, **Isi card per section**, and **Tab page**. Each row shows a live sample, − / + steppers, a ? tooltip, and a **↺ Default** chip; the save bar works as on Wall.
@@ -49,13 +40,13 @@ A title word that does not fit its pill (e.g. INFRASTRUKTUR at a large size or B
 
 | Group | Buttons | Default |
 | --- | --- | --- |
-| Card section (`card`) | Idle main card of columns 1/3/4/6 and the sub-item tiles of columns 2/5 | On, 1.0 s |
-| Button page (`page`) | Page tabs (1960 / 1996, PAGE 1–4) | On, 1.0 s |
-| Button slider (`slider`) | Photo arrows | On, 1.0 s |
-| Bahasa (`language`) | Language flags (ID / EN / 中文) | **Off** |
-| Tombol close (`back`) | The open card's ✕ button | **Off** |
+| Card section (`card`) | Idle main card of columns 1/3/4/6 and the sub-item tiles of columns 2/5 | Hold, 1.0 s |
+| Button page (`page`) | Page tabs (PAGE 1–4) | Hold, 1.0 s |
+| Button slider (`slider`) | Photo arrows | Hold, 1.0 s |
+| Bahasa (`language`) | Language flags (ID / EN / 中文) | **Tap** |
+| Tombol close (`back`) | The open card's ✕ button | **Tap** |
 
-Each group has a **mode** (segmented **Tap / Hold / Tap + delay**) and a duration (0.3–5 s, 0.1 s steps, unused for Tap); the table's "On" means Hold and "Off" means Tap.
+Each group has a **mode** (segmented **Tap / Hold / Tap + delay**) and a duration (0.3–5 s, 0.1 s steps, unused for Tap).
 
 - **Hold**: the button must be held; the border progress animation follows the duration; releasing early cancels.
 - **Tap + delay**: one tap starts the same border animation and the button activates when it completes, without holding (releasing does not cancel; another tap while it runs is ignored). Sensor Service treats it as a short contact and the wall plays the delay on the touched button (`wall:press`), so LiDAR and pointer input behave alike.
@@ -66,7 +57,7 @@ Each group has a **mode** (segmented **Tap / Hold / Tap + delay**) and a duratio
 
 ## Wall
 
-The page is grouped into four cards: **Tampilan** (language bar, card offset), **Tombol di card** (close + size/position, slider + Auto slide, page tabs, Auto page + duration), **Waktu** (reset), and **Diagnostik** (amber; touch dots + duration, with a "Masih menyala" badge while on). Each row has a one-line hint (number rows state their default), a **?** tooltip with the details (hover; a click or tap pins it and lights the **?**, closed by another click, a click elsewhere, or Escape), and, when the value differs from its default, a **↺ Default: …** chip that restores it. Switches show On/Off. Inputs that only matter while a switch is off (Auto slide, Auto page) or on (Durasi titik) sit indented under it. The language bar options are drawn as small card sketches.
+The page is grouped into four cards: **Tampilan** (language bar, card offset), **Tombol di card** (close + size/position, slider + Auto slide, page tabs, Auto page + duration, Scroll teks trial), **Waktu** (reset), and **Diagnostik** (amber; touch dots + duration, with a "Masih menyala" badge while on). Each row has a one-line hint (number rows state their default), a **?** tooltip with the details (hover; a click or tap pins it and lights the **?**, closed by another click, a click elsewhere, or Escape), and, when the value differs from its default, a **↺ Default: …** chip that restores it. Switches show On/Off. Inputs that only matter while a switch is off (Auto slide, Auto page) or on (Durasi titik) sit indented under it. The language bar options are drawn as small card sketches.
 
 | Setting | Effect | Default |
 | --- | --- | --- |
@@ -77,7 +68,7 @@ The page is grouped into four cards: **Tampilan** (language bar, card offset), *
 | Posisi tombol close | Shown while Tombol close is on: X (− left / + right) and Y (− up / + down) shift of the badge, −60 to 60 logical px in 2 px steps | X 0 · Y 0 |
 | Tombol slider | Shows the photo arrows on open cards. Off hides them on every column, removes the previous/next touch targets from Sensor Service, and turns on auto slide | On |
 | Auto slide | Shown only while Tombol slider is off: an open card with several photos moves to the next photo (wrapping) every N seconds, 2–60 s. A **video** slide ignores the interval: it starts from the beginning when shown, plays once, and the next slide appears when it ends (e.g. video 20 s → image 5 s → image 5 s → video …; a video that fails to play is skipped). Any photo, page, or sub-item change restarts that column's countdown; auto slide is not visitor activity; the reset only waits for the slideshow to reach its last slide (see Reset otomatis). Operator ←/→ keys and OSC still change photos | 5 s |
-| Tombol page | Shows the page tabs (1960 / 1996, PAGE 1–4) on open cards. Off hides them on every column, removes the page touch targets from Sensor Service, and turns on auto page; the text then starts right below the photo | On |
+| Tombol page | Shows the page tabs (PAGE 1–4) on open cards. Off hides them on every column, removes the page touch targets from Sensor Service, and turns on auto page; the text then starts right below the photo | On |
 | Auto page | Pages change on their own, also while the tabs are shown (always on while Tombol page is off). The next page (wrapping, photos restart at the first) appears every **Durasi auto page** seconds (3–120 s) since the last page change, so pressing a tab restarts the count. A playing video slide finishes first. **With Tombol slider also off**, a page with several photos ignores this interval and changes right after its last photo, so every photo of every page is shown (e.g. 10 + 5 photos at 5 s: page 2 at 50 s, the card closes at 75 s); pages with one photo or none keep the interval. Not visitor activity; the reset only waits for the last page (see Reset otomatis) | On, 15 s |
 | Titik sentuh | Calibration overlay on the wall itself (same URL): a blue dot where a pointer pressed, a red dot and dashed line where it released if it drifted, a green dot where a Sensor Service input landed, each with logical coordinates. Never blocks input. `?dots=1` in the wall URL turns it on without the dashboard (for browsers with their own storage, such as a TouchDesigner Web Render TOP) | Off |
 | Durasi titik | Shown only while Titik sentuh is on: seconds a dot stays after its release or sensor input (1–60 s) | 5 s |
@@ -96,12 +87,21 @@ Videos always play to their end while anything advances automatically, and a car
 
 **Simpan** and **Default** work as on the Hold page.
 
+### Scroll teks (trial)
+
+**Scroll teks (uji coba)** under Tombol di card (`scrollText`, default **Off**) trials vertically scrolling card text on section 6 only (`scrollMerge` in `6-summit-2026.ts`):
+
+- **On:** its three pages show as one page without tabs, at the card's Font Maks size. The text scrolls up and down by touch or mouse drag, mouse wheel, or a TouchDesigner drag. A fade, a thin bar on the right, and a bouncing ⌄ show that more text follows, and the text starts at the top each time the card opens.
+- **Off:** the card has its three pages and tabs again.
+- **Switching:** an open card that was on a later page shows its first page when the pages merge (`clampPage`).
+- **Sensor Service:** it does not send drags yet, so on the LiDAR/TUIO path section 6 only takes taps while scrolling is on.
+
 ### Storage and scope
 
-- Hold and Wall live in this browser's `localStorage` (`altama.settings.v1`) through `app/plugins/settings-storage.client.ts`. Open the dashboard in the same browser profile as the wall on the event PC: in the kiosk started by `start-wall.bat` press **Ctrl+Shift+D** (again to return to the wall; the kiosk uses its own profile in `.wall-run/browser-profile` on `http://127.0.0.1:<WALL_PORT>`). A wall already open in another tab updates immediately (storage event); no reload is needed.
+- Wall, Hold, and Font live in this browser's `localStorage` (`altama.settings.v1`) through `app/plugins/settings-storage.client.ts`. Open the dashboard in the same browser profile as the wall on the event PC: in the kiosk started by `start-wall.bat` press **Ctrl+Shift+D** (again to return to the wall; the kiosk uses its own profile in `.wall-run/browser-profile` on `http://127.0.0.1:<WALL_PORT>`). A wall already open in another tab updates immediately (storage event); no reload is needed.
 - Clearing browser data restores the defaults; keep an exported JSON as backup.
 - There is no server or login. The page is not secret: anyone who can type a URL on the kiosk browser can open it. The wall runs fullscreen, so visitors cannot reach it in practice.
-- The wall publishes the hold rules as `hold`, the card offset as `cardOffsetY`, the close switch as `showClose` (with its size and position as `closeScale`, `closeOffsetX`, `closeOffsetY`), the slider switch as `showArrows`, the page switch as `showPages`, and the language bar mode as `languageBar` in every `clientHello`/`clientState` message, so LiDAR input follows the same configuration and targets move with the cards. See [sensor](./sensor.md).
+- The wall publishes the hold rules as `hold`, the card offset as `cardOffsetY`, the close switch as `showClose` (with its size and position as `closeScale`, `closeOffsetX`, `closeOffsetY`), the slider switch as `showArrows`, the page switch as `showPages`, the page count and tab position per column (`pageCount`, `tabsTop`, so Scroll teks drops section 6's tabs), and the language bar mode as `languageBar` in every `clientHello`/`clientState` message, so LiDAR input follows the same configuration and targets move with the cards. See [sensor](./sensor.md).
 
 ## Sensor
 
@@ -116,10 +116,10 @@ The page talks to the Sensor Service over WebSocket (`NUXT_PUBLIC_SENSOR_WS_URL`
 
 ## Code
 
-- `app/pages/dashboard.vue`: shell (sidebar `NAV`, drawer, scrolling content column, backup/fullscreen/reset); `app/pages/dashboard/{index,hold,wall,sensor}.vue`: pages with `definePageMeta({ title, description })`.
-- `app/components/dashboard/`: `DashboardHold`, `DashboardWall`, `DashboardSensor`, and `DashboardFormActions` (Simpan/Default bar).
+- `app/pages/dashboard.vue`: shell (sidebar `NAV`, drawer, scrolling content column, backup/fullscreen/reset); `app/pages/dashboard/{index,wall,hold,font,sensor}.vue`: pages with `definePageMeta({ title, description })`.
+- `app/components/dashboard/`: `DashboardWall`, `DashboardHold`, `DashboardFont` (with `DashboardCardFit`, the invisible fit check), `DashboardSensor`, `DashboardFormActions` (Simpan/Batal/Default bar), and the shared `DashboardSection`, `DashboardSettingRow`, and `DashboardSwitch`.
 - `app/composables/useSettingsBackup.ts`: export/import; `app/composables/useSensorAdmin.ts`: admin socket with reconnect, owned by the Sensor page's scope.
-- `shared/hold-settings.ts`, `shared/wall-settings.ts`: groups/settings, defaults, limits, normalizers, and the action → hold group map (`HOLD_GROUP_BY_ACTION`); `shared/sensor-config.ts`: Sensor Service config and admin contract.
-- `app/stores/settings.ts`: serializable `hold` and `wall` state. `WallHoldButton` reads its `group` rule and passes `{ enabled, durationMs }` to the `v-hold` directive (`app/utils/hold.ts`).
+- `shared/hold-settings.ts`, `shared/wall-settings.ts`, `shared/font-settings.ts`: groups/settings, defaults, limits, normalizers, and the action → hold group map (`HOLD_GROUP_BY_ACTION`); `shared/sensor-config.ts`: Sensor Service config and admin contract.
+- `app/stores/settings.ts`: serializable `hold`, `wall`, and `fonts` state. `WallHoldButton` reads its `group` rule and passes `{ mode, durationMs }` to the `v-hold` directive (`app/utils/hold.ts`).
 
 To add a setting: extend the shared normalizer and store, persist it through the same plugin, and add a row to the matching page (or a new page in `NAV` in `app/pages/dashboard.vue`).
