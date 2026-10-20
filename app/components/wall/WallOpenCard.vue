@@ -155,7 +155,7 @@ function onNatural(index: number, px: number) {
     <template v-if="hasPages">
       <WallHoldButton
         v-for="target in tabs" :key="target.page"
-        class="wall-page-tab absolute flex items-center justify-center [border-radius:calc(7*var(--wall-x))/calc(7*var(--wall-y))] font-display text-[length:calc(24*var(--wall-u))] font-bold uppercase tracking-wide"
+        class="wall-page-tab absolute flex items-center justify-center [border-radius:calc(7*var(--wall-x))/calc(7*var(--wall-y))] font-display text-[length:calc(var(--fs-tab,24)*var(--wall-u))] font-bold uppercase tracking-wide"
         :class="page === target.page ? 'pointer-events-none !cursor-default bg-[#0b1a78] text-white ring-2 ring-[#9fdcff] shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.8)]' : 'bg-white text-[#0b1a78] ring-2 ring-white/80 hover:bg-sky-100'"
         :style="rectStyle(target, geometry.card)" :outline="target" group="page" :radius="7"
         :disabled="page === target.page" :aria-current="page === target.page ? 'page' : undefined" data-sensor-action="page" :data-page="target.page"

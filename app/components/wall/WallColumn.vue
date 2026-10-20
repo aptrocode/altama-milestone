@@ -115,7 +115,7 @@ function act(action: WallAction) {
           v-if="openSubItem.wordmark" :src="openSubItem.wordmark.src" :alt="copy.activeLabel"
           class="max-w-[calc(300*var(--wall-x))] h-[calc(92*var(--wall-y))] object-contain"
         >
-        <span v-else class="text-[length:calc(32*var(--wall-u))] font-extrabold uppercase tracking-wide text-white drop-shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.9)]">
+        <span v-else class="text-[length:calc(var(--fs-subitem,32)*var(--wall-u))] font-extrabold uppercase tracking-wide text-white drop-shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.9)]">
           {{ copy.activeLabel }}
         </span>
       </div>
