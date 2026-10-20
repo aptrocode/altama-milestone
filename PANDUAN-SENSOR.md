@@ -68,6 +68,28 @@ Uji tiap bendera di keenam kolom, juga ✕, panah, dan tab page.
 - **Titik selalu bergeser ke satu arah** (misalnya selalu agak ke bawah): perbaiki kalibrasi di OptiTUIO. Kalau semua card hanya perlu naik atau turun, bisa juga pakai **Wall → Posisi Y card**. Area sentuh ikut bergeser otomatis.
 - **Titik tepat tapi tetap sulit**: perbesar tombolnya (bagian 5).
 
+### Titik sentuh langsung di wall (cara A dan B)
+
+Untuk melihat di proyeksi atau LED **di mana** sentuhan benar-benar diterima halaman, nyalakan **Dashboard → Wall → Titik sentuh**, atau buka wall dengan `?dots=1` (misalnya `http://localhost:3000/?dots=1`). Ini halaman yang sama, hanya ditambah lapisan titik selama 2,5 detik:
+
+| Tanda | Arti |
+| --- | --- |
+| Titik **biru** + koordinat | Posisi saat menekan (klik mouse/touch dari TouchDesigner atau tangan) |
+| Titik **merah** + garis kuning putus-putus | Posisi saat melepas, kalau bergeser dari posisi tekan |
+| Titik **hijau** | Input dari Sensor Service (cara B) |
+
+Cara membaca:
+
+| Yang terlihat | Artinya | Solusi |
+| --- | --- | --- |
+| Biru dan merah sama-sama di luar bendera, selalu bergeser ke arah yang sama | Kalibrasi OptiTUIO atau posisi proyektor meleset | Rapikan kalibrasi di OptiTUIO, atau geser card dengan **Posisi Y card** |
+| Biru tepat di bendera, merah jauh | Saat tangan dilepas, posisinya bergeser | Nyalakan **Hold → Bahasa** 0,3–0,5 detik (bagian 5) |
+| Tidak muncul titik sama sekali | Klik tidak sampai ke halaman | Cek pengiriman klik di TouchDesigner, atau output OptiTUIO |
+
+Matikan lagi (hapus `?dots=1`) sebelum acara.
+
+> **Pengaturan dashboard tersimpan per browser.** Wall yang tampil di TouchDesigner (Web Render) punya penyimpanan sendiri, terpisah dari Chrome. Mengubah dashboard di Chrome tidak mengubah wall di TouchDesigner. Ubah pengaturannya di browser yang sama dengan yang menampilkan wall (buka `/dashboard` di Web Render, atau tekan **Ctrl+Shift+D** di sana), atau pakai **Export / Import pengaturan**. Titik sentuh bisa langsung lewat `?dots=1`.
+
 ## 5. Atur dashboard agar cocok untuk LiDAR
 
 Di **Dashboard → Wall**:
@@ -80,7 +102,11 @@ Di **Dashboard → Wall**:
 | Tombol close | **Off** kalau ✕ sulit ditekan | Card tetap tertutup sendiri setelah Reset otomatis |
 | Reset otomatis | Biarkan 30 s | Saat auto slide/page aktif, card otomatis menunggu sampai slide terakhir selesai (mis. video 30 s + 5 gambar × 5 s = tutup di 55 s) |
 
-Di **Dashboard → Hold**, biarkan Bahasa **off** (cukup tekan sebentar). Card section boleh tetap 1 detik supaya orang yang lewat tidak membuka card tanpa sengaja.
+Di **Dashboard → Hold**:
+
+- **Cara A (klik dari TouchDesigner): nyalakan Bahasa, 0,3–0,5 detik.** Dengan hold off, bendera baru aktif saat tangan *dilepas*, dan posisi lepas dari LiDAR sering bergeser keluar bendera. Dengan hold, bendera aktif selama tangan diam sebentar di atasnya, sama seperti card. Lakukan hal yang sama untuk Tombol close kalau ✕ dipakai.
+- **Cara B (Sensor Service):** Bahasa boleh off, karena Sensor Service sudah menunggu tangan diam 250 ms.
+- Card section boleh tetap 1 detik, supaya orang yang lewat tidak membuka card tanpa sengaja.
 
 ## 6. Kalau ada masalah
 

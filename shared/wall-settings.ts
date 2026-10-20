@@ -18,6 +18,7 @@ import { LANGUAGE_BAR_MODES } from './language-bar';
  * - autoPageSeconds: auto-page interval while the page tabs are off.
  * - languageBar: `compact` flag pill (default) or `full` width with larger buttons
  *   (shared/language-bar.ts); Sensor Service moves the language targets with it.
+ * - showTouchDots: calibration overlay on the wall (press/release/sensor dots with coordinates).
  */
 export interface WallSettings {
   resetSeconds: number;
@@ -28,6 +29,7 @@ export interface WallSettings {
   showPages: boolean;
   autoPageSeconds: number;
   languageBar: LanguageBarMode;
+  showTouchDots: boolean;
 }
 
 export const RESET_SECONDS = { min: 5, max: 600, step: 1 } as const;
@@ -35,7 +37,7 @@ export const CARD_OFFSET_Y = { min: -120, max: 120, step: 2 } as const;
 export const AUTO_SLIDE_SECONDS = { min: 2, max: 60, step: 1 } as const;
 export const AUTO_PAGE_SECONDS = { min: 3, max: 120, step: 1 } as const;
 
-export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPageSeconds: 10, languageBar: 'compact' };
+export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPageSeconds: 10, languageBar: 'compact', showTouchDots: false };
 
 function clampNumber(value: unknown, fallback: number, limits: { min: number; max: number; step: number }): number {
   const raw = typeof value === 'number' && Number.isFinite(value) ? value : fallback;
@@ -55,5 +57,6 @@ export function normalizeWallSettings(value: unknown): WallSettings {
     showPages: typeof source.showPages === 'boolean' ? source.showPages : DEFAULT_WALL_SETTINGS.showPages,
     autoPageSeconds: clampNumber(source.autoPageSeconds, DEFAULT_WALL_SETTINGS.autoPageSeconds, AUTO_PAGE_SECONDS),
     languageBar: LANGUAGE_BAR_MODES.includes(source.languageBar as LanguageBarMode) ? source.languageBar as LanguageBarMode : DEFAULT_WALL_SETTINGS.languageBar,
+    showTouchDots: typeof source.showTouchDots === 'boolean' ? source.showTouchDots : DEFAULT_WALL_SETTINGS.showTouchDots,
   };
 }

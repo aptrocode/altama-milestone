@@ -181,6 +181,24 @@ function nudgeOffset(delta: number) {
           </button>
         </div>
       </li>
+      <li class="flex flex-wrap items-center gap-4 px-4 py-4" data-wall-setting="showTouchDots">
+        <div class="min-w-0 flex-1 basis-56">
+          <p class="font-bold text-white">
+            Titik sentuh
+          </p>
+          <p class="text-sm text-sky-100/60">
+            Untuk cek kalibrasi: wall menggambar titik biru (tekan), merah (lepas), dan hijau (input Sensor Service) beserta koordinatnya. Matikan saat acara. Di browser lain (mis. TouchDesigner) buka wall dengan <code class="text-sky-100/80">?dots=1</code>.
+          </p>
+        </div>
+        <button
+          type="button" role="switch" :aria-checked="draft.showTouchDots" aria-label="Tampilkan titik sentuh"
+          class="relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors"
+          :class="draft.showTouchDots ? 'bg-emerald-400' : 'bg-white/20'"
+          @click="draft = normalizeWallSettings({ ...draft, showTouchDots: !draft.showTouchDots })"
+        >
+          <span class="inline-block size-5 rounded-full bg-white shadow transition-transform" :class="draft.showTouchDots ? 'translate-x-6' : 'translate-x-1'" />
+        </button>
+      </li>
     </ul>
 
     <DashboardFormActions :dirty="dirty" :status="status" @save="save" @defaults="restoreDefaults" />

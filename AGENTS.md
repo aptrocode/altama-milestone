@@ -19,7 +19,7 @@ Read only the document needed:
 
 ## Source map
 
-- `app/components/kiosk/`: wall vs stacked (phone/tablet) layout, background media layer, operator shortcuts, socket, diagnostics.
+- `app/components/kiosk/`: wall vs stacked (phone/tablet) layout, background media layer, operator shortcuts, socket, diagnostics, and `KioskTouchDots` (calibration overlay: dashboard `showTouchDots` or `?dots=1`).
 - `app/components/wall/`: `WallColumn` (orchestrator), `WallIdleFrame` (mockup 1), `WallOpenCard` (mockup 2: page photo slider, arrows, page tabs), `WallPageCopy`, `WallColumnPill`, `WallColumnIcon`, `WallLanguageSwitcher`, and `WallHoldButton`.
 - `app/composables/useWallController.ts`: shared action API and per-instance inactivity timers; `useStackedLayout.ts`: phone/tablet media query.
 - `app/data/columns/`: one file per column (labels, artwork, tiles, pages, photos) plus `helpers.ts`; `app/types/wall-content.ts`: their types.
