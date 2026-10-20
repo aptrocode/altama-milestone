@@ -291,7 +291,7 @@ const unit = 'text-sm text-sky-100/60';
 
       <div>
         <DashboardSettingRow
-          data-wall-setting="showPages" title="Tombol page" hint="Tab page (1960/1996, PAGE 1/2/3). Off = tab hilang, page berganti otomatis."
+          data-wall-setting="showPages" title="Tombol page" hint="Tab page (PAGE 1–4). Off = tab hilang, page berganti otomatis."
           :help="HELP.showPages"
           :changed="changed('showPages')" :default-label="defaultLabel('showPages')" @reset="reset('showPages')"
         >

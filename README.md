@@ -16,7 +16,7 @@ bun dev
 | Alamat | Isi |
 | :--- | :--- |
 | `http://localhost:3000` | Wall |
-| `http://localhost:3000/dashboard` | Dashboard operator (Hold, Wall, Sensor) |
+| `http://localhost:3000/dashboard` | Dashboard operator (Wall, Hold, Font, Sensor) |
 
 Input sensor ke wall default mati; nyalakan dengan `NUXT_PUBLIC_SENSOR_ENABLED=true` di `.env` (contoh: `.env.example`).
 
@@ -32,8 +32,9 @@ Di event **jangan** pakai `bun dev`. Klik dua kali **`start-wall.bat`**:
 
 ## Dashboard (`/dashboard`)
 
-- **Hold**: tombol mana yang harus ditahan dan berapa lama (bahasa & close default cukup ditekan).
-- **Wall**: detik reset otomatis, posisi Y semua card, tombol close on/off.
+- **Wall**: bar bahasa (Compact / Full width / Grid 2 + 1), posisi Y card, tombol close (ukuran & posisi), tombol slider + auto slide, tombol page + auto page, Scroll teks (uji coba, section 6), reset otomatis, titik sentuh.
+- **Hold**: cara menekan tiap jenis tombol, **Tap / Hold / Tap + delay**, dan durasinya (bahasa & close default Tap).
+- **Font**: ukuran judul, nama sub-item, caption tile, tab, ketebalan judul, dan rentang **Min–Maks** isi card per section (default 24–26 px) dengan status muat.
 - **Sensor**: sumber sentuh, port, kalibrasi Hokuyo, status live.
 
 Sidebar: export/import pengaturan, fullscreen, reset ke default. Detail: [docs/dashboard.md](docs/dashboard.md).

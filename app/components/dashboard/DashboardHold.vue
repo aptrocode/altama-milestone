@@ -11,7 +11,7 @@ import { DEFAULT_HOLD_SETTINGS, HOLD_GROUPS, HOLD_MODES, HOLD_SECONDS, normalize
 
 const GROUP_LABEL: Record<HoldGroup, { title: string; hint: string }> = {
   card: { title: 'Card section', hint: 'Kartu & tile' },
-  page: { title: 'Button page', hint: '1960/1996, PAGE 1/2' },
+  page: { title: 'Button page', hint: 'Tab PAGE 1–4' },
   slider: { title: 'Button slider', hint: 'Panah foto' },
   language: { title: 'Bahasa', hint: 'Bendera ID / EN / 中文' },
   back: { title: 'Tombol close', hint: 'Tombol ✕ di card' },

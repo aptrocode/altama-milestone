@@ -13,8 +13,8 @@ import { DEFAULT_WALL_SETTINGS } from '../../shared/wall-settings';
 const NAV = [
   { section: 'Pengaturan', items: [
     { to: '/dashboard/wall', label: 'Wall', hint: 'Tampilan, reset & auto slide', icon: 'wall' },
-    { to: '/dashboard/hold', label: 'Hold', hint: 'Durasi tahan tombol', icon: 'hold' },
-    { to: '/dashboard/font', label: 'Font', hint: 'Ukuran & ketebalan teks', icon: 'font' },
+    { to: '/dashboard/hold', label: 'Hold', hint: 'Tap, hold, atau delay', icon: 'hold' },
+    { to: '/dashboard/font', label: 'Font', hint: 'Ukuran teks per section', icon: 'font' },
   ] },
   { section: 'Perangkat', items: [
     { to: '/dashboard/sensor', label: 'Sensor', hint: 'Sumber & kalibrasi', icon: 'sensor' },
