@@ -30,6 +30,8 @@ const props = defineProps<{
   autoPage?: boolean;
   /** Each page's text grows until it fills the card (column `fillText`). */
   fillText?: boolean;
+  /** Text size relative to the body size (sub-item `textScale`). */
+  textScale?: number;
 }>();
 const emit = defineEmits<{ action: [action: WallAction]; height: [logical: number]; mediaEnded: [] }>();
 
@@ -221,7 +223,7 @@ function onNatural(index: number, px: number) {
         v-for="(item, index) in pages" :key="index"
         class="absolute inset-0 overflow-hidden text-white transition-opacity duration-300 motion-reduce:transition-none"
         :class="page === index ? 'opacity-100' : 'opacity-0'"
-        :aria-hidden="page !== index" :copy="item.i18n[locale]" :locale="locale" :active="page === index" :fill="fillText"
+        :aria-hidden="page !== index" :copy="item.i18n[locale]" :locale="locale" :active="page === index" :fill="fillText" :base="textScale"
         @natural="onNatural(index, $event)"
       />
     </div>

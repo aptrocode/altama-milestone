@@ -60,6 +60,8 @@ export interface SubItem {
   wordmark?: MediaAsset;
   i18n: Record<WallLocale, { label: string }>;
   pages: ContentPage[];
+  /** Open-card text size relative to the body size (e.g. 1.2); the card grows to fit it. */
+  textScale?: number;
 }
 
 export type ColumnIcon = 'building' | 'gear' | 'warehouse' | 'person' | 'pin' | 'people';
