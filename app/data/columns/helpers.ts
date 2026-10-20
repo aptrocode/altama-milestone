@@ -46,9 +46,10 @@ export function rotatingList(tab: string, heading: string, bullets: BulletItem[]
 }
 
 /**
- * A page shown in the given parts, changing on their own every `seconds` (no buttons), each part
- * grown to fill the card. Auto page waits until every part has been shown.
+ * A page shown in the given parts, changing on their own every `seconds` (no buttons). With `fill`
+ * each part grows to fill the tallest card; without it the text keeps its size and the card fits
+ * the tallest part. Auto page waits until every part has been shown.
  */
-export function rotatingParts(tab: string, parts: ContentBlock[][], seconds = 10): PageCopy {
-  return { tab, blocks: parts.flat(), parts, partSeconds: seconds, fill: true };
+export function rotatingParts(tab: string, parts: ContentBlock[][], seconds = 10, fill = true): PageCopy {
+  return { tab, blocks: parts.flat(), parts, partSeconds: seconds, fill };
 }

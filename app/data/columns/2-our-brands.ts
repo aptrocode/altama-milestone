@@ -19,6 +19,8 @@ export const OUR_BRANDS: ColumnConfig = {
       image: provisional('/brands/tekiro-wordmark.webp'),
       tileBackground: '#000000',
       wordmark: provisional('/brands/tekiro-wordmark.webp'),
+      // Section 1's text size, like RYU and Rexco.
+      textScale: 1.2,
       i18n: { 'id': { label: 'TEKIRO' }, 'en': { label: 'TEKIRO' }, 'zh-Hans': { label: 'TEKIRO' } },
       pages: [
         page(
@@ -38,7 +40,7 @@ export const OUR_BRANDS: ColumnConfig = {
                 { lead: 'Market segment:', text: 'Industri, Rumah Tangga/DIY, Oil & Gas, Otomotif, Bangunan, Mining, Perkebunan, Kelistrikan.' },
                 { lead: 'Kategori Produk:', text: 'Wrench, Pliers, Measurement, Automotive, Hex Key, Screwdriver, General Tools, Gardening, Torque, Air Tools, Storage, Tray, Insulation, Impact Socket, Welding, Special Tools, dan Cordless.' },
               ] }],
-            ]),
+            ], 10, false),
             'en': rotatingParts(PAGE_TABS.first.en, [
               [{ bullets: [
                 { lead: 'Founded: 1999' },
@@ -49,7 +51,7 @@ export const OUR_BRANDS: ColumnConfig = {
                 { lead: 'Market segments:', text: 'Industry, Household/DIY, Oil & Gas, Automotive, Construction, Mining, Plantation, Electrical.' },
                 { lead: 'Product categories:', text: 'Wrench, Pliers, Measurement, Automotive, Hex Key, Screwdriver, General Tools, Gardening, Torque, Air Tools, Storage, Tray, Insulation, Impact Socket, Welding, Special Tools, and Cordless.' },
               ] }],
-            ]),
+            ], 10, false),
             'zh-Hans': rotatingParts(PAGE_TABS.first['zh-Hans'], [
               [{ bullets: [
                 { lead: '创立：1999 年' },
@@ -60,7 +62,7 @@ export const OUR_BRANDS: ColumnConfig = {
                 { lead: '市场领域：', text: '工业、家用/DIY、石油天然气、汽车、建筑、采矿、种植园、电气。' },
                 { lead: '产品类别：', text: '扳手、钳子、测量工具、汽车工具、内六角扳手、螺丝刀、通用工具、园艺工具、扭力工具、气动工具、收纳、托盘、绝缘工具、冲击套筒、焊接、专用工具及无绳工具。' },
               ] }],
-            ]),
+            ], 10, false),
           },
         ),
         page(
@@ -179,6 +181,8 @@ export const OUR_BRANDS: ColumnConfig = {
           {
             'id': {
               tab: PAGE_TABS.second.id,
+              // The awards grow to fill the tallest card.
+              fill: true,
               blocks: [
                 'Penghargaan:',
                 {
@@ -192,6 +196,7 @@ export const OUR_BRANDS: ColumnConfig = {
             },
             'en': {
               tab: PAGE_TABS.second.en,
+              fill: true,
               blocks: [
                 'Awards & Accolades:',
                 {
@@ -205,6 +210,7 @@ export const OUR_BRANDS: ColumnConfig = {
             },
             'zh-Hans': {
               tab: PAGE_TABS.second['zh-Hans'],
+              fill: true,
               blocks: [
                 '所获荣誉：',
                 {

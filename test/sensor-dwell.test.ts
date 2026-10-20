@@ -86,9 +86,14 @@ describe('visible targets', () => {
   it('lays out three page tabs, and moves tabs to the top of a card without photos', () => {
     const three = { 1: { ...idle, phase: 'active' as const, photoCount: 0, pageCount: 3, tabsTop: true } };
     const tabs = visibleTargets(three).filter(item => item.action.type === 'page').map(item => item.rect);
-    // Page 0 is visible (inert), so pages 1 and 2 are targets, 96 px wide, at the card top (y 512 + 35).
+    // Page 0 is visible (inert), so pages 1 and 2 are targets: two layout tabs at the card top
+    // (y 512 + 35), the third centred under them (2 + 1 rows).
     expect(tabs).toHaveLength(2);
-    expect(tabs.every(rect => rect.width === 96 && rect.y === 547)).toBe(true);
+    const [second, third] = tabs as [typeof tabs[0], typeof tabs[0]];
+    expect(tabs.every(rect => rect.width === 112)).toBe(true);
+    expect([second.y, third.y]).toEqual([547, 595]);
+    const row = visibleTargets({ 1: { ...idle, phase: 'active' as const, photoCount: 0, pageCount: 3, tabsTop: true, page: 1 } }).find(item => item.key === '1:page:0')!.rect;
+    expect(third.x + third.width / 2).toBe((row.x + second.x + second.width) / 2);
     const two = visibleTargets({ 1: { ...idle, phase: 'active' as const, photoCount: 2, pageCount: 2 } }).find(item => item.action.type === 'page')!.rect;
     expect([two.width, two.y]).toEqual([112, 707]);
   });
