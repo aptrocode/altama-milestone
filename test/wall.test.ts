@@ -1,7 +1,7 @@
 import type { ColumnId } from '../shared/wall';
 import { createPinia } from 'pinia';
 import { describe, expect, it } from 'vitest';
-import { getColumnConfig, getColumnPages, WALL_CONFIG } from '../app/data/wall-config';
+import { getColumnConfig, getColumnPages, scrollsText, WALL_CONFIG } from '../app/data/wall-config';
 import { useSettingsStore } from '../app/stores/settings';
 import { useWallStore } from '../app/stores/wall';
 import { COLUMN_IDS } from '../shared/wall';
@@ -133,7 +133,10 @@ describe('wall state and actions', () => {
     const all = getColumnPages(getColumnConfig(6), '').flatMap(page => page.i18n.id.blocks);
     expect(merged.i18n.id.blocks).toEqual(all);
     expect(getColumnPages(getColumnConfig(6), '', true)[0]).toBe(merged);
-    // Other columns keep their pages.
+    // Section 1 (one page) scrolls too; other columns keep their pages.
+    expect(scrollsText(getColumnConfig(1), true)).toBe(true);
+    expect(getColumnPages(getColumnConfig(1), '', true)).toHaveLength(1);
+    expect(scrollsText(getColumnConfig(3), true)).toBe(false);
     expect(getColumnPages(getColumnConfig(3), '', true)).toHaveLength(2);
     settings.setWall({ ...settings.wall, scrollText: false });
     expect(wall.publishedColumns[6]).toMatchObject({ pageCount: 3 });

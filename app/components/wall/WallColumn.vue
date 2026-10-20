@@ -41,7 +41,7 @@ const idle = computed(() => props.snapshot.phase === 'idle');
 const closeRect = computed(() => closeButtonRect(geometry.value.active.back, closeButtonOptions(settings.wall)));
 const idleFrame = computed(() => extendDown(geometry.value.card, languageGeometry(geometry.value, settings.wall.languageBar).extend));
 const pages = computed(() => getColumnPages(props.column, props.snapshot.subItem, settings.wall.scrollText));
-// Trial: section 6's merged text scrolls vertically (Dashboard → Wall "Scroll teks").
+// Trial: sections 1 and 6 scroll their text vertically (Dashboard → Wall "Scroll teks").
 const scroll = computed(() => scrollsText(props.column, settings.wall.scrollText));
 // Open-card text size and fill come from Dashboard → Font, per card (column or sub-item).
 const cardText = computed(() => {

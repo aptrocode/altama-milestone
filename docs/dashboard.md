@@ -89,12 +89,12 @@ Videos always play to their end while anything advances automatically, and a car
 
 ### Scroll teks (trial)
 
-**Scroll teks (uji coba)** under Tombol di card (`scrollText`, default **Off**) trials vertically scrolling card text on section 6 only (`scrollMerge` in `6-summit-2026.ts`):
+**Scroll teks (uji coba)** under Tombol di card (`scrollText`, default **Off**) trials vertically scrolling card text on sections 1 and 6 only (`scrollMerge` in `1-about-altama.ts` and `6-summit-2026.ts`):
 
-- **On:** its three pages show as one page without tabs, at the card's Font Maks size. The text scrolls up and down by touch or mouse drag, mouse wheel, or a TouchDesigner drag. A fade, a thin bar on the right, and a bouncing ⌄ show that more text follows, and the text starts at the top each time the card opens.
-- **Off:** the card has its three pages and tabs again.
+- **On:** section 6's three pages show as one page without tabs; both cards keep their Font Maks size instead of shrinking. The text scrolls up and down by touch or mouse drag, mouse wheel, or a TouchDesigner drag. A fade, a thin bar on the right, and a bouncing ⌄ show that more text follows, and the text starts at the top each time the card opens.
+- **Off:** section 6 has its three pages and tabs again, and section 1's text fits its card as usual. Section 1 fits at 26 px today, so its scrolling only shows when the text is longer than the tallest card (e.g. a larger Maks).
 - **Switching:** an open card that was on a later page shows its first page when the pages merge (`clampPage`).
-- **Sensor Service:** it does not send drags yet, so on the LiDAR/TUIO path section 6 only takes taps while scrolling is on.
+- **Sensor Service:** it does not send drags yet, so on the LiDAR/TUIO path these cards only take taps while scrolling is on.
 
 ### Storage and scope
 
