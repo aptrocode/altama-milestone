@@ -122,6 +122,15 @@ export function useWallController(wall = useWallStore(), options: WallController
     return autoSliding(id) || autoPaging(id);
   }
 
+  /**
+   * Both switches off and the page has several photos: the page changes after its last photo
+   * instead of on the Auto page timer, so every photo of every page is shown (e.g. 10 + 5 photos at
+   * 5 s: page 2 at 50 s, the slideshow ends at 75 s). Pages with one photo or none keep the timer.
+   */
+  function photosDrivePages(id: ColumnId) {
+    return autoSliding(id) && autoPaging(id);
+  }
+
   /** A video slide plays once (and reports its end) whenever something advances automatically. */
   function videoPlaysOnce(id: ColumnId) {
     return autoAdvancing(id) && !!options.slidePlaysToEnd?.(id);
@@ -142,7 +151,13 @@ export function useWallController(wall = useWallStore(), options: WallController
 
   function nextSlide(id: ColumnId) {
     const column = wall.publishedColumns[id]!;
-    if (column.photo === (column.photoCount ?? 1) - 1 && completeCycle(id))
+    const last = column.photo === (column.photoCount ?? 1) - 1;
+    // The last photo of a page leads to the next page (the last page then ends the slideshow).
+    if (last && photosDrivePages(id)) {
+      nextPage(id);
+      return;
+    }
+    if (last && completeCycle(id))
       return;
     wall.dispatch({ type: 'next', columnId: id });
   }
@@ -155,10 +170,11 @@ export function useWallController(wall = useWallStore(), options: WallController
   }
 
   // Auto page: the open card shows its next page (wrapping) after the interval, counted from the
-  // last page change. A video slide still plays to its end first. Not visitor activity either.
+  // last page change, unless its photos drive the pages (photosDrivePages). A video slide still
+  // plays to its end first. Not visitor activity either.
   function schedulePage(id: ColumnId) {
     clearPage(id);
-    if (!autoPaging(id))
+    if (!autoPaging(id) || photosDrivePages(id))
       return;
     pageTimers.set(id, setTimeout(() => {
       pageTimers.delete(id);
@@ -200,7 +216,7 @@ export function useWallController(wall = useWallStore(), options: WallController
     }, () => scheduleSlide(id), { immediate: true, flush: 'sync' });
     watch(() => {
       const column = wall.publishedColumns[id];
-      return [options.autoPageMs?.() ?? 0, column?.phase, column?.subItem, column?.page, column?.pageCount].join('|');
+      return [options.autoPageMs?.() ?? 0, options.autoSlideMs?.() ?? 0, column?.phase, column?.subItem, column?.page, column?.pageCount, column?.photoCount].join('|');
     }, () => schedulePage(id), { immediate: true, flush: 'sync' });
     // A card waiting for its slideshow closes at once when nothing advances any more (the operator
     // showed the arrows/tabs again, or the column changed).
