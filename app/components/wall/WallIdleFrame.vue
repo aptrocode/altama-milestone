@@ -128,7 +128,8 @@ onBeforeUnmount(() => {
         class="size-full object-fill" :class="stretchArtwork ? 'opacity-0' : ''"
       />
       <canvas v-if="stretchArtwork" ref="canvasElement" class="absolute inset-0 size-full" />
-      <img v-else :src="column.illustration.src" alt="" class="size-full object-fill">
+      <!-- Still images only; video artwork is drawn by the video (or the grid canvas above). -->
+      <img v-if="!cardVideo" :src="column.illustration.src" alt="" class="size-full object-fill">
     </div>
     <WallHoldButton
       v-if="main" class="absolute inset-0 [border-radius:inherit] hover:bg-white/5"
