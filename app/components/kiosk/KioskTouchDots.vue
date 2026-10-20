@@ -7,12 +7,15 @@ import { installationLayout } from '~/data/installation-layout';
  * where it released (red, with a line when it drifted), and where Sensor Service inputs landed
  * (green), with logical wall coordinates on the LED layout. Purely visual: it never takes input.
  */
-const props = defineProps<{ wallLayout: boolean }>();
+const props = defineProps<{
+  wallLayout: boolean;
+  /** How long a dot stays after its release or sensor input (dashboard "Durasi titik"). */
+  durationMs: number;
+}>();
 
 interface Point { x: number; y: number }
 interface Mark { key: number; pointerId?: number; kind: 'pointer' | 'sensor'; down: Point; up?: Point }
 
-const SHOW_MS = 2500;
 const canvas = installationLayout.canvas;
 const marks = reactive<Mark[]>([]);
 const timers = new Set<ReturnType<typeof setTimeout>>();
@@ -39,7 +42,7 @@ function onDown(event: PointerEvent) {
   const mark: Mark = { key: nextKey++, pointerId: event.pointerId, kind: 'pointer', down: { x: event.clientX, y: event.clientY } };
   marks.push(mark);
   // A press without a release (lost pointer) still disappears.
-  expire(mark, SHOW_MS * 4);
+  expire(mark, props.durationMs * 4);
 }
 
 function onUp(event: PointerEvent) {
@@ -47,7 +50,7 @@ function onUp(event: PointerEvent) {
   if (!mark)
     return;
   mark.up = { x: event.clientX, y: event.clientY };
-  expire(mark, SHOW_MS);
+  expire(mark, props.durationMs);
 }
 
 /** A Sensor Service input at logical wall coordinates. */
@@ -56,7 +59,7 @@ function addSensor(x: number, y: number) {
     return;
   const mark: Mark = { key: nextKey++, kind: 'sensor', down: { x: x / canvas.width * window.innerWidth, y: y / canvas.height * window.innerHeight } };
   marks.push(mark);
-  expire(mark, SHOW_MS);
+  expire(mark, props.durationMs);
 }
 
 defineExpose({ addSensor });
