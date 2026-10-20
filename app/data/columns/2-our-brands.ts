@@ -30,7 +30,7 @@ export const OUR_BRANDS: ColumnConfig = {
       tileBackground: '#000000',
       wordmark: provisional('/brands/tekiro-wordmark.webp'),
       i18n: { 'id': { label: 'TEKIRO' }, 'en': { label: 'TEKIRO' }, 'zh-Hans': { label: 'TEKIRO' } },
-      // Four pages with tabs (no rotating text): profile, products, then the awards in two halves.
+      // Four pages with tabs (no rotating text): profile, products, then the awards (5 + 6, in their original order).
       pages: [
         page(TEKIRO_PROFILE_PHOTOS, {
           'id': { tab: PAGE_TABS.first.id, blocks: [{ bullets: [
@@ -70,7 +70,6 @@ export const OUR_BRANDS: ColumnConfig = {
             { lead: '12x TOP Brand Award', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
             { lead: '7x Indonesia Digital Popular Brand Award' },
             { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
-            { lead: '5x SUPERBRANDS', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
           ] }] },
           'en': { tab: PAGE_TABS.third.en, blocks: ['Awards & Accolades:', { bullets: [
             { lead: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
@@ -78,7 +77,6 @@ export const OUR_BRANDS: ColumnConfig = {
             { lead: '12x TOP Brand Award', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
             { lead: '7x Indonesia Digital Popular Brand Award' },
             { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
-            { lead: '5x SUPERBRANDS', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
           ] }] },
           'zh-Hans': { tab: PAGE_TABS.third['zh-Hans'], blocks: ['所获荣誉：', { bullets: [
             { lead: '吉尼斯世界纪录 (Guinness World Records)', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
@@ -86,11 +84,11 @@ export const OUR_BRANDS: ColumnConfig = {
             { lead: '12届 TOP Brand Award 顶级品牌奖', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
             { lead: '7届 印尼数字大众品牌大奖' },
             { lead: '5届 顶级数字公关大奖 TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
-            { lead: '5届 SUPERBRANDS 超级品牌大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
           ] }] },
         }),
         page(TEKIRO_AWARD_PHOTOS, {
           'id': { tab: PAGE_TABS.fourth.id, blocks: ['Penghargaan:', { bullets: [
+            { lead: '5x SUPERBRANDS', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
             { lead: '2x INDONESIA BRAND CHAMPION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
             { lead: '2x INDONESIA BRAND CHOICE AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
             { lead: '2x CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
@@ -98,6 +96,7 @@ export const OUR_BRANDS: ColumnConfig = {
             { lead: 'Indonesia Best Brand Awards' },
           ] }] },
           'en': { tab: PAGE_TABS.fourth.en, blocks: ['Awards & Accolades:', { bullets: [
+            { lead: '5x SUPERBRANDS', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
             { lead: '2x INDONESIA BRAND CHAMPION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
             { lead: '2x INDONESIA BRAND CHOICE AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
             { lead: '2x CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
@@ -105,6 +104,7 @@ export const OUR_BRANDS: ColumnConfig = {
             { lead: 'Indonesia Best Brand Awards' },
           ] }] },
           'zh-Hans': { tab: PAGE_TABS.fourth['zh-Hans'], blocks: ['所获荣誉：', { bullets: [
+            { lead: '5届 SUPERBRANDS 超级品牌大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
             { lead: '2届 印尼品牌冠军大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
             { lead: '2届 印尼品牌之选大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
             { lead: '2届 CNN 印尼大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },

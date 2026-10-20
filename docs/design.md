@@ -22,11 +22,11 @@ The Summit logo is shared. Idle it is 278 px tall at y 70, narrow enough to stay
 | Column | Title (id) | Idle | Open |
 | --- | --- | --- | --- |
 | 1 | Tentang Altama | Building illustration | 1960 / 1996 pages, each with its own photo slider and text |
-| 2 | Our Brand | Tekiro, RYU, Rexco tiles; each tile opens that brand directly | Brand logo above the card; Tekiro has PAGE 1 / PAGE 2, each with its own photos and text; Tekiro's PAGE 2 awards show in two parts that change every 10 s without buttons, text grown to fill the tallest card |
-| 3 | Infrastruktur | Warehouse illustration | Photo slider and bullets in two pages (PAGE 1/2, same slider); text grows to fill the card |
-| 4 | Digital Trust | Phone illustration | Photo slider (ODP) and bullets in two pages (PAGE 1/2, same slider); text grows to fill the card |
+| 2 | Our Brand | Tekiro, RYU, Rexco tiles; each tile opens that brand directly | Brand logo above the card; Tekiro has PAGE 1–4 (profile, products, awards 1–5, awards 6–11) with 2 + 2 tabs; RYU and Rexco have PAGE 1 / PAGE 2, each with its own photos and text |
+| 3 | Infrastruktur | Warehouse illustration | Photo slider and bullets in two pages (PAGE 1/2, same slider); text 24–26 px |
+| 4 | Digital Trust | Phone illustration | Photo slider (ODP) and bullets in two pages (PAGE 1/2, same slider); text 24–26 px |
 | 5 | Distribusi & Pemasaran | Captioned Distribusi / Pemasaran tiles; each opens directly | Sub-item name above the card, photo slider, bullets |
-| 6 | Altama Summit 2026 | Flag ceremony illustration | Text-only Summit message in three pages (PAGE 1/2/3 tabs at the top of the card); each page's text grows to fill the card |
+| 6 | Altama Summit 2026 | Flag ceremony illustration | Text-only Summit message in three pages (PAGE 1/2/3 tabs at the top of the card); each page's text 24–26 px |
 
 There is no submenu: brand and distribution tiles are hold targets on the idle frame. The hold border animation shows progress.
 
@@ -34,7 +34,7 @@ There is no submenu: brand and distribution tiles are hold targets on the idle f
 
 ## Open card
 
-Inside the card: the photo frame (262 × 144 at card offset 34, 35) with arrows centered near its left/right edges (44 px targets, 34 px white circles that nudge 5 px in their direction on a 1.6 s loop; the target stays put). Every page owns its photos: arrows move between the current page's photos, and page tabs (112 × 40, under the photo; the visible page's tab is inert) switch the whole page, photos and text together, restarting its slider. Tabs render only when content has more than one page; arrows only when the current page has more than one photo slot. Body text fills the rest of the card in Roboto at the card's Dashboard → Font size with the card-copy system in [style](./style.md#card-copy); the card grows to fit the visible page (only its bottom edge moves on a page switch), and text shrinks only when even the tallest card is not enough. Back is a ✕ badge on the card's top-right corner. When the page changes without a press on its tab (auto page, auto slide, OSC), the newly active tab plays a short press: its border traces round in 0.6 s and glows, so visitors see which page is showing. Cards with Penuhi card on, and pages with `fill`, grow their text in 1 % steps until the last line would reach the card bottom. A photo slot without a file shows a numbered placeholder.
+Inside the card: the photo frame (262 × 144 at card offset 34, 35) with arrows centered near its left/right edges (44 px targets, 34 px white circles that nudge 5 px in their direction on a 1.6 s loop; the target stays put). Every page owns its photos: arrows move between the current page's photos, and page tabs (112 × 40, under the photo; the visible page's tab is inert) switch the whole page, photos and text together, restarting its slider. Tabs render only when content has more than one page; arrows only when the current page has more than one photo slot. Body text fills the rest of the card in Roboto at the card's Dashboard → Font size with the card-copy system in [style](./style.md#card-copy); the card grows to fit the visible page (only its bottom edge moves on a page switch), and text shrinks only when even the tallest card is not enough. Back is a ✕ badge on the card's top-right corner. When the page changes without a press on its tab (auto page, auto slide, OSC), the newly active tab plays a short press: its border traces round in 0.6 s and glows, so visitors see which page is showing. Each page's text takes the largest size in its card's Dashboard → Font range (default 24–26 px) that fits the tallest card, in 1 % steps. A photo slot without a file shows a numbered placeholder.
 
 ## Controls and geometry
 

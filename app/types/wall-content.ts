@@ -37,8 +37,6 @@ export interface PageCopy {
    */
   parts?: ContentBlock[][];
   partSeconds?: number;
-  /** This page takes the tallest card and grows its text to fill it, whatever the card's Dashboard → Font setting. */
-  fill?: boolean;
 }
 
 /**
