@@ -23,7 +23,7 @@ The Summit logo is shared. Idle it is 278 px tall at y 70, narrow enough to stay
 | --- | --- | --- | --- |
 | 1 | Tentang Altama | Building illustration | 1960 / 1996 pages, each with its own photo slider and text |
 | 2 | Our Brand | Tekiro, RYU, Rexco tiles; each tile opens that brand directly | Brand logo above the card; Tekiro has PAGE 1 / PAGE 2, each with its own photos and text; Tekiro's PAGE 2 awards show in two parts that change every 10 s without buttons, text grown to fill the tallest card |
-| 3 | Infrastruktur | Warehouse illustration | Photo slider and bullets |
+| 3 | Infrastruktur | Warehouse illustration | Photo slider and bullets in two pages (PAGE 1/2, same slider); text grows to fill the card |
 | 4 | Digital Trust | Phone illustration | Photo slider (ODP) and bullets |
 | 5 | Distribusi & Pemasaran | Captioned Distribusi / Pemasaran tiles; each opens directly | Sub-item name above the card, photo slider, bullets |
 | 6 | Altama Summit 2026 | Flag ceremony illustration | Text-only Summit message in three pages (PAGE 1/2/3 tabs at the top of the card); each page's text grows to fill the card |
@@ -34,7 +34,7 @@ There is no submenu: brand and distribution tiles are hold targets on the idle f
 
 ## Open card
 
-Inside the card: the photo frame (262 × 144 at card offset 34, 35) with arrows centered near its left/right edges (44 px targets, 34 px white circles that nudge 5 px in their direction on a 1.6 s loop; the target stays put). Every page owns its photos: arrows move between the current page's photos, and page tabs (112 × 40, under the photo; the visible page's tab is inert) switch the whole page, photos and text together, restarting its slider. Tabs render only when content has more than one page; arrows only when the current page has more than one photo slot. Body text fills the rest of the card in Roboto Condensed at 18 px with the card-copy system in [style](./style.md#card-copy); the card grows to fit the visible page (only its bottom edge moves on a page switch), and text shrinks only when even the tallest card is not enough. Back is a ✕ badge on the card's top-right corner. A photo slot without a file shows a numbered placeholder.
+Inside the card: the photo frame (262 × 144 at card offset 34, 35) with arrows centered near its left/right edges (44 px targets, 34 px white circles that nudge 5 px in their direction on a 1.6 s loop; the target stays put). Every page owns its photos: arrows move between the current page's photos, and page tabs (112 × 40, under the photo; the visible page's tab is inert) switch the whole page, photos and text together, restarting its slider. Tabs render only when content has more than one page; arrows only when the current page has more than one photo slot. Body text fills the rest of the card in Roboto Condensed at 18 px with the card-copy system in [style](./style.md#card-copy); the card grows to fit the visible page (only its bottom edge moves on a page switch), and text shrinks only when even the tallest card is not enough. Back is a ✕ badge on the card's top-right corner. When the page changes without a press on its tab (auto page, auto slide, OSC), the newly active tab plays a short press: its border traces round in 0.6 s and glows, so visitors see which page is showing. Pages with `fillText` / `fill` grow their text in 1 % steps until the last line would reach the card bottom. A photo slot without a file shows a numbered placeholder.
 
 ## Controls and geometry
 

@@ -29,6 +29,14 @@ const scale = ref(1);
 let observer: ResizeObserver | undefined;
 let lastNatural = -1;
 
+/** Bottom of the last block in CSS px (the content's own height, unlike scrollHeight). */
+function contentBottom(element: HTMLElement) {
+  return [...element.children].reduce((bottom, child) => {
+    const box = child as HTMLElement;
+    return Math.max(bottom, box.offsetTop + box.offsetHeight);
+  }, 0);
+}
+
 function fit() {
   const element = root.value;
   if (!element)
@@ -48,13 +56,15 @@ function fit() {
     next = Math.max(MIN_SCALE, Math.round((next - 0.02) * 100) / 100);
     element.style.setProperty('--copy-scale', String(next));
   }
-  // Fill: grow in small steps while the page still fits, then keep the last size that fit. The card
+  // Fill: grow in 1 % steps while the page still fits, then keep the last size that fit. The card
   // keeps the height of the page at full size (reported above), so growing never grows the card.
   if ((props.fill || props.copy.fill) && next >= 1) {
     while (next < MAX_FILL) {
-      const candidate = Math.min(MAX_FILL, Math.round((next + 0.02) * 100) / 100);
+      const candidate = Math.min(MAX_FILL, Math.round((next + 0.01) * 100) / 100);
       element.style.setProperty('--copy-scale', String(candidate));
-      if (element.scrollHeight > available + 1)
+      // Measure the content itself (scrollHeight never drops below the box), strictly, so a filled
+      // page never touches or crosses the card edge.
+      if (contentBottom(element) > available - 1)
         break;
       next = candidate;
     }
