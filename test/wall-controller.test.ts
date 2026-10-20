@@ -1,8 +1,8 @@
 import type { ColumnId } from '../shared/wall';
 import { createPinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { effectScope } from 'vue';
-import { useWallController } from '../app/composables/useWallController';
+import { effectScope, ref } from 'vue';
+import { MAX_RESET_WAIT_MS, useWallController } from '../app/composables/useWallController';
 import { useWallStore } from '../app/stores/wall';
 
 const scopes: ReturnType<typeof effectScope>[] = [];
@@ -219,5 +219,67 @@ describe('page auto change', () => {
     const { wall } = open({ autoPageMs: () => 0 });
     vi.advanceTimersByTime(60_000);
     expect(wall.publishedColumns[2]!.page).toBe(0);
+  });
+});
+
+describe('reset waits for the auto slideshow', () => {
+  // Column 3 (Infrastruktur): photo 0 is a video, then 7 images; auto slide 5 s, reset 30 s.
+  function open(autoSlideMs = () => 5000) {
+    const wall = useWallStore(createPinia());
+    const scope = effectScope();
+    scopes.push(scope);
+    let current: ReturnType<typeof useWallStore> | undefined;
+    const controls = scope.run(() => useWallController(wall, {
+      autoSlideMs,
+      slidePlaysToEnd: id => current?.publishedColumns[id]!.photo === 0,
+    }))!;
+    current = wall;
+    controls.dispatch({ type: 'main', columnId: 3 });
+    // Re-evaluate the video flag now that the store is reachable.
+    controls.dispatch({ type: 'next', columnId: 3 });
+    controls.dispatch({ type: 'previous', columnId: 3 });
+    expect(wall.publishedColumns[3]!.photoCount).toBe(8);
+    return { wall, controls };
+  }
+
+  it('closes right after the last slide when the slideshow outlasts the reset time', () => {
+    const { wall, controls } = open();
+    vi.advanceTimersByTime(30_000);
+    controls.mediaEnded(3); // the 30 s video ends
+    expect(wall.getColumnState(3)).toBe('active');
+    expect(wall.publishedColumns[3]!.photo).toBe(1);
+    vi.advanceTimersByTime(6 * 5000);
+    expect(wall.publishedColumns[3]!.photo).toBe(7);
+    expect(wall.getColumnState(3)).toBe('active');
+    vi.advanceTimersByTime(4999);
+    expect(wall.getColumnState(3)).toBe('active');
+    vi.advanceTimersByTime(1); // 30 s video + 7 × 5 s images = 65 s
+    expect(wall.getColumnState(3)).toBe('idle');
+  });
+
+  it('keeps the normal reset time when the slideshow already finished', () => {
+    const { wall, controls } = open(() => 3000);
+    controls.mediaEnded(3); // short video
+    vi.advanceTimersByTime(7 * 3000); // whole slideshow seen (21 s), wrapped back to the video
+    expect(wall.publishedColumns[3]!.photo).toBe(0);
+    vi.advanceTimersByTime(30_000 - 7 * 3000 - 1);
+    expect(wall.getColumnState(3)).toBe('active');
+    vi.advanceTimersByTime(1);
+    expect(wall.getColumnState(3)).toBe('idle');
+  });
+
+  it('gives up after the safety cap and when auto slide is switched off', () => {
+    const stuck = open();
+    vi.advanceTimersByTime(30_000 + MAX_RESET_WAIT_MS - 1); // the video never ends
+    expect(stuck.wall.getColumnState(3)).toBe('active');
+    vi.advanceTimersByTime(1);
+    expect(stuck.wall.getColumnState(3)).toBe('idle');
+
+    const interval = ref(5000);
+    const waiting = open(() => interval.value);
+    vi.advanceTimersByTime(30_000);
+    expect(waiting.wall.getColumnState(3)).toBe('active');
+    interval.value = 0; // operator shows the arrows again
+    expect(waiting.wall.getColumnState(3)).toBe('idle');
   });
 });
