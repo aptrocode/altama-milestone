@@ -1,6 +1,6 @@
 # Project status
 
-Updated 20 October 2026. Package version remains 0.3.0; changes land on `main` through squash-merged PRs and are unreleased until the release workflow runs.
+Updated 20 October 2026. Package version 1.0.0 (tag `v1.0.0`, the first stable release for the event); later changes land on `main` through squash-merged PRs and are unreleased until the next release.
 
 ## Implemented
 
