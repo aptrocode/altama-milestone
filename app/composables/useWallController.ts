@@ -16,6 +16,8 @@ export interface WallControllerOptions {
   autoPageMs?: () => number;
   /** Whether a column's visible slide is a video, which plays to its end (mediaEnded) instead of the interval. */
   slidePlaysToEnd?: (id: ColumnId) => boolean;
+  /** Shortest time a column's visible page stays before an automatic page change (its rotating text parts); 0 when none. */
+  pageMinMs?: (id: ColumnId) => number;
 }
 
 export function useWallController(wall = useWallStore(), options: WallControllerOptions = {}) {
@@ -24,6 +26,8 @@ export function useWallController(wall = useWallStore(), options: WallController
   const pageTimers = new Map<ColumnId, ReturnType<typeof setTimeout>>();
   // Columns whose page interval elapsed during a video slide; the page changes when it ends.
   const pagesDue = new Set<ColumnId>();
+  // When each column's visible page appeared, so its rotating text parts can all be shown first.
+  const pageShownAt = new Map<ColumnId, number>();
   // Auto slideshow vs. reset: a column whose slideshow has not reached its end since the last
   // interaction keeps its card open past the reset time (resetDue) until it does, or until the
   // safety cap (waitTimers) runs out.
@@ -154,12 +158,30 @@ export function useWallController(wall = useWallStore(), options: WallController
     const last = column.photo === (column.photoCount ?? 1) - 1;
     // The last photo of a page leads to the next page (the last page then ends the slideshow).
     if (last && photosDrivePages(id)) {
-      nextPage(id);
+      autoNextPage(id);
       return;
     }
     if (last && completeCycle(id))
       return;
     wall.dispatch({ type: 'next', columnId: id });
+  }
+
+  /**
+   * Automatic page change: a page whose text rotates in parts (pageMinMs) stays until every part has
+   * been shown for its time, then changes (e.g. two 10 s parts keep the page 20 s even with a 15 s
+   * Auto page). Manual tabs are not affected.
+   */
+  function autoNextPage(id: ColumnId) {
+    clearPage(id);
+    const wait = (options.pageMinMs?.(id) ?? 0) - (Date.now() - (pageShownAt.get(id) ?? 0));
+    if (wait > 0) {
+      pageTimers.set(id, setTimeout(() => {
+        pageTimers.delete(id);
+        autoNextPage(id);
+      }, wait));
+      return;
+    }
+    nextPage(id);
   }
 
   function nextPage(id: ColumnId) {
@@ -181,7 +203,7 @@ export function useWallController(wall = useWallStore(), options: WallController
       if (videoPlaysOnce(id))
         pagesDue.add(id);
       else
-        nextPage(id);
+        autoNextPage(id);
     }, options.autoPageMs?.() ?? 0));
   }
 
@@ -203,13 +225,17 @@ export function useWallController(wall = useWallStore(), options: WallController
     if (!videoPlaysOnce(id))
       return;
     if (pagesDue.has(id))
-      nextPage(id);
+      autoNextPage(id);
     else if (autoSliding(id))
       nextSlide(id);
   }
 
   // A string key, so a change in another column (publishedColumns is rebuilt) does not restart this one.
   for (const id of COLUMN_IDS) {
+    watch(() => {
+      const column = wall.publishedColumns[id];
+      return [column?.phase, column?.subItem, column?.page, column?.locale].join('|');
+    }, () => pageShownAt.set(id, Date.now()), { immediate: true, flush: 'sync' });
     watch(() => {
       const column = wall.publishedColumns[id];
       return [options.autoSlideMs?.() ?? 0, column?.phase, column?.subItem, column?.page, column?.photo, column?.photoCount, options.slidePlaysToEnd?.(id)].join('|');

@@ -39,8 +39,16 @@ export const PAGE_TABS = {
  * `seconds` (no buttons), each part with the heading and text grown to fill the card.
  */
 export function rotatingList(tab: string, heading: string, bullets: BulletItem[], perPart: number, seconds = 10): PageCopy {
-  const parts: ContentBlock[][] = [];
+  const parts: BulletItem[][] = [];
   for (let start = 0; start < bullets.length; start += perPart)
-    parts.push([heading, { bullets: bullets.slice(start, start + perPart) }]);
-  return { tab, blocks: [heading, { bullets }], parts, partSeconds: seconds, fill: true };
+    parts.push(bullets.slice(start, start + perPart));
+  return rotatingParts(tab, parts.map(items => [heading, { bullets: items }]), seconds);
+}
+
+/**
+ * A page shown in the given parts, changing on their own every `seconds` (no buttons), each part
+ * grown to fill the card. Auto page waits until every part has been shown.
+ */
+export function rotatingParts(tab: string, parts: ContentBlock[][], seconds = 10): PageCopy {
+  return { tab, blocks: parts.flat(), parts, partSeconds: seconds, fill: true };
 }

@@ -1,5 +1,5 @@
 import type { ColumnConfig } from '~/types/wall-content';
-import { page, PAGE_TABS, provisional, rotatingList } from './helpers';
+import { page, PAGE_TABS, provisional, rotatingList, rotatingParts } from './helpers';
 
 /** Column 2 — Our Brand. Idle tiles open Tekiro, RYU, or Rexco directly. */
 export const OUR_BRANDS: ColumnConfig = {
@@ -28,48 +28,39 @@ export const OUR_BRANDS: ColumnConfig = {
             provisional('/photos/our-brands/tekiro/page-1-photo-3.webp'),
           ],
           {
-            'id': {
-              tab: PAGE_TABS.first.id,
-              blocks: [
-                {
-                  bullets: [
-                    { lead: 'Lahir: 1999' },
-                    { lead: 'Standar kualitas', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
-                    { lead: 'Jumlah SKU: 2.183 SKU' },
-                    { lead: 'Market segment:', text: 'Industri, Rumah Tangga/DIY, Oil & Gas, Otomotif, Bangunan, Mining, Perkebunan, Kelistrikan.' },
-                    { lead: 'Kategori Produk:', text: 'Wrench, Pliers, Measurement, Automotive, Hex Key, Screwdriver, General Tools, Gardening, Torque, Air Tools, Storage, Tray, Insulation, Impact Socket, Welding, Special Tools, dan Cordless.' },
-                  ],
-                },
-              ],
-            },
-            'en': {
-              tab: PAGE_TABS.first.en,
-              blocks: [
-                {
-                  bullets: [
-                    { lead: 'Founded: 1999' },
-                    { lead: 'Quality standards', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
-                    { lead: 'SKU count: 2,183 SKUs' },
-                    { lead: 'Market segments:', text: 'Industry, Household/DIY, Oil & Gas, Automotive, Construction, Mining, Plantation, Electrical.' },
-                    { lead: 'Product categories:', text: 'Wrench, Pliers, Measurement, Automotive, Hex Key, Screwdriver, General Tools, Gardening, Torque, Air Tools, Storage, Tray, Insulation, Impact Socket, Welding, Special Tools, and Cordless.' },
-                  ],
-                },
-              ],
-            },
-            'zh-Hans': {
-              tab: PAGE_TABS.first['zh-Hans'],
-              blocks: [
-                {
-                  bullets: [
-                    { lead: '创立：1999 年' },
-                    { lead: '质量标准', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
-                    { lead: 'SKU 数量：2,183 个' },
-                    { lead: '市场领域：', text: '工业、家用/DIY、石油天然气、汽车、建筑、采矿、种植园、电气。' },
-                    { lead: '产品类别：', text: '扳手、钳子、测量工具、汽车工具、内六角扳手、螺丝刀、通用工具、园艺工具、扭力工具、气动工具、收纳、托盘、绝缘工具、冲击套筒、焊接、专用工具及无绳工具。' },
-                  ],
-                },
-              ],
-            },
+            'id': rotatingParts(PAGE_TABS.first.id, [
+              [{ bullets: [
+                { lead: 'Lahir: 1999' },
+                { lead: 'Standar kualitas', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
+                { lead: 'Jumlah SKU: 2.183 SKU' },
+              ] }],
+              [{ bullets: [
+                { lead: 'Market segment:', text: 'Industri, Rumah Tangga/DIY, Oil & Gas, Otomotif, Bangunan, Mining, Perkebunan, Kelistrikan.' },
+                { lead: 'Kategori Produk:', text: 'Wrench, Pliers, Measurement, Automotive, Hex Key, Screwdriver, General Tools, Gardening, Torque, Air Tools, Storage, Tray, Insulation, Impact Socket, Welding, Special Tools, dan Cordless.' },
+              ] }],
+            ]),
+            'en': rotatingParts(PAGE_TABS.first.en, [
+              [{ bullets: [
+                { lead: 'Founded: 1999' },
+                { lead: 'Quality standards', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
+                { lead: 'SKU count: 2,183 SKUs' },
+              ] }],
+              [{ bullets: [
+                { lead: 'Market segments:', text: 'Industry, Household/DIY, Oil & Gas, Automotive, Construction, Mining, Plantation, Electrical.' },
+                { lead: 'Product categories:', text: 'Wrench, Pliers, Measurement, Automotive, Hex Key, Screwdriver, General Tools, Gardening, Torque, Air Tools, Storage, Tray, Insulation, Impact Socket, Welding, Special Tools, and Cordless.' },
+              ] }],
+            ]),
+            'zh-Hans': rotatingParts(PAGE_TABS.first['zh-Hans'], [
+              [{ bullets: [
+                { lead: '创立：1999 年' },
+                { lead: '质量标准', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
+                { lead: 'SKU 数量：2,183 个' },
+              ] }],
+              [{ bullets: [
+                { lead: '市场领域：', text: '工业、家用/DIY、石油天然气、汽车、建筑、采矿、种植园、电气。' },
+                { lead: '产品类别：', text: '扳手、钳子、测量工具、汽车工具、内六角扳手、螺丝刀、通用工具、园艺工具、扭力工具、气动工具、收纳、托盘、绝缘工具、冲击套筒、焊接、专用工具及无绳工具。' },
+              ] }],
+            ]),
           },
         ),
         page(
