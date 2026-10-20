@@ -91,13 +91,20 @@ const textStyle = computed(() => ({
 // height transition.
 const probe = ref<HTMLElement | null>(null);
 const naturals = reactive<Record<number, number>>({});
+// A page whose text fills the card (`fill`, e.g. Tekiro's rotating awards) takes the tallest card
+// (WallColumn clamps to openCardMaxBottom) so its text can grow.
+const FILL_HEIGHT = 10_000;
 function reportHeight() {
+  if (current.value?.i18n[props.locale].fill) {
+    emit('height', FILL_HEIGHT);
+    return;
+  }
   const pxPerUnit = (probe.value?.offsetHeight || 0) / 1000;
   const visible = naturals[props.page] || 0;
   if (pxPerUnit > 0 && visible > 0)
     emit('height', Math.ceil(textTop.value + visible / pxPerUnit + TEXT_BOTTOM));
 }
-watch([naturals, textTop, () => props.pages, () => props.page], reportHeight);
+watch([naturals, textTop, () => props.pages, () => props.page, () => props.locale], reportHeight);
 function onNatural(index: number, px: number) {
   naturals[index] = px;
 }

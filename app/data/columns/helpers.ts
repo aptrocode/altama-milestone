@@ -1,5 +1,5 @@
 import type { WallLocale } from '../../../shared/wall';
-import type { ContentBlock, ContentPage, MediaAsset, PageCopy, PhotoSlot } from '~/types/wall-content';
+import type { BulletItem, ContentBlock, ContentPage, MediaAsset, PageCopy, PhotoSlot } from '~/types/wall-content';
 
 /** Mockup crop or stand-in file that the client has not approved yet. */
 export function provisional(src: string): MediaAsset {
@@ -33,3 +33,14 @@ export const PAGE_TABS = {
   second: { 'id': 'PAGE 2', 'en': 'PAGE 2', 'zh-Hans': '第 2 页' },
   third: { 'id': 'PAGE 3', 'en': 'PAGE 3', 'zh-Hans': '第 3 页' },
 } as const satisfies Record<string, Record<WallLocale, string>>;
+
+/**
+ * A heading plus a bullet list shown in parts of `perPart` items that change on their own every
+ * `seconds` (no buttons), each part with the heading and text grown to fill the card.
+ */
+export function rotatingList(tab: string, heading: string, bullets: BulletItem[], perPart: number, seconds = 10): PageCopy {
+  const parts: ContentBlock[][] = [];
+  for (let start = 0; start < bullets.length; start += perPart)
+    parts.push([heading, { bullets: bullets.slice(start, start + perPart) }]);
+  return { tab, blocks: [heading, { bullets }], parts, partSeconds: seconds, fill: true };
+}

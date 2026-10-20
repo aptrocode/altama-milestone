@@ -1,5 +1,5 @@
 import type { ColumnConfig } from '~/types/wall-content';
-import { page, PAGE_TABS, provisional } from './helpers';
+import { page, PAGE_TABS, provisional, rotatingList } from './helpers';
 
 /** Column 2 — Our Brand. Idle tiles open Tekiro, RYU, or Rexco directly. */
 export const OUR_BRANDS: ColumnConfig = {
@@ -78,69 +78,45 @@ export const OUR_BRANDS: ColumnConfig = {
             provisional('/photos/our-brands/tekiro/page-2-photo-2.webp'),
           ],
           {
-            'id': {
-              tab: PAGE_TABS.second.id,
-              blocks: [
-                'Penghargaan:',
-                {
-                  bullets: [
-                    { lead: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
-                    { lead: 'Museum Rekor Indonesia - MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
-                    { lead: '12x TOP Brand Award', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
-                    { lead: '7x Indonesia Digital Popular Brand Award' },
-                    { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
-                    { lead: '5x SUPERBRANDS', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
-                    { lead: '2x INDONESIA BRAND CHAMPION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
-                    { lead: '2x INDONESIA BRAND CHOICE AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
-                    { lead: '2x CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
-                    { lead: 'Golden Brand Of The Year' },
-                    { lead: 'Indonesia Best Brand Awards' },
-                  ],
-                },
-              ],
-            },
-            'en': {
-              tab: PAGE_TABS.second.en,
-              blocks: [
-                'Awards & Accolades:',
-                {
-                  bullets: [
-                    { lead: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
-                    { lead: 'Museum Rekor Indonesia - MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
-                    { lead: '12x TOP Brand Award', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
-                    { lead: '7x Indonesia Digital Popular Brand Award' },
-                    { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
-                    { lead: '5x SUPERBRANDS', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
-                    { lead: '2x INDONESIA BRAND CHAMPION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
-                    { lead: '2x INDONESIA BRAND CHOICE AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
-                    { lead: '2x CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
-                    { lead: 'Golden Brand Of The Year' },
-                    { lead: 'Indonesia Best Brand Awards' },
-                  ],
-                },
-              ],
-            },
-            'zh-Hans': {
-              tab: PAGE_TABS.second['zh-Hans'],
-              blocks: [
-                '所获荣誉：',
-                {
-                  bullets: [
-                    { lead: '吉尼斯世界纪录 (Guinness World Records)', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
-                    { lead: '印尼纪录博物馆纪录 - MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
-                    { lead: '12届 TOP Brand Award 顶级品牌奖', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
-                    { lead: '7届 印尼数字大众品牌大奖' },
-                    { lead: '5届 顶级数字公关大奖 TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
-                    { lead: '5届 SUPERBRANDS 超级品牌大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
-                    { lead: '2届 印尼品牌冠军大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
-                    { lead: '2届 印尼品牌之选大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
-                    { lead: '2届 CNN 印尼大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
-                    { lead: '年度金牌品牌 Golden Brand Of The Year' },
-                    { lead: '印尼最佳品牌奖 Indonesia Best Brand Awards' },
-                  ],
-                },
-              ],
-            },
+            'id': rotatingList(PAGE_TABS.second.id, 'Penghargaan:', [
+              { lead: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
+              { lead: 'Museum Rekor Indonesia - MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
+              { lead: '12x TOP Brand Award', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
+              { lead: '7x Indonesia Digital Popular Brand Award' },
+              { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
+              { lead: '5x SUPERBRANDS', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
+              { lead: '2x INDONESIA BRAND CHAMPION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
+              { lead: '2x INDONESIA BRAND CHOICE AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
+              { lead: '2x CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
+              { lead: 'Golden Brand Of The Year' },
+              { lead: 'Indonesia Best Brand Awards' },
+            ], 6),
+            'en': rotatingList(PAGE_TABS.second.en, 'Awards & Accolades:', [
+              { lead: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
+              { lead: 'Museum Rekor Indonesia - MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
+              { lead: '12x TOP Brand Award', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
+              { lead: '7x Indonesia Digital Popular Brand Award' },
+              { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
+              { lead: '5x SUPERBRANDS', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
+              { lead: '2x INDONESIA BRAND CHAMPION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
+              { lead: '2x INDONESIA BRAND CHOICE AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
+              { lead: '2x CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
+              { lead: 'Golden Brand Of The Year' },
+              { lead: 'Indonesia Best Brand Awards' },
+            ], 6),
+            'zh-Hans': rotatingList(PAGE_TABS.second['zh-Hans'], '所获荣誉：', [
+              { lead: '吉尼斯世界纪录 (Guinness World Records)', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
+              { lead: '印尼纪录博物馆纪录 - MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
+              { lead: '12届 TOP Brand Award 顶级品牌奖', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
+              { lead: '7届 印尼数字大众品牌大奖' },
+              { lead: '5届 顶级数字公关大奖 TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
+              { lead: '5届 SUPERBRANDS 超级品牌大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
+              { lead: '2届 印尼品牌冠军大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
+              { lead: '2届 印尼品牌之选大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
+              { lead: '2届 CNN 印尼大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
+              { lead: '年度金牌品牌 Golden Brand Of The Year' },
+              { lead: '印尼最佳品牌奖 Indonesia Best Brand Awards' },
+            ], 6),
           },
         ),
       ],
