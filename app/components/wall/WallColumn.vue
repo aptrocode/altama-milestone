@@ -10,7 +10,9 @@ import { getColumnLayout, installationLayout, rectStyle } from '~/data/installat
 import { getColumnPages } from '~/data/wall-config';
 import { WALL_COPY } from '~/data/wall-copy';
 import { useSettingsStore } from '~/stores/settings';
+import { closeButtonRect } from '../../../shared/close-button';
 import { extendDown, languageGeometry } from '../../../shared/language-bar';
+import { closeButtonOptions } from '../../../shared/wall-settings';
 
 /**
  * One column in logical canvas units. Idle shows WallIdleFrame (mockup 1); open shows the raised
@@ -34,6 +36,8 @@ const geometry = computed(() => getColumnLayout(props.column.id));
 const visual = installationLayout.visual;
 const idle = computed(() => props.snapshot.phase === 'idle');
 // The 2 + 1 language grid makes the idle frame taller (downward).
+// The close badge follows the dashboard size (1×–2×, around its centre) and X/Y shift, like its sensor target.
+const closeRect = computed(() => closeButtonRect(geometry.value.active.back, closeButtonOptions(settings.wall)));
 const idleFrame = computed(() => extendDown(geometry.value.card, languageGeometry(geometry.value, settings.wall.languageBar).extend));
 const pages = computed(() => getColumnPages(props.column, props.snapshot.subItem));
 const openSubItem = computed(() => props.column.type === 'expandable' && !idle.value
@@ -138,9 +142,9 @@ function act(action: WallAction) {
       leave-active-class="transition duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0"
     >
       <WallHoldButton
-        v-if="!idle && settings.wall.showClose" :outline="geometry.active.back" group="back" :radius="22"
-        class="wall-back absolute z-20 flex items-center justify-center rounded-full bg-[#0b1a78] ring-2 ring-[#bfe8ff] shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.8)] text-white text-[length:calc(20*var(--wall-u))] hover:bg-red-500 cursor-pointer"
-        :style="rectStyle(geometry.active.back, geometry.section)"
+        v-if="!idle && settings.wall.showClose" :outline="closeRect" group="back" :radius="22 * settings.wall.closeScale"
+        class="wall-back absolute z-20 flex items-center justify-center rounded-full bg-[#0b1a78] ring-2 ring-[#bfe8ff] shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.8)] text-white hover:bg-red-500 cursor-pointer"
+        :style="{ ...rectStyle(closeRect, geometry.section), fontSize: `calc(${20 * settings.wall.closeScale} * var(--wall-u))` }"
         :aria-label="WALL_COPY[snapshot.locale].back" data-sensor-action="back"
         @activate="act({ type: 'back', columnId: column.id })"
       >

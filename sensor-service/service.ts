@@ -1,16 +1,18 @@
+import type { CloseButtonOptions } from '../shared/close-button';
 import type { HoldSettings } from '../shared/hold-settings';
 import type { LanguageBarMode } from '../shared/language-bar';
 import type { OscMessage } from '../shared/osc';
 import type { Point2, SensorAdminClientMessage, SensorAdminServerMessage, SensorConfig, SensorServiceStatus } from '../shared/sensor-config';
-import type { ColumnId, ColumnSnapshot, PublishedColumn, WallLocale } from '../shared/wall';
+import type { ColumnId, ColumnSnapshot, PublishedColumn, WallAction, WallLocale } from '../shared/wall';
 import type { Calibration } from './calibration';
 import type { DwellInput } from './dwell';
 import type { ScanParameters } from './scip';
+import { DEFAULT_CLOSE_BUTTON } from '../shared/close-button';
 import { DEFAULT_HOLD_SETTINGS, normalizeHoldSettings } from '../shared/hold-settings';
 import { mergeSensorConfig, normalizeSensorConfig, SENSOR_ADMIN_VERSION } from '../shared/sensor-config';
 import { SENSOR_LAYOUT_VERSION, visibleTargets } from '../shared/sensor-targets';
 import { COLUMN_IDS, WALL_LOCALES } from '../shared/wall';
-import { normalizeWallSettings } from '../shared/wall-settings';
+import { closeButtonOptions, normalizeWallSettings } from '../shared/wall-settings';
 import { buildCalibration } from './calibration';
 import { DwellEngine } from './dwell';
 import { AugmentaReceiver, normalizedToWall, TuioReceiver } from './normalized';
@@ -38,7 +40,19 @@ export interface SensorServiceOptions {
 const BACKGROUND_SCANS = 40;
 const BACKGROUND_TIMEOUT_MS = 5_000;
 
-interface WallState { columns: Partial<Record<ColumnId, PublishedColumn>>; hold: HoldSettings; cardOffsetY: number; showClose: boolean; showArrows: boolean; showPages: boolean; languageBar: LanguageBarMode }
+interface WallState { columns: Partial<Record<ColumnId, PublishedColumn>>; hold: HoldSettings; cardOffsetY: number; showClose: boolean; close: CloseButtonOptions; showArrows: boolean; showPages: boolean; languageBar: LanguageBarMode }
+
+/** Same wall action (type, column, and its locale / sub-item / page). */
+function sameAction(a: WallAction, b: WallAction): boolean {
+  const key = (action: WallAction) => JSON.stringify([
+    action.type,
+    action.columnId,
+    'locale' in action ? action.locale : '',
+    'subItemId' in action ? action.subItemId : '',
+    'page' in action ? action.page : '',
+  ]);
+  return key(a) === key(b);
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -192,6 +206,7 @@ export class SensorService {
       showArrows: state?.showArrows ?? true,
       showPages: state?.showPages ?? true,
       languageBar: state?.languageBar ?? 'compact',
+      close: state?.close,
     }), this.now());
   }
 
@@ -261,6 +276,9 @@ export class SensorService {
         showClose: typeof data.showClose === 'boolean' ? data.showClose : previous?.showClose ?? true,
         showArrows: typeof data.showArrows === 'boolean' ? data.showArrows : previous?.showArrows ?? true,
         showPages: typeof data.showPages === 'boolean' ? data.showPages : previous?.showPages ?? true,
+        close: data.closeScale !== undefined || data.closeOffsetX !== undefined || data.closeOffsetY !== undefined
+          ? closeButtonOptions(normalizeWallSettings({ closeScale: data.closeScale, closeOffsetX: data.closeOffsetX, closeOffsetY: data.closeOffsetY }))
+          : previous?.close ?? DEFAULT_CLOSE_BUTTON,
         languageBar: data.languageBar !== undefined ? normalizeWallSettings({ languageBar: data.languageBar }).languageBar : previous?.languageBar ?? 'compact',
       };
       this.walls.set(client, state);
@@ -437,8 +455,20 @@ export class SensorService {
   /** /altama/* show control, independent of the touch source. */
   handleShowControl(messages: OscMessage[]) {
     const snapshots = Object.fromEntries(COLUMN_IDS.map(id => [id, this.columns[id] ?? { phase: 'idle', locale: 'id', subItem: '', photo: 0, page: 0 }])) as Record<ColumnId, ColumnSnapshot>;
-    for (const input of showControlInputs(messages, snapshots))
-      this.emitInput('osc-showcontrol', input.x, input.y, input.action);
+    // Press each action where the wall draws it now (card offset, language bar, close button),
+    // falling back to the layout point when the target is not on screen.
+    const state = this.primaryWall ? this.walls.get(this.primaryWall) : undefined;
+    const drawn = visibleTargets(this.columns, {
+      offsetY: state?.cardOffsetY ?? 0,
+      languageBar: state?.languageBar ?? 'compact',
+      close: state?.close,
+    });
+    for (const input of showControlInputs(messages, snapshots)) {
+      const target = drawn.find(item => sameAction(item.action, input.action));
+      const x = target ? target.rect.x + target.rect.width / 2 : input.x;
+      const y = target ? target.rect.y + target.rect.height / 2 : input.y;
+      this.emitInput('osc-showcontrol', x, y, input.action);
+    }
   }
 
   private sendInput(input: DwellInput) {

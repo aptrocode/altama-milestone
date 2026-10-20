@@ -118,6 +118,20 @@ describe('sensor Service protocol v2', () => {
     expect(actions).toEqual([{ type: 'subItem', columnId: 2, subItemId: 'tekiro' }, { type: 'language', columnId: 4, locale: 'en' }]);
   });
 
+  it('presses show-control targets where the wall draws them (moved close button, raised grid bar)', () => {
+    const { service, wall } = setup();
+    const open = { ...columns, 1: { ...idle, phase: 'active' as const } };
+    service.handleMessage(wall, JSON.stringify({ version: 2, type: 'clientState', layoutVersion: 'wall-v7', columns: open, closeScale: 2, closeOffsetX: -40, closeOffsetY: 30, languageBar: 'grid' }));
+    service.handleShowControl(parseOscPacket(createOscMessage('/altama/back', [1])));
+    service.handleShowControl(parseOscPacket(createOscMessage('/altama/lang', [4, 'en'])));
+    const inputs = wall.frames.map(frame => JSON.parse(frame)).filter(message => message.type === 'input');
+    // The wall validates with the same settings, so both inputs land on their drawn targets.
+    const close = { scale: 2, x: -40, y: 30 };
+    expect(inputs.map(input => input.action.type)).toEqual(['back', 'language']);
+    for (const input of inputs)
+      expect(parseSensorMessage(JSON.stringify(input), 0, 'grid', close).ok).toBe(true);
+  });
+
   it('drives the wall from synthetic UST-10LX scans after calibration and background capture', () => {
     const calibration = DEFAULT_CALIBRATION_WALL_POINTS.map(wall => ({ wall, sensor: wallToSensor(wall) }));
     const { service, admin, parsed, adminMessages, at } = setup({ ...DEFAULT_SENSOR_CONFIG, source: 'hokuyo', hokuyo: { ...DEFAULT_SENSOR_CONFIG.hokuyo, calibration } });

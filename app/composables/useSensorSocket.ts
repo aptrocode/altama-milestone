@@ -1,3 +1,4 @@
+import type { CloseButtonOptions } from '../../shared/close-button';
 import type { HoldSettings } from '../../shared/hold-settings';
 import type { LanguageBarMode } from '../../shared/language-bar';
 import type { ColumnId, ColumnSnapshot } from '../../shared/wall';
@@ -24,6 +25,8 @@ export interface SensorSocketOptions {
   getShowPages?: () => boolean;
   /** Compact or full-width language bar (dashboard); moves the language targets. */
   getLanguageBar?: () => LanguageBarMode;
+  /** Close (✕) button size and position from the dashboard; the Back target follows it. */
+  getClose?: () => CloseButtonOptions;
   heartbeatTimeoutMs?: number;
   maxMessageBytes?: number;
 }
@@ -157,7 +160,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
         return;
       }
 
-      const result = parseSensorMessage(event.data, options.getCardOffsetY?.() ?? 0, options.getLanguageBar?.() ?? 'compact');
+      const result = parseSensorMessage(event.data, options.getCardOffsetY?.() ?? 0, options.getLanguageBar?.() ?? 'compact', options.getClose?.());
       if (!result.ok) {
         system.setSocketStatus('error', result.error);
         return;
@@ -234,6 +237,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
       ...(options.getShowArrows ? { showArrows: options.getShowArrows() } : {}),
       ...(options.getShowPages ? { showPages: options.getShowPages() } : {}),
       ...(options.getLanguageBar ? { languageBar: options.getLanguageBar() } : {}),
+      ...(options.getClose ? { closeScale: options.getClose().scale, closeOffsetX: options.getClose().x, closeOffsetY: options.getClose().y } : {}),
     });
   }
 

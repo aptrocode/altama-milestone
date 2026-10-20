@@ -1,4 +1,6 @@
+import type { CloseButtonOptions } from './close-button';
 import type { LanguageBarMode } from './language-bar';
+import { CLOSE_OFFSET, CLOSE_SCALE } from './close-button';
 import { LANGUAGE_BAR_MODES } from './language-bar';
 
 /**
@@ -10,6 +12,8 @@ import { LANGUAGE_BAR_MODES } from './language-bar';
  *   wall (negative moves them up). The stacked phone/tablet layout ignores it.
  * - showClose: whether open cards show their close (✕) button. When off, Sensor Service drops the
  *   Back touch target too; columns still close on inactivity, operator keys, and OSC.
+ * - closeScale / closeOffsetX / closeOffsetY: size (1×–2×) and position shift (logical px) of the
+ *   close (✕) button (shared/close-button.ts); Sensor Service's Back target follows it.
  * - showArrows: whether open cards show their photo slider arrows. When off, Sensor Service drops
  *   the previous/next targets and photos advance on their own every autoSlideSeconds.
  * - autoSlideSeconds: auto-slide interval while the arrows are off.
@@ -25,6 +29,9 @@ export interface WallSettings {
   resetSeconds: number;
   cardOffsetY: number;
   showClose: boolean;
+  closeScale: number;
+  closeOffsetX: number;
+  closeOffsetY: number;
   showArrows: boolean;
   autoSlideSeconds: number;
   showPages: boolean;
@@ -40,12 +47,12 @@ export const AUTO_SLIDE_SECONDS = { min: 2, max: 60, step: 1 } as const;
 export const AUTO_PAGE_SECONDS = { min: 3, max: 120, step: 1 } as const;
 export const TOUCH_DOT_SECONDS = { min: 1, max: 60, step: 1 } as const;
 
-export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPageSeconds: 10, languageBar: 'compact', showTouchDots: false, touchDotSeconds: 5 };
+export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPageSeconds: 10, languageBar: 'compact', showTouchDots: false, touchDotSeconds: 5 };
 
 function clampNumber(value: unknown, fallback: number, limits: { min: number; max: number; step: number }): number {
   const raw = typeof value === 'number' && Number.isFinite(value) ? value : fallback;
   const clamped = Math.min(limits.max, Math.max(limits.min, raw));
-  return Math.round(clamped / limits.step) * limits.step;
+  return Math.round(Math.round(clamped / limits.step) * limits.step * 1000) / 1000;
 }
 
 /** Accepts stored, imported, edited, or published data and returns complete, clamped settings. */
@@ -55,6 +62,9 @@ export function normalizeWallSettings(value: unknown): WallSettings {
     resetSeconds: clampNumber(source.resetSeconds, DEFAULT_WALL_SETTINGS.resetSeconds, RESET_SECONDS),
     cardOffsetY: clampNumber(source.cardOffsetY, DEFAULT_WALL_SETTINGS.cardOffsetY, CARD_OFFSET_Y),
     showClose: typeof source.showClose === 'boolean' ? source.showClose : DEFAULT_WALL_SETTINGS.showClose,
+    closeScale: clampNumber(source.closeScale, DEFAULT_WALL_SETTINGS.closeScale, CLOSE_SCALE),
+    closeOffsetX: clampNumber(source.closeOffsetX, DEFAULT_WALL_SETTINGS.closeOffsetX, CLOSE_OFFSET),
+    closeOffsetY: clampNumber(source.closeOffsetY, DEFAULT_WALL_SETTINGS.closeOffsetY, CLOSE_OFFSET),
     showArrows: typeof source.showArrows === 'boolean' ? source.showArrows : DEFAULT_WALL_SETTINGS.showArrows,
     autoSlideSeconds: clampNumber(source.autoSlideSeconds, DEFAULT_WALL_SETTINGS.autoSlideSeconds, AUTO_SLIDE_SECONDS),
     showPages: typeof source.showPages === 'boolean' ? source.showPages : DEFAULT_WALL_SETTINGS.showPages,
@@ -63,4 +73,9 @@ export function normalizeWallSettings(value: unknown): WallSettings {
     showTouchDots: typeof source.showTouchDots === 'boolean' ? source.showTouchDots : DEFAULT_WALL_SETTINGS.showTouchDots,
     touchDotSeconds: clampNumber(source.touchDotSeconds, DEFAULT_WALL_SETTINGS.touchDotSeconds, TOUCH_DOT_SECONDS),
   };
+}
+
+/** The close button options of wall settings, as shared/close-button.ts takes them. */
+export function closeButtonOptions(settings: Pick<WallSettings, 'closeScale' | 'closeOffsetX' | 'closeOffsetY'>): CloseButtonOptions {
+  return { scale: settings.closeScale, x: settings.closeOffsetX, y: settings.closeOffsetY };
 }

@@ -72,6 +72,17 @@ describe('visible targets', () => {
       expect(isInsideRect(flag(locale).x + 1, flag(locale).y + 1, main.exclude!)).toBe(true);
   });
 
+  it('grows the Back target around its centre with the close size and moves it by X/Y', () => {
+    const open = { 1: { ...idle, phase: 'active' as const, photoCount: 1, pageCount: 1 } };
+    const base = visibleTargets(open).find(item => item.key === '1:back')!.rect;
+    const big = visibleTargets(open, { close: { scale: 2, x: 0, y: 0 } }).find(item => item.key === '1:back')!.rect;
+    expect(big.width).toBe(base.width * 2);
+    expect(big.x + big.width / 2).toBe(base.x + base.width / 2);
+    expect(big.y + big.height / 2).toBe(base.y + base.height / 2);
+    const moved = visibleTargets(open, { close: { scale: 1, x: -20, y: 10 } }).find(item => item.key === '1:back')!.rect;
+    expect([moved.x, moved.y]).toEqual([base.x - 20, base.y + 10]);
+  });
+
   it('drops the page tabs when the wall hides them (auto page)', () => {
     const open = { 1: { ...idle, phase: 'active' as const, photoCount: 3, pageCount: 2 } };
     expect(visibleTargets(open, { showPages: false }).map(item => item.key)).toEqual(['1:back', '1:previous', '1:next']);
