@@ -1,7 +1,8 @@
+import type { ContentPage } from '../app/types/wall-content';
 import type { ColumnId } from '../shared/wall';
 import { createPinia } from 'pinia';
 import { describe, expect, it } from 'vitest';
-import { getColumnConfig, getColumnPages, scrollsText, WALL_CONFIG } from '../app/data/wall-config';
+import { getColumnConfig, getColumnPages, WALL_CONFIG } from '../app/data/wall-config';
 import { useSettingsStore } from '../app/stores/settings';
 import { useWallStore } from '../app/stores/wall';
 import { COLUMN_IDS } from '../shared/wall';
@@ -121,7 +122,7 @@ describe('wall state and actions', () => {
     expect(wall.dispatch({ type: 'page', columnId: 1, page: 0 })).toBe(false);
   });
 
-  it('merges section 6 into one scrolling page while "Scroll teks" is on, and restores its pages when off', () => {
+  it('groups pages for "Scroll teks": one page by default, Tekiro 2, RYU and Rexco keep 2; off restores them', () => {
     const wall = store();
     const settings = useSettingsStore();
     wall.dispatch({ type: 'main', columnId: 6 });
@@ -129,15 +130,20 @@ describe('wall state and actions', () => {
     settings.setWall({ ...settings.wall, scrollText: true });
     expect(wall.publishedColumns[6]).toMatchObject({ pageCount: 1 });
     expect(wall.dispatch({ type: 'page', columnId: 6, page: 1 })).toBe(false);
-    const merged = getColumnPages(getColumnConfig(6), '', true)[0]!;
-    const all = getColumnPages(getColumnConfig(6), '').flatMap(page => page.i18n.id.blocks);
-    expect(merged.i18n.id.blocks).toEqual(all);
-    expect(getColumnPages(getColumnConfig(6), '', true)[0]).toBe(merged);
-    // Section 1 (one page) scrolls too; other columns keep their pages.
-    expect(scrollsText(getColumnConfig(1), true)).toBe(true);
-    expect(getColumnPages(getColumnConfig(1), '', true)).toHaveLength(1);
-    expect(scrollsText(getColumnConfig(3), true)).toBe(false);
-    expect(getColumnPages(getColumnConfig(3), '', true)).toHaveLength(2);
+    const summit = getColumnPages(getColumnConfig(6), '', true)[0]!;
+    expect(summit.i18n.id.blocks).toEqual(getColumnPages(getColumnConfig(6), '').flatMap(page => page.i18n.id.blocks));
+    expect(getColumnPages(getColumnConfig(6), '', true)[0]).toBe(summit);
+    for (const [id, sub] of [[3, ''], [4, ''], [5, 'distribusi'], [5, 'pemasaran']] as const)
+      expect(getColumnPages(getColumnConfig(id), sub, true)).toHaveLength(1);
+    expect(getColumnPages(getColumnConfig(2), 'ryu', true)).toEqual(getColumnPages(getColumnConfig(2), 'ryu'));
+    expect(getColumnPages(getColumnConfig(2), 'rexco', true)).toHaveLength(2);
+    // Tekiro: profile + products, then all awards under one heading in one list.
+    const [profile, awards] = getColumnPages(getColumnConfig(2), 'tekiro', true) as [ContentPage, ContentPage];
+    expect(getColumnPages(getColumnConfig(2), 'tekiro', true)).toHaveLength(2);
+    expect([profile.i18n.id.tab, awards.i18n.id.tab]).toEqual(['PAGE 1', 'PAGE 2']);
+    expect(awards.i18n.id.blocks).toHaveLength(2);
+    expect(awards.i18n.id.blocks[0]).toBe('Penghargaan:');
+    expect((awards.i18n.id.blocks[1] as { bullets: unknown[] }).bullets).toHaveLength(11);
     settings.setWall({ ...settings.wall, scrollText: false });
     expect(wall.publishedColumns[6]).toMatchObject({ pageCount: 3 });
   });

@@ -5,7 +5,7 @@ import type { PageCopy } from '~/types/wall-content';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import WallPageCopy from '~/components/wall/WallPageCopy.vue';
 import { getColumnLayout, installationLayout } from '~/data/installation-layout';
-import { getColumnPages, scrollsText, WALL_CONFIG } from '~/data/wall-config';
+import { getColumnPages, WALL_CONFIG } from '~/data/wall-config';
 import { openCardTextTop, TEXT_INSET } from '~/utils/open-card-text';
 import { cardTextKey } from '../../../shared/font-settings';
 import { WALL_LOCALES } from '../../../shared/wall';
@@ -29,7 +29,7 @@ const probes = computed<Probe[]>(() => WALL_CONFIG.columns.flatMap((column) => {
     ? (column.subItems ?? []).map(sub => ({ key: cardTextKey(column.key, sub.key), pages: getColumnPages(column, sub.key, props.scrollText) }))
     : [{ key: cardTextKey(column.key, ''), pages: getColumnPages(column, '', props.scrollText) }];
   // Scrolling text keeps its largest size, so it always fits.
-  const scroll = scrollsText(column, props.scrollText);
+  const scroll = props.scrollText;
   return contents.flatMap(({ key, pages }) => {
     if (!key)
       return [];

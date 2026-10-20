@@ -19,14 +19,16 @@ The Summit logo is shared. Idle it is 278 px tall at y 70, narrow enough to stay
 
 ## Column content
 
+With the Dashboard → Wall **Scroll teks** trial on, every card's text scrolls vertically at its Font Maks size and the pages are grouped: Tekiro 2, RYU and Rexco 2, every other card 1 page without tabs (see [dashboard](./dashboard.md#scroll-teks-trial)).
+
 | Column | Title (id) | Idle | Open |
 | --- | --- | --- | --- |
-| 1 | Tentang Altama | Building illustration | One page: photo slider and company history. Trial: with "Scroll teks" on, its text keeps Maks and scrolls vertically |
+| 1 | Tentang Altama | Building illustration | One page: photo slider and company history |
 | 2 | Our Brand | Tekiro, RYU, Rexco tiles; each tile opens that brand directly | Brand logo above the card; Tekiro has PAGE 1–4 (profile, products, awards 1–5, awards 6–11) with 2 + 2 tabs; RYU and Rexco have PAGE 1 / PAGE 2, each with its own photos and text |
 | 3 | Infrastruktur | Warehouse illustration | Photo slider and bullets in two pages (PAGE 1/2, same slider); text 24–26 px |
 | 4 | Digital Trust | Phone illustration | Photo slider (ODP) and bullets in two pages (PAGE 1/2, same slider); text 24–26 px |
 | 5 | Distribusi & Pemasaran | Captioned Distribusi / Pemasaran tiles; each opens directly | Sub-item name above the card; two pages each (PAGE 1/2, same slider), bullets with logos |
-| 6 | Altama Summit 2026 | Flag ceremony illustration | Text-only Summit message in three pages (PAGE 1/2/3 tabs at the top of the card); each page's text 24–26 px. Trial: with Dashboard → Wall "Scroll teks" on, one page without tabs whose text scrolls vertically |
+| 6 | Altama Summit 2026 | Flag ceremony illustration | Text-only Summit message in three pages (PAGE 1/2/3 tabs at the top of the card); each page's text 24–26 px. |
 
 There is no submenu: brand and distribution tiles are hold targets on the idle frame. The hold border animation shows progress.
 

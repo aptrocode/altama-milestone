@@ -6,8 +6,6 @@ export const ABOUT_ALTAMA: ColumnConfig = {
   id: 1,
   key: 'about-altama',
   type: 'single',
-  // Trial: with Dashboard → Wall "Scroll teks" on, the text keeps its largest size and scrolls.
-  scrollMerge: true,
   icon: 'building',
   illustration: provisional('/illustrations/about-altama.webm'),
   i18n: {

@@ -32,7 +32,7 @@ Di event **jangan** pakai `bun dev`. Klik dua kali **`start-wall.bat`**:
 
 ## Dashboard (`/dashboard`)
 
-- **Wall**: bar bahasa (Compact / Full width / Grid 2 + 1), posisi Y card, tombol close (ukuran & posisi), tombol slider + auto slide, tombol page + auto page, Scroll teks (uji coba, section 1 & 6), reset otomatis, titik sentuh.
+- **Wall**: bar bahasa (Compact / Full width / Grid 2 + 1), posisi Y card, tombol close (ukuran & posisi), tombol slider + auto slide, tombol page + auto page, Scroll teks (uji coba), reset otomatis, titik sentuh.
 - **Hold**: cara menekan tiap jenis tombol, **Tap / Hold / Tap + delay**, dan durasinya (bahasa & close default Tap).
 - **Font**: ukuran judul, nama sub-item, caption tile, tab, ketebalan judul, dan rentang **Min–Maks** isi card per section (default 24–26 px) dengan status muat.
 - **Sensor**: sumber sentuh, port, kalibrasi Hokuyo, status live.
