@@ -16,6 +16,7 @@ const rule = computed(() => settings.holdRule(props.group));
 const hold = computed(() => ({
   onActivate: () => emit('activate'),
   enabled: rule.value.enabled,
+  mode: rule.value.mode,
   durationMs: Math.round(rule.value.seconds * 1000),
 }));
 
@@ -59,7 +60,7 @@ const perimeter = computed(() => {
   <button
     v-hold="hold" type="button"
     class="group/hold cursor-pointer transition-colors duration-150"
-    :style="{ '--hold-duration': `${hold.durationMs}ms`, '--path-length': `${perimeter}px` }" :data-hold-group="group" :data-hold="rule.enabled ? 'on' : 'off'"
+    :style="{ '--hold-duration': `${hold.durationMs}ms`, '--path-length': `${perimeter}px` }" :data-hold-group="group" :data-hold="rule.mode === 'tap' ? 'off' : rule.mode === 'hold' ? 'on' : 'delay'"
   >
     <slot />
     <div

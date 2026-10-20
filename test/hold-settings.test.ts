@@ -12,13 +12,19 @@ describe('hold settings', () => {
       page: { enabled: false, seconds: 1.26 },
       slider: { seconds: 99 },
     })).toEqual({
-      card: { enabled: true, seconds: 0.3 },
-      page: { enabled: false, seconds: 1.3 },
-      slider: { enabled: true, seconds: 5 },
+      card: { mode: 'hold', enabled: true, seconds: 0.3 },
+      page: { mode: 'tap', enabled: false, seconds: 1.3 },
+      slider: { mode: 'hold', enabled: true, seconds: 5 },
       language: DEFAULT_HOLD_SETTINGS.language,
       back: DEFAULT_HOLD_SETTINGS.back,
     });
     expect(normalizeHoldSettings({ card: { enabled: 'yes', seconds: 'x' } }).card).toEqual(DEFAULT_HOLD_SETTINGS.card);
+  });
+
+  it('has three modes; delay is not a sensor dwell', () => {
+    expect(normalizeHoldSettings({ card: { mode: 'delay', seconds: 2 } }).card).toEqual({ mode: 'delay', enabled: false, seconds: 2 });
+    expect(normalizeHoldSettings({ card: { mode: 'x', enabled: true } }).card.mode).toBe('hold');
+    expect(DEFAULT_HOLD_SETTINGS.card.mode).toBe('hold');
   });
 
   it('maps every wall action to a hold group; language and back are off by default', () => {
@@ -48,7 +54,7 @@ describe('hold settings', () => {
   it('stores normalized settings and resets to defaults', () => {
     const settings = useSettingsStore(createPinia());
     settings.setHold({ slider: { enabled: false, seconds: 2 } });
-    expect(settings.holdRule('slider')).toEqual({ enabled: false, seconds: 2 });
+    expect(settings.holdRule('slider')).toEqual({ mode: 'tap', enabled: false, seconds: 2 });
     expect(settings.holdRule('card')).toEqual(DEFAULT_HOLD_SETTINGS.card);
     settings.resetHold();
     expect(settings.hold).toEqual(DEFAULT_HOLD_SETTINGS);

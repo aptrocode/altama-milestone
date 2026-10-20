@@ -17,6 +17,7 @@ import { useSettingsStore } from '~/stores/settings';
 import { useSystemStore } from '~/stores/system';
 import { useWallStore } from '~/stores/wall';
 import { isVideoSrc } from '~/utils/media';
+import { HOLD_GROUP_BY_ACTION } from '../../../shared/hold-settings';
 import { columnOffsetY, languageGeometry } from '../../../shared/language-bar';
 import { COLUMN_IDS } from '../../../shared/wall';
 import { autoPageActive, closeButtonOptions } from '../../../shared/wall-settings';
@@ -112,10 +113,27 @@ const route = useRoute();
 const showTouchDots = computed(() => settings.wall.showTouchDots || route.query.dots === '1');
 const touchDots = ref<InstanceType<typeof KioskTouchDots> | null>(null);
 
+/** The wall button of an action (for a delayed press), or null when it is not on screen. */
+function actionButton(action: WallAction): HTMLElement | null {
+  const column = document.querySelector(`section[data-col="${action.columnId}"]`);
+  const extra = action.type === 'language'
+    ? `[data-locale="${action.locale}"]`
+    : action.type === 'subItem' ? `[data-sub-item="${action.subItemId}"]` : action.type === 'page' ? `[data-page="${action.page}"]` : '';
+  return column?.querySelector<HTMLElement>(`[data-sensor-action="${action.type}"]${extra}`) ?? null;
+}
+
 function handleSensorMessage(message: SensorMessage) {
   if (message.type !== 'input')
     return;
   touchDots.value?.addSensor(message.x, message.y);
+  // Delay mode: the button plays its hold animation and activates itself (through dispatch).
+  const group = HOLD_GROUP_BY_ACTION[message.action.type];
+  const button = group && settings.holdRule(group).mode === 'delay' ? actionButton(message.action) : null;
+  if (button) {
+    controls.touchColumn(message.action.columnId);
+    button.dispatchEvent(new CustomEvent('wall:press'));
+    return;
+  }
   controls.dispatch(message.action);
 }
 
