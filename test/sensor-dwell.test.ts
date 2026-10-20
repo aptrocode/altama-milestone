@@ -99,6 +99,16 @@ describe('visible targets', () => {
     expect([two.width, two.y]).toEqual([112, 707]);
   });
 
+  it('lays out four page tabs as 2 + 2 half-width tabs', () => {
+    const four = { 1: { ...idle, phase: 'active' as const, photoCount: 0, pageCount: 4, tabsTop: true, page: 3 } };
+    const rects = visibleTargets(four).filter(item => item.action.type === 'page').map(item => item.rect);
+    expect(rects).toHaveLength(3);
+    const [first, second, third] = rects as [typeof rects[0], typeof rects[0], typeof rects[0]];
+    expect([first.y, second.y, third.y]).toEqual([547, 547, 595]);
+    expect(third.x).toBe(first.x);
+    expect(second.x - (first.x + first.width)).toBe(8);
+  });
+
   it('drops the page tabs when the wall hides them (auto page)', () => {
     const open = { 1: { ...idle, phase: 'active' as const, photoCount: 3, pageCount: 2 } };
     expect(visibleTargets(open, { showPages: false }).map(item => item.key)).toEqual(['1:back', '1:previous', '1:next']);

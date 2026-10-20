@@ -186,8 +186,8 @@ describe('page auto change', () => {
     const scope = effectScope();
     scopes.push(scope);
     const controls = scope.run(() => useWallController(wall, { resetDelayMs: () => 120_000, ...options }))!;
-    // Our Brand · Tekiro has two pages (PAGE 1 / PAGE 2).
-    controls.dispatch({ type: 'subItem', columnId: 2, subItemId: 'tekiro' });
+    // Our Brand · RYU has two pages (PAGE 1 / PAGE 2).
+    controls.dispatch({ type: 'subItem', columnId: 2, subItemId: 'ryu' });
     expect(wall.publishedColumns[2]!.pageCount).toBe(2);
     return { wall, controls };
   }
