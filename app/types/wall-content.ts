@@ -29,7 +29,16 @@ export type ContentBlock = string | { bullets: BulletItem[]; inline?: boolean } 
 export interface PageCopy {
   /** Tab label such as a year or page; tabs render only when content has several pages. */
   tab?: string;
+  /** All of the page's text (validation, and what shows when there are no `parts`). */
   blocks: ContentBlock[];
+  /**
+   * The page shows these block groups one after another, without buttons, every `partSeconds`
+   * (default 10), starting again from the first whenever the page becomes visible.
+   */
+  parts?: ContentBlock[][];
+  partSeconds?: number;
+  /** Grow this page's text until it fills the card (like a column's `fillText`). */
+  fill?: boolean;
 }
 
 /**

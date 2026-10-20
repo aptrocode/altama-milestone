@@ -50,7 +50,7 @@ function fit() {
   }
   // Fill: grow in small steps while the page still fits, then keep the last size that fit. The card
   // keeps the height of the page at full size (reported above), so growing never grows the card.
-  if (props.fill && next >= 1) {
+  if ((props.fill || props.copy.fill) && next >= 1) {
     while (next < MAX_FILL) {
       const candidate = Math.min(MAX_FILL, Math.round((next + 0.02) * 100) / 100);
       element.style.setProperty('--copy-scale', String(candidate));
@@ -77,12 +77,38 @@ onMounted(() => {
 const settings = useSettingsStore();
 // A new dashboard body size changes the content height, which the ResizeObserver cannot see.
 watch(() => [props.copy, props.locale, settings.fonts.bodySize], () => nextTick(fit));
-onBeforeUnmount(() => observer?.disconnect());
+
+// Rotating parts (`copy.parts`): no buttons, the next part shows every `partSeconds` while this page
+// is visible, from the first part again each time it becomes visible. The timer is this
+// component's resource and stops with it.
+const part = ref(0);
+const shownBlocks = computed(() => props.copy.parts?.[part.value] ?? props.copy.blocks);
+let partTimer: ReturnType<typeof setInterval> | undefined;
+watch(() => [props.active, props.copy] as const, ([active]) => {
+  clearInterval(partTimer);
+  partTimer = undefined;
+  part.value = 0;
+  const parts = props.copy.parts?.length ?? 0;
+  if (active && parts > 1) {
+    partTimer = setInterval(() => {
+      part.value = (part.value + 1) % parts;
+    }, (props.copy.partSeconds ?? 10) * 1000);
+  }
+}, { immediate: true });
+watch(part, () => nextTick(() => {
+  fit();
+  replay();
+}));
+
+onBeforeUnmount(() => {
+  observer?.disconnect();
+  clearInterval(partTimer);
+});
 
 // Reading-order index of every paragraph / list item, so delays run top to bottom across blocks.
 const revealStart = computed(() => {
   let next = 0;
-  return props.copy.blocks.map((block) => {
+  return shownBlocks.value.map((block) => {
     const start = next;
     next += typeof block === 'string' ? 1 : 'bullets' in block ? block.bullets.length : block.numbered.length;
     return start;
@@ -118,7 +144,7 @@ watch(() => [props.active, props.copy], () => {
     ref="root" class="grid content-start gap-[calc(12*var(--wall-y)*var(--copy-scale,1))] font-medium text-[length:calc(var(--fs-body,18)*var(--wall-u)*var(--copy-scale,1))]"
     :style="{ '--copy-scale': scale }" :data-copy-scale="scale"
   >
-    <template v-for="(block, index) in copy.blocks" :key="index">
+    <template v-for="(block, index) in shownBlocks" :key="`${part}-${index}`">
       <p v-if="typeof block === 'string'" class="leading-[1.3] text-white/95" data-reveal :style="reveal(index)">
         {{ block }}
       </p>
