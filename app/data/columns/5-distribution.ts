@@ -10,6 +10,8 @@ export const DISTRIBUTION: ColumnConfig = {
   illustration: provisional('/illustrations/distribution.webm'),
   captionTiles: true,
   defaultSub: 'distribusi',
+  // Each sub-item's text grows to fill the tallest card.
+  fillText: true,
   i18n: {
     'id': { label: 'DISTRIBUSI & PEMASARAN' },
     'en': { label: 'DISTRIBUTION & MARKETING' },
