@@ -13,8 +13,8 @@ export interface SettingsDraftOptions<T> {
 
 /**
  * Editable copy of a dashboard setting group: `dirty` compares against the saved value, the draft
- * follows changes from another tab or an import unless the operator is editing, and `save` /
- * `restoreDefaults` report their result in `status`.
+ * follows changes from another tab or an import unless the operator is editing, `save` /
+ * `restoreDefaults` report their result in `status`, and `discard` drops unsaved edits.
  */
 export function useSettingsDraft<T>(options: SettingsDraftOptions<T>) {
   const copy = (value: unknown): T => options.normalize(JSON.parse(JSON.stringify(value)));
@@ -33,10 +33,15 @@ export function useSettingsDraft<T>(options: SettingsDraftOptions<T>) {
     status.value = 'Tersimpan';
   }
 
+  function discard() {
+    draft.value = copy(options.saved());
+    status.value = '';
+  }
+
   function restoreDefaults() {
     draft.value = copy(options.defaults);
     status.value = 'Default dimuat, klik Simpan';
   }
 
-  return { draft, dirty, status, save, restoreDefaults };
+  return { draft, dirty, status, save, discard, restoreDefaults };
 }

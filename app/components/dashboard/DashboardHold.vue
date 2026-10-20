@@ -24,7 +24,7 @@ const hiddenByWall = computed(() => ({
 const visibleGroups = computed(() => HOLD_GROUPS.filter(group => !hiddenByWall.value[group]));
 const hiddenNote = computed(() => HOLD_GROUPS.filter(group => hiddenByWall.value[group]).map(group => GROUP_LABEL[group].title));
 const listFormat = new Intl.ListFormat('id', { type: 'conjunction' });
-const { draft, dirty, status, save, restoreDefaults } = useSettingsDraft({
+const { draft, dirty, status, save, discard, restoreDefaults } = useSettingsDraft({
   saved: () => settings.hold,
   normalize: normalizeHoldSettings,
   defaults: DEFAULT_HOLD_SETTINGS,
@@ -77,6 +77,6 @@ function setSeconds(group: HoldGroup, value: string) {
       </NuxtLink>
     </p>
 
-    <DashboardFormActions :dirty="dirty" :status="status" @save="save" @defaults="restoreDefaults" />
+    <DashboardFormActions :dirty="dirty" :status="status" @save="save" @discard="discard" @defaults="restoreDefaults" />
   </section>
 </template>

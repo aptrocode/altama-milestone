@@ -3,7 +3,7 @@ import DashboardWall from '~/components/dashboard/DashboardWall.vue';
 
 definePageMeta({
   title: 'Wall',
-  description: 'Reset otomatis section dan posisi vertikal semua card di layar LED.',
+  description: 'Tampilan, tombol di card, dan waktu reset wall. Simpan untuk menerapkan ke wall di browser ini.',
 });
 </script>
 
