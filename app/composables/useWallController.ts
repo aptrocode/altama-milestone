@@ -244,6 +244,8 @@ export function useWallController(wall = useWallStore(), options: WallController
       const column = wall.publishedColumns[id];
       return [options.autoPageMs?.() ?? 0, options.autoSlideMs?.() ?? 0, column?.phase, column?.subItem, column?.page, column?.pageCount, column?.photoCount].join('|');
     }, () => schedulePage(id), { immediate: true, flush: 'sync' });
+    // The page count can shrink under an open card ("Scroll teks" merges pages): show its first page.
+    watch(() => wall.publishedColumns[id]?.pageCount, () => wall.clampPage(id), { flush: 'sync' });
     // A card waiting for its slideshow closes at once when nothing advances any more (the operator
     // showed the arrows/tabs again, or the column changed).
     watch(() => autoAdvancing(id), (advancing) => {

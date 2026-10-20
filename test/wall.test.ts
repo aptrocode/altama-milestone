@@ -2,6 +2,7 @@ import type { ColumnId } from '../shared/wall';
 import { createPinia } from 'pinia';
 import { describe, expect, it } from 'vitest';
 import { getColumnConfig, getColumnPages, WALL_CONFIG } from '../app/data/wall-config';
+import { useSettingsStore } from '../app/stores/settings';
 import { useWallStore } from '../app/stores/wall';
 import { COLUMN_IDS } from '../shared/wall';
 
@@ -118,6 +119,24 @@ describe('wall state and actions', () => {
     expect(pagesOf(1)).toHaveLength(1);
     wall.dispatch({ type: 'main', columnId: 1 });
     expect(wall.dispatch({ type: 'page', columnId: 1, page: 0 })).toBe(false);
+  });
+
+  it('merges section 6 into one scrolling page while "Scroll teks" is on, and restores its pages when off', () => {
+    const wall = store();
+    const settings = useSettingsStore();
+    wall.dispatch({ type: 'main', columnId: 6 });
+    expect(wall.publishedColumns[6]).toMatchObject({ pageCount: 3 });
+    settings.setWall({ ...settings.wall, scrollText: true });
+    expect(wall.publishedColumns[6]).toMatchObject({ pageCount: 1 });
+    expect(wall.dispatch({ type: 'page', columnId: 6, page: 1 })).toBe(false);
+    const merged = getColumnPages(getColumnConfig(6), '', true)[0]!;
+    const all = getColumnPages(getColumnConfig(6), '').flatMap(page => page.i18n.id.blocks);
+    expect(merged.i18n.id.blocks).toEqual(all);
+    expect(getColumnPages(getColumnConfig(6), '', true)[0]).toBe(merged);
+    // Other columns keep their pages.
+    expect(getColumnPages(getColumnConfig(3), '', true)).toHaveLength(2);
+    settings.setWall({ ...settings.wall, scrollText: false });
+    expect(wall.publishedColumns[6]).toMatchObject({ pageCount: 3 });
   });
 
   it('publishes arrow and tab counts with each snapshot', () => {

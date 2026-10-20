@@ -26,7 +26,7 @@ The Summit logo is shared. Idle it is 278 px tall at y 70, narrow enough to stay
 | 3 | Infrastruktur | Warehouse illustration | Photo slider and bullets in two pages (PAGE 1/2, same slider); text 24–26 px |
 | 4 | Digital Trust | Phone illustration | Photo slider (ODP) and bullets in two pages (PAGE 1/2, same slider); text 24–26 px |
 | 5 | Distribusi & Pemasaran | Captioned Distribusi / Pemasaran tiles; each opens directly | Sub-item name above the card, photo slider, bullets |
-| 6 | Altama Summit 2026 | Flag ceremony illustration | Text-only Summit message in three pages (PAGE 1/2/3 tabs at the top of the card); each page's text 24–26 px |
+| 6 | Altama Summit 2026 | Flag ceremony illustration | Text-only Summit message in three pages (PAGE 1/2/3 tabs at the top of the card); each page's text 24–26 px. Trial: with Dashboard → Wall "Scroll teks" on, one page without tabs whose text scrolls vertically |
 
 There is no submenu: brand and distribution tiles are hold targets on the idle frame. The hold border animation shows progress.
 

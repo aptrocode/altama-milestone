@@ -29,6 +29,8 @@ const props = defineProps<{
   showPages?: boolean;
   /** Pages change on their own (dashboard Auto page, or tabs hidden). */
   autoPage?: boolean;
+  /** Trial: the text keeps its largest size and scrolls vertically (Dashboard → Wall "Scroll teks"). */
+  scroll?: boolean;
   /** Body size range in logical px (Dashboard → Font, per card). */
   textMin?: number;
   textMax?: number;
@@ -230,7 +232,7 @@ function onNatural(index: number, px: number) {
         v-for="(item, index) in pages" :key="index"
         class="absolute inset-0 overflow-hidden text-white transition-opacity duration-300 motion-reduce:transition-none"
         :class="page === index ? 'opacity-100' : 'opacity-0'"
-        :aria-hidden="page !== index" :copy="item.i18n[locale]" :locale="locale" :active="page === index" :min="textMin" :max="textMax" :limit="textLimit"
+        :aria-hidden="page !== index" :copy="item.i18n[locale]" :locale="locale" :active="page === index" :min="textMin" :max="textMax" :limit="textLimit" :scroll="scroll"
         @natural="onNatural(index, $event)"
       />
     </div>

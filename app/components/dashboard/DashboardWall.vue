@@ -98,6 +98,12 @@ const HELP: Record<string, HelpLine[]> = {
     { term: 'Video', text: 'Diputar sampai selesai dulu, baru ganti page.' },
     { term: 'Dengan Tombol slider off', text: 'Page berganti setelah foto terakhirnya, bukan per Auto page.' },
   ],
+  scrollText: [
+    'Uji coba: hanya section 6 (KTT Altama 2026).',
+    { term: 'On', text: 'Ketiga page digabung jadi satu tanpa tab. Teks memakai ukuran Maks dari Font dan bisa digeser ke atas/bawah (sentuh-geser, drag mouse, atau scroll wheel). Fade di bawah, scrollbar tipis, dan panah ⌄ menandakan masih ada teks.' },
+    { term: 'Off', text: 'Kembali 3 page dengan tab seperti biasa.' },
+    { term: 'Sensor', text: 'Geser lewat touchscreen, mouse, atau TD yang mengirim drag. Sensor Service (LiDAR/TUIO) belum mengirim geser; di jalur itu hanya tap.' },
+  ],
   resetSeconds: [
     'Kolom yang dibuka atau diganti bahasanya kembali ke tampilan awal (Bahasa Indonesia) setelah sekian detik tanpa sentuhan.',
     { term: 'Saat auto slide/page', text: 'Card menunggu sampai slide terakhir selesai dulu (paling lama 5 menit).' },
@@ -317,6 +323,13 @@ const unit = 'text-sm text-sky-100/60';
             </div>
           </DashboardSettingRow>
         </Transition>
+        <DashboardSettingRow
+          data-wall-setting="scrollText" title="Scroll teks (uji coba)" hint="Section 6: page digabung, teks digeser ke atas/bawah."
+          :help="HELP.scrollText"
+          :changed="changed('scrollText')" :default-label="defaultLabel('scrollText')" @reset="reset('scrollText')"
+        >
+          <DashboardSwitch :model-value="draft.scrollText" label="Scroll teks" @update:model-value="update({ scrollText: $event })" />
+        </DashboardSettingRow>
       </div>
     </DashboardSection>
 

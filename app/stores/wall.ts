@@ -1,15 +1,21 @@
 import type { ColumnId, ColumnSnapshot, PublishedColumn, WallAction } from '../../shared/wall';
 import { defineStore } from 'pinia';
 import { getColumnConfig, getColumnPages, WALL_CONFIG } from '~/data/wall-config';
+import { useSettingsStore } from '~/stores/settings';
 import { COLUMN_IDS, WALL_LOCALES } from '../../shared/wall';
 
 function initialColumn(columnId: ColumnId): ColumnSnapshot {
   return { phase: 'idle', locale: 'id', subItem: getColumnConfig(columnId).defaultSub || '', photo: 0, page: 0 };
 }
 
+/** The pages a column shows now (merged while Dashboard → Wall "Scroll teks" is on, for `scrollMerge` columns). */
+function pagesOf(columnId: ColumnId, subItem: string) {
+  return getColumnPages(getColumnConfig(columnId), subItem, useSettingsStore().wall.scrollText);
+}
+
 /** Photo count of the page currently shown in a column (0 when the page has no slider). */
 function photoCount(columnId: ColumnId, snapshot: ColumnSnapshot): number {
-  return getColumnPages(getColumnConfig(columnId), snapshot.subItem)[snapshot.page]?.photos.length || 0;
+  return pagesOf(columnId, snapshot.subItem)[snapshot.page]?.photos.length || 0;
 }
 
 function columnCopy(columnId: ColumnId, snapshot: ColumnSnapshot) {
@@ -36,8 +42,9 @@ export const useWallStore = defineStore('wall', {
     /** Snapshots plus visible arrow/tab counts for Sensor Service target selection. */
     publishedColumns: state => Object.fromEntries(COLUMN_IDS.map((id) => {
       const snapshot = state.columns[id];
-      const pageCount = getColumnPages(getColumnConfig(id), snapshot.subItem).length;
-      const tabsTop = !getColumnPages(getColumnConfig(id), snapshot.subItem).some(page => page.photos.length > 0);
+      const pages = pagesOf(id, snapshot.subItem);
+      const pageCount = pages.length;
+      const tabsTop = !pages.some(page => page.photos.length > 0);
       return [id, { ...snapshot, photoCount: photoCount(id, snapshot), pageCount, tabsTop }];
     })) as Record<ColumnId, PublishedColumn>,
   },
@@ -48,6 +55,14 @@ export const useWallStore = defineStore('wall', {
       if (preserveLocale)
         this.columns[id].locale = locale;
     },
+    /** A column whose page count shrank (Dashboard → Wall "Scroll teks" merging pages) shows its first page. */
+    clampPage(id: ColumnId) {
+      const column = this.columns[id];
+      if (column.page > 0 && column.page >= pagesOf(id, column.subItem).length) {
+        column.page = 0;
+        column.photo = 0;
+      }
+    },
     resetAll() {
       COLUMN_IDS.forEach(id => this.resetColumn(id, true));
     },
@@ -56,7 +71,7 @@ export const useWallStore = defineStore('wall', {
       if (!config)
         return false;
       const column = this.columns[action.columnId];
-      const pages = getColumnPages(config, column.subItem);
+      const pages = pagesOf(config.id, column.subItem);
 
       switch (action.type) {
         case 'language':

@@ -7,7 +7,7 @@ import WallHoldButton from '~/components/wall/WallHoldButton.vue';
 import WallIdleFrame from '~/components/wall/WallIdleFrame.vue';
 import WallOpenCard from '~/components/wall/WallOpenCard.vue';
 import { getColumnLayout, installationLayout, rectStyle } from '~/data/installation-layout';
-import { getColumnPages } from '~/data/wall-config';
+import { getColumnPages, scrollsText } from '~/data/wall-config';
 import { WALL_COPY } from '~/data/wall-copy';
 import { useSettingsStore } from '~/stores/settings';
 import { closeButtonRect } from '../../../shared/close-button';
@@ -40,7 +40,9 @@ const idle = computed(() => props.snapshot.phase === 'idle');
 // The close badge follows the dashboard size (1×–2×, around its centre) and X/Y shift, like its sensor target.
 const closeRect = computed(() => closeButtonRect(geometry.value.active.back, closeButtonOptions(settings.wall)));
 const idleFrame = computed(() => extendDown(geometry.value.card, languageGeometry(geometry.value, settings.wall.languageBar).extend));
-const pages = computed(() => getColumnPages(props.column, props.snapshot.subItem));
+const pages = computed(() => getColumnPages(props.column, props.snapshot.subItem, settings.wall.scrollText));
+// Trial: section 6's merged text scrolls vertically (Dashboard → Wall "Scroll teks").
+const scroll = computed(() => scrollsText(props.column, settings.wall.scrollText));
 // Open-card text size and fill come from Dashboard → Font, per card (column or sub-item).
 const cardText = computed(() => {
   const key = cardTextKey(props.column.key, props.column.type === 'expandable' ? props.snapshot.subItem : '');
@@ -86,7 +88,7 @@ function act(action: WallAction) {
   <section
     class="wall-column absolute text-wall-ink transition-[top] duration-500 ease-out motion-reduce:transition-none" :style="rectStyle(geometry.section, { x: origin.x, y: origin.y - offsetY })"
     :data-col="column.id" :data-phase="snapshot.phase" :lang="snapshot.locale" :aria-label="copy.label"
-    @pointerdown.capture="$emit('activity', column.id)" @keydown.capture="$emit('activity', column.id)"
+    @pointerdown.capture="$emit('activity', column.id)" @wheel.capture.passive="$emit('activity', column.id)" @keydown.capture="$emit('activity', column.id)"
   >
     <Transition
       enter-active-class="transition duration-500 ease-out" enter-from-class="opacity-0" enter-to-class="opacity-100"
@@ -138,7 +140,7 @@ function act(action: WallAction) {
       <WallOpenCard
         v-if="!idle" class="absolute transition-[height] duration-300 ease-out motion-reduce:transition-none" :style="cardStyle"
         :column-id="column.id" :pages="pages" :locale="snapshot.locale" :photo="snapshot.photo" :page="snapshot.page"
-        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" :show-pages="settings.wall.showPages" :auto-page="autoPageActive(settings.wall)" :text-min="cardText?.min" :text-max="cardText?.max" :max-height="maxCardHeight" @action="act" @height="onCardHeight"
+        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" :show-pages="settings.wall.showPages" :auto-page="autoPageActive(settings.wall)" :scroll="scroll" :text-min="cardText?.min" :text-max="cardText?.max" :max-height="maxCardHeight" @action="act" @height="onCardHeight"
         @media-ended="emit('slideEnded', column.id)"
       />
     </Transition>

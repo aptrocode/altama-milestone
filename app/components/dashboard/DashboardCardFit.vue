@@ -5,7 +5,7 @@ import type { PageCopy } from '~/types/wall-content';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import WallPageCopy from '~/components/wall/WallPageCopy.vue';
 import { getColumnLayout, installationLayout } from '~/data/installation-layout';
-import { WALL_CONFIG } from '~/data/wall-config';
+import { getColumnPages, scrollsText, WALL_CONFIG } from '~/data/wall-config';
 import { openCardTextTop, TEXT_INSET } from '~/utils/open-card-text';
 import { cardTextKey } from '../../../shared/font-settings';
 import { WALL_LOCALES } from '../../../shared/wall';
@@ -18,16 +18,18 @@ import { WALL_LOCALES } from '../../../shared/wall';
  */
 export interface CardFit { low: number; page: number; locale: WallLocale; high: number }
 
-const props = defineProps<{ cards: Record<CardTextKey, CardText>; showPages: boolean; offsetY: number }>();
+const props = defineProps<{ cards: Record<CardTextKey, CardText>; showPages: boolean; offsetY: number; /** Dashboard → Wall "Scroll teks". */ scrollText: boolean }>();
 const emit = defineEmits<{ result: [fits: Partial<Record<CardTextKey, CardFit>>] }>();
 
-interface Probe { id: string; key: CardTextKey; page: number; locale: WallLocale; copy: PageCopy; width: number; height: number }
+interface Probe { id: string; key: CardTextKey; page: number; locale: WallLocale; copy: PageCopy; width: number; height: number; scroll: boolean }
 
 const probes = computed<Probe[]>(() => WALL_CONFIG.columns.flatMap((column) => {
   const card = getColumnLayout(column.id).active;
   const contents = column.type === 'expandable'
-    ? (column.subItems ?? []).map(sub => ({ key: cardTextKey(column.key, sub.key), pages: sub.pages }))
-    : [{ key: cardTextKey(column.key, ''), pages: column.pages ?? [] }];
+    ? (column.subItems ?? []).map(sub => ({ key: cardTextKey(column.key, sub.key), pages: getColumnPages(column, sub.key, props.scrollText) }))
+    : [{ key: cardTextKey(column.key, ''), pages: getColumnPages(column, '', props.scrollText) }];
+  // Scrolling text keeps its largest size, so it always fits.
+  const scroll = scrollsText(column, props.scrollText);
   return contents.flatMap(({ key, pages }) => {
     if (!key)
       return [];
@@ -38,7 +40,7 @@ const probes = computed<Probe[]>(() => WALL_CONFIG.columns.flatMap((column) => {
       const copy = page.i18n[locale];
       // Each rotating part on its own, since only one shows at a time.
       const parts = copy.parts?.length ? copy.parts.map(blocks => ({ ...copy, blocks, parts: undefined })) : [copy];
-      return parts.map((part, partIndex) => ({ id: `${key}-${index}-${locale}-${partIndex}`, key, page: index, locale, copy: part, width, height }));
+      return parts.map((part, partIndex) => ({ id: `${key}-${index}-${locale}-${partIndex}`, key, page: index, locale, copy: part, width, height, scroll }));
     }));
   });
 }));
@@ -93,7 +95,7 @@ onBeforeUnmount(() => {
     <div v-for="probe in probes" :key="probe.id" class="absolute left-0 top-0" :data-probe="probe.id" :style="{ width: `${probe.width}px`, height: `${probe.height}px` }">
       <WallPageCopy
         class="absolute inset-0 overflow-hidden" :copy="probe.copy" :locale="probe.locale"
-        :min="cards[probe.key].min" :max="cards[probe.key].max" :limit="probe.height"
+        :min="cards[probe.key].min" :max="cards[probe.key].max" :limit="probe.height" :scroll="probe.scroll"
       />
     </div>
   </div>

@@ -78,4 +78,6 @@ export interface ColumnConfig {
   captionTiles?: boolean;
   /** Sub-item opened by the operator/OSC `main` action. */
   defaultSub?: string;
+  /** With Dashboard → Wall "Scroll teks" on, show all pages as one page whose text scrolls vertically. */
+  scrollMerge?: boolean;
 }
