@@ -24,6 +24,8 @@ const props = withDefaults(defineProps<{
   origin?: { x: number; y: number };
   /** Dashboard card offset in logical px (LED wall only): moves the whole column up or down. */
   offsetY?: number;
+  /** Idle hint target in this column (`main` or a tile key), if any. */
+  hintKey?: string | null;
 }>(), { origin: () => ({ x: 0, y: 0 }), offsetY: 0 });
 const emit = defineEmits<{ action: [action: WallAction]; activity: [id: ColumnId]; cardBottom: [y: number]; slideEnded: [id: ColumnId] }>();
 
@@ -95,7 +97,7 @@ function act(action: WallAction) {
     >
       <WallIdleFrame
         v-if="idle" class="absolute" :style="rectStyle(idleFrame, geometry.section)"
-        :column="column" :locale="snapshot.locale" :label="copy.label" @action="act"
+        :column="column" :locale="snapshot.locale" :label="copy.label" :hint-key="hintKey" @action="act"
       />
     </Transition>
 

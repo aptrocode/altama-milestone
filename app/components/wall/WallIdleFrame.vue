@@ -13,7 +13,7 @@ import { extendDown, languageGeometry } from '../../../shared/language-bar';
  * Idle frame (reference mockup 1): one full-frame hold target with artwork for single columns,
  * or one hold tile per sub-item for expandable columns, plus the floating flag bar.
  */
-const props = defineProps<{ column: ColumnConfig; locale: WallLocale; label: string }>();
+const props = defineProps<{ column: ColumnConfig; locale: WallLocale; label: string; /** Idle hint target: `main` or a tile key. */ hintKey?: string | null }>();
 const emit = defineEmits<{ action: [action: WallAction] }>();
 
 const settings = useSettingsStore();
@@ -132,7 +132,7 @@ onBeforeUnmount(() => {
     </div>
     <WallHoldButton
       v-if="main" class="absolute inset-0 [border-radius:inherit] hover:bg-white/5"
-      :outline="main" group="card" :radius="14" :aria-label="label" data-sensor-action="main"
+      :outline="main" group="card" :radius="14" :hint="hintKey === 'main'" :aria-label="label" data-sensor-action="main"
       @activate="emit('action', { type: 'main', columnId: column.id })"
     />
     <!-- Over card artwork the tiles are transparent targets on its panels (19 px corners);
@@ -144,7 +144,7 @@ onBeforeUnmount(() => {
         ? '[border-radius:calc(19*var(--wall-x))/calc(19*var(--wall-y))] hover:bg-white/5'
         : ['[border-radius:calc(10*var(--wall-x))/calc(10*var(--wall-y))] ring-1 ring-white/30 shadow-[0_0_calc(10*var(--wall-x))_rgba(80,190,255,0.35)]', column.captionTiles ? 'bg-[#1530b8]/70' : '']"
       :style="{ ...rectStyle(tile, card), backgroundColor: column.illustration ? undefined : sub.tileBackground }"
-      :outline="tile" group="card" :radius="column.illustration ? 19 : 10" :aria-label="sub.i18n[locale].label"
+      :outline="tile" group="card" :radius="column.illustration ? 19 : 10" :hint="hintKey === tile.key" :aria-label="sub.i18n[locale].label"
       data-sensor-action="subItem" :data-sub-item="tile.key"
       @activate="emit('action', { type: 'subItem', columnId: column.id, subItemId: tile.key })"
     >

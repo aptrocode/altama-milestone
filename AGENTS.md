@@ -21,7 +21,7 @@ Read only the document needed:
 
 - `app/components/kiosk/`: wall vs stacked (phone/tablet) layout, background media layer, operator shortcuts, socket, diagnostics, and `KioskTouchDots` (calibration overlay: dashboard `showTouchDots` or `?dots=1`).
 - `app/components/wall/`: `WallColumn` (orchestrator), `WallIdleFrame` (mockup 1), `WallOpenCard` (mockup 2: page photo slider, arrows, page tabs), `WallPageCopy`, `WallColumnPill`, `WallColumnIcon`, `WallLanguageSwitcher`, and `WallHoldButton`.
-- `app/composables/useWallController.ts`: shared action API and per-instance inactivity timers; `useStackedLayout.ts`: phone/tablet media query.
+- `app/composables/useWallController.ts`: shared action API and per-instance inactivity timers; `useStackedLayout.ts`: phone/tablet media query; `useTouchHints.ts`: idle "press me" cue scheduler (one target at a time, quiet after a touch).
 - `app/data/columns/`: one file per column (labels, artwork, tiles, pages, photos) plus `helpers.ts`; `app/types/wall-content.ts`: their types.
 - `app/stores/`: serializable wall, system, and operator-settings (`hold`, `wall`) state only; `app/plugins/settings-storage.client.ts` persists settings to localStorage.
 - Operator dashboard: `app/pages/dashboard.vue` (sidebar shell) with `app/pages/dashboard/{hold,wall,sensor}.vue`, `app/components/dashboard/` (`DashboardHold`, `DashboardWall`, `DashboardSensor`, `DashboardFormActions`), `app/composables/useSettingsBackup.ts` (export/import), `app/composables/useSettingsDraft.ts` (draft/dirty/save/default for the browser-stored forms), and `app/composables/useSensorAdmin.ts` (admin socket).
