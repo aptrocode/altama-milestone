@@ -31,9 +31,11 @@ Every button, switch, link, and tab (including the Sensor source tabs) shows a p
 - **Off**: the button activates on a normal press.
 - Keyboard Enter/Space always activate immediately, whatever the rule.
 - Groups whose buttons the Wall page hides are hidden here as well, with a note linking to Wall: Button page while Tombol page is off, Button slider while Tombol slider is off, Tombol close while Tombol close is off. Their values are kept and return when the switch is turned on again. The list follows the saved Wall settings, also when they change in another tab.
-- **Simpan** applies the edit; **Default** loads the defaults into the form (save to apply).
+- The save bar sticks to the bottom of the page: it counts unsaved changes; **Simpan** applies them, **Batal** discards them, **Default** loads the defaults into the form (save to apply).
 
 ## Wall
+
+The page is grouped into four cards: **Tampilan** (language bar, card offset), **Tombol di card** (close, slider + Auto slide, page + Auto page), **Waktu** (reset), and **Diagnostik** (amber; touch dots + duration, with a "Masih menyala" badge while on). Each row has a one-line hint (number rows state their default), a **?** tooltip with the details (hover; a click or tap pins it and lights the **?**, closed by another click, a click elsewhere, or Escape), and, when the value differs from its default, a **↺ Default: …** chip that restores it. Switches show On/Off. Inputs that only matter while a switch is off (Auto slide, Auto page) or on (Durasi titik) sit indented under it. The language bar options are drawn as small card sketches.
 
 | Setting | Effect | Default |
 | --- | --- | --- |
