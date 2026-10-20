@@ -283,3 +283,31 @@ describe('reset waits for the auto slideshow', () => {
     expect(waiting.wall.getColumnState(3)).toBe('idle');
   });
 });
+
+describe('auto slide and auto page together', () => {
+  // Our Brand · Rexco: page 1 has 4 photos, page 2 has 3.
+  function open() {
+    const wall = useWallStore(createPinia());
+    const scope = effectScope();
+    scopes.push(scope);
+    scope.run(() => useWallController(wall, { autoSlideMs: () => 5000, autoPageMs: () => 10_000 }))!
+      .dispatch({ type: 'subItem', columnId: 2, subItemId: 'rexco' });
+    expect(wall.publishedColumns[2]).toMatchObject({ page: 0, photoCount: 4, pageCount: 2 });
+    return wall;
+  }
+
+  it('changes page after the last photo instead of the page timer, then closes after the last page', () => {
+    const wall = open();
+    vi.advanceTimersByTime(15_000); // past the 10 s page interval: still page 1, photo 4
+    expect(wall.publishedColumns[2]).toMatchObject({ page: 0, photo: 3 });
+    vi.advanceTimersByTime(5000); // 4 photos × 5 s
+    expect(wall.publishedColumns[2]).toMatchObject({ page: 1, photo: 0, photoCount: 3 });
+    vi.advanceTimersByTime(10_000);
+    expect(wall.publishedColumns[2]).toMatchObject({ page: 1, photo: 2 });
+    expect(wall.getColumnState(2)).toBe('active'); // 30 s reset passed, last photo still showing
+    vi.advanceTimersByTime(4999);
+    expect(wall.getColumnState(2)).toBe('active');
+    vi.advanceTimersByTime(1); // 20 s + 15 s = 35 s
+    expect(wall.getColumnState(2)).toBe('idle');
+  });
+});
