@@ -127,11 +127,11 @@ watch(() => props.page, (page, previous) => {
 });
 onBeforeUnmount(() => flashTimers.forEach(clearTimeout));
 const naturals = reactive<Record<number, number>>({});
-// A page whose text fills the card (column `fillText` or page `fill`, e.g. Tekiro's rotating awards)
-// takes the tallest card (WallColumn clamps to openCardMaxBottom) so its text can grow.
+// A page whose text fills the card (`fill`, e.g. Tekiro's rotating awards) takes the tallest card
+// (WallColumn clamps to openCardMaxBottom) so its text can grow.
 const FILL_HEIGHT = 10_000;
 function reportHeight() {
-  if (props.fillText || current.value?.i18n[props.locale].fill) {
+  if (current.value?.i18n[props.locale].fill) {
     emit('height', FILL_HEIGHT);
     return;
   }
@@ -140,7 +140,7 @@ function reportHeight() {
   if (pxPerUnit > 0 && visible > 0)
     emit('height', Math.ceil(textTop.value + visible / pxPerUnit + TEXT_BOTTOM));
 }
-watch([naturals, textTop, () => props.pages, () => props.page, () => props.locale, () => props.fillText], reportHeight);
+watch([naturals, textTop, () => props.pages, () => props.page, () => props.locale], reportHeight);
 function onNatural(index: number, px: number) {
   naturals[index] = px;
 }
