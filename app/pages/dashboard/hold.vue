@@ -3,7 +3,7 @@ import DashboardHold from '~/components/dashboard/DashboardHold.vue';
 
 definePageMeta({
   title: 'Hold',
-  description: 'Tombol mana yang harus ditahan dan berapa lama. Tersimpan di browser ini dan dikirim ke Sensor Service.',
+  description: 'Cara menekan setiap jenis tombol: tap, hold, atau tap + delay, dan berapa lama. Tersimpan di browser ini dan dikirim ke Sensor Service.',
 });
 </script>
 

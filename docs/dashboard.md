@@ -43,8 +43,11 @@ A title word that does not fit its pill (e.g. INFRASTRUKTUR at a large size or B
 | Bahasa (`language`) | Language flags (ID / EN / 中文) | **Off** |
 | Tombol close (`back`) | The open card's ✕ button | **Off** |
 
-- **On** with a duration (0.3–5 s, 0.1 s steps): the button must be held; the border progress animation follows the duration.
-- **Off**: the button activates on a normal press.
+Each group has a **mode** (segmented **Tap / Hold / Tap + delay**) and a duration (0.3–5 s, 0.1 s steps, unused for Tap); the table's "On" means Hold and "Off" means Tap.
+
+- **Hold**: the button must be held; the border progress animation follows the duration; releasing early cancels.
+- **Tap + delay**: one tap starts the same border animation and the button activates when it completes, without holding (releasing does not cancel; another tap while it runs is ignored). Sensor Service treats it as a short contact and the wall plays the delay on the touched button (`wall:press`), so LiDAR and pointer input behave alike.
+- **Tap**: the button activates on a normal press.
 - Keyboard Enter/Space always activate immediately, whatever the rule.
 - Groups whose buttons the Wall page hides are hidden here as well, with a note linking to Wall: Button page while Tombol page is off, Button slider while Tombol slider is off, Tombol close while Tombol close is off. Their values are kept and return when the switch is turned on again. The list follows the saved Wall settings, also when they change in another tab.
 - The save bar sticks to the bottom of the page: it counts unsaved changes; **Simpan** applies them, **Batal** discards them, **Default** loads the defaults into the form (save to apply).

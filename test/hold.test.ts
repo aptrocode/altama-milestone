@@ -20,7 +20,7 @@ function event(type: string, properties: Record<string, unknown>) {
 }
 
 const bindings: ReturnType<typeof bindHold>[] = [];
-function setup(options: { enabled?: boolean; durationMs?: number } = {}, view?: EventTarget) {
+function setup(options: { enabled?: boolean; durationMs?: number; mode?: 'tap' | 'hold' | 'delay' } = {}, view?: EventTarget) {
   const button = new Button(view);
   const activate = vi.fn();
   const binding = bindHold(button as unknown as HTMLElement, { onActivate: activate, ...options });
@@ -164,5 +164,33 @@ describe('hold input lifecycle', () => {
     expect(activate).not.toHaveBeenCalled();
     expect(vi.getTimerCount()).toBe(0);
     expect(button.classes.size).toBe(0);
+  });
+
+  it('delay mode: a tap starts the hold animation and activates after the duration without holding', () => {
+    const { button, activate } = setup({ enabled: false, mode: 'delay', durationMs: 800 });
+    button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 1, isPrimary: true }));
+    button.view.dispatchEvent(event('pointerup', { pointerId: 1 }));
+    button.dispatchEvent(event('pointerleave', { pointerId: 1 }));
+    button.dispatchEvent(event('click', { detail: 1 }));
+    expect(button.classes.has('holding')).toBe(true);
+    // A second tap while waiting does not start another countdown.
+    vi.advanceTimersByTime(400);
+    button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 2, isPrimary: true }));
+    vi.advanceTimersByTime(399);
+    expect(activate).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1);
+    expect(activate).toHaveBeenCalledTimes(1);
+    expect(button.classes.has('holding')).toBe(false);
+  });
+
+  it('wall:press (sensor input) delays in delay mode and activates at once otherwise', () => {
+    const delayed = setup({ enabled: false, mode: 'delay', durationMs: 500 });
+    delayed.button.dispatchEvent(new Event('wall:press'));
+    expect(delayed.activate).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(500);
+    expect(delayed.activate).toHaveBeenCalledTimes(1);
+    const tap = setup({ enabled: false, mode: 'tap' });
+    tap.button.dispatchEvent(new Event('wall:press'));
+    expect(tap.activate).toHaveBeenCalledTimes(1);
   });
 });
