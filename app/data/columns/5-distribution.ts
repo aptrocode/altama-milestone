@@ -22,8 +22,6 @@ export const DISTRIBUTION: ColumnConfig = {
   icon: 'pin',
   illustration: provisional('/illustrations/distribution.webm'),
   captionTiles: true,
-  // Like Infrastruktur and Kepercayaan Digital: each page's text grows to fill its card.
-  fillText: true,
   defaultSub: 'distribusi',
   i18n: {
     'id': { label: 'DISTRIBUSI & PEMASARAN' },

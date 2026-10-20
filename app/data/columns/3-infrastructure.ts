@@ -19,13 +19,12 @@ export const INFRASTRUCTURE: ColumnConfig = {
   type: 'single',
   icon: 'warehouse',
   illustration: provisional('/illustrations/infrastructure.webm'),
-  fillText: true,
   i18n: {
     'id': { label: 'INFRASTRUKTUR' },
     'en': { label: 'INFRASTRUCTURE' },
     'zh-Hans': { label: '基础设施' },
   },
-  // Two pages with the same photo slider; each page's text grows to fill the card.
+  // Two pages with the same photo slider (text size: Dashboard → Font).
   pages: [
     page(PHOTOS, {
       'id': { tab: PAGE_TABS.first.id, blocks: [{ bullets: [

@@ -13,13 +13,12 @@ export const DIGITAL_TRUST: ColumnConfig = {
   type: 'single',
   icon: 'person',
   illustration: provisional('/illustrations/digital-partners.webm'),
-  fillText: true,
   i18n: {
     'id': { label: 'KEPERCAYAAN DIGITAL' },
     'en': { label: 'DIGITAL TRUST' },
     'zh-Hans': { label: '数字信任' },
   },
-  // Two pages with the same photo slider; each page's text grows to fill the card.
+  // Two pages with the same photo slider (text size: Dashboard → Font).
   pages: [
     page(PHOTOS, {
       'id': { tab: PAGE_TABS.first.id, blocks: [{ bullets: [

@@ -31,7 +31,7 @@ All open-card text renders through `WallPageCopy`, the only place that styles it
 - `numbered`: glow `01`, `02` numbers in a column 1.8 em wide (it scales with the text) with the text beside them.
 - Motion: slider arrow discs nudge 5 px left/right in their direction on a 1.6 s loop (translate only, scoped keyframes in `WallOpenCard`, off under reduced motion).
 - Motion: paragraphs and list items fade up one after another in reading order (70 ms apart, 460 ms each) whenever a page becomes visible: on open, page tab, and language. Scoped keyframes in `WallPageCopy`, off under reduced motion.
-- Size: body text is the Dashboard → Font body size (default 18 logical px, `--fs-body` × `--wall-u`). The card grows with the visible page first (WallOpenCard reports the height, WallColumn clamps it between `active.card.height` and `openCardMaxBottom`); only a page that still overflows the tallest card (y 1312) shrinks, in 2 % steps down to 80 %. Never clip text, and never set per-page font sizes in content.
+- Size: body text is the open card's Dashboard → Font size (`cards` per column or sub-item, default 18 or 22 logical px; WallPageCopy `size` → `--copy-base` = size / 18, × `--wall-u`), and its Penuhi card switch grows it to fill the card. The card grows with the visible page first (WallOpenCard reports the height, WallColumn clamps it between `active.card.height` and `openCardMaxBottom`); only a page that still overflows the tallest card (y 1312) shrinks, in 2 % steps down to 80 %. Never clip text, and never set per-page font sizes in content.
 - After content changes, check every column, sub-item, page, and language at 2304 × 1344 and a phone width: no page overflows and no card grows past y 1312.
 
 ## Card artwork and brand logos

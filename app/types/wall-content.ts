@@ -37,7 +37,7 @@ export interface PageCopy {
    */
   parts?: ContentBlock[][];
   partSeconds?: number;
-  /** Grow this page's text until it fills the card (like a column's `fillText`). */
+  /** This page takes the tallest card and grows its text to fill it, whatever the card's Dashboard → Font setting. */
   fill?: boolean;
 }
 
@@ -60,8 +60,6 @@ export interface SubItem {
   wordmark?: MediaAsset;
   i18n: Record<WallLocale, { label: string }>;
   pages: ContentPage[];
-  /** Open-card text size relative to the body size (e.g. 1.2); the card grows to fit it. */
-  textScale?: number;
 }
 
 export type ColumnIcon = 'building' | 'gear' | 'warehouse' | 'person' | 'pin' | 'people';
@@ -82,6 +80,4 @@ export interface ColumnConfig {
   captionTiles?: boolean;
   /** Sub-item opened by the operator/OSC `main` action. */
   defaultSub?: string;
-  /** Open-card text grows, page by page, until it fills the card's height (short text-only pages). */
-  fillText?: boolean;
 }

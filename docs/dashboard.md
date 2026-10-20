@@ -20,7 +20,7 @@ Every button, switch, link, and tab (including the Sensor source tabs) shows a p
 
 ## Font
 
-Every wall text uses Roboto. The page sets the sizes (logical px on the 2304 × 1344 canvas) and the title weight, grouped as **Judul** and **Card terbuka**. Each row shows a live sample, − / + steppers, a ? tooltip, and a **↺ Default** chip; the save bar works as on Wall.
+Every wall text uses Roboto. The page sets the sizes (logical px on the 2304 × 1344 canvas) and the title weight, grouped as **Judul**, **Isi card per section**, and **Tab page**. Each row shows a live sample, − / + steppers, a ? tooltip, and a **↺ Default** chip; the save bar works as on Wall.
 
 | Setting | Text | Default | Range |
 | --- | --- | --- | --- |
@@ -29,7 +29,10 @@ Every wall text uses Roboto. The page sets the sizes (logical px on the 2304 × 
 | Nama sub-item | Open sub-item name above the card (when it has no logo) | 32 | 24–40 |
 | Caption tile | Tile labels of column 5 (Distribusi / Pemasaran) | 30 | 22–36 |
 | Tab page | Page tab labels | 24 | 16–28 |
-| Isi konten | Open-card copy; glow labels stay 0.82 × | 18 | 14–24 |
+
+**Isi card per section** has one row per open card (`cards` in `shared/font-settings.ts`): Tentang Altama, Tekiro, RYU, Rexco, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, and KTT Altama 2026. Each row sets the body size (14–40 px; glow labels stay 0.82 ×) and a **Penuhi card** switch (on: the text starts at that size and grows until the card is full; off: it stays at that size and the card grows to fit it). The defaults keep the earlier look: Tekiro, RYU, and Rexco at 22 px without fill, the other cards at 18 px with fill. Pages built to fill the tallest card (Tekiro and RYU awards) always fill.
+
+Each row also shows a fit status, checked on every page, rotating part, and language at once (`DashboardCardFit` renders them invisibly in the tallest card's text box): **✓ Muat**, or **⚠ Terlalu besar · dikecilkan ke N% (PAGE p, language)** when the wall would have to shrink that text. Pages are never added automatically; a card that needs a larger size than fits is split into more pages in its content file.
 
 A title word that does not fit its pill (e.g. INFRASTRUKTUR at a large size or Black) shrinks just that title (down to 60 %); long open-card pages still grow the card first and then shrink, so no setting clips text.
 

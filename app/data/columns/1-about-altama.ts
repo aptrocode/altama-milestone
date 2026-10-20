@@ -8,8 +8,6 @@ export const ABOUT_ALTAMA: ColumnConfig = {
   type: 'single',
   icon: 'building',
   illustration: provisional('/illustrations/about-altama.webm'),
-  // Short text: it grows to fill the open card.
-  fillText: true,
   i18n: {
     'id': { label: 'TENTANG ALTAMA' },
     'en': { label: 'ABOUT ALTAMA' },

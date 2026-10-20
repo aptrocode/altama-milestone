@@ -78,7 +78,6 @@ const fontVars = computed(() => ({
   '--fs-subitem': settings.fonts.subItemSize,
   '--fs-caption': settings.fonts.captionSize,
   '--fs-tab': settings.fonts.tabSize,
-  '--fs-body': settings.fonts.bodySize,
 }));
 
 // Phones/tablets: each column is drawn in its own box with a uniform scale (container width),

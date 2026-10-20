@@ -8,7 +8,8 @@ import WallPageCopy from '~/components/wall/WallPageCopy.vue';
 import { installationLayout, rectStyle } from '~/data/installation-layout';
 import { WALL_COPY } from '~/data/wall-copy';
 import { isVideoSrc } from '~/utils/media';
-import { extraTabRows, pageTabRects, textTopUnderTopTabs } from '../../../shared/page-tabs';
+import { openCardTextTop, TEXT_INSET } from '~/utils/open-card-text';
+import { pageTabRects } from '../../../shared/page-tabs';
 
 /**
  * Open-card content: each page owns a photo slider and text. Arrows move photos inside the
@@ -28,10 +29,10 @@ const props = defineProps<{
   showPages?: boolean;
   /** Pages change on their own (dashboard Auto page, or tabs hidden). */
   autoPage?: boolean;
-  /** Each page's text grows until it fills the card (column `fillText`). */
+  /** Each page's text grows until it fills the card (Dashboard → Font, per card). */
   fillText?: boolean;
-  /** Text size relative to the body size (sub-item `textScale`). */
-  textScale?: number;
+  /** Body text size in logical px (Dashboard → Font, per card). */
+  textSize?: number;
 }>();
 const emit = defineEmits<{ action: [action: WallAction]; height: [logical: number]; mediaEnded: [] }>();
 
@@ -73,19 +74,13 @@ function onVideoDone(index: number) {
     emit('mediaEnded');
 }
 // Text starts below whichever of the photo frame and page tabs are present.
-const textTop = computed(() => {
-  if (hasPages.value) {
-    const tabHeight = props.geometry.pages[0]!.height;
-    return hasPhotoFrame.value ? visual.textTop.tabs + extraTabRows(props.pages.length, tabHeight) : textTopUnderTopTabs(tabHeight, props.pages.length);
-  }
-  return hasPhotoFrame.value ? visual.textTop.photo : visual.textTop.plain;
-});
-const TEXT_BOTTOM = 20;
+const textTop = computed(() => openCardTextTop(props.geometry, props.pages, props.showPages !== false));
+const TEXT_BOTTOM = TEXT_INSET.bottom;
 const textStyle = computed(() => ({
   top: `calc(${textTop.value} * var(--wall-y))`,
   bottom: `calc(${TEXT_BOTTOM} * var(--wall-y))`,
-  left: `calc(26 * var(--wall-x))`,
-  right: `calc(24 * var(--wall-x))`,
+  left: `calc(${TEXT_INSET.left} * var(--wall-x))`,
+  right: `calc(${TEXT_INSET.right} * var(--wall-x))`,
 }));
 
 // The card is as tall as the visible page needs (WallColumn clamps it between the layout's card
@@ -225,7 +220,7 @@ function onNatural(index: number, px: number) {
         v-for="(item, index) in pages" :key="index"
         class="absolute inset-0 overflow-hidden text-white transition-opacity duration-300 motion-reduce:transition-none"
         :class="page === index ? 'opacity-100' : 'opacity-0'"
-        :aria-hidden="page !== index" :copy="item.i18n[locale]" :locale="locale" :active="page === index" :fill="fillText" :base="textScale"
+        :aria-hidden="page !== index" :copy="item.i18n[locale]" :locale="locale" :active="page === index" :fill="fillText" :size="textSize"
         @natural="onNatural(index, $event)"
       />
     </div>
