@@ -25,7 +25,7 @@ import { LANGUAGE_BAR_MODES } from './language-bar';
  * - scrollText: trial of vertically scrolling card text (default off). Every card keeps its Font
  *   Maks size and scrolls; its pages are grouped by `scrollPages` (default one page: Tekiro 2, RYU
  *   and Rexco keep 2); off restores the pages and tabs.
- * - languageBar: `compact` flag pill (default) or `full` width with larger buttons
+ * - languageBar: `full` width with larger buttons (default), the `compact` flag pill, or the 2 + 1 `grid`
  *   (shared/language-bar.ts); Sensor Service moves the language targets with it.
  * - showTouchDots: calibration overlay on the wall (press/release/sensor dots with coordinates).
  * - touchDotSeconds: how long each touch dot stays after its release (or after a sensor input).
@@ -54,7 +54,7 @@ export const AUTO_SLIDE_SECONDS = { min: 2, max: 60, step: 1 } as const;
 export const AUTO_PAGE_SECONDS = { min: 3, max: 120, step: 1 } as const;
 export const TOUCH_DOT_SECONDS = { min: 1, max: 60, step: 1 } as const;
 
-export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPage: true, autoPageSeconds: 15, scrollText: false, languageBar: 'compact', showTouchDots: false, touchDotSeconds: 5 };
+export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPage: true, autoPageSeconds: 15, scrollText: false, languageBar: 'full', showTouchDots: false, touchDotSeconds: 5 };
 
 function clampNumber(value: unknown, fallback: number, limits: { min: number; max: number; step: number }): number {
   const raw = typeof value === 'number' && Number.isFinite(value) ? value : fallback;

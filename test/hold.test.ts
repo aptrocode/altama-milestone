@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { bindHold, HOLD_SETTLE_MS } from '../app/utils/hold';
+import { bindHold, HOLD_SETTLE_MS, HOLD_STALL_MS } from '../app/utils/hold';
 
 class Button extends EventTarget {
   ownerDocument: { defaultView: EventTarget };
@@ -219,5 +219,32 @@ describe('hold input lifecycle', () => {
     vi.advanceTimersByTime(HOLD_SETTLE_MS);
     expect(activate).toHaveBeenCalledTimes(1);
     expect(button.classes.has('hold-complete')).toBe(true);
+  });
+
+  it('a running Tap + delay survives re-renders (update with the same rule) and window blur', () => {
+    const { button, activate, binding } = setup({ enabled: false, mode: 'delay', durationMs: 1000 });
+    button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 1, isPrimary: true }));
+    vi.advanceTimersByTime(400);
+    binding.update({ onActivate: activate, enabled: false, mode: 'delay', durationMs: 1000 });
+    button.view.dispatchEvent(new Event('blur'));
+    expect(button.classes.has('holding')).toBe(true);
+    vi.advanceTimersByTime(600 + HOLD_SETTLE_MS);
+    expect(activate).toHaveBeenCalledTimes(1);
+    // Switching to Tap does stop a running delay.
+    button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 2, isPrimary: true }));
+    binding.update({ onActivate: activate, enabled: false, mode: 'tap' });
+    expect(button.classes.has('holding')).toBe(false);
+    vi.advanceTimersByTime(2000);
+    expect(activate).toHaveBeenCalledTimes(1);
+  });
+
+  it('acts anyway when the border animation never finishes (frozen page)', () => {
+    const { button, activate } = setup({ enabled: false, mode: 'delay', durationMs: 1000 });
+    (button as unknown as { getAnimations: () => unknown[] }).getAnimations = () => [{ animationName: 'hold-border-x', playState: 'running', finished: new Promise(() => {}) }];
+    button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 1, isPrimary: true }));
+    vi.advanceTimersByTime(1000 + HOLD_STALL_MS - 1);
+    expect(activate).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(1 + HOLD_SETTLE_MS);
+    expect(activate).toHaveBeenCalledTimes(1);
   });
 });
