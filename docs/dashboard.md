@@ -40,11 +40,11 @@ A title word that does not fit its pill (e.g. INFRASTRUKTUR at a large size or B
 
 | Group | Buttons | Default |
 | --- | --- | --- |
-| Card section (`card`) | Idle main card of columns 1/3/4/6 and the sub-item tiles of columns 2/5 | Tap + delay, 1.0 s |
-| Button page (`page`) | Page tabs (PAGE 1–4) | Tap + delay, 1.0 s |
-| Button slider (`slider`) | Photo arrows | Tap + delay, 1.0 s |
-| Bahasa (`language`) | Language flags (ID / EN / 中文) | Tap + delay, 1.0 s |
-| Tombol close (`back`) | The open card's ✕ button | Tap + delay, 1.0 s |
+| Card section (`card`) | Idle main card of columns 1/3/4/6 and the sub-item tiles of columns 2/5 | Hold, 1.0 s |
+| Button page (`page`) | Page tabs (PAGE 1–4) | Hold, 1.0 s |
+| Button slider (`slider`) | Photo arrows | Hold, 1.0 s |
+| Bahasa (`language`) | Language flags (ID / EN / 中文) | Hold, 1.0 s |
+| Tombol close (`back`) | The open card's ✕ button | Hold, 1.0 s |
 
 Each group has a **mode** (segmented **Tap / Hold / Tap + delay**) and a duration (0.3–5 s, 0.1 s steps, unused for Tap).
 
@@ -105,7 +105,7 @@ Videos always play to their end while anything advances automatically, and a car
 
   | Tentang Altama, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, Altama Summit | 1, no page tabs |
 
-- **Preset when switched on:** Tombol slider turns off in the form (photos auto-slide), and on **Simpan** every Hold group becomes Tap + delay with its duration kept (`scrollModeHold`). Tombol close is left as it is. Everything can be changed again afterwards; turning Scroll teks off does not undo the preset.
+- **Preset when switched on:** Tombol slider turns off in the form (photos auto-slide). Tombol close and the Hold page are left as they are.
 - **Card height:** every open card ends where its idle frame ends (under the flag bar: y 1068, or 76 px lower with Grid 2 + 1, moving with Posisi Y card), whatever its content, so the skyline stays visible; the text scrolls inside. Off: cards grow with their text up to y 1312 again.
 - **Photo swipe:** a photo with more than one slide also swipes horizontally (left = next, right = previous, like the arrows): the photo follows the drag and snaps back, and a swipe counts when it is mostly horizontal and longer than a fifth of the frame. Touch, mouse, or a TouchDesigner drag.
 - **Tombol slider:** unchanged by Scroll teks: Off still hides the arrows and auto-slides the photos.

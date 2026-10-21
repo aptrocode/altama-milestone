@@ -11,7 +11,6 @@ import DashboardSwitch from '~/components/dashboard/DashboardSwitch.vue';
 import { useSettingsDraft } from '~/composables/useSettingsDraft';
 import { useSettingsStore } from '~/stores/settings';
 import { CLOSE_OFFSET, CLOSE_SCALE } from '../../../shared/close-button';
-import { scrollModeHold } from '../../../shared/hold-settings';
 import { AUTO_PAGE_SECONDS, AUTO_SLIDE_SECONDS, autoPageActive, CARD_OFFSET_Y, DEFAULT_WALL_SETTINGS, normalizeWallSettings, RESET_SECONDS, TOUCH_DOT_SECONDS } from '../../../shared/wall-settings';
 
 const settings = useSettingsStore();
@@ -19,13 +18,7 @@ const { draft, dirty, status, save, discard, restoreDefaults } = useSettingsDraf
   saved: () => settings.wall,
   normalize: normalizeWallSettings,
   defaults: DEFAULT_WALL_SETTINGS,
-  save: (value) => {
-    // Switching Scroll teks on applies its preset: every hold group becomes Tap + delay.
-    const scrollTurnedOn = value.scrollText && !settings.wall.scrollText;
-    settings.setWall(value);
-    if (scrollTurnedOn)
-      settings.setHold(scrollModeHold(settings.hold));
-  },
+  save: value => settings.setWall(value),
 });
 
 const KEYS = Object.keys(DEFAULT_WALL_SETTINGS) as (keyof WallSettings)[];
@@ -34,7 +27,7 @@ const changed = (key: keyof WallSettings) => draft.value[key] !== DEFAULT_WALL_S
 
 function update(patch: Partial<WallSettings>) {
   // Scroll teks preset (client request): turning it on also turns Tombol slider off (photos
-  // auto-slide); the hold groups follow on save. Tombol close is left as it is.
+  // auto-slide). Tombol close and the Hold page are left as they are.
   const preset = patch.scrollText && !draft.value.scrollText ? { showArrows: false } : {};
   draft.value = normalizeWallSettings({ ...draft.value, ...patch, ...preset });
 }
@@ -133,7 +126,7 @@ const HELP: Record<string, HelpLine[]> = {
   scrollText: [
     { term: 'Page', text: 'Teks dibagi ke page dengan tab (Tekiro 4, yang lain 1–2). Card memanjang mengikuti teks, sampai di atas gedung.' },
     { term: 'Scroll (uji coba)', text: 'Card setinggi frame idle, jadi gedung tetap terlihat. Teks memakai ukuran Maks dari Font dan digeser ke atas/bawah (sentuh-geser, drag mouse, scroll wheel); fade, scrollbar tipis, dan panah ⌄ menandakan masih ada teks. Page lebih sedikit: section 2 (Merek Kami: Tekiro, RYU, Rexco) tetap punya page, masing-masing 2 page dengan tab; section lain 1 page tanpa tab. Foto juga bisa di-swipe kiri/kanan.' },
-    { term: 'Saat memilih Scroll', text: 'Tombol slider otomatis off (foto auto slide), dan saat disimpan semua jenis tombol di Hold jadi Tap + delay (durasinya tetap). Tombol close tidak diubah. Setelah itu semuanya masih bisa diubah lagi.' },
+    { term: 'Saat memilih Scroll', text: 'Tombol slider otomatis off (foto auto slide). Tombol close dan pengaturan Hold tidak diubah. Setelah itu semuanya masih bisa diubah lagi.' },
     { term: 'Sensor', text: 'Geser teks dan swipe foto lewat touchscreen, mouse, atau TD yang mengirim drag. Sensor Service (LiDAR/TUIO) belum mengirim geser; di jalur itu hanya tap.' },
   ],
   resetSeconds: [

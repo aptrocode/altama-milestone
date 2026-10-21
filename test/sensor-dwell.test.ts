@@ -189,7 +189,7 @@ describe('dwell engine', () => {
   });
 
   it('still requires a short deliberate contact when hold is off, and for language', () => {
-    const { engine, inputs } = setup({ card: { enabled: false, seconds: 1 } });
+    const { engine, inputs } = setup({ card: { enabled: false, seconds: 1 }, language: { mode: 'tap', seconds: 1 } });
     engine.update([{ id: 'a', x: 212, y: 700 }, { id: 'b', x: 588, y: 1017 }], 0);
     engine.tick(200);
     expect(inputs).toEqual([]);
