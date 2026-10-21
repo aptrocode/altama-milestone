@@ -30,7 +30,7 @@ Every wall text uses Roboto. The page sets the sizes (logical px on the 2304 × 
 | Caption tile | Tile labels of column 5 (Distribusi / Pemasaran) | 30 | 22–36 |
 | Tab page | Page tab labels | 24 | 16–28 |
 
-**Isi card per section** has one row per open card (`cards` in `shared/font-settings.ts`): Tentang Altama, Tekiro, RYU, Rexco, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, and KTT Altama 2026. Each row sets a body size range, **Min** and **Maks** (14–40 px, default 24–26 px for every card; glow labels stay 0.82 ×). Every page uses the largest size up to Maks that still fits the tallest card (y 1312), never less than Min, and the card grows to that text.
+**Isi card per section** has one row per open card (`cards` in `shared/font-settings.ts`): Tentang Altama, Tekiro, RYU, Rexco, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, and Altama Summit 2026. Each row sets a body size range, **Min** and **Maks** (14–40 px, default 24–26 px for every card; glow labels stay 0.82 ×). Every page uses the largest size up to Maks that still fits the tallest card (y 1312), never less than Min, and the card grows to that text.
 
 Each row also shows a fit status, checked on every page and language at once (`DashboardCardFit` renders them invisibly in the tallest card's text box): **✓ 26 px** (or the range of sizes the pages use, e.g. ✓ 24–26 px), or **⚠ Di bawah Min · N px (PAGE p, language)** when a page does not fit even at Min and the wall has to shrink it further so it is not clipped. At 24–26 px only Tekiro does: PAGE 2 Produk (ID) about 23.5 px and the award pages 22.6–24 px. Pages are never added automatically; a card that needs a larger size than fits is split into more pages in its content file.
 
@@ -102,13 +102,13 @@ Videos always play to their end while anything advances automatically, and a car
 
   Section 2 (Merek Kami) always keeps its tabbed pages in scroll mode (client decision), and its tabs show even when Tombol page is off (`tabsAlways`; the Hold page then keeps Button page); only the other sections become one page.
 
-  | Tentang Altama, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, KTT | 1, no page tabs |
+  | Tentang Altama, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, Altama Summit | 1, no page tabs |
 
 - **Preset when switched on:** Tombol close and Tombol slider turn off in the form (photos auto-slide), and on **Simpan** every Hold group becomes Tap + delay with its duration kept (`scrollModeHold`). Everything can be changed again afterwards; turning Scroll teks off does not undo the preset.
 - **Card height:** every open card ends where its idle frame ends (under the flag bar: y 1068, or 76 px lower with Grid 2 + 1, moving with Posisi Y card), whatever its content, so the skyline stays visible; the text scrolls inside. Off: cards grow with their text up to y 1312 again.
 - **Photo swipe:** a photo with more than one slide also swipes horizontally (left = next, right = previous, like the arrows): the photo follows the drag and snaps back, and a swipe counts when it is mostly horizontal and longer than a fifth of the frame. Touch, mouse, or a TouchDesigner drag.
 - **Tombol slider:** unchanged by Scroll teks: Off still hides the arrows and auto-slides the photos.
-- **Off:** the usual pages and tabs return (Tekiro 4, KTT 3, …) and the text fits its card again.
+- **Off:** the usual pages and tabs return (Tekiro 4, Summit 3, …) and the text fits its card again.
 - **Switching:** an open card that was on a later page shows its first page when the pages merge (`clampPage`).
 - **Sensor Service:** it does not send drags yet, so on the LiDAR/TUIO path cards only take taps while scrolling is on.
 

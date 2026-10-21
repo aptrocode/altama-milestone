@@ -66,7 +66,7 @@ const CARDS: { key: CardTextKey; title: string; hint: string }[] = [
   { key: 'digital-partners', title: 'Kepercayaan Digital', hint: 'Kolom 4' },
   { key: 'distribusi', title: 'Distribusi', hint: 'Kolom 5' },
   { key: 'pemasaran', title: 'Pemasaran', hint: 'Kolom 5' },
-  { key: 'summit-2026', title: 'KTT Altama 2026', hint: 'Kolom 6' },
+  { key: 'summit-2026', title: 'Altama Summit 2026', hint: 'Kolom 6' },
 ];
 const CARD_HELP: HelpLine[] = [
   'Ukuran teks isi card saat kolom ini dibuka, untuk semua page dan bahasa. Label biru (mis. "Lahir") ikut proporsional.',
