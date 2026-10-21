@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { bindHold } from '../app/utils/hold';
+import { bindHold, HOLD_SETTLE_MS } from '../app/utils/hold';
 
 class Button extends EventTarget {
   ownerDocument: { defaultView: EventTarget };
@@ -41,6 +41,10 @@ describe('hold input lifecycle', () => {
     vi.advanceTimersByTime(999);
     expect(activate).not.toHaveBeenCalled();
     vi.advanceTimersByTime(1);
+    // The finished border shows briefly before the button acts.
+    expect(button.classes.has('hold-complete')).toBe(true);
+    expect(activate).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(HOLD_SETTLE_MS);
     expect(activate).toHaveBeenCalledTimes(1);
     button.view.dispatchEvent(event('pointerup', { pointerId: 1 }));
     button.dispatchEvent(event('click', { detail: 1 }));
@@ -71,7 +75,7 @@ describe('hold input lifecycle', () => {
   it('uses the configured dwell time', () => {
     const { button, activate } = setup({ durationMs: 2500 });
     button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 1, isPrimary: true }));
-    vi.advanceTimersByTime(2499);
+    vi.advanceTimersByTime(2499 + HOLD_SETTLE_MS);
     expect(activate).not.toHaveBeenCalled();
     vi.advanceTimersByTime(1);
     expect(activate).toHaveBeenCalledTimes(1);
@@ -107,7 +111,7 @@ describe('hold input lifecycle', () => {
     vi.advanceTimersByTime(400);
     second.button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 2, isPrimary: false }));
     expect(second.button.classes.has('holding')).toBe(true);
-    vi.advanceTimersByTime(600);
+    vi.advanceTimersByTime(600 + HOLD_SETTLE_MS);
     expect(first.activate).toHaveBeenCalledTimes(1);
     expect(second.activate).not.toHaveBeenCalled();
     vi.advanceTimersByTime(400);
@@ -121,7 +125,7 @@ describe('hold input lifecycle', () => {
     first.button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 1, isPrimary: true }));
     second.button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 2, isPrimary: false }));
     view.dispatchEvent(event('pointerup', { pointerId: 1 }));
-    vi.advanceTimersByTime(1000);
+    vi.advanceTimersByTime(1000 + HOLD_SETTLE_MS);
     expect(first.activate).not.toHaveBeenCalled();
     expect(first.button.classes.has('holding')).toBe(false);
     expect(second.activate).toHaveBeenCalledTimes(1);
@@ -133,7 +137,7 @@ describe('hold input lifecycle', () => {
     vi.advanceTimersByTime(600);
     button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 2, isPrimary: false }));
     button.view.dispatchEvent(event('pointerup', { pointerId: 2 }));
-    vi.advanceTimersByTime(400);
+    vi.advanceTimersByTime(400 + HOLD_SETTLE_MS);
     expect(activate).toHaveBeenCalledTimes(1);
     vi.advanceTimersByTime(2000);
     expect(activate).toHaveBeenCalledTimes(1);
@@ -147,11 +151,11 @@ describe('hold input lifecycle', () => {
     inner.button.dispatchEvent(event('pointerdown', down));
     outer.button.dispatchEvent(event('pointerdown', down));
     expect(outer.button.classes.has('holding')).toBe(false);
-    vi.advanceTimersByTime(1000);
+    vi.advanceTimersByTime(1000 + HOLD_SETTLE_MS);
     expect(inner.activate).toHaveBeenCalledTimes(1);
     expect(outer.activate).not.toHaveBeenCalled();
     outer.button.dispatchEvent(event('pointerdown', down));
-    vi.advanceTimersByTime(1000);
+    vi.advanceTimersByTime(1000 + HOLD_SETTLE_MS);
     expect(outer.activate).toHaveBeenCalledTimes(1);
   });
 
@@ -176,7 +180,7 @@ describe('hold input lifecycle', () => {
     // A second tap while waiting does not start another countdown.
     vi.advanceTimersByTime(400);
     button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 2, isPrimary: true }));
-    vi.advanceTimersByTime(399);
+    vi.advanceTimersByTime(399 + HOLD_SETTLE_MS);
     expect(activate).not.toHaveBeenCalled();
     vi.advanceTimersByTime(1);
     expect(activate).toHaveBeenCalledTimes(1);
@@ -187,7 +191,7 @@ describe('hold input lifecycle', () => {
     const delayed = setup({ enabled: false, mode: 'delay', durationMs: 500 });
     delayed.button.dispatchEvent(new Event('wall:press'));
     expect(delayed.activate).not.toHaveBeenCalled();
-    vi.advanceTimersByTime(500);
+    vi.advanceTimersByTime(500 + HOLD_SETTLE_MS);
     expect(delayed.activate).toHaveBeenCalledTimes(1);
     const tap = setup({ enabled: false, mode: 'tap' });
     tap.button.dispatchEvent(new Event('wall:press'));
@@ -212,6 +216,7 @@ describe('hold input lifecycle', () => {
     done();
     await finished;
     await Promise.resolve();
+    vi.advanceTimersByTime(HOLD_SETTLE_MS);
     expect(activate).toHaveBeenCalledTimes(1);
     expect(button.classes.has('hold-complete')).toBe(true);
   });

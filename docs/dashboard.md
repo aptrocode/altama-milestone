@@ -51,7 +51,7 @@ Each group has a **mode** (segmented **Tap / Hold / Tap + delay**) and a duratio
 - **Hold**: the button must be held; the border progress animation follows the duration; releasing early cancels.
 - **Tap + delay**: one tap starts the same border animation and the button activates when it completes, without holding (releasing does not cancel; another tap while it runs is ignored). Sensor Service treats it as a short contact and the wall plays the delay on the touched button (`wall:press`), so LiDAR and pointer input behave alike.
 - **Tap**: the button activates on a normal press.
-- In Hold and Tap + delay the button activates only once its border has finished drawing, so the card never opens with the border unfinished, even when a busy wall starts the animation late.
+- In Hold and Tap + delay the button activates only once its border has finished drawing, and the finished border with its glow stays for 250 ms (`HOLD_SETTLE_MS`) before the content opens, so the animation always completes visibly, even when a busy wall starts it late.
 - Keyboard Enter/Space always activate immediately, whatever the rule.
 - Groups whose buttons the Wall page hides are hidden here as well, with a note linking to Wall: Button page while Tombol page is off, Button slider while Tombol slider is off, Tombol close while Tombol close is off. Their values are kept and return when the switch is turned on again. The list follows the saved Wall settings, also when they change in another tab.
 - The save bar sticks to the bottom of the page: it counts unsaved changes; **Simpan** applies them, **Batal** discards them, **Default** loads the defaults into the form (save to apply).
@@ -101,6 +101,7 @@ Videos always play to their end while anything advances automatically, and a car
   | RYU, Rexco | 2, as usual |
   | Tentang Altama, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, KTT | 1, no page tabs |
 
+- **Preset when switched on:** Tombol close and Tombol slider turn off in the form (photos auto-slide), and on **Simpan** every Hold group becomes Tap + delay with its duration kept (`scrollModeHold`). Everything can be changed again afterwards; turning Scroll teks off does not undo the preset.
 - **Card height:** every open card ends where its idle frame ends (under the flag bar: y 1068, or 76 px lower with Grid 2 + 1, moving with Posisi Y card), whatever its content, so the skyline stays visible; the text scrolls inside. Off: cards grow with their text up to y 1312 again.
 - **Photo swipe:** a photo with more than one slide also swipes horizontally (left = next, right = previous, like the arrows): the photo follows the drag and snaps back, and a swipe counts when it is mostly horizontal and longer than a fifth of the frame. Touch, mouse, or a TouchDesigner drag.
 - **Tombol slider:** unchanged by Scroll teks: Off still hides the arrows and auto-slides the photos.

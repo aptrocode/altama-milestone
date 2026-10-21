@@ -1,4 +1,6 @@
 export const HOLD_DURATION_MS = 1_000;
+/** How long a finished hold border stays fully drawn (with its glow) before the button acts. */
+export const HOLD_SETTLE_MS = 250;
 
 /** Pointers currently holding some button: one finger drives at most one button at a time. */
 const heldPointers = new Set<number>();
@@ -33,6 +35,7 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
   /** The duration has passed; activation waits only for the border animation to finish drawing. */
   let completing = false;
   let disposed = false;
+  let settleTimer: ReturnType<typeof setTimeout> | undefined;
 
   /**
    * Activate once the border has visibly finished. The timer starts on the press, but the CSS
@@ -44,16 +47,26 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
     const borders = (element.getAnimations?.({ subtree: true }) ?? [])
       .filter(animation => (animation as CSSAnimation).animationName?.includes('hold-border') && animation.playState === 'running');
     if (!borders.length) {
-      finish();
+      settle();
       return;
     }
     Promise.all(borders.map(animation => animation.finished)).then(() => {
       if (completing && !disposed)
-        finish();
+        settle();
     }, () => {
       if (completing && !disposed)
-        finish();
+        settle();
     });
+  }
+
+  /** Show the finished border (and its glow) for a moment, so visitors see it complete, then act. */
+  function settle() {
+    element.classList.add('hold-complete');
+    settleTimer = setTimeout(() => {
+      settleTimer = undefined;
+      if (completing && !disposed)
+        finish();
+    }, HOLD_SETTLE_MS);
   }
 
   function startDelay() {
@@ -100,6 +113,8 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
 
   function finish() {
     completing = false;
+    clearTimeout(settleTimer);
+    settleTimer = undefined;
     cancel();
     clearTimeout(completionTimer);
     element.classList.add('hold-complete');
@@ -173,6 +188,7 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
     },
     dispose() {
       disposed = true;
+      clearTimeout(settleTimer);
       completing = false;
       cancel();
       cancelDelay();
