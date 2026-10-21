@@ -62,12 +62,18 @@ const pillStyle = computed(() => rectStyle(idle.value
 const cardHeight = ref(geometry.value.active.card.height);
 // The on-screen bottom limit stays at openCardMaxBottom whatever the dashboard offset is.
 const maxCardHeight = computed(() => visual.openCardMaxBottom - props.offsetY - geometry.value.active.card.y);
+// Scroll teks: every open card ends where the idle frame ends (under the flag bar, following the
+// language bar mode), so the skyline stays visible; its text scrolls instead of growing the card.
+const scrollCardHeight = computed(() => idleFrame.value.y + idleFrame.value.height - geometry.value.active.card.y);
+const cardLimit = computed(() => scroll.value ? scrollCardHeight.value : maxCardHeight.value);
 function onCardHeight(needed: number) {
-  cardHeight.value = Math.min(maxCardHeight.value, Math.max(geometry.value.active.card.height, needed));
+  cardHeight.value = scroll.value
+    ? scrollCardHeight.value
+    : Math.min(maxCardHeight.value, Math.max(geometry.value.active.card.height, needed));
 }
-watch([idle, () => props.snapshot.subItem, () => props.offsetY], () => {
-  cardHeight.value = geometry.value.active.card.height;
-});
+watch([idle, () => props.snapshot.subItem, () => props.offsetY, scroll, scrollCardHeight], () => {
+  cardHeight.value = scroll.value ? scrollCardHeight.value : geometry.value.active.card.height;
+}, { immediate: true });
 const cardBottom = computed(() => geometry.value.active.card.y + cardHeight.value);
 watch(cardBottom, bottom => emit('cardBottom', bottom), { immediate: true });
 const cardStyle = computed(() => ({
@@ -140,7 +146,7 @@ function act(action: WallAction) {
       <WallOpenCard
         v-if="!idle" class="absolute transition-[height] duration-300 ease-out motion-reduce:transition-none" :style="cardStyle"
         :column-id="column.id" :pages="pages" :locale="snapshot.locale" :photo="snapshot.photo" :page="snapshot.page"
-        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" :show-pages="settings.wall.showPages" :auto-page="autoPageActive(settings.wall)" :scroll="scroll" :text-min="cardText?.min" :text-max="cardText?.max" :max-height="maxCardHeight" @action="act" @height="onCardHeight"
+        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" :show-pages="settings.wall.showPages" :auto-page="autoPageActive(settings.wall)" :scroll="scroll" :text-min="cardText?.min" :text-max="cardText?.max" :max-height="cardLimit" @action="act" @height="onCardHeight"
         @media-ended="emit('slideEnded', column.id)"
       />
     </Transition>

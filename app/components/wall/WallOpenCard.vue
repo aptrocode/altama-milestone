@@ -181,7 +181,7 @@ function reportHeight() {
   if (pxPerUnit.value > 0 && visible > 0)
     emit('height', Math.ceil(textTop.value + visible / pxPerUnit.value + TEXT_BOTTOM));
 }
-watch([naturals, textTop, pxPerUnit, () => props.pages, () => props.page, () => props.locale], reportHeight);
+watch([naturals, textTop, pxPerUnit, () => props.pages, () => props.page, () => props.locale, () => props.scroll], reportHeight);
 function onNatural(index: number, px: number) {
   naturals[index] = px;
 }
