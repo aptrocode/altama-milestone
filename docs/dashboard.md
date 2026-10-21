@@ -97,8 +97,11 @@ Videos always play to their end while anything advances automatically, and a car
 
   | Card | Pages |
   | --- | --- |
-  | Tekiro | 2: profile + products, all awards under one heading |
-  | RYU, Rexco | 2, as usual |
+  | Tekiro (section 2) | 2: profile + products, all awards under one heading |
+  | RYU, Rexco (section 2) | 2, as usual |
+
+  Section 2 (Merek Kami) always keeps its tabbed pages in scroll mode (client decision); only the other sections become one page.
+
   | Tentang Altama, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, KTT | 1, no page tabs |
 
 - **Preset when switched on:** Tombol close and Tombol slider turn off in the form (photos auto-slide), and on **Simpan** every Hold group becomes Tap + delay with its duration kept (`scrollModeHold`). Everything can be changed again afterwards; turning Scroll teks off does not undo the preset.
