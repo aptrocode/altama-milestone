@@ -162,15 +162,15 @@ function act(action: WallAction) {
       leave-active-class="transition duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0"
     >
       <WallHoldButton
-        v-if="!idle && bottomClose" :outline="closeRect" group="back" :radius="18"
-        class="wall-back wall-pill absolute z-20 flex items-center gap-[calc(10*var(--wall-x))] pl-[calc(6*var(--wall-x))] pr-[calc(16*var(--wall-x))] [border-radius:calc(18*var(--wall-x))/calc(18*var(--wall-y))] bg-linear-to-b from-[#112a9c]/95 via-[#0a1a78]/95 to-[#071056]/95 ring-2 ring-wall-glow/70 shadow-[0_0_calc(18*var(--wall-x))_rgba(80,190,255,0.5),inset_0_calc(2*var(--wall-y))_calc(10*var(--wall-y))_rgba(255,255,255,0.12)] text-white cursor-pointer"
+        v-if="!idle && bottomClose" :outline="closeRect" group="back" :radius="49"
+        class="wall-back absolute z-20 flex items-center justify-center gap-[calc(14*var(--wall-x))] [border-radius:calc(49*var(--wall-x))/calc(49*var(--wall-y))] bg-red-600 text-white shadow-[0_calc(4*var(--wall-y))_calc(14*var(--wall-y))_rgba(0,0,0,0.35)] hover:bg-red-500 cursor-pointer"
         :style="rectStyle(closeRect, geometry.section)"
         :aria-label="WALL_COPY[snapshot.locale].back" data-sensor-action="back" data-close="bottom"
         @activate="act({ type: 'back', columnId: column.id })"
       >
-        <!-- Same build as the title pill (WallColumnPill): a glowing red ring with ✕ and the label. -->
-        <span class="shrink-0 ml-[calc(10*var(--wall-x))] w-[calc(64*var(--wall-x))] h-[calc(64*var(--wall-y))] flex items-center justify-center rounded-full ring-3 ring-wall-glow bg-red-600 text-[length:calc(30*var(--wall-u))] leading-none shadow-[0_0_calc(16*var(--wall-x))_rgba(102,204,255,0.8),inset_0_0_calc(12*var(--wall-x))_rgba(255,255,255,0.25)]" aria-hidden="true">✕</span>
-        <span class="flex-1 min-w-0 text-left font-display text-[length:calc(var(--fs-title,27)*var(--wall-u))] [font-weight:var(--fw-title,700)] uppercase leading-[1.08] tracking-[0.01em] drop-shadow-[0_0_calc(6*var(--wall-x))_rgba(102,204,255,0.5)]">{{ WALL_COPY[snapshot.locale].close }}</span>
+        <!-- A solid red capsule (client pick): a white ✕ and the bold label, centred together. -->
+        <span class="text-[length:calc(38*var(--wall-u))] font-bold leading-none" aria-hidden="true">✕</span>
+        <span class="font-display text-[length:calc(var(--fs-title,27)*var(--wall-u))] font-extrabold uppercase leading-none tracking-[0.08em]">{{ WALL_COPY[snapshot.locale].close }}</span>
       </WallHoldButton>
       <WallHoldButton
         v-else-if="!idle && settings.wall.showClose" :outline="closeRect" group="back" :radius="22 * settings.wall.closeScale"
