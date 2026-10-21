@@ -1,6 +1,6 @@
 /**
  * Close (✕) button geometry from the dashboard, in two places (`position`):
- * - `bottom` (default, client request): a capsule at 75 % of the column title pill, centred 20 px
+ * - `bottom` (default, client request): a capsule as wide as the open card (74 tall), 20 px
  *   under the idle frame (so it follows the language bar's frame extension and the card offset);
  * - `corner`: the layout's 44 px badge on the open card's top-right corner, where `scale` grows it
  *   around its own centre and `x` / `y` (logical px) move it.
@@ -15,19 +15,19 @@ export type ClosePosition = typeof CLOSE_POSITIONS[number];
 
 export interface CloseButtonOptions { scale: number; x: number; y: number; position?: ClosePosition }
 
-/** The bottom close capsule: 75 % of the title pill (252 × 74, client request), 20 px under the idle frame. */
-export const BOTTOM_CLOSE = { width: 252, height: 74, gap: 20 } as const;
+/** The bottom close capsule: as wide as the open card, 74 tall (client request), 20 px under the idle frame. */
+export const BOTTOM_CLOSE = { height: 74, gap: 20 } as const;
 
 export const CLOSE_SCALE = { min: 1, max: 2, step: 0.1 } as const;
 export const CLOSE_OFFSET = { min: -60, max: 60, step: 2 } as const;
 export const DEFAULT_CLOSE_BUTTON: CloseButtonOptions = { scale: 1, x: 0, y: 0 };
 
-/** The bottom close pill under an idle frame (the column card, extended by the language bar). */
-export function bottomCloseRect(frame: Rect): Rect {
+/** The bottom close capsule: the open card's width, under an idle frame (extended by the language bar). */
+export function bottomCloseRect(frame: Rect, card: Rect): Rect {
   return {
-    x: frame.x + (frame.width - BOTTOM_CLOSE.width) / 2,
+    x: card.x,
     y: frame.y + frame.height + BOTTOM_CLOSE.gap,
-    width: BOTTOM_CLOSE.width,
+    width: card.width,
     height: BOTTOM_CLOSE.height,
   };
 }
@@ -37,9 +37,9 @@ export function bottomCloseRect(frame: Rect): Rect {
  * language bar's extension) or the corner badge. Callers without a position (older walls) get the
  * corner badge.
  */
-export function closeTargetRect(column: { card: Rect; active: { back: Rect } }, close: CloseButtonOptions = DEFAULT_CLOSE_BUTTON, frameExtend = 0): Rect {
+export function closeTargetRect(column: { card: Rect; active: { back: Rect; card: Rect } }, close: CloseButtonOptions = DEFAULT_CLOSE_BUTTON, frameExtend = 0): Rect {
   if (close.position === 'bottom')
-    return bottomCloseRect({ ...column.card, height: column.card.height + frameExtend });
+    return bottomCloseRect({ ...column.card, height: column.card.height + frameExtend }, column.active.card);
   return closeButtonRect(column.active.back, close);
 }
 
