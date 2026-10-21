@@ -1,7 +1,7 @@
 import type { CloseButtonOptions } from '../../shared/close-button';
 import type { LanguageBarMode } from '../../shared/language-bar';
 import type { ColumnId, WallAction, WallLocale } from '../../shared/wall';
-import { closeButtonRect } from '../../shared/close-button';
+import { closeTargetRect } from '../../shared/close-button';
 import rawLayout from '../../shared/installation-layout.json';
 import { columnOffsetY, extendDown, languageGeometry } from '../../shared/language-bar';
 import { allPageTabRects } from '../../shared/page-tabs';
@@ -93,7 +93,7 @@ export function getActionRects(action: WallAction, offsetY = 0, languageBar: Lan
       case 'main': return column.main ? [extendDown(column.main, languageGeometry(column, languageBar).extend)] : [];
       case 'language': return languageGeometry(column, languageBar).languages.filter(item => item.locale === action.locale);
       case 'subItem': return column.subItems?.filter(item => item.key === action.subItemId) || [];
-      case 'back': return [closeButtonRect(column.active.back, close)];
+      case 'back': return [closeTargetRect(column, close, languageGeometry(column, languageBar).extend)];
       case 'previous': return [column.active.previous];
       case 'next': return [column.active.next];
       // Two or three tabs, under the photo or at the top: any arrangement of that page's tab.

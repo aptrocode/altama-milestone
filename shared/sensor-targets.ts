@@ -2,7 +2,7 @@ import type { CloseButtonOptions } from './close-button';
 import type { HoldGroup } from './hold-settings';
 import type { LanguageBarMode } from './language-bar';
 import type { ColumnId, PublishedColumn, WallAction, WallLocale } from './wall';
-import { closeButtonRect } from './close-button';
+import { closeTargetRect } from './close-button';
 import { HOLD_GROUP_BY_ACTION } from './hold-settings';
 import rawLayout from './installation-layout.json';
 import { columnOffsetY, extendDown, languageGeometry } from './language-bar';
@@ -83,7 +83,7 @@ export function visibleTargets(snapshots: Partial<Record<ColumnId, PublishedColu
     }
 
     if (showClose)
-      targets.push(target({ type: 'back', columnId }, `${columnId}:back`, closeButtonRect(geometry.active.back, close), offsetY));
+      targets.push(target({ type: 'back', columnId }, `${columnId}:back`, closeTargetRect(geometry, close, languageGeometry(geometry, languageBar).extend), offsetY));
     if (showArrows && (snapshot.photoCount ?? 0) > 1) {
       targets.push(target({ type: 'previous', columnId }, `${columnId}:previous`, geometry.active.previous, offsetY));
       targets.push(target({ type: 'next', columnId }, `${columnId}:next`, geometry.active.next, offsetY));

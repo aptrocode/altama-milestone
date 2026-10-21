@@ -3,6 +3,7 @@ import type { WallLocale } from '../../shared/wall';
 export const WALL_COPY = {
   'id': {
     back: 'Kembali',
+    close: 'Tutup',
     previous: 'Sebelumnya',
     next: 'Berikutnya',
     photo: 'FOTO',
@@ -11,6 +12,7 @@ export const WALL_COPY = {
   },
   'en': {
     back: 'Back',
+    close: 'Close',
     previous: 'Previous',
     next: 'Next',
     photo: 'PHOTO',
@@ -19,6 +21,7 @@ export const WALL_COPY = {
   },
   'zh-Hans': {
     back: '返回',
+    close: '关闭',
     previous: '上一张',
     next: '下一张',
     photo: '图片',
@@ -27,6 +30,8 @@ export const WALL_COPY = {
   },
 } satisfies Record<WallLocale, {
   back: string;
+  /** Label of the bottom close pill. */
+  close: string;
   previous: string;
   next: string;
   photo: string;

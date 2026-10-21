@@ -64,6 +64,7 @@ The page is grouped into five cards: **Mode konten** (Page or Scroll, at the top
 | --- | --- | --- |
 | Reset otomatis | Seconds without interaction before a column returns to idle/Indonesian; one value for every column (5–600 s). While a card advances on its own (auto slide/auto page), the reset waits until the slideshow has reached its last slide (or last page) since the last interaction: e.g. a 30 s video plus 5 × 5 s images closes at 55 s, right after the last image, while 2 images (10 s) still close at the reset time. A card never waits longer than 5 minutes past the reset time, and closes at once if the operator turns the arrows/tabs back on | 30 s |
 | Posisi Y card | Moves every column (frame, title, card, controls) up (−) or down (+) on the LED wall, −120 to 120 logical px; ↑/↓ nudge by 10. Open cards still end at y 1312 on screen; the phone/tablet layout ignores it | 0 |
+| Letak tombol close | Shown while Tombol close is on: **Di bawah card** (a title-sized pill with a red ✕ ring and TUTUP / CLOSE / 关闭, 20 px under the idle frame; open cards then stop at the idle frame's bottom, so long text can shrink below Min, see Font) or **Pojok kanan atas** (the ✕ badge on the card's corner; the size and position rows below apply only to it) | Di bawah card |
 | Tombol close | Shows the open card's ✕ button. Off hides it on every column and removes the Back touch target from Sensor Service; cards still close after the reset time, with operator keys 1–6, R/Escape, and OSC `/altama/back` | On |
 | Ukuran tombol close | Shown while Tombol close is on: 1× (the 44 px badge), 2×, or a manual 1–2× (0.1 steps); the badge grows around its centre on the card corner | 1× |
 | Posisi tombol close | Shown while Tombol close is on: X (− left / + right) and Y (− up / + down) shift of the badge, −60 to 60 logical px in 2 px steps | X 0 · Y 0 |
@@ -104,7 +105,7 @@ Videos always play to their end while anything advances automatically, and a car
 
   | Tentang Altama, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, Altama Summit | 1, no page tabs |
 
-- **Preset when switched on:** Tombol close and Tombol slider turn off in the form (photos auto-slide), and on **Simpan** every Hold group becomes Tap + delay with its duration kept (`scrollModeHold`). Everything can be changed again afterwards; turning Scroll teks off does not undo the preset.
+- **Preset when switched on:** Tombol slider turns off in the form (photos auto-slide), and on **Simpan** every Hold group becomes Tap + delay with its duration kept (`scrollModeHold`). Tombol close is left as it is. Everything can be changed again afterwards; turning Scroll teks off does not undo the preset.
 - **Card height:** every open card ends where its idle frame ends (under the flag bar: y 1068, or 76 px lower with Grid 2 + 1, moving with Posisi Y card), whatever its content, so the skyline stays visible; the text scrolls inside. Off: cards grow with their text up to y 1312 again.
 - **Photo swipe:** a photo with more than one slide also swipes horizontally (left = next, right = previous, like the arrows): the photo follows the drag and snaps back, and a swipe counts when it is mostly horizontal and longer than a fifth of the frame. Touch, mouse, or a TouchDesigner drag.
 - **Tombol slider:** unchanged by Scroll teks: Off still hides the arrows and auto-slides the photos.

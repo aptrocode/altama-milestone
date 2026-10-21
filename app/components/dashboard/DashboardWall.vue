@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ClosePosition } from '../../../shared/close-button';
 import type { LanguageBarMode } from '../../../shared/language-bar';
 import type { WallSettings } from '../../../shared/wall-settings';
 import type { HelpLine } from '~/components/dashboard/DashboardSettingRow.vue';
@@ -32,9 +33,9 @@ const changes = computed(() => KEYS.filter(key => draft.value[key] !== settings.
 const changed = (key: keyof WallSettings) => draft.value[key] !== DEFAULT_WALL_SETTINGS[key];
 
 function update(patch: Partial<WallSettings>) {
-  // Scroll teks preset (client request): turning it on also turns Tombol close and Tombol slider
-  // off (photos auto-slide); the hold groups follow on save. Both can be changed again afterwards.
-  const preset = patch.scrollText && !draft.value.scrollText ? { showClose: false, showArrows: false } : {};
+  // Scroll teks preset (client request): turning it on also turns Tombol slider off (photos
+  // auto-slide); the hold groups follow on save. Tombol close is left as it is.
+  const preset = patch.scrollText && !draft.value.scrollText ? { showArrows: false } : {};
   draft.value = normalizeWallSettings({ ...draft.value, ...patch, ...preset });
 }
 
@@ -42,6 +43,12 @@ const LANGUAGE_BAR_OPTIONS: { value: LanguageBarMode; label: string; hint: strin
   { value: 'compact', label: 'Compact', hint: 'Bendera kecil di tengah' },
   { value: 'full', label: 'Full width', hint: 'Selebar card, lebih besar' },
   { value: 'grid', label: 'Grid 2 + 1', hint: 'Paling besar, card lebih tinggi' },
+];
+
+/** Close button place: a title-sized pill under the card (default) or the badge on its corner. */
+const CLOSE_POSITION_OPTIONS: { value: ClosePosition; label: string; hint: string }[] = [
+  { value: 'bottom', label: 'Di bawah card', hint: 'Tombol besar dengan tulisan Tutup' },
+  { value: 'corner', label: 'Pojok kanan atas', hint: 'Badge ✕ di border card' },
 ];
 
 /** Content mode: Page (tabs) or Scroll (the `scrollText` trial). */
@@ -55,6 +62,8 @@ function defaultLabel(key: keyof WallSettings) {
   const value = DEFAULT_WALL_SETTINGS[key];
   if (key === 'scrollText')
     return value ? 'Scroll' : 'Page';
+  if (key === 'closePosition')
+    return CLOSE_POSITION_OPTIONS.find(option => option.value === value)?.label ?? String(value);
   if (typeof value === 'boolean')
     return value ? 'On' : 'Off';
   if (key === 'languageBar')
@@ -90,6 +99,11 @@ const HELP: Record<string, HelpLine[]> = {
     { term: 'Off', text: 'Tombol ✕ hilang, area sentuhnya di sensor ikut dihapus.' },
     'Card tetap tertutup sendiri setelah Reset otomatis, atau lewat tombol operator 1–6, R/Escape, dan OSC.',
   ],
+  closePosition: [
+    { term: 'Di bawah card', text: 'Tombol besar seukuran judul section (✕ + tulisan Tutup / Close / 关闭), di luar card, tepat di bawah posisi bar bahasa. Card yang terbuka berhenti di bawah frame idle supaya tidak menabrak tombol; teks panjang bisa mengecil (lihat status di Font).' },
+    { term: 'Pojok kanan atas', text: 'Badge ✕ kecil di border card; card memanjang sampai di atas gedung seperti biasa. Ukuran dan posisi badge bisa diatur di bawah.' },
+    { term: 'Sensor', text: 'Area sentuh tombol close di Sensor Service ikut pindah.' },
+  ],
   closeScale: [
     'Memperbesar tombol ✕ di sudut kanan atas card yang terbuka, dari titik tengahnya.',
     { term: 'Sensor', text: 'Area sentuh tombol close di Sensor Service ikut membesar, jadi lebih mudah ditekan dengan LiDAR.' },
@@ -119,7 +133,7 @@ const HELP: Record<string, HelpLine[]> = {
   scrollText: [
     { term: 'Page', text: 'Teks dibagi ke page dengan tab (Tekiro 4, yang lain 1–2). Card memanjang mengikuti teks, sampai di atas gedung.' },
     { term: 'Scroll (uji coba)', text: 'Card setinggi frame idle, jadi gedung tetap terlihat. Teks memakai ukuran Maks dari Font dan digeser ke atas/bawah (sentuh-geser, drag mouse, scroll wheel); fade, scrollbar tipis, dan panah ⌄ menandakan masih ada teks. Page lebih sedikit: section 2 (Merek Kami: Tekiro, RYU, Rexco) tetap punya page, masing-masing 2 page dengan tab; section lain 1 page tanpa tab. Foto juga bisa di-swipe kiri/kanan.' },
-    { term: 'Saat memilih Scroll', text: 'Tombol close dan Tombol slider otomatis off (foto auto slide), dan saat disimpan semua jenis tombol di Hold jadi Tap + delay (durasinya tetap). Setelah itu semuanya masih bisa diubah lagi.' },
+    { term: 'Saat memilih Scroll', text: 'Tombol slider otomatis off (foto auto slide), dan saat disimpan semua jenis tombol di Hold jadi Tap + delay (durasinya tetap). Tombol close tidak diubah. Setelah itu semuanya masih bisa diubah lagi.' },
     { term: 'Sensor', text: 'Geser teks dan swipe foto lewat touchscreen, mouse, atau TD yang mengirim drag. Sensor Service (LiDAR/TUIO) belum mengirim geser; di jalur itu hanya tap.' },
   ],
   resetSeconds: [
@@ -261,7 +275,46 @@ const unit = 'text-sm text-sky-100/60';
         </DashboardSettingRow>
         <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-1" leave-active-class="transition duration-150 ease-in" leave-to-class="opacity-0 -translate-y-1">
           <DashboardSettingRow
-            v-if="draft.showClose" nested data-wall-setting="closeScale" title="Ukuran tombol close"
+            v-if="draft.showClose" nested data-wall-setting="closePosition" title="Letak tombol close"
+            hint="Di bawah card (besar, dengan tulisan) atau badge di pojok kanan atas."
+            :help="HELP.closePosition"
+            :changed="changed('closePosition')" :default-label="defaultLabel('closePosition')" @reset="reset('closePosition')"
+          >
+            <div class="grid w-full grid-cols-2 gap-2 sm:w-auto" role="radiogroup" aria-label="Letak tombol close">
+              <button
+                v-for="option in CLOSE_POSITION_OPTIONS" :key="option.value" type="button" role="radio" :aria-checked="draft.closePosition === option.value"
+                class="flex flex-col items-center gap-1.5 rounded-lg px-2 py-2 text-center ring-1 transition-colors sm:w-28"
+                :class="draft.closePosition === option.value ? 'bg-wall-glow/15 text-white ring-2 ring-wall-glow' : 'text-sky-100/70 ring-white/15 hover:bg-white/5'"
+                @click="update({ closePosition: option.value })"
+              >
+                <!-- Sketch of an open card with its close button in this place. -->
+                <svg viewBox="0 0 48 60" class="h-14 w-12" aria-hidden="true">
+                  <template v-if="option.value === 'bottom'">
+                    <rect x="6" y="2" width="36" height="38" rx="4" class="fill-white/5 stroke-current" stroke-width="1.5" />
+                    <rect x="10" y="6" width="28" height="11" rx="1.5" class="fill-current opacity-25" />
+                    <rect v-for="i in 3" :key="i" x="11" :y="21 + (i - 1) * 4.5" width="24" height="2" rx="1" class="fill-current opacity-60" />
+                    <rect x="6" y="45" width="36" height="12" rx="3.5" class="fill-none stroke-current" stroke-width="1.5" />
+                    <circle cx="12.5" cy="51" r="3.5" class="fill-none stroke-current" stroke-width="1.2" />
+                    <path d="M11 49.5 L14 52.5 M14 49.5 L11 52.5" class="stroke-current" stroke-width="1" />
+                    <rect x="19" y="50" width="16" height="2.5" rx="1" class="fill-current" />
+                  </template>
+                  <template v-else>
+                    <rect x="6" y="6" width="36" height="50" rx="4" class="fill-white/5 stroke-current" stroke-width="1.5" />
+                    <rect x="10" y="10" width="28" height="12" rx="1.5" class="fill-current opacity-25" />
+                    <rect v-for="i in 5" :key="i" x="11" :y="26 + (i - 1) * 4.5" width="24" height="2" rx="1" class="fill-current opacity-60" />
+                    <circle cx="41" cy="7" r="4.5" class="fill-white/10 stroke-current" stroke-width="1.2" />
+                    <path d="M39 5 L43 9 M43 5 L39 9" class="stroke-current" stroke-width="1.2" />
+                  </template>
+                </svg>
+                <span class="text-xs font-bold leading-tight">{{ option.label }}</span>
+                <span class="hidden text-[0.7rem] leading-tight text-sky-100/50 sm:block">{{ option.hint }}</span>
+              </button>
+            </div>
+          </DashboardSettingRow>
+        </Transition>
+        <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-1" leave-active-class="transition duration-150 ease-in" leave-to-class="opacity-0 -translate-y-1">
+          <DashboardSettingRow
+            v-if="draft.showClose && draft.closePosition === 'corner'" nested data-wall-setting="closeScale" title="Ukuran tombol close"
             :hint="`1× = ukuran sekarang, 2× = dua kali lebih besar, atau isi manual (${CLOSE_SCALE.min}–${CLOSE_SCALE.max}×).`"
             :help="HELP.closeScale"
             :changed="changed('closeScale')" :default-label="defaultLabel('closeScale')" @reset="reset('closeScale')"
@@ -295,7 +348,7 @@ const unit = 'text-sm text-sky-100/60';
         </Transition>
         <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-1" leave-active-class="transition duration-150 ease-in" leave-to-class="opacity-0 -translate-y-1">
           <DashboardSettingRow
-            v-if="draft.showClose" nested data-wall-setting="closeOffset" title="Posisi tombol close"
+            v-if="draft.showClose && draft.closePosition === 'corner'" nested data-wall-setting="closeOffset" title="Posisi tombol close"
             :hint="`Geser ✕ ke kiri/kanan (X) dan atas/bawah (Y), ${CLOSE_OFFSET.min} s.d. ${CLOSE_OFFSET.max} px. Default 0.`"
             :help="HELP.closeOffset"
             :changed="changed('closeOffsetX') || changed('closeOffsetY')" default-label="X 0 · Y 0"

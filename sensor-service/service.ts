@@ -1,4 +1,4 @@
-import type { CloseButtonOptions } from '../shared/close-button';
+import type { CloseButtonOptions, ClosePosition } from '../shared/close-button';
 import type { HoldSettings } from '../shared/hold-settings';
 import type { LanguageBarMode } from '../shared/language-bar';
 import type { OscMessage } from '../shared/osc';
@@ -7,7 +7,7 @@ import type { ColumnId, ColumnSnapshot, PublishedColumn, WallAction, WallLocale 
 import type { Calibration } from './calibration';
 import type { DwellInput } from './dwell';
 import type { ScanParameters } from './scip';
-import { DEFAULT_CLOSE_BUTTON } from '../shared/close-button';
+import { CLOSE_POSITIONS, DEFAULT_CLOSE_BUTTON } from '../shared/close-button';
 import { DEFAULT_HOLD_SETTINGS, normalizeHoldSettings } from '../shared/hold-settings';
 import { mergeSensorConfig, normalizeSensorConfig, SENSOR_ADMIN_VERSION } from '../shared/sensor-config';
 import { SENSOR_LAYOUT_VERSION, visibleTargets } from '../shared/sensor-targets';
@@ -278,8 +278,12 @@ export class SensorService {
         showClose: typeof data.showClose === 'boolean' ? data.showClose : previous?.showClose ?? true,
         showArrows: typeof data.showArrows === 'boolean' ? data.showArrows : previous?.showArrows ?? true,
         showPages: typeof data.showPages === 'boolean' ? data.showPages : previous?.showPages ?? true,
-        close: data.closeScale !== undefined || data.closeOffsetX !== undefined || data.closeOffsetY !== undefined
-          ? closeButtonOptions(normalizeWallSettings({ closeScale: data.closeScale, closeOffsetX: data.closeOffsetX, closeOffsetY: data.closeOffsetY }))
+        close: data.closeScale !== undefined || data.closeOffsetX !== undefined || data.closeOffsetY !== undefined || data.closePosition !== undefined
+          ? {
+              ...closeButtonOptions(normalizeWallSettings({ closeScale: data.closeScale, closeOffsetX: data.closeOffsetX, closeOffsetY: data.closeOffsetY })),
+              // Walls that do not send a position draw the corner badge.
+              position: CLOSE_POSITIONS.includes(data.closePosition as ClosePosition) ? data.closePosition as ClosePosition : 'corner',
+            }
           : previous?.close ?? DEFAULT_CLOSE_BUTTON,
         languageBar: data.languageBar !== undefined ? normalizeWallSettings({ languageBar: data.languageBar }).languageBar : previous?.languageBar ?? 'compact',
       };
