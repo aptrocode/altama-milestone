@@ -2,7 +2,7 @@ import { createPinia } from 'pinia';
 import { describe, expect, it } from 'vitest';
 import { useSettingsStore } from '../app/stores/settings';
 import { DEFAULT_HOLD_SETTINGS, HOLD_GROUP_BY_ACTION, normalizeHoldSettings } from '../shared/hold-settings';
-import { arrowsShown, autoPageActive, DEFAULT_WALL_SETTINGS, normalizeWallSettings } from '../shared/wall-settings';
+import { autoPageActive, DEFAULT_WALL_SETTINGS, normalizeWallSettings } from '../shared/wall-settings';
 
 describe('hold settings', () => {
   it('fills missing groups with defaults and clamps/rounds seconds', () => {
@@ -44,10 +44,6 @@ describe('hold settings', () => {
     expect(normalizeWallSettings({ autoPage: false }).autoPage).toBe(false);
     expect(autoPageActive({ autoPage: false, showPages: false })).toBe(true);
     expect(autoPageActive({ autoPage: false, showPages: true })).toBe(false);
-    // Scroll teks always shows the photo arrows.
-    expect(arrowsShown({ showArrows: false, scrollText: true })).toBe(true);
-    expect(arrowsShown({ showArrows: false, scrollText: false })).toBe(false);
-    expect(arrowsShown({ showArrows: true, scrollText: false })).toBe(true);
     expect(normalizeWallSettings({ closeScale: 1.26 }).closeScale).toBe(1.3);
     expect(normalizeWallSettings({ closeScale: 9 }).closeScale).toBe(2);
     expect(normalizeWallSettings({ closeOffsetX: -99, closeOffsetY: 7 })).toMatchObject({ closeOffsetX: -60, closeOffsetY: 8 });

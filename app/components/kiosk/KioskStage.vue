@@ -20,14 +20,14 @@ import { isVideoSrc } from '~/utils/media';
 import { HOLD_GROUP_BY_ACTION } from '../../../shared/hold-settings';
 import { columnOffsetY, languageGeometry } from '../../../shared/language-bar';
 import { COLUMN_IDS } from '../../../shared/wall';
-import { arrowsShown, autoPageActive, closeButtonOptions } from '../../../shared/wall-settings';
+import { autoPageActive, closeButtonOptions } from '../../../shared/wall-settings';
 
 const wall = useWallStore();
 const system = useSystemStore();
 const settings = useSettingsStore();
 const controls = useWallController(wall, {
   resetDelayMs: () => settings.wall.resetSeconds * 1000,
-  autoSlideMs: () => arrowsShown(settings.wall) ? 0 : settings.wall.autoSlideSeconds * 1000,
+  autoSlideMs: () => settings.wall.showArrows ? 0 : settings.wall.autoSlideSeconds * 1000,
   autoPageMs: () => autoPageActive(settings.wall) ? settings.wall.autoPageSeconds * 1000 : 0,
   // Video slides play to their end (client request); images use the interval.
   slidePlaysToEnd: (id) => {
@@ -152,7 +152,7 @@ const sensorSocket = useSensorSocket({
   getHold: () => settings.hold,
   getCardOffsetY: () => settings.wall.cardOffsetY,
   getShowClose: () => settings.wall.showClose,
-  getShowArrows: () => arrowsShown(settings.wall),
+  getShowArrows: () => settings.wall.showArrows,
   getShowPages: () => settings.wall.showPages,
   getLanguageBar: () => settings.wall.languageBar,
   getClose: () => closeButtonOptions(settings.wall),
