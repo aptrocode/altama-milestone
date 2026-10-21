@@ -36,12 +36,12 @@ Apa yang berubah dengan V4:
 - **Multitouch:** beberapa orang bisa menekan dan menahan tombol di kolom berbeda bersamaan.
 - **Geser teks** (Mode konten Scroll) dan **swipe foto** ikut jalan.
 
-Walau masih memakai V3.2, mode **Tap + delay** (default) tetap berjalan: wall menganggap klik dari script sebagai satu tap, lalu menunggu border penuh. Yang butuh V4 hanya mode **Hold**, multitouch, dan geser/swipe.
+Walau masih memakai V3.2, mode **Tap + delay** tetap berjalan: wall menganggap klik dari script sebagai satu tap, lalu menunggu border penuh. Yang butuh V4 hanya mode **Hold**, multitouch, dan geser/swipe.
 
 ## 2. Kenapa bendera bahasa susah ditekan di cara A
 
 1. **Bendera kecil.** Di mode Compact, bendera berukuran 64 × 48 px, sedangkan card 360 × 642 px. Kalau satu pixel di layar kira-kira 2–3 mm, bendera cuma sekitar 13–19 cm × 10–14 cm. Titik dari LiDAR adalah *tengah tangan*, bukan ujung jari, dan bisa meleset beberapa cm.
-2. **Klik mouse butuh tekan dan lepas di tombol yang sama.** Bendera aktif dengan sekali tekan (Hold → Bahasa default **Tap + delay**; kalau diubah ke Tap, aktif saat dilepas). Browser baru menganggap itu klik kalau mouse ditekan *dan* dilepas di atas elemen yang sama. Tangan di depan LiDAR selalu bergeser sedikit. Kalau saat dilepas posisinya sudah di luar bendera, kliknya hilang.
+2. **Klik mouse butuh tekan dan lepas di tombol yang sama.** Hold → Bahasa default **Hold 1 detik**: lewat klik dari TouchDesigner V3.2 hold tidak bisa dihitung (lihat bagian 1b); kalau diubah ke Tap, bendera aktif saat dilepas. Browser baru menganggap itu klik kalau mouse ditekan *dan* dilepas di atas elemen yang sama. Tangan di depan LiDAR selalu bergeser sedikit. Kalau saat dilepas posisinya sudah di luar bendera, kliknya hilang.
 3. **Meleset sedikit, kena card di belakangnya.** Bar bendera ada di atas card. Kalau titiknya jatuh di luar bendera, yang tersentuh adalah card (yang punya hold 1 detik), bukan bahasa.
 4. **Satu kursor untuk semua orang.** Kalau ada dua tangan, kursornya lompat-lompat.
 

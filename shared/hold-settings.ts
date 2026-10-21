@@ -29,13 +29,13 @@ export type HoldSettings = Record<HoldGroup, HoldRule>;
 
 export const HOLD_SECONDS = { min: 0.3, max: 5, step: 0.1 } as const;
 
-/** Every group defaults to Tap + delay, 1 s (client request): one tap, the border fills, then it acts. */
+/** Every group defaults to Hold, 1 s (client request), in Page and Scroll mode alike. */
 export const DEFAULT_HOLD_SETTINGS: HoldSettings = {
-  card: { mode: 'delay', enabled: false, seconds: 1 },
-  page: { mode: 'delay', enabled: false, seconds: 1 },
-  slider: { mode: 'delay', enabled: false, seconds: 1 },
-  language: { mode: 'delay', enabled: false, seconds: 1 },
-  back: { mode: 'delay', enabled: false, seconds: 1 },
+  card: { mode: 'hold', enabled: true, seconds: 1 },
+  page: { mode: 'hold', enabled: true, seconds: 1 },
+  slider: { mode: 'hold', enabled: true, seconds: 1 },
+  language: { mode: 'hold', enabled: true, seconds: 1 },
+  back: { mode: 'hold', enabled: true, seconds: 1 },
 };
 
 /** Which hold rule applies to each wall action. */
@@ -61,11 +61,6 @@ function normalizeRule(value: unknown, fallback: HoldRule): HoldRule {
 }
 
 /** Accepts stored, imported, or edited data and returns complete, clamped settings. */
-/** Scroll teks preset (client request): every group becomes Tap + delay, keeping its duration. */
-export function scrollModeHold(settings: HoldSettings): HoldSettings {
-  return normalizeHoldSettings(Object.fromEntries(HOLD_GROUPS.map(group => [group, { ...settings[group], mode: 'delay' }])));
-}
-
 export function normalizeHoldSettings(value: unknown): HoldSettings {
   const source = (typeof value === 'object' && value !== null ? value : {}) as Partial<Record<HoldGroup, unknown>>;
   return Object.fromEntries(HOLD_GROUPS.map(group => [group, normalizeRule(source[group], DEFAULT_HOLD_SETTINGS[group])])) as HoldSettings;
