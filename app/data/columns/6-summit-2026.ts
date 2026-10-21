@@ -9,9 +9,10 @@ export const SUMMIT_2026: ColumnConfig = {
   icon: 'people',
   illustration: provisional('/illustrations/summit-2026.webm'),
   i18n: {
-    'id': { label: 'KTT ALTAMA 2026' },
+    // The event name stays in English in every language (client request).
+    'id': { label: 'ALTAMA SUMMIT 2026' },
     'en': { label: 'ALTAMA SUMMIT 2026' },
-    'zh-Hans': { label: 'ALTAMA 2026 峰会' },
+    'zh-Hans': { label: 'ALTAMA SUMMIT 2026' },
   },
   // Three text pages (PAGE 1 / 2 / 3) with tabs at the top of the card (no photo frame).
   pages: [
@@ -42,16 +43,13 @@ export const SUMMIT_2026: ColumnConfig = {
     }),
     page([], {
       'id': { tab: PAGE_TABS.third.id, blocks: [
-        'Sejalan dengan tema ALTAMA SUMMIT 2026 – "Powering Partnership: Building a Strong Ecosystem for a Sustainable Future", hari ini, kita semua menjadi bagian dari sejarah.',
-        'Mari lanjutkan perjalanan ini bersama',
+        'ALTAMA SUMMIT 2026: Powering Partnership, hari ini kita semua menjadi bagian sejarah. Mari lanjutkan bersama.',
       ] },
       'en': { tab: PAGE_TABS.third.en, blocks: [
-        'In line with the ALTAMA SUMMIT 2026 theme – "Powering Partnership: Building a Strong Ecosystem for a Sustainable Future", today we all become part of history.',
-        'Let’s continue this journey together',
+        'ALTAMA SUMMIT 2026: Powering Partnership, today we all become part of history. Let’s continue together.',
       ] },
       'zh-Hans': { tab: PAGE_TABS.third['zh-Hans'], blocks: [
-        '秉承 ALTAMA SUMMIT 2026 主题——“Powering Partnership: Building a Strong Ecosystem for a Sustainable Future”，今天我们都成为历史的一部分。',
-        '让我们携手继续前行',
+        'ALTAMA SUMMIT 2026：Powering Partnership，今天我们都成为历史的一部分。让我们携手前行。',
       ] },
     }),
   ],

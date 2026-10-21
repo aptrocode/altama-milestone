@@ -41,10 +41,11 @@ describe('wall state and actions', () => {
     expect(wall.getColumnCopy(6).label).toBe('ALTAMA SUMMIT 2026');
   });
 
-  it('gives every section title a different text in each language', () => {
+  it('gives every section title a different text in each language, except the event name', () => {
     for (const column of WALL_CONFIG.columns) {
       const labels = (['id', 'en', 'zh-Hans'] as const).map(locale => column.i18n[locale].label);
-      expect(new Set(labels).size, labels.join(' / ')).toBe(3);
+      // Column 6 is the event's own name, kept in English everywhere (client request).
+      expect(new Set(labels).size, labels.join(' / ')).toBe(column.id === 6 ? 1 : 3);
     }
   });
 
