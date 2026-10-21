@@ -100,7 +100,7 @@ Videos always play to their end while anything advances automatically, and a car
   | Tekiro (section 2) | 2: profile + products, all awards under one heading |
   | RYU, Rexco (section 2) | 2, as usual |
 
-  Section 2 (Merek Kami) always keeps its tabbed pages in scroll mode (client decision); only the other sections become one page.
+  Section 2 (Merek Kami) always keeps its tabbed pages in scroll mode (client decision), and its tabs show even when Tombol page is off (`tabsAlways`; the Hold page then keeps Button page); only the other sections become one page.
 
   | Tentang Altama, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, KTT | 1, no page tabs |
 

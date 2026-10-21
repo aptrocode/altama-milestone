@@ -114,6 +114,11 @@ describe('visible targets', () => {
     expect(visibleTargets(open, { showPages: false }).map(item => item.key)).toEqual(['1:back', '1:previous', '1:next']);
   });
 
+  it('keeps the page tabs of a tabsAlways column (scroll mode, section 2) with the tabs switched off', () => {
+    const open = { 1: { ...idle, phase: 'active' as const, photoCount: 3, pageCount: 2, tabsAlways: true } };
+    expect(visibleTargets(open, { showPages: false }).map(item => item.key)).toContain('1:page:1');
+  });
+
   it('drops the photo arrows when the wall hides them (auto slide)', () => {
     const open = { 1: { ...idle, phase: 'active' as const, photoCount: 3, pageCount: 2 } };
     expect(visibleTargets(open, { showArrows: false }).map(item => item.key)).toEqual(['1:back', '1:page:1']);

@@ -144,8 +144,13 @@ describe('wall state and actions', () => {
     expect(awards.i18n.id.blocks).toHaveLength(2);
     expect(awards.i18n.id.blocks[0]).toBe('Penghargaan:');
     expect((awards.i18n.id.blocks[1] as { bullets: unknown[] }).bullets).toHaveLength(11);
+    // Section 2 keeps its tabs in scroll mode (tabsAlways); one-page cards do not.
+    wall.dispatch({ type: 'subItem', columnId: 2, subItemId: 'tekiro' });
+    expect(wall.publishedColumns[2]).toMatchObject({ pageCount: 2, tabsAlways: true });
+    expect(wall.publishedColumns[6]).toMatchObject({ pageCount: 1, tabsAlways: false });
     settings.setWall({ ...settings.wall, scrollText: false });
     expect(wall.publishedColumns[6]).toMatchObject({ pageCount: 3 });
+    expect(wall.publishedColumns[2]).toMatchObject({ pageCount: 4, tabsAlways: false });
   });
 
   it('publishes arrow and tab counts with each snapshot', () => {

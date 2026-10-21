@@ -76,6 +76,7 @@ function parseColumns(value: unknown): Partial<Record<ColumnId, PublishedColumn>
       photoCount: count(item.photoCount),
       pageCount: count(item.pageCount),
       tabsTop: item.tabsTop === true,
+      tabsAlways: item.tabsAlways === true,
     };
   }
   return out;

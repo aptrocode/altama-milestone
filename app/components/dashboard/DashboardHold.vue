@@ -20,7 +20,8 @@ const GROUP_LABEL: Record<HoldGroup, { title: string; hint: string }> = {
 const settings = useSettingsStore();
 // Groups whose buttons the Wall page hides are hidden here too (their values are kept).
 const hiddenByWall = computed(() => ({
-  page: !settings.wall.showPages,
+  // Scroll mode keeps section 2's tabs, so Button page stays while it is on.
+  page: !settings.wall.showPages && !settings.wall.scrollText,
   slider: !settings.wall.showArrows,
   back: !settings.wall.showClose,
 }) as Partial<Record<HoldGroup, boolean>>);
