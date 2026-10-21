@@ -2,6 +2,7 @@
 import type { WallLocale } from '../../../shared/wall';
 import type { BulletItem, MediaAsset, PageCopy } from '~/types/wall-content';
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
+import { capturePointer } from '~/utils/media';
 import { BASE_BODY_SIZE } from '../../../shared/font-settings';
 
 /**
@@ -116,7 +117,7 @@ function dragStart(event: PointerEvent) {
   if (!props.scroll || !scroller.value)
     return;
   drag = { id: event.pointerId, y: event.clientY, top: scroller.value.scrollTop };
-  scroller.value.setPointerCapture?.(event.pointerId);
+  capturePointer(scroller.value, event.pointerId);
 }
 function dragMove(event: PointerEvent) {
   if (drag?.id === event.pointerId && scroller.value)

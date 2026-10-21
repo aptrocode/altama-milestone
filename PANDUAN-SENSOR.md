@@ -16,6 +16,28 @@ Panduan praktis menyambungkan sensor ke wall, dari nol sampai bisa disentuh. Det
 
 **Rekomendasi:** pakai **B**. Kalibrasi tetap di **OptiTUIO**, karena sudah kalian setel dengan objek pembatas dan tidak perlu diulang. Yang diubah hanya tujuan kirimnya: OptiTUIO mengirim TUIO langsung ke Sensor Service, dan TouchDesigner tidak dipakai lagi untuk klik.
 
+## 1b. Cara A dengan script TouchDesigner V4 (hold, multitouch, geser)
+
+Script lama di TouchDesigner (**TUIO MULTITOUCH V3.2**) hanya memanggil `element.click()` saat tangan dilepas. Akibatnya wall tidak tahu kapan tangan mulai menekan:
+
+- **Hold tidak bisa dipakai.** Mode Hold (misalnya 5 detik) tidak berjalan dari sensor; setiap sentuhan langsung dianggap tap.
+- **Swipe foto dan geser teks dengan drag** tidak terbaca; yang jalan hanya `scrollBy` milik script itu.
+
+Pakai script baru **`touchdesigner/tuio-pointer-bridge.py`** (V4) di repo ini:
+
+1. Buka project TouchDesigner, pilih Execute DAT yang berisi script V3.2.
+2. Ganti seluruh isinya dengan isi `touchdesigner/tuio-pointer-bridge.py`. Path `TUIO`, `WEB`, dan `SETTINGS` di bagian atas sama seperti V3.2; sesuaikan kalau nama node di project berbeda.
+3. Simpan project. Tidak perlu mengubah apa pun di wall.
+
+Apa yang berubah dengan V4:
+
+- Setiap sentuhan TUIO dikirim sebagai **pointer sungguhan** (tekan, geser, lepas), masing-masing dengan ID sendiri.
+- **Hold, Tap + delay, dan Tap** di Dashboard → Hold berjalan persis seperti di touchscreen.
+- **Multitouch:** beberapa orang bisa menekan dan menahan tombol di kolom berbeda bersamaan.
+- **Geser teks** (Mode konten Scroll) dan **swipe foto** ikut jalan.
+
+Walau masih memakai V3.2, mode **Tap + delay** (default) tetap berjalan: wall menganggap klik dari script sebagai satu tap, lalu menunggu border penuh. Yang butuh V4 hanya mode **Hold**, multitouch, dan geser/swipe.
+
 ## 2. Kenapa bendera bahasa susah ditekan di cara A
 
 1. **Bendera kecil.** Di mode Compact, bendera berukuran 64 × 48 px, sedangkan card 360 × 642 px. Kalau satu pixel di layar kira-kira 2–3 mm, bendera cuma sekitar 13–19 cm × 10–14 cm. Titik dari LiDAR adalah *tengah tangan*, bukan ujung jari, dan bisa meleset beberapa cm.

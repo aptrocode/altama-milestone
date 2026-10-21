@@ -247,4 +247,26 @@ describe('hold input lifecycle', () => {
     vi.advanceTimersByTime(1 + HOLD_SETTLE_MS);
     expect(activate).toHaveBeenCalledTimes(1);
   });
+
+  it('a script click (TouchDesigner element.click()) presses like a tap: Tap + delay animates first', () => {
+    const { button, activate } = setup({ enabled: false, mode: 'delay', durationMs: 1000 });
+    // Events dispatched by a script are untrusted; a keyboard Enter click would be trusted.
+    button.dispatchEvent(event('click', { detail: 0 }));
+    expect(activate).not.toHaveBeenCalled();
+    expect(button.classes.has('holding')).toBe(true);
+    vi.advanceTimersByTime(1000 + HOLD_SETTLE_MS);
+    expect(activate).toHaveBeenCalledTimes(1);
+  });
+
+  it('puts its classes back after a re-render rewrote the class attribute (idle hint moving on)', () => {
+    const { button, activate, binding } = setup({ mode: 'hold', durationMs: 1000 });
+    button.dispatchEvent(event('pointerdown', { button: 0, pointerId: 1, isPrimary: true }));
+    vi.advanceTimersByTime(300);
+    // Vue patched className: our class is gone until the directive's updated hook runs.
+    button.classes.clear();
+    binding.update({ onActivate: activate, mode: 'hold', durationMs: 1000 });
+    expect(button.classes.has('holding')).toBe(true);
+    vi.advanceTimersByTime(700 + HOLD_SETTLE_MS);
+    expect(activate).toHaveBeenCalledTimes(1);
+  });
 });
