@@ -76,6 +76,38 @@ function onVideoDone(index: number) {
   if (playOnce.value && index === props.photo)
     emit('mediaEnded');
 }
+// Scroll mode: the photo also swipes horizontally (left = next, right = previous), like the arrows.
+// The visible photo follows the drag and snaps back; a swipe counts when it is mostly horizontal
+// and longer than a fifth of the frame. Touch, mouse, or a TouchDesigner drag (not Sensor Service).
+const SWIPE_FRACTION = 0.2;
+const swipe = ref<{ id: number; x: number; y: number; dx: number } | null>(null);
+const swipes = computed(() => !!props.scroll && (current.value?.photos.length || 0) > 1);
+function swipeStart(event: PointerEvent) {
+  if (!swipes.value || swipe.value)
+    return;
+  swipe.value = { id: event.pointerId, x: event.clientX, y: event.clientY, dx: 0 };
+  (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
+}
+function swipeMove(event: PointerEvent) {
+  if (swipe.value?.id === event.pointerId)
+    swipe.value.dx = event.clientX - swipe.value.x;
+}
+function swipeEnd(event: PointerEvent) {
+  const drag = swipe.value;
+  if (!drag || drag.id !== event.pointerId)
+    return;
+  swipe.value = null;
+  const width = (event.currentTarget as HTMLElement).clientWidth;
+  if (event.type === 'pointerup' && Math.abs(drag.dx) > width * SWIPE_FRACTION && Math.abs(drag.dx) > Math.abs(event.clientY - drag.y))
+    emit('action', { type: drag.dx < 0 ? 'next' : 'previous', columnId: props.columnId });
+}
+/** The visible photo follows the drag (damped), and eases back when released. */
+function photoStyle(index: number) {
+  if (index !== props.photo || !swipe.value)
+    return undefined;
+  return { transform: `translateX(${swipe.value.dx * 0.6}px)`, transition: 'none' };
+}
+
 // Text starts below whichever of the photo frame and page tabs are present.
 const textTop = computed(() => openCardTextTop(props.geometry, props.pages, props.showPages !== false));
 const TEXT_BOTTOM = TEXT_INSET.bottom;
@@ -161,12 +193,13 @@ function onNatural(index: number, px: number) {
   >
     <div
       v-if="hasPhotoFrame" class="absolute overflow-hidden [border-radius:calc(12*var(--wall-x))/calc(12*var(--wall-y))] bg-[#0b1a78]"
-      :style="rectStyle(visual.photo)"
+      :class="swipes ? 'cursor-grab' : ''" :style="rectStyle(visual.photo)" :data-swipe="swipes ? '' : undefined"
+      @pointerdown="swipeStart" @pointermove="swipeMove" @pointerup="swipeEnd" @pointercancel="swipeEnd"
     >
       <div
         v-for="(item, index) in current?.photos || []" :key="`${page}-${index}`"
-        class="absolute inset-0 transition-opacity duration-300 motion-reduce:transition-none"
-        :class="photo === index ? 'opacity-100' : 'opacity-0'" :aria-hidden="photo !== index" :data-photo="index + 1"
+        class="absolute inset-0 transition-[opacity,transform] duration-300 motion-reduce:transition-none"
+        :class="photo === index ? 'opacity-100' : 'opacity-0'" :style="photoStyle(index)" :aria-hidden="photo !== index" :data-photo="index + 1"
       >
         <video
           v-if="item && isVideoSrc(item.src)"
@@ -180,7 +213,7 @@ function onNatural(index: number, px: number) {
           @ended="onVideoDone(index)"
           @error="onVideoDone(index)"
         />
-        <img v-else-if="item" :src="item.src" alt="" class="size-full object-cover">
+        <img v-else-if="item" :src="item.src" alt="" class="size-full object-cover" draggable="false">
         <div v-else class="size-full flex flex-col items-center justify-center gap-[calc(8*var(--wall-y))] border border-dashed border-white/25 [border-radius:inherit]">
           <svg viewBox="0 0 100 80" class="w-[calc(44*var(--wall-x))] h-[calc(35*var(--wall-y))] text-white/40" aria-hidden="true">
             <polygon points="50,15 85,65 15,65" fill="currentColor" />
