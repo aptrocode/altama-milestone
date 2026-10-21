@@ -126,17 +126,17 @@ describe('wall state and actions', () => {
   it('groups pages for "Scroll teks": one page by default, Tekiro 2, RYU and Rexco keep 2; off restores them', () => {
     const wall = store();
     const settings = useSettingsStore();
-    wall.dispatch({ type: 'main', columnId: 4 });
-    expect(wall.publishedColumns[4]).toMatchObject({ pageCount: 2 });
+    wall.dispatch({ type: 'subItem', columnId: 5, subItemId: 'distribusi' });
+    expect(wall.publishedColumns[5]).toMatchObject({ pageCount: 2 });
     settings.setWall({ ...settings.wall, scrollText: true });
-    expect(wall.publishedColumns[4]).toMatchObject({ pageCount: 1 });
-    expect(wall.dispatch({ type: 'page', columnId: 4, page: 1 })).toBe(false);
-    const digital = getColumnPages(getColumnConfig(4), '', true)[0]!;
+    expect(wall.publishedColumns[5]).toMatchObject({ pageCount: 1 });
+    expect(wall.dispatch({ type: 'page', columnId: 5, page: 1 })).toBe(false);
+    const digital = getColumnPages(getColumnConfig(5), 'distribusi', true)[0]!;
     // Back-to-back bullet lists of the merged pages join into one list.
-    const bullets = getColumnPages(getColumnConfig(4), '').flatMap(page => page.i18n.id.blocks.flatMap(block => typeof block !== 'string' && 'bullets' in block ? block.bullets : []));
+    const bullets = getColumnPages(getColumnConfig(5), 'distribusi').flatMap(page => page.i18n.id.blocks.flatMap(block => typeof block !== 'string' && 'bullets' in block ? block.bullets : []));
     expect(digital.i18n.id.blocks).toEqual([{ bullets }]);
-    expect(getColumnPages(getColumnConfig(4), '', true)[0]).toBe(digital);
-    for (const [id, sub] of [[1, ''], [3, ''], [5, 'distribusi'], [5, 'pemasaran'], [6, '']] as const)
+    expect(getColumnPages(getColumnConfig(5), 'distribusi', true)[0]).toBe(digital);
+    for (const [id, sub] of [[1, ''], [3, ''], [4, ''], [5, 'pemasaran'], [6, '']] as const)
       expect(getColumnPages(getColumnConfig(id), sub, true)).toHaveLength(1);
     expect(getColumnPages(getColumnConfig(2), 'ryu', true)).toEqual(getColumnPages(getColumnConfig(2), 'ryu'));
     expect(getColumnPages(getColumnConfig(2), 'rexco', true)).toHaveLength(2);
@@ -150,9 +150,9 @@ describe('wall state and actions', () => {
     // Section 2 keeps its tabs in scroll mode (tabsAlways); one-page cards do not.
     wall.dispatch({ type: 'subItem', columnId: 2, subItemId: 'tekiro' });
     expect(wall.publishedColumns[2]).toMatchObject({ pageCount: 2, tabsAlways: true });
-    expect(wall.publishedColumns[4]).toMatchObject({ pageCount: 1, tabsAlways: false });
+    expect(wall.publishedColumns[5]).toMatchObject({ pageCount: 1, tabsAlways: false });
     settings.setWall({ ...settings.wall, scrollText: false });
-    expect(wall.publishedColumns[4]).toMatchObject({ pageCount: 2 });
+    expect(wall.publishedColumns[5]).toMatchObject({ pageCount: 2 });
     expect(wall.publishedColumns[2]).toMatchObject({ pageCount: 4, tabsAlways: false });
   });
 

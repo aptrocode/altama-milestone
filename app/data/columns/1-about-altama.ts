@@ -21,16 +21,13 @@ export const ABOUT_ALTAMA: ColumnConfig = {
       ],
       {
         'id': [
-          'Berawal dari CV. Sumber Daya Group, bisnis keluarga yang telah menapaki industri sejak 1967 hampir enam dekade pengalaman menjadi fondasi ALTAMA hari ini',
-          'Resmi berdiri sebagai badan usaha pada 1996, menjadi titik awal Altama seperti yang dikenal luas sekarang.',
+          'Berawal dari CV. Sumber Daya Group, berjalan hampir selama enam dekade dan menjadi titik awal ALTAMA seperti yang dikenal sekarang.',
         ],
         'en': [
-          'Originating from CV. Sumber Daya Group, a family business in the industry since 1967, nearly six decades of experience form the foundation of ALTAMA today.',
-          'Officially established as a business entity in 1996, marking the beginning of Altama as widely known today.',
+          'Beginning with CV. Sumber Daya Group, a journey of almost six decades became the starting point of ALTAMA as it is known today.',
         ],
         'zh-Hans': [
-          'ALTAMA 起源于自 1967 年起深耕行业的家族企业 CV. Sumber Daya Group，近六十年的丰富经验奠定了今日 ALTAMA 的基石。',
-          '1996 年正式成立为法人企业，成为如今广为人知的 ALTAMA 的起点。',
+          '始于 CV. Sumber Daya Group，历经近六十年，成为今日 ALTAMA 的起点。',
         ],
       },
     ),
