@@ -57,7 +57,7 @@ export const AUTO_SLIDE_SECONDS = { min: 2, max: 60, step: 1 } as const;
 export const AUTO_PAGE_SECONDS = { min: 3, max: 120, step: 1 } as const;
 export const TOUCH_DOT_SECONDS = { min: 1, max: 60, step: 1 } as const;
 
-export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, closePosition: 'bottom', closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPage: true, autoPageSeconds: 15, scrollText: false, languageBar: 'full', showTouchDots: false, touchDotSeconds: 5 };
+export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, closePosition: 'bottom', closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPage: true, autoPageSeconds: 15, scrollText: true, languageBar: 'full', showTouchDots: false, touchDotSeconds: 5 };
 
 function clampNumber(value: unknown, fallback: number, limits: { min: number; max: number; step: number }): number {
   const raw = typeof value === 'number' && Number.isFinite(value) ? value : fallback;

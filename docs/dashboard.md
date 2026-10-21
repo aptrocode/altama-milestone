@@ -91,7 +91,7 @@ Videos always play to their end while anything advances automatically, and a car
 
 ### Mode konten: Scroll (trial)
 
-**Mode konten** at the top of the page (`scrollText`) picks **Page** (default: text in tabbed pages, cards growing with their text) or **Scroll** (trial: vertically scrolling card text on every section). Like Tampilan bahasa, each option is a small card sketch: Page shows a tall card with tabs, Scroll a shorter card with a scroll bar and ⌄ above the skyline line.
+**Mode konten** at the top of the page (`scrollText`) picks **Page** (text in tabbed pages, cards growing with their text) or **Scroll** (default, client request: vertically scrolling card text on every section). Like Tampilan bahasa, each option is a small card sketch: Page shows a tall card with tabs, Scroll a shorter card with a scroll bar and ⌄ above the skyline line.
 
 - **On:** every card keeps its Font Maks size instead of shrinking. Its text scrolls up and down by touch or mouse drag, mouse wheel, or a TouchDesigner drag. A fade, a thin bar on the right, and a bouncing ⌄ show that more text follows, only when the text is longer than the tallest card; it starts at the top each time the card opens.
 - **Pages while on** (`scrollPages` per column or sub-item; default all pages in one):

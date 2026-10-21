@@ -327,6 +327,7 @@ describe('scroll teks trial', () => {
     const settings = useSettingsStore();
     const scope = effectScope();
     scopes.push(scope);
+    settings.setWall({ ...settings.wall, scrollText: false });
     const controls = scope.run(() => useWallController(wall, { resetDelayMs: () => 120_000 }))!;
     controls.dispatch({ type: 'subItem', columnId: 5, subItemId: 'distribusi' });
     controls.dispatch({ type: 'page', columnId: 5, page: 1 });

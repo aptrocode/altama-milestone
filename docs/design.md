@@ -19,7 +19,7 @@ The Summit logo is shared. Idle it is 278 px tall at y 70, narrow enough to stay
 
 ## Column content
 
-With the Dashboard → Wall **Scroll teks** trial on, every card's text scrolls vertically at its Font Maks size and the pages are grouped: Tekiro 2, RYU and Rexco 2, every other card 1 page without tabs (see [dashboard](./dashboard.md#scroll-teks-trial)).
+With Dashboard → Wall **Mode konten** on Scroll (the default), every card's text scrolls vertically at its Font Maks size and the pages are grouped: Tekiro 2, RYU and Rexco 2, every other card 1 page without tabs (see [dashboard](./dashboard.md#scroll-teks-trial)).
 
 | Column | Title (id) | Idle | Open |
 | --- | --- | --- | --- |
