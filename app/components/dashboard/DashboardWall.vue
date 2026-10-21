@@ -10,7 +10,7 @@ import DashboardSwitch from '~/components/dashboard/DashboardSwitch.vue';
 import { useSettingsDraft } from '~/composables/useSettingsDraft';
 import { useSettingsStore } from '~/stores/settings';
 import { CLOSE_OFFSET, CLOSE_SCALE } from '../../../shared/close-button';
-import { AUTO_PAGE_SECONDS, AUTO_SLIDE_SECONDS, autoPageActive, CARD_OFFSET_Y, DEFAULT_WALL_SETTINGS, normalizeWallSettings, RESET_SECONDS, TOUCH_DOT_SECONDS } from '../../../shared/wall-settings';
+import { arrowsShown, AUTO_PAGE_SECONDS, AUTO_SLIDE_SECONDS, autoPageActive, CARD_OFFSET_Y, DEFAULT_WALL_SETTINGS, normalizeWallSettings, RESET_SECONDS, TOUCH_DOT_SECONDS } from '../../../shared/wall-settings';
 
 const settings = useSettingsStore();
 const { draft, dirty, status, save, discard, restoreDefaults } = useSettingsDraft({
@@ -101,7 +101,8 @@ const HELP: Record<string, HelpLine[]> = {
   scrollText: [
     'Uji coba untuk semua section: teks memakai ukuran Maks dari Font dan bisa digeser ke atas/bawah (sentuh-geser, drag mouse, atau scroll wheel). Fade di bawah, scrollbar tipis, dan panah ⌄ menandakan masih ada teks.',
     { term: 'Page saat On', text: 'Tekiro 2 page (Profil + Produk, semua Penghargaan); RYU dan Rexco tetap 2 page; Tentang Altama, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, dan KTT jadi 1 page tanpa tombol page.' },
-    { term: 'Off', text: 'Kembali ke page seperti biasa (Tekiro 4, KTT 3, …) dan teks menyesuaikan card.' },
+    { term: 'Tombol slider', text: 'Selalu on selama Scroll teks on: panah foto tampil dan foto tidak auto slide.' },
+    { term: 'Off', text: 'Kembali ke page seperti biasa (Tekiro 4, KTT 3, …) dan teks menyesuaikan card. Tombol slider kembali mengikuti switch-nya.' },
     { term: 'Sensor', text: 'Geser lewat touchscreen, mouse, atau TD yang mengirim drag. Sensor Service (LiDAR/TUIO) belum mengirim geser; di jalur itu hanya tap.' },
   ],
   resetSeconds: [
@@ -124,6 +125,8 @@ const CLOSE_AXES = [
 
 // Auto page runs when switched on, and always while the page tabs are hidden.
 const autoPageOn = computed(() => autoPageActive(draft.value));
+// The arrows are always on while Scroll teks is on (client request).
+const arrowsOn = computed(() => arrowsShown(draft.value));
 
 const field = 'w-20 rounded-md bg-white/10 px-2 py-1.5 text-right font-bold text-white ring-1 ring-white/15 focus:outline-none focus:ring-2 focus:ring-wall-glow';
 const unit = 'text-sm text-sky-100/60';
@@ -269,11 +272,14 @@ const unit = 'text-sm text-sky-100/60';
           :help="HELP.showArrows"
           :changed="changed('showArrows')" :default-label="defaultLabel('showArrows')" @reset="reset('showArrows')"
         >
-          <DashboardSwitch :model-value="draft.showArrows" label="Tampilkan tombol slider" @update:model-value="update({ showArrows: $event })" />
+          <div class="flex flex-col items-end gap-1">
+            <DashboardSwitch :model-value="arrowsOn" label="Tampilkan tombol slider" @update:model-value="update({ showArrows: $event })" />
+            <span v-if="draft.scrollText" class="text-xs text-sky-100/50">Selalu on saat Scroll teks on</span>
+          </div>
         </DashboardSettingRow>
         <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-1" leave-active-class="transition duration-150 ease-in" leave-to-class="opacity-0 -translate-y-1">
           <DashboardSettingRow
-            v-if="!draft.showArrows" nested data-wall-setting="autoSlideSeconds" title="Auto slide"
+            v-if="!arrowsOn" nested data-wall-setting="autoSlideSeconds" title="Auto slide"
             :hint="`Foto berikutnya tiap sekian detik (${AUTO_SLIDE_SECONDS.min}–${AUTO_SLIDE_SECONDS.max} s). Default ${DEFAULT_WALL_SETTINGS.autoSlideSeconds} detik.`"
             :changed="changed('autoSlideSeconds')" :default-label="defaultLabel('autoSlideSeconds')" @reset="reset('autoSlideSeconds')"
           >
