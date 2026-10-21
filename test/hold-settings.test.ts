@@ -1,7 +1,7 @@
 import { createPinia } from 'pinia';
 import { describe, expect, it } from 'vitest';
 import { useSettingsStore } from '../app/stores/settings';
-import { DEFAULT_HOLD_SETTINGS, HOLD_GROUP_BY_ACTION, normalizeHoldSettings } from '../shared/hold-settings';
+import { DEFAULT_HOLD_SETTINGS, HOLD_GROUP_BY_ACTION, HOLD_GROUPS, normalizeHoldSettings, scrollModeHold } from '../shared/hold-settings';
 import { autoPageActive, DEFAULT_WALL_SETTINGS, normalizeWallSettings } from '../shared/wall-settings';
 
 describe('hold settings', () => {
@@ -60,5 +60,12 @@ describe('hold settings', () => {
     expect(settings.hold).toEqual(DEFAULT_HOLD_SETTINGS);
     settings.setWall({ resetSeconds: 60, cardOffsetY: -40 });
     expect(settings.wall).toEqual({ ...DEFAULT_WALL_SETTINGS, resetSeconds: 60, cardOffsetY: -40 });
+  });
+
+  it('scroll mode preset: every group Tap + delay, durations kept', () => {
+    const hold = scrollModeHold(normalizeHoldSettings({ ...DEFAULT_HOLD_SETTINGS, slider: { mode: 'hold', seconds: 2.5 } }));
+    expect(HOLD_GROUPS.every(group => hold[group].mode === 'delay' && !hold[group].enabled)).toBe(true);
+    expect(hold.slider.seconds).toBe(2.5);
+    expect(hold.card.seconds).toBe(DEFAULT_HOLD_SETTINGS.card.seconds);
   });
 });

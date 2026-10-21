@@ -60,6 +60,11 @@ function normalizeRule(value: unknown, fallback: HoldRule): HoldRule {
 }
 
 /** Accepts stored, imported, or edited data and returns complete, clamped settings. */
+/** Scroll teks preset (client request): every group becomes Tap + delay, keeping its duration. */
+export function scrollModeHold(settings: HoldSettings): HoldSettings {
+  return normalizeHoldSettings(Object.fromEntries(HOLD_GROUPS.map(group => [group, { ...settings[group], mode: 'delay' }])));
+}
+
 export function normalizeHoldSettings(value: unknown): HoldSettings {
   const source = (typeof value === 'object' && value !== null ? value : {}) as Partial<Record<HoldGroup, unknown>>;
   return Object.fromEntries(HOLD_GROUPS.map(group => [group, normalizeRule(source[group], DEFAULT_HOLD_SETTINGS[group])])) as HoldSettings;

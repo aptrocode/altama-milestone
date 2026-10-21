@@ -10,6 +10,7 @@ import DashboardSwitch from '~/components/dashboard/DashboardSwitch.vue';
 import { useSettingsDraft } from '~/composables/useSettingsDraft';
 import { useSettingsStore } from '~/stores/settings';
 import { CLOSE_OFFSET, CLOSE_SCALE } from '../../../shared/close-button';
+import { scrollModeHold } from '../../../shared/hold-settings';
 import { AUTO_PAGE_SECONDS, AUTO_SLIDE_SECONDS, autoPageActive, CARD_OFFSET_Y, DEFAULT_WALL_SETTINGS, normalizeWallSettings, RESET_SECONDS, TOUCH_DOT_SECONDS } from '../../../shared/wall-settings';
 
 const settings = useSettingsStore();
@@ -17,7 +18,13 @@ const { draft, dirty, status, save, discard, restoreDefaults } = useSettingsDraf
   saved: () => settings.wall,
   normalize: normalizeWallSettings,
   defaults: DEFAULT_WALL_SETTINGS,
-  save: value => settings.setWall(value),
+  save: (value) => {
+    // Switching Scroll teks on applies its preset: every hold group becomes Tap + delay.
+    const scrollTurnedOn = value.scrollText && !settings.wall.scrollText;
+    settings.setWall(value);
+    if (scrollTurnedOn)
+      settings.setHold(scrollModeHold(settings.hold));
+  },
 });
 
 const KEYS = Object.keys(DEFAULT_WALL_SETTINGS) as (keyof WallSettings)[];
@@ -25,7 +32,10 @@ const changes = computed(() => KEYS.filter(key => draft.value[key] !== settings.
 const changed = (key: keyof WallSettings) => draft.value[key] !== DEFAULT_WALL_SETTINGS[key];
 
 function update(patch: Partial<WallSettings>) {
-  draft.value = normalizeWallSettings({ ...draft.value, ...patch });
+  // Scroll teks preset (client request): turning it on also turns Tombol close and Tombol slider
+  // off (photos auto-slide); the hold groups follow on save. Both can be changed again afterwards.
+  const preset = patch.scrollText && !draft.value.scrollText ? { showClose: false, showArrows: false } : {};
+  draft.value = normalizeWallSettings({ ...draft.value, ...patch, ...preset });
 }
 
 const LANGUAGE_BAR_OPTIONS: { value: LanguageBarMode; label: string; hint: string }[] = [
@@ -100,6 +110,7 @@ const HELP: Record<string, HelpLine[]> = {
   ],
   scrollText: [
     'Uji coba untuk semua section: teks memakai ukuran Maks dari Font dan bisa digeser ke atas/bawah (sentuh-geser, drag mouse, atau scroll wheel). Fade di bawah, scrollbar tipis, dan panah ⌄ menandakan masih ada teks.',
+    { term: 'Saat dinyalakan', text: 'Tombol close dan Tombol slider otomatis off (foto auto slide), dan saat disimpan semua jenis tombol di Hold jadi Tap + delay (durasinya tetap). Setelah itu semuanya masih bisa diubah lagi.' },
     { term: 'Page saat On', text: 'Tekiro 2 page (Profil + Produk, semua Penghargaan); RYU dan Rexco tetap 2 page; Tentang Altama, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, dan KTT jadi 1 page tanpa tombol page.' },
     { term: 'Foto', text: 'Foto bisa di-swipe kiri/kanan. Panah dan auto slide tetap mengikuti Tombol slider.' },
     { term: 'Off', text: 'Kembali ke page seperti biasa (Tekiro 4, KTT 3, …) dan teks menyesuaikan card.' },
@@ -325,7 +336,7 @@ const unit = 'text-sm text-sky-100/60';
           </DashboardSettingRow>
         </Transition>
         <DashboardSettingRow
-          data-wall-setting="scrollText" title="Scroll teks (uji coba)" hint="Semua section: teks digeser ke atas/bawah, page lebih sedikit."
+          data-wall-setting="scrollText" title="Scroll teks (uji coba)" hint="Semua section: teks digeser ke atas/bawah, page lebih sedikit. Saat dinyalakan: Hold jadi Tap + delay, Tombol close & slider off."
           :help="HELP.scrollText"
           :changed="changed('scrollText')" :default-label="defaultLabel('scrollText')" @reset="reset('scrollText')"
         >
