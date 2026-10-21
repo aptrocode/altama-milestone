@@ -1,6 +1,8 @@
 export const HOLD_DURATION_MS = 1_000;
 /** How long a finished hold border stays fully drawn (with its glow) before the button acts. */
 export const HOLD_SETTLE_MS = 250;
+/** Longest wait for a late border animation after the duration before acting anyway. */
+export const HOLD_STALL_MS = 1_000;
 
 /** Pointers currently holding some button: one finger drives at most one button at a time. */
 const heldPointers = new Set<number>();
@@ -36,6 +38,7 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
   let completing = false;
   let disposed = false;
   let settleTimer: ReturnType<typeof setTimeout> | undefined;
+  let stallTimer: ReturnType<typeof setTimeout> | undefined;
 
   /**
    * Activate once the border has visibly finished. The timer starts on the press, but the CSS
@@ -50,13 +53,17 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
       settle();
       return;
     }
-    Promise.all(borders.map(animation => animation.finished)).then(() => {
-      if (completing && !disposed)
+    let settled = false;
+    const done = () => {
+      clearTimeout(stallTimer);
+      if (!settled && completing && !disposed) {
+        settled = true;
         settle();
-    }, () => {
-      if (completing && !disposed)
-        settle();
-    });
+      }
+    };
+    // Safety: a border animation that never finishes (a hidden or frozen page) must not block the button.
+    stallTimer = setTimeout(done, HOLD_STALL_MS);
+    Promise.all(borders.map(animation => animation.finished)).then(done, done);
   }
 
   /** Show the finished border (and its glow) for a moment, so visitors see it complete, then act. */
@@ -108,7 +115,9 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
     if (pointerId !== null)
       heldPointers.delete(pointerId);
     pointerId = null;
-    element.classList.remove('holding');
+    // A running Tap + delay keeps its border: only cancelDelay() (mode change, keyboard) stops it.
+    if (delayTimer === undefined)
+      element.classList.remove('holding');
   }
 
   function finish() {
@@ -180,8 +189,11 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
 
   return {
     update(next: HoldOptions) {
+      // Vue calls this on every re-render of the button (e.g. the idle touch hint moving on), so
+      // only a real mode change may stop what is running: Tap + delay reports enabled: false and
+      // must keep its countdown and border.
       options = next;
-      if (!holdEnabled())
+      if (!holdEnabled() && !delayed())
         cancel();
       if (!delayed())
         cancelDelay();
@@ -189,6 +201,7 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
     dispose() {
       disposed = true;
       clearTimeout(settleTimer);
+      clearTimeout(stallTimer);
       completing = false;
       cancel();
       cancelDelay();
