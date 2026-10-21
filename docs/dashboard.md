@@ -101,7 +101,8 @@ Videos always play to their end while anything advances automatically, and a car
   | RYU, Rexco | 2, as usual |
   | Tentang Altama, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, KTT | 1, no page tabs |
 
-- **Off:** the usual pages and tabs return (Tekiro 4, KTT 3, …) and the text fits its card again.
+- **Tombol slider:** always on while Scroll teks is on (`arrowsShown`): the photo arrows show and photos do not auto-slide; the switch shows On with "Selalu on saat Scroll teks on", the Hold page lists Button slider, and Sensor Service keeps the previous/next targets.
+- **Off:** the usual pages and tabs return (Tekiro 4, KTT 3, …), the text fits its card again, and Tombol slider follows its own switch.
 - **Switching:** an open card that was on a later page shows its first page when the pages merge (`clampPage`).
 - **Sensor Service:** it does not send drags yet, so on the LiDAR/TUIO path cards only take taps while scrolling is on.
 

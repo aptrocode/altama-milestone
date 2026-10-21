@@ -13,7 +13,7 @@ import { useSettingsStore } from '~/stores/settings';
 import { closeButtonRect } from '../../../shared/close-button';
 import { cardTextKey } from '../../../shared/font-settings';
 import { extendDown, languageGeometry } from '../../../shared/language-bar';
-import { autoPageActive, closeButtonOptions } from '../../../shared/wall-settings';
+import { arrowsShown, autoPageActive, closeButtonOptions } from '../../../shared/wall-settings';
 
 /**
  * One column in logical canvas units. Idle shows WallIdleFrame (mockup 1); open shows the raised
@@ -140,7 +140,7 @@ function act(action: WallAction) {
       <WallOpenCard
         v-if="!idle" class="absolute transition-[height] duration-300 ease-out motion-reduce:transition-none" :style="cardStyle"
         :column-id="column.id" :pages="pages" :locale="snapshot.locale" :photo="snapshot.photo" :page="snapshot.page"
-        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" :show-pages="settings.wall.showPages" :auto-page="autoPageActive(settings.wall)" :scroll="scroll" :text-min="cardText?.min" :text-max="cardText?.max" :max-height="maxCardHeight" @action="act" @height="onCardHeight"
+        :geometry="geometry.active" :show-arrows="arrowsShown(settings.wall)" :show-pages="settings.wall.showPages" :auto-page="autoPageActive(settings.wall)" :scroll="scroll" :text-min="cardText?.min" :text-max="cardText?.max" :max-height="maxCardHeight" @action="act" @height="onCardHeight"
         @media-ended="emit('slideEnded', column.id)"
       />
     </Transition>

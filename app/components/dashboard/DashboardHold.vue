@@ -8,6 +8,7 @@ import DashboardSettingRow from '~/components/dashboard/DashboardSettingRow.vue'
 import { useSettingsDraft } from '~/composables/useSettingsDraft';
 import { useSettingsStore } from '~/stores/settings';
 import { DEFAULT_HOLD_SETTINGS, HOLD_GROUPS, HOLD_MODES, HOLD_SECONDS, normalizeHoldSettings } from '../../../shared/hold-settings';
+import { arrowsShown } from '../../../shared/wall-settings';
 
 const GROUP_LABEL: Record<HoldGroup, { title: string; hint: string }> = {
   card: { title: 'Card section', hint: 'Kartu & tile' },
@@ -21,7 +22,7 @@ const settings = useSettingsStore();
 // Groups whose buttons the Wall page hides are hidden here too (their values are kept).
 const hiddenByWall = computed(() => ({
   page: !settings.wall.showPages,
-  slider: !settings.wall.showArrows,
+  slider: !arrowsShown(settings.wall),
   back: !settings.wall.showClose,
 }) as Partial<Record<HoldGroup, boolean>>);
 const visibleGroups = computed(() => HOLD_GROUPS.filter(group => !hiddenByWall.value[group]));
