@@ -101,6 +101,7 @@ Videos always play to their end while anything advances automatically, and a car
   | RYU, Rexco | 2, as usual |
   | Tentang Altama, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, KTT | 1, no page tabs |
 
+- **Card height:** every open card ends where its idle frame ends (under the flag bar: y 1068, or 76 px lower with Grid 2 + 1, moving with Posisi Y card), whatever its content, so the skyline stays visible; the text scrolls inside. Off: cards grow with their text up to y 1312 again.
 - **Photo swipe:** a photo with more than one slide also swipes horizontally (left = next, right = previous, like the arrows): the photo follows the drag and snaps back, and a swipe counts when it is mostly horizontal and longer than a fifth of the frame. Touch, mouse, or a TouchDesigner drag.
 - **Tombol slider:** unchanged by Scroll teks: Off still hides the arrows and auto-slides the photos.
 - **Off:** the usual pages and tabs return (Tekiro 4, KTT 3, …) and the text fits its card again.
