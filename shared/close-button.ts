@@ -1,6 +1,6 @@
 /**
  * Close (✕) button geometry from the dashboard, in two places (`position`):
- * - `bottom` (default, client request): a pill the size of the column title pill, centred 20 px
+ * - `bottom` (default, client request): a capsule at 75 % of the column title pill, centred 20 px
  *   under the idle frame (so it follows the language bar's frame extension and the card offset);
  * - `corner`: the layout's 44 px badge on the open card's top-right corner, where `scale` grows it
  *   around its own centre and `x` / `y` (logical px) move it.
@@ -15,8 +15,8 @@ export type ClosePosition = typeof CLOSE_POSITIONS[number];
 
 export interface CloseButtonOptions { scale: number; x: number; y: number; position?: ClosePosition }
 
-/** The bottom close pill: the title pill's size (336 × 98), 20 px under the idle frame. */
-export const BOTTOM_CLOSE = { width: 336, height: 98, gap: 20 } as const;
+/** The bottom close capsule: 75 % of the title pill (252 × 74, client request), 20 px under the idle frame. */
+export const BOTTOM_CLOSE = { width: 252, height: 74, gap: 20 } as const;
 
 export const CLOSE_SCALE = { min: 1, max: 2, step: 0.1 } as const;
 export const CLOSE_OFFSET = { min: -60, max: 60, step: 2 } as const;

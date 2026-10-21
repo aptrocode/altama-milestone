@@ -162,14 +162,14 @@ function act(action: WallAction) {
       leave-active-class="transition duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0"
     >
       <WallHoldButton
-        v-if="!idle && bottomClose" :outline="closeRect" group="back" :radius="49"
-        class="wall-back absolute z-20 flex items-center justify-center gap-[calc(14*var(--wall-x))] [border-radius:calc(49*var(--wall-x))/calc(49*var(--wall-y))] bg-red-600 text-white shadow-[0_calc(4*var(--wall-y))_calc(14*var(--wall-y))_rgba(0,0,0,0.35)] hover:bg-red-500 cursor-pointer"
+        v-if="!idle && bottomClose" :outline="closeRect" group="back" :radius="37"
+        class="wall-back absolute z-20 flex items-center justify-center gap-[calc(12*var(--wall-x))] [border-radius:calc(37*var(--wall-x))/calc(37*var(--wall-y))] bg-red-600 text-white shadow-[0_calc(4*var(--wall-y))_calc(14*var(--wall-y))_rgba(0,0,0,0.35)] hover:bg-red-500 cursor-pointer"
         :style="rectStyle(closeRect, geometry.section)"
         :aria-label="WALL_COPY[snapshot.locale].back" data-sensor-action="back" data-close="bottom"
         @activate="act({ type: 'back', columnId: column.id })"
       >
         <!-- A solid red capsule (client pick): a white ✕ and the bold label, centred together. -->
-        <span class="text-[length:calc(38*var(--wall-u))] font-bold leading-none" aria-hidden="true">✕</span>
+        <span class="text-[length:calc(32*var(--wall-u))] font-bold leading-none" aria-hidden="true">✕</span>
         <span class="font-display text-[length:calc(var(--fs-title,27)*var(--wall-u))] font-extrabold uppercase leading-none tracking-[0.08em]">{{ WALL_COPY[snapshot.locale].close }}</span>
       </WallHoldButton>
       <WallHoldButton

@@ -21,7 +21,7 @@ import { LANGUAGE_BAR_MODES } from './language-bar';
  * - autoSlideSeconds: auto-slide interval while the arrows are off.
  * - showPages: whether open cards show their page tabs. When off, Sensor Service drops the page
  *   targets and pages change on their own every autoPageSeconds.
- * - autoPage: pages also change on their own while the tabs are shown (default on); with the
+ * - autoPage: pages also change on their own while the tabs are shown (default off); with the
  *   tabs off they always do (autoPageActive).
  * - autoPageSeconds: auto-page interval (default 15 s).
  * - scrollText: trial of vertically scrolling card text (default off). Every card keeps its Font
@@ -57,7 +57,7 @@ export const AUTO_SLIDE_SECONDS = { min: 2, max: 60, step: 1 } as const;
 export const AUTO_PAGE_SECONDS = { min: 3, max: 120, step: 1 } as const;
 export const TOUCH_DOT_SECONDS = { min: 1, max: 60, step: 1 } as const;
 
-export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, closePosition: 'bottom', closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: false, autoSlideSeconds: 5, showPages: true, autoPage: true, autoPageSeconds: 15, scrollText: true, languageBar: 'full', showTouchDots: false, touchDotSeconds: 5 };
+export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, closePosition: 'bottom', closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: false, autoSlideSeconds: 5, showPages: true, autoPage: false, autoPageSeconds: 15, scrollText: true, languageBar: 'full', showTouchDots: false, touchDotSeconds: 5 };
 
 function clampNumber(value: unknown, fallback: number, limits: { min: number; max: number; step: number }): number {
   const raw = typeof value === 'number' && Number.isFinite(value) ? value : fallback;
