@@ -39,6 +39,20 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
   let disposed = false;
   let settleTimer: ReturnType<typeof setTimeout> | undefined;
   let stallTimer: ReturnType<typeof setTimeout> | undefined;
+  // The visual state classes this binding owns. Vue rewrites the button's whole class attribute
+  // when a bound class changes (e.g. the idle touch hint moving on), which would drop them mid-hold;
+  // `update()` (the directive's updated hook, after Vue's patch) puts them back.
+  const shown = new Set<string>();
+  function show(name: 'holding' | 'hold-complete', on: boolean) {
+    if (on) {
+      shown.add(name);
+      element.classList.add(name);
+    }
+    else {
+      shown.delete(name);
+      element.classList.remove(name);
+    }
+  }
 
   /**
    * Activate once the border has visibly finished. The timer starts on the press, but the CSS
@@ -68,7 +82,7 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
 
   /** Show the finished border (and its glow) for a moment, so visitors see it complete, then act. */
   function settle() {
-    element.classList.add('hold-complete');
+    show('hold-complete', true);
     settleTimer = setTimeout(() => {
       settleTimer = undefined;
       if (completing && !disposed)
@@ -80,8 +94,8 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
     if (delayTimer !== undefined)
       return;
     clearTimeout(completionTimer);
-    element.classList.remove('hold-complete');
-    element.classList.add('holding');
+    show('hold-complete', false);
+    show('holding', true);
     delayTimer = setTimeout(() => {
       delayTimer = undefined;
       complete();
@@ -89,11 +103,12 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
   }
 
   function cancelDelay() {
-    if (completing)
+    // Nothing to stop unless a delay runs: a Hold in progress keeps its border.
+    if (completing || delayTimer === undefined)
       return;
     clearTimeout(delayTimer);
     delayTimer = undefined;
-    element.classList.remove('holding');
+    show('holding', false);
   }
 
   /** A press from outside the pointer path (sensor input): delay mode animates first. */
@@ -117,7 +132,7 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
     pointerId = null;
     // A running Tap + delay keeps its border: only cancelDelay() (mode change, keyboard) stops it.
     if (delayTimer === undefined)
-      element.classList.remove('holding');
+      show('holding', false);
   }
 
   function finish() {
@@ -126,8 +141,8 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
     settleTimer = undefined;
     cancel();
     clearTimeout(completionTimer);
-    element.classList.add('hold-complete');
-    completionTimer = setTimeout(() => element.classList.remove('hold-complete'), 400);
+    show('hold-complete', true);
+    completionTimer = setTimeout(show, 400, 'hold-complete', false);
     options.onActivate();
   }
 
@@ -143,10 +158,10 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
     if (!holdEnabled() || pointer.button !== 0 || pointerId !== null || heldPointers.has(pointer.pointerId))
       return;
     clearTimeout(completionTimer);
-    element.classList.remove('hold-complete');
+    show('hold-complete', false);
     pointerId = pointer.pointerId;
     heldPointers.add(pointerId);
-    element.classList.add('holding');
+    show('holding', true);
     holdTimer = setTimeout(complete, options.durationMs ?? HOLD_DURATION_MS);
   }
 
@@ -160,7 +175,13 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
     event.stopPropagation();
     // Keyboard/assistive clicks (detail 0) always activate; pointer clicks only when hold is off
     // (delay mode already started on pointer down).
-    if ((event as MouseEvent).detail === 0) {
+    if ((event as MouseEvent).detail === 0 && !event.isTrusted) {
+      // A click sent by a script (TouchDesigner's `element.click()`) is a tap, not a keyboard
+      // press: Tap + delay animates first. Hold cannot be timed from a click; that needs the
+      // bridge to send pointerdown/pointerup (touchdesigner/tuio-pointer-bridge.py).
+      press();
+    }
+    else if ((event as MouseEvent).detail === 0) {
       cancelDelay();
       finish();
     }
@@ -197,6 +218,7 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
         cancel();
       if (!delayed())
         cancelDelay();
+      shown.forEach(name => element.classList.add(name));
     },
     dispose() {
       disposed = true;
@@ -206,7 +228,7 @@ export function bindHold(element: HTMLElement, initial: HoldOptions) {
       cancel();
       cancelDelay();
       clearTimeout(completionTimer);
-      element.classList.remove('hold-complete');
+      show('hold-complete', false);
       Object.entries(listeners).forEach(([name, handler]) => element.removeEventListener(name, handler));
       windowTarget.removeEventListener('pointerup', release);
       windowTarget.removeEventListener('blur', cancel);

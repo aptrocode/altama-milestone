@@ -7,7 +7,7 @@ import WallHoldButton from '~/components/wall/WallHoldButton.vue';
 import WallPageCopy from '~/components/wall/WallPageCopy.vue';
 import { installationLayout, rectStyle } from '~/data/installation-layout';
 import { WALL_COPY } from '~/data/wall-copy';
-import { isVideoSrc } from '~/utils/media';
+import { capturePointer, isVideoSrc } from '~/utils/media';
 import { openCardTextTop, TEXT_INSET } from '~/utils/open-card-text';
 import { pageTabRects } from '../../../shared/page-tabs';
 
@@ -86,7 +86,7 @@ function swipeStart(event: PointerEvent) {
   if (!swipes.value || swipe.value)
     return;
   swipe.value = { id: event.pointerId, x: event.clientX, y: event.clientY, dx: 0 };
-  (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
+  capturePointer(event.currentTarget as HTMLElement, event.pointerId);
 }
 function swipeMove(event: PointerEvent) {
   if (swipe.value?.id === event.pointerId)
