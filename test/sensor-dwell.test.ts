@@ -142,11 +142,13 @@ describe('visible targets', () => {
 });
 
 describe('dwell engine', () => {
-  function setup(hold?: unknown) {
+  // Hold rules for card, page, and slider (1 s dwell), so these tests exercise the service's dwell;
+  // the dashboard defaults are Tap + delay, which the service treats as a short contact.
+  const HOLD_RULES = { card: { mode: 'hold', seconds: 1 }, page: { mode: 'hold', seconds: 1 }, slider: { mode: 'hold', seconds: 1 }, language: { mode: 'tap', seconds: 1 }, back: { mode: 'tap', seconds: 1 } };
+  function setup(hold: unknown = HOLD_RULES) {
     const inputs: DwellInput[] = [];
     const engine = new DwellEngine({ onInput: input => inputs.push(input) });
-    if (hold)
-      engine.setHold(hold);
+    engine.setHold(hold);
     engine.setTargets(visibleTargets(allIdle), 0);
     return { engine, inputs };
   }

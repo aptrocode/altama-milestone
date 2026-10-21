@@ -29,12 +29,13 @@ export type HoldSettings = Record<HoldGroup, HoldRule>;
 
 export const HOLD_SECONDS = { min: 0.3, max: 5, step: 0.1 } as const;
 
+/** Every group defaults to Tap + delay, 1 s (client request): one tap, the border fills, then it acts. */
 export const DEFAULT_HOLD_SETTINGS: HoldSettings = {
-  card: { mode: 'hold', enabled: true, seconds: 1 },
-  page: { mode: 'hold', enabled: true, seconds: 1 },
-  slider: { mode: 'hold', enabled: true, seconds: 1 },
-  language: { mode: 'tap', enabled: false, seconds: 1 },
-  back: { mode: 'tap', enabled: false, seconds: 1 },
+  card: { mode: 'delay', enabled: false, seconds: 1 },
+  page: { mode: 'delay', enabled: false, seconds: 1 },
+  slider: { mode: 'delay', enabled: false, seconds: 1 },
+  language: { mode: 'delay', enabled: false, seconds: 1 },
+  back: { mode: 'delay', enabled: false, seconds: 1 },
 };
 
 /** Which hold rule applies to each wall action. */

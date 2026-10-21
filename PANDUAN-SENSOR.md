@@ -19,7 +19,7 @@ Panduan praktis menyambungkan sensor ke wall, dari nol sampai bisa disentuh. Det
 ## 2. Kenapa bendera bahasa susah ditekan di cara A
 
 1. **Bendera kecil.** Di mode Compact, bendera berukuran 64 × 48 px, sedangkan card 360 × 642 px. Kalau satu pixel di layar kira-kira 2–3 mm, bendera cuma sekitar 13–19 cm × 10–14 cm. Titik dari LiDAR adalah *tengah tangan*, bukan ujung jari, dan bisa meleset beberapa cm.
-2. **Klik mouse butuh tekan dan lepas di tombol yang sama.** Bendera aktif dengan "tekan biasa" (Hold → Bahasa default **Tap**). Browser baru menganggap itu klik kalau mouse ditekan *dan* dilepas di atas elemen yang sama. Tangan di depan LiDAR selalu bergeser sedikit. Kalau saat dilepas posisinya sudah di luar bendera, kliknya hilang.
+2. **Klik mouse butuh tekan dan lepas di tombol yang sama.** Bendera aktif dengan sekali tekan (Hold → Bahasa default **Tap + delay**; kalau diubah ke Tap, aktif saat dilepas). Browser baru menganggap itu klik kalau mouse ditekan *dan* dilepas di atas elemen yang sama. Tangan di depan LiDAR selalu bergeser sedikit. Kalau saat dilepas posisinya sudah di luar bendera, kliknya hilang.
 3. **Meleset sedikit, kena card di belakangnya.** Bar bendera ada di atas card. Kalau titiknya jatuh di luar bendera, yang tersentuh adalah card (yang punya hold 1 detik), bukan bahasa.
 4. **Satu kursor untuk semua orang.** Kalau ada dua tangan, kursornya lompat-lompat.
 
