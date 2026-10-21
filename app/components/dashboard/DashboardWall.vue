@@ -117,7 +117,7 @@ const HELP: Record<string, HelpLine[]> = {
     { term: 'Dengan Tombol slider off', text: 'Page berganti setelah foto terakhirnya, bukan per Auto page.' },
   ],
   scrollText: [
-    { term: 'Page', text: 'Teks dibagi ke page dengan tab (Tekiro 4, Summit 3, yang lain 1–2). Card memanjang mengikuti teks, sampai di atas gedung.' },
+    { term: 'Page', text: 'Teks dibagi ke page dengan tab (Tekiro 4, yang lain 1–2). Card memanjang mengikuti teks, sampai di atas gedung.' },
     { term: 'Scroll (uji coba)', text: 'Card setinggi frame idle, jadi gedung tetap terlihat. Teks memakai ukuran Maks dari Font dan digeser ke atas/bawah (sentuh-geser, drag mouse, scroll wheel); fade, scrollbar tipis, dan panah ⌄ menandakan masih ada teks. Page lebih sedikit: section 2 (Merek Kami: Tekiro, RYU, Rexco) tetap punya page, masing-masing 2 page dengan tab; section lain 1 page tanpa tab. Foto juga bisa di-swipe kiri/kanan.' },
     { term: 'Saat memilih Scroll', text: 'Tombol close dan Tombol slider otomatis off (foto auto slide), dan saat disimpan semua jenis tombol di Hold jadi Tap + delay (durasinya tetap). Setelah itu semuanya masih bisa diubah lagi.' },
     { term: 'Sensor', text: 'Geser teks dan swipe foto lewat touchscreen, mouse, atau TD yang mengirim drag. Sensor Service (LiDAR/TUIO) belum mengirim geser; di jalur itu hanya tap.' },
