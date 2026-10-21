@@ -45,7 +45,9 @@ export const useWallStore = defineStore('wall', {
       const pages = pagesOf(id, snapshot.subItem);
       const pageCount = pages.length;
       const tabsTop = !pages.some(page => page.photos.length > 0);
-      return [id, { ...snapshot, photoCount: photoCount(id, snapshot), pageCount, tabsTop }];
+      // In scroll mode only cards that keep several pages (section 2) have them; their tabs always show.
+      const tabsAlways = useSettingsStore().wall.scrollText && pageCount > 1;
+      return [id, { ...snapshot, photoCount: photoCount(id, snapshot), pageCount, tabsTop, tabsAlways }];
     })) as Record<ColumnId, PublishedColumn>,
   },
   actions: {

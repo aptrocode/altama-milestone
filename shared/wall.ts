@@ -22,6 +22,8 @@ export interface PublishedColumn extends ColumnSnapshot {
   pageCount: number;
   /** The open card has no photo frame, so its page tabs sit at the top (shared/page-tabs.ts). */
   tabsTop?: boolean;
+  /** Scroll mode keeps this card's tabbed pages (section 2), so its tabs show even with the page tabs switched off. */
+  tabsAlways?: boolean;
 }
 
 export type WallAction

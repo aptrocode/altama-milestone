@@ -55,7 +55,8 @@ function target(action: WallAction, key: string, rect: Rect, offsetY: number, ex
  * `offsetY` is the wall's dashboard card offset: every column, and so every target, moves by it.
  * `showClose: false` hides the open card's close button, so it has no Back target either;
  * `showArrows: false` hides the photo arrows (photos auto-slide), so previous/next go too.
- * `showPages: false` hides the page tabs (pages auto-change), so page targets go too.
+ * `showPages: false` hides the page tabs (pages auto-change), so page targets go too, except on a
+ * column published with `tabsAlways` (scroll mode keeps section 2's tabbed pages).
  * `languageBar` picks the compact, full-width, or 2 + 1 grid flag bar (shared/language-bar.ts);
  * the grid makes the idle frame, and so main, taller.
  */
@@ -88,7 +89,7 @@ export function visibleTargets(snapshots: Partial<Record<ColumnId, PublishedColu
       targets.push(target({ type: 'next', columnId }, `${columnId}:next`, geometry.active.next, offsetY));
     }
     const pageCount = snapshot.pageCount ?? 0;
-    if (showPages && pageCount > 1) {
+    if ((showPages || snapshot.tabsAlways) && pageCount > 1) {
       // The visible page's tab is inert, so only the other tab is a target.
       for (const page of pageTabRects(geometry.active, pageCount, snapshot.tabsTop).filter(item => item.page !== snapshot.page))
         targets.push(target({ type: 'page', columnId, page: page.page }, `${columnId}:page:${page.page}`, page, offsetY));

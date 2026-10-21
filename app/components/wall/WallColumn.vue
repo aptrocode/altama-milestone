@@ -43,6 +43,8 @@ const idleFrame = computed(() => extendDown(geometry.value.card, languageGeometr
 const pages = computed(() => getColumnPages(props.column, props.snapshot.subItem, settings.wall.scrollText));
 // Trial: every card's text scrolls vertically (Dashboard → Wall "Scroll teks").
 const scroll = computed(() => settings.wall.scrollText);
+// Scroll mode keeps section 2's tabbed pages: their tabs show even with Tombol page off.
+const tabsAlways = computed(() => scroll.value && pages.value.length > 1);
 // Open-card text size and fill come from Dashboard → Font, per card (column or sub-item).
 const cardText = computed(() => {
   const key = cardTextKey(props.column.key, props.column.type === 'expandable' ? props.snapshot.subItem : '');
@@ -146,7 +148,7 @@ function act(action: WallAction) {
       <WallOpenCard
         v-if="!idle" class="absolute transition-[height] duration-300 ease-out motion-reduce:transition-none" :style="cardStyle"
         :column-id="column.id" :pages="pages" :locale="snapshot.locale" :photo="snapshot.photo" :page="snapshot.page"
-        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" :show-pages="settings.wall.showPages" :auto-page="autoPageActive(settings.wall)" :scroll="scroll" :text-min="cardText?.min" :text-max="cardText?.max" :max-height="cardLimit" @action="act" @height="onCardHeight"
+        :geometry="geometry.active" :show-arrows="settings.wall.showArrows" :show-pages="settings.wall.showPages || tabsAlways" :auto-page="autoPageActive(settings.wall)" :scroll="scroll" :text-min="cardText?.min" :text-max="cardText?.max" :max-height="cardLimit" @action="act" @height="onCardHeight"
         @media-ended="emit('slideEnded', column.id)"
       />
     </Transition>

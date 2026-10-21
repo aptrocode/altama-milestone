@@ -121,7 +121,7 @@ Both messages also carry `hold`, the operator's dwell rules from `/dashboard`:
 ```
 `card` covers `main` and `subItem`, `page` covers `page`, `slider` covers `previous`/`next` (`HOLD_GROUP_BY_ACTION` in `shared/hold-settings.ts`). Each rule has a `mode` (`tap`, `hold`, or `delay`) and `enabled`, which mirrors `mode === "hold"` and is what the service's dwell reads (older payloads with only `enabled` still work). Apply the rule current at contact start. When a group is not `hold`, still require a short deliberate contact (about 0.2–0.3 s) and send one input per contact, so passers-by do not trigger it. If `hold` is missing, use the defaults (all enabled, 1 s).
 
-The actual `columns` payload always includes IDs 1–6. `phase` is `idle` or `active`; `photoCount` is the number of photo slots on the page currently shown, `pageCount` the number of pages of the selected content (1–4; Scroll teks makes section 6 one page), and `tabsTop` whether its tabs sit at the card top (no photo frame). Changes send the same snapshot with `type: "clientState"`.
+The actual `columns` payload always includes IDs 1–6. `phase` is `idle` or `active`; `photoCount` is the number of photo slots on the page currently shown, `pageCount` the number of pages of the selected content (1–4; Scroll teks makes section 6 one page), `tabsTop` whether its tabs sit at the card top (no photo frame), and `tabsAlways` whether its tabs show even when `showPages` is false (scroll mode keeps section 2's tabbed pages); the service keeps those page targets. Changes send the same snapshot with `type: "clientState"`.
 
 Sensor Service combines that snapshot with `shared/installation-layout.json`:
 - language targets are visible only in idle;
