@@ -58,7 +58,7 @@ Each group has a **mode** (segmented **Tap / Hold / Tap + delay**) and a duratio
 
 ## Wall
 
-The page is grouped into four cards: **Tampilan** (language bar, card offset), **Tombol di card** (close + size/position, slider + Auto slide, page tabs, Auto page + duration, Scroll teks trial), **Waktu** (reset), and **Diagnostik** (amber; touch dots + duration, with a "Masih menyala" badge while on). Each row has a one-line hint (number rows state their default), a **?** tooltip with the details (hover; a click or tap pins it and lights the **?**, closed by another click, a click elsewhere, or Escape), and, when the value differs from its default, a **↺ Default: …** chip that restores it. Switches show On/Off. Inputs that only matter while a switch is off (Auto slide, Auto page) or on (Durasi titik) sit indented under it. The language bar options are drawn as small card sketches.
+The page is grouped into five cards: **Mode konten** (Page or Scroll, at the top), **Tampilan** (language bar, card offset), **Tombol di card** (close + size/position, slider + Auto slide, page tabs, Auto page + duration), **Waktu** (reset), and **Diagnostik** (amber; touch dots + duration, with a "Masih menyala" badge while on). Each row has a one-line hint (number rows state their default), a **?** tooltip with the details (hover; a click or tap pins it and lights the **?**, closed by another click, a click elsewhere, or Escape), and, when the value differs from its default, a **↺ Default: …** chip that restores it. Switches show On/Off. Inputs that only matter while a switch is off (Auto slide, Auto page) or on (Durasi titik) sit indented under it. The language bar options are drawn as small card sketches.
 
 | Setting | Effect | Default |
 | --- | --- | --- |
@@ -88,9 +88,9 @@ Videos always play to their end while anything advances automatically, and a car
 
 **Simpan** and **Default** work as on the Hold page.
 
-### Scroll teks (trial)
+### Mode konten: Scroll (trial)
 
-**Scroll teks (uji coba)** under Tombol di card (`scrollText`, default **Off**) trials vertically scrolling card text on every section.
+**Mode konten** at the top of the page (`scrollText`) picks **Page** (default: text in tabbed pages, cards growing with their text) or **Scroll** (trial: vertically scrolling card text on every section). Like Tampilan bahasa, each option is a small card sketch: Page shows a tall card with tabs, Scroll a shorter card with a scroll bar and ⌄ above the skyline line.
 
 - **On:** every card keeps its Font Maks size instead of shrinking. Its text scrolls up and down by touch or mouse drag, mouse wheel, or a TouchDesigner drag. A fade, a thin bar on the right, and a bouncing ⌄ show that more text follows, only when the text is longer than the tallest card; it starts at the top each time the card opens.
 - **Pages while on** (`scrollPages` per column or sub-item; default all pages in one):

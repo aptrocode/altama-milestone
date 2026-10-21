@@ -44,9 +44,17 @@ const LANGUAGE_BAR_OPTIONS: { value: LanguageBarMode; label: string; hint: strin
   { value: 'grid', label: 'Grid 2 + 1', hint: 'Paling besar, card lebih tinggi' },
 ];
 
+/** Content mode: Page (tabs) or Scroll (the `scrollText` trial). */
+const CONTENT_MODE_OPTIONS: { value: boolean; label: string; hint: string }[] = [
+  { value: false, label: 'Page', hint: 'Teks dibagi page dengan tab' },
+  { value: true, label: 'Scroll', hint: 'Card pendek, teks digeser' },
+];
+
 /** The default of a setting as the operator reads it (shown on the "Default: …" chip). */
 function defaultLabel(key: keyof WallSettings) {
   const value = DEFAULT_WALL_SETTINGS[key];
+  if (key === 'scrollText')
+    return value ? 'Scroll' : 'Page';
   if (typeof value === 'boolean')
     return value ? 'On' : 'Off';
   if (key === 'languageBar')
@@ -109,12 +117,10 @@ const HELP: Record<string, HelpLine[]> = {
     { term: 'Dengan Tombol slider off', text: 'Page berganti setelah foto terakhirnya, bukan per Auto page.' },
   ],
   scrollText: [
-    'Uji coba untuk semua section: teks memakai ukuran Maks dari Font dan bisa digeser ke atas/bawah (sentuh-geser, drag mouse, atau scroll wheel). Fade di bawah, scrollbar tipis, dan panah ⌄ menandakan masih ada teks.',
-    { term: 'Saat dinyalakan', text: 'Tombol close dan Tombol slider otomatis off (foto auto slide), dan saat disimpan semua jenis tombol di Hold jadi Tap + delay (durasinya tetap). Setelah itu semuanya masih bisa diubah lagi.' },
-    { term: 'Page saat On', text: 'Tekiro 2 page (Profil + Produk, semua Penghargaan); RYU dan Rexco tetap 2 page; Tentang Altama, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, dan KTT jadi 1 page tanpa tombol page.' },
-    { term: 'Foto', text: 'Foto bisa di-swipe kiri/kanan. Panah dan auto slide tetap mengikuti Tombol slider.' },
-    { term: 'Off', text: 'Kembali ke page seperti biasa (Tekiro 4, KTT 3, …) dan teks menyesuaikan card.' },
-    { term: 'Sensor', text: 'Geser lewat touchscreen, mouse, atau TD yang mengirim drag. Sensor Service (LiDAR/TUIO) belum mengirim geser; di jalur itu hanya tap.' },
+    { term: 'Page', text: 'Teks dibagi ke page dengan tab (Tekiro 4, KTT 3, yang lain 1–2). Card memanjang mengikuti teks, sampai di atas gedung.' },
+    { term: 'Scroll (uji coba)', text: 'Card setinggi frame idle, jadi gedung tetap terlihat. Teks memakai ukuran Maks dari Font dan digeser ke atas/bawah (sentuh-geser, drag mouse, scroll wheel); fade, scrollbar tipis, dan panah ⌄ menandakan masih ada teks. Page lebih sedikit: Tekiro, RYU, Rexco 2 page; yang lain 1 page tanpa tab. Foto juga bisa di-swipe kiri/kanan.' },
+    { term: 'Saat memilih Scroll', text: 'Tombol close dan Tombol slider otomatis off (foto auto slide), dan saat disimpan semua jenis tombol di Hold jadi Tap + delay (durasinya tetap). Setelah itu semuanya masih bisa diubah lagi.' },
+    { term: 'Sensor', text: 'Geser teks dan swipe foto lewat touchscreen, mouse, atau TD yang mengirim drag. Sensor Service (LiDAR/TUIO) belum mengirim geser; di jalur itu hanya tap.' },
   ],
   resetSeconds: [
     'Kolom yang dibuka atau diganti bahasanya kembali ke tampilan awal (Bahasa Indonesia) setelah sekian detik tanpa sentuhan.',
@@ -143,6 +149,45 @@ const unit = 'text-sm text-sky-100/60';
 
 <template>
   <section aria-label="Wall" class="space-y-4">
+    <DashboardSection title="Mode konten" icon="card" description="Cara isi card ditampilkan saat kolom dibuka.">
+      <DashboardSettingRow
+        data-wall-setting="scrollText" title="Mode konten" hint="Page: teks dibagi page dengan tab. Scroll (uji coba): card setinggi frame idle, teks digeser."
+        :help="HELP.scrollText"
+        :changed="changed('scrollText')" :default-label="defaultLabel('scrollText')" @reset="reset('scrollText')"
+      >
+        <div class="grid w-full grid-cols-2 gap-2 sm:w-auto" role="radiogroup" aria-label="Mode konten">
+          <button
+            v-for="mode in CONTENT_MODE_OPTIONS" :key="mode.label" type="button" role="radio" :aria-checked="draft.scrollText === mode.value"
+            class="flex flex-col items-center gap-1.5 rounded-lg px-2 py-2 text-center ring-1 transition-colors sm:w-28"
+            :class="draft.scrollText === mode.value ? 'bg-wall-glow/15 text-white ring-2 ring-wall-glow' : 'text-sky-100/70 ring-white/15 hover:bg-white/5'"
+            @click="update({ scrollText: mode.value })"
+          >
+            <!-- Sketch of an open card in this mode, with the skyline line under it. -->
+            <svg viewBox="0 0 48 60" class="h-14 w-12" aria-hidden="true">
+              <line x1="1" y1="56" x2="47" y2="56" class="stroke-current opacity-40" stroke-width="1" stroke-dasharray="2 2" />
+              <template v-if="!mode.value">
+                <rect x="6" y="2" width="36" height="52" rx="4" class="fill-white/5 stroke-current" stroke-width="1.5" />
+                <rect x="10" y="6" width="28" height="12" rx="1.5" class="fill-current opacity-25" />
+                <rect x="11" y="21" width="12" height="4" rx="1.5" class="fill-current" />
+                <rect x="25" y="21" width="12" height="4" rx="1.5" class="fill-none stroke-current" stroke-width="1" />
+                <rect v-for="i in 5" :key="i" x="11" :y="28 + (i - 1) * 4.5" :width="i === 5 ? 16 : 26" height="2" rx="1" class="fill-current opacity-60" />
+              </template>
+              <template v-else>
+                <rect x="6" y="2" width="36" height="40" rx="4" class="fill-white/5 stroke-current" stroke-width="1.5" />
+                <rect x="10" y="6" width="28" height="12" rx="1.5" class="fill-current opacity-25" />
+                <rect v-for="i in 4" :key="i" x="11" :y="22 + (i - 1) * 4.5" width="22" height="2" rx="1" class="fill-current opacity-60" />
+                <rect x="36" y="22" width="2" height="16" rx="1" class="fill-current opacity-25" />
+                <rect x="36" y="22" width="2" height="7" rx="1" class="fill-current" />
+                <path d="M21 46 L24 49 L27 46" class="fill-none stroke-current" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </template>
+            </svg>
+            <span class="text-xs font-bold leading-tight">{{ mode.label }}</span>
+            <span class="hidden text-[0.7rem] leading-tight text-sky-100/50 sm:block">{{ mode.hint }}</span>
+          </button>
+        </div>
+      </DashboardSettingRow>
+    </DashboardSection>
+
     <DashboardSection title="Tampilan" icon="display" description="Bentuk bar bahasa dan posisi card di layar.">
       <DashboardSettingRow
         data-wall-setting="languageBar" title="Tampilan bahasa" hint="Pilih bentuk bar bendera di card idle."
@@ -335,13 +380,6 @@ const unit = 'text-sm text-sky-100/60';
             </div>
           </DashboardSettingRow>
         </Transition>
-        <DashboardSettingRow
-          data-wall-setting="scrollText" title="Scroll teks (uji coba)" hint="Semua section: teks digeser ke atas/bawah, page lebih sedikit. Saat dinyalakan: Hold jadi Tap + delay, Tombol close & slider off."
-          :help="HELP.scrollText"
-          :changed="changed('scrollText')" :default-label="defaultLabel('scrollText')" @reset="reset('scrollText')"
-        >
-          <DashboardSwitch :model-value="draft.scrollText" label="Scroll teks" @update:model-value="update({ scrollText: $event })" />
-        </DashboardSettingRow>
       </div>
     </DashboardSection>
 
