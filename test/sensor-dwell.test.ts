@@ -83,6 +83,20 @@ describe('visible targets', () => {
     expect([moved.x, moved.y]).toEqual([base.x - 20, base.y + 10]);
   });
 
+  it('puts the bottom close pill under the idle frame (title pill size), following the language bar', () => {
+    const open = { 1: { ...idle, phase: 'active' as const, photoCount: 1, pageCount: 1 } };
+    const bottom = { scale: 1, x: 0, y: 0, position: 'bottom' as const };
+    const pill = visibleTargets(open, { close: bottom, languageBar: 'full' }).find(item => item.key === '1:back')!.rect;
+    // Column 1's idle frame is 360 × 642 at (32, 426): the pill is centred 20 px under it.
+    expect(pill).toMatchObject({ x: 32 + (360 - 336) / 2, y: 426 + 642 + 20, width: 336, height: 98 });
+    // The grid bar makes the frame 76 px taller and raises the column 40 px.
+    const grid = visibleTargets(open, { close: bottom, languageBar: 'grid' }).find(item => item.key === '1:back')!.rect;
+    expect(grid.y).toBe(pill.y + 76 - 40);
+    // Without a position (older walls) the corner badge stays.
+    const corner = visibleTargets(open, { close: { scale: 1, x: 0, y: 0 } }).find(item => item.key === '1:back')!.rect;
+    expect(corner.width).toBe(44);
+  });
+
   it('lays out three page tabs, and moves tabs to the top of a card without photos', () => {
     const three = { 1: { ...idle, phase: 'active' as const, photoCount: 0, pageCount: 3, tabsTop: true } };
     const tabs = visibleTargets(three).filter(item => item.action.type === 'page').map(item => item.rect);

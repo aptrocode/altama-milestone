@@ -237,7 +237,7 @@ export function useSensorSocket(options: SensorSocketOptions): SensorSocketContr
       ...(options.getShowArrows ? { showArrows: options.getShowArrows() } : {}),
       ...(options.getShowPages ? { showPages: options.getShowPages() } : {}),
       ...(options.getLanguageBar ? { languageBar: options.getLanguageBar() } : {}),
-      ...(options.getClose ? { closeScale: options.getClose().scale, closeOffsetX: options.getClose().x, closeOffsetY: options.getClose().y } : {}),
+      ...(options.getClose ? { closeScale: options.getClose().scale, closeOffsetX: options.getClose().x, closeOffsetY: options.getClose().y, closePosition: options.getClose().position ?? 'corner' } : {}),
     });
   }
 

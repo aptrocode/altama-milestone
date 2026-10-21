@@ -10,7 +10,7 @@ import { getColumnLayout, installationLayout, rectStyle } from '~/data/installat
 import { getColumnPages } from '~/data/wall-config';
 import { WALL_COPY } from '~/data/wall-copy';
 import { useSettingsStore } from '~/stores/settings';
-import { closeButtonRect } from '../../../shared/close-button';
+import { closeTargetRect } from '../../../shared/close-button';
 import { cardTextKey } from '../../../shared/font-settings';
 import { extendDown, languageGeometry } from '../../../shared/language-bar';
 import { autoPageActive, closeButtonOptions } from '../../../shared/wall-settings';
@@ -38,7 +38,9 @@ const visual = installationLayout.visual;
 const idle = computed(() => props.snapshot.phase === 'idle');
 // The 2 + 1 language grid makes the idle frame taller (downward).
 // The close badge follows the dashboard size (1×–2×, around its centre) and X/Y shift, like its sensor target.
-const closeRect = computed(() => closeButtonRect(geometry.value.active.back, closeButtonOptions(settings.wall)));
+const closeRect = computed(() => closeTargetRect(geometry.value, closeButtonOptions(settings.wall), languageGeometry(geometry.value, settings.wall.languageBar).extend));
+// Default: a title-sized close pill under the idle frame (client request); else the corner badge.
+const bottomClose = computed(() => settings.wall.showClose && settings.wall.closePosition === 'bottom');
 const idleFrame = computed(() => extendDown(geometry.value.card, languageGeometry(geometry.value, settings.wall.languageBar).extend));
 const pages = computed(() => getColumnPages(props.column, props.snapshot.subItem, settings.wall.scrollText));
 // Trial: every card's text scrolls vertically (Dashboard → Wall "Scroll teks").
@@ -66,18 +68,20 @@ const cardHeight = ref(geometry.value.active.card.height);
 const maxCardHeight = computed(() => visual.openCardMaxBottom - props.offsetY - geometry.value.active.card.y);
 // Scroll teks: every open card ends where the idle frame ends (under the flag bar, following the
 // language bar mode), so the skyline stays visible; its text scrolls instead of growing the card.
+// The bottom close pill sits under the idle frame too, so with it an open card also stops there.
 const scrollCardHeight = computed(() => idleFrame.value.y + idleFrame.value.height - geometry.value.active.card.y);
-const cardLimit = computed(() => scroll.value ? scrollCardHeight.value : maxCardHeight.value);
+const cardLimit = computed(() => scroll.value || bottomClose.value ? scrollCardHeight.value : maxCardHeight.value);
 function onCardHeight(needed: number) {
   cardHeight.value = scroll.value
     ? scrollCardHeight.value
-    : Math.min(maxCardHeight.value, Math.max(geometry.value.active.card.height, needed));
+    : Math.min(cardLimit.value, Math.max(geometry.value.active.card.height, needed));
 }
 watch([idle, () => props.snapshot.subItem, () => props.offsetY, scroll, scrollCardHeight], () => {
   cardHeight.value = scroll.value ? scrollCardHeight.value : geometry.value.active.card.height;
 }, { immediate: true });
 const cardBottom = computed(() => geometry.value.active.card.y + cardHeight.value);
-watch(cardBottom, bottom => emit('cardBottom', bottom), { immediate: true });
+// The stacked layout's box grows to the lowest open element: the card, or the bottom close pill.
+watch(() => bottomClose.value ? Math.max(cardBottom.value, closeRect.value.y + closeRect.value.height) : cardBottom.value, bottom => emit('cardBottom', bottom), { immediate: true });
 const cardStyle = computed(() => ({
   ...rectStyle(geometry.value.active.card, geometry.value.section),
   height: `calc(${cardHeight.value} * var(--wall-y))`,
@@ -158,7 +162,18 @@ function act(action: WallAction) {
       leave-active-class="transition duration-100" leave-from-class="opacity-100" leave-to-class="opacity-0"
     >
       <WallHoldButton
-        v-if="!idle && settings.wall.showClose" :outline="closeRect" group="back" :radius="22 * settings.wall.closeScale"
+        v-if="!idle && bottomClose" :outline="closeRect" group="back" :radius="18"
+        class="wall-back wall-pill absolute z-20 flex items-center gap-[calc(10*var(--wall-x))] pl-[calc(6*var(--wall-x))] pr-[calc(16*var(--wall-x))] [border-radius:calc(18*var(--wall-x))/calc(18*var(--wall-y))] bg-linear-to-b from-[#112a9c]/95 via-[#0a1a78]/95 to-[#071056]/95 ring-2 ring-wall-glow/70 shadow-[0_0_calc(18*var(--wall-x))_rgba(80,190,255,0.5),inset_0_calc(2*var(--wall-y))_calc(10*var(--wall-y))_rgba(255,255,255,0.12)] text-white cursor-pointer"
+        :style="rectStyle(closeRect, geometry.section)"
+        :aria-label="WALL_COPY[snapshot.locale].back" data-sensor-action="back" data-close="bottom"
+        @activate="act({ type: 'back', columnId: column.id })"
+      >
+        <!-- Same build as the title pill (WallColumnPill): a glowing red ring with ✕ and the label. -->
+        <span class="shrink-0 ml-[calc(10*var(--wall-x))] w-[calc(64*var(--wall-x))] h-[calc(64*var(--wall-y))] flex items-center justify-center rounded-full ring-3 ring-wall-glow bg-red-600 text-[length:calc(30*var(--wall-u))] leading-none shadow-[0_0_calc(16*var(--wall-x))_rgba(102,204,255,0.8),inset_0_0_calc(12*var(--wall-x))_rgba(255,255,255,0.25)]" aria-hidden="true">✕</span>
+        <span class="flex-1 min-w-0 text-left font-display text-[length:calc(var(--fs-title,27)*var(--wall-u))] [font-weight:var(--fw-title,700)] uppercase leading-[1.08] tracking-[0.01em] drop-shadow-[0_0_calc(6*var(--wall-x))_rgba(102,204,255,0.5)]">{{ WALL_COPY[snapshot.locale].close }}</span>
+      </WallHoldButton>
+      <WallHoldButton
+        v-else-if="!idle && settings.wall.showClose" :outline="closeRect" group="back" :radius="22 * settings.wall.closeScale"
         class="wall-back absolute z-20 flex items-center justify-center rounded-full bg-[#0b1a78] ring-2 ring-[#bfe8ff] shadow-[0_0_calc(12*var(--wall-x))_rgba(102,204,255,0.8)] text-white hover:bg-red-500 cursor-pointer"
         :style="{ ...rectStyle(closeRect, geometry.section), fontSize: `calc(${20 * settings.wall.closeScale} * var(--wall-u))` }"
         :aria-label="WALL_COPY[snapshot.locale].back" data-sensor-action="back"

@@ -7,8 +7,12 @@ import { useSettingsStore } from '../app/stores/settings';
 import { useWallStore } from '../app/stores/wall';
 import { COLUMN_IDS } from '../shared/wall';
 
+// These tests describe Page mode (tabs, page counts); the wall's default is Scroll (Mode konten).
 function store() {
-  return useWallStore(createPinia());
+  const wall = useWallStore(createPinia());
+  const settings = useSettingsStore();
+  settings.setWall({ ...settings.wall, scrollText: false });
+  return wall;
 }
 
 // Counts come from the content files, so client edits (more photos, a second page) never break

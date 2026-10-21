@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CardText, CardTextKey } from '../../../shared/font-settings';
+import type { LanguageBarMode } from '../../../shared/language-bar';
 import type { WallLocale } from '../../../shared/wall';
 import type { PageCopy } from '~/types/wall-content';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
@@ -8,6 +9,7 @@ import { getColumnLayout, installationLayout } from '~/data/installation-layout'
 import { getColumnPages, WALL_CONFIG } from '~/data/wall-config';
 import { openCardTextTop, TEXT_INSET } from '~/utils/open-card-text';
 import { cardTextKey } from '../../../shared/font-settings';
+import { languageGeometry } from '../../../shared/language-bar';
 import { WALL_LOCALES } from '../../../shared/wall';
 
 /**
@@ -18,7 +20,16 @@ import { WALL_LOCALES } from '../../../shared/wall';
  */
 export interface CardFit { low: number; page: number; locale: WallLocale; high: number }
 
-const props = defineProps<{ cards: Record<CardTextKey, CardText>; showPages: boolean; offsetY: number; /** Dashboard → Wall "Scroll teks". */ scrollText: boolean }>();
+const props = defineProps<{
+  cards: Record<CardTextKey, CardText>;
+  showPages: boolean;
+  offsetY: number;
+  /** Dashboard → Wall "Scroll teks". */
+  scrollText: boolean;
+  /** The bottom close pill is shown, so open cards stop at the idle frame's bottom (as in scroll mode). */
+  frameBottomCards: boolean;
+  languageBar: LanguageBarMode;
+}>();
 const emit = defineEmits<{ result: [fits: Partial<Record<CardTextKey, CardFit>>] }>();
 
 interface Probe { id: string; key: CardTextKey; page: number; locale: WallLocale; copy: PageCopy; width: number; height: number; scroll: boolean }
@@ -35,7 +46,12 @@ const probes = computed<Probe[]>(() => WALL_CONFIG.columns.flatMap((column) => {
       return [];
     const top = openCardTextTop(card, pages, props.showPages);
     const width = card.card.width - TEXT_INSET.left - TEXT_INSET.right;
-    const height = installationLayout.visual.openCardMaxBottom - props.offsetY - card.card.y - top - TEXT_INSET.bottom;
+    // Tallest card bottom: the idle frame's bottom when the bottom close pill shows, else y 1312 on screen.
+    const frame = getColumnLayout(column.id).card;
+    const bottom = props.frameBottomCards
+      ? frame.y + frame.height + languageGeometry(getColumnLayout(column.id), props.languageBar).extend
+      : installationLayout.visual.openCardMaxBottom - props.offsetY;
+    const height = bottom - card.card.y - top - TEXT_INSET.bottom;
     return pages.flatMap((page, index) => WALL_LOCALES.flatMap((locale) => {
       const copy = page.i18n[locale];
       // Each rotating part on its own, since only one shows at a time.

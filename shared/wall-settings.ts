@@ -1,6 +1,6 @@
-import type { CloseButtonOptions } from './close-button';
+import type { CloseButtonOptions, ClosePosition } from './close-button';
 import type { LanguageBarMode } from './language-bar';
-import { CLOSE_OFFSET, CLOSE_SCALE } from './close-button';
+import { CLOSE_OFFSET, CLOSE_POSITIONS, CLOSE_SCALE } from './close-button';
 import { LANGUAGE_BAR_MODES } from './language-bar';
 
 /**
@@ -12,6 +12,8 @@ import { LANGUAGE_BAR_MODES } from './language-bar';
  *   wall (negative moves them up). The stacked phone/tablet layout ignores it.
  * - showClose: whether open cards show their close (✕) button. When off, Sensor Service drops the
  *   Back touch target too; columns still close on inactivity, operator keys, and OSC.
+ * - closePosition: `bottom` (default) puts a title-sized close pill under the idle frame and stops
+ *   open cards at the frame's bottom; `corner` keeps the badge on the card's top-right corner.
  * - closeScale / closeOffsetX / closeOffsetY: size (1×–2×) and position shift (logical px) of the
  *   close (✕) button (shared/close-button.ts); Sensor Service's Back target follows it.
  * - showArrows: whether open cards show their photo slider arrows. When off, Sensor Service drops
@@ -34,6 +36,7 @@ export interface WallSettings {
   resetSeconds: number;
   cardOffsetY: number;
   showClose: boolean;
+  closePosition: ClosePosition;
   closeScale: number;
   closeOffsetX: number;
   closeOffsetY: number;
@@ -54,7 +57,7 @@ export const AUTO_SLIDE_SECONDS = { min: 2, max: 60, step: 1 } as const;
 export const AUTO_PAGE_SECONDS = { min: 3, max: 120, step: 1 } as const;
 export const TOUCH_DOT_SECONDS = { min: 1, max: 60, step: 1 } as const;
 
-export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPage: true, autoPageSeconds: 15, scrollText: false, languageBar: 'full', showTouchDots: false, touchDotSeconds: 5 };
+export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, closePosition: 'bottom', closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPage: true, autoPageSeconds: 15, scrollText: true, languageBar: 'full', showTouchDots: false, touchDotSeconds: 5 };
 
 function clampNumber(value: unknown, fallback: number, limits: { min: number; max: number; step: number }): number {
   const raw = typeof value === 'number' && Number.isFinite(value) ? value : fallback;
@@ -69,6 +72,7 @@ export function normalizeWallSettings(value: unknown): WallSettings {
     resetSeconds: clampNumber(source.resetSeconds, DEFAULT_WALL_SETTINGS.resetSeconds, RESET_SECONDS),
     cardOffsetY: clampNumber(source.cardOffsetY, DEFAULT_WALL_SETTINGS.cardOffsetY, CARD_OFFSET_Y),
     showClose: typeof source.showClose === 'boolean' ? source.showClose : DEFAULT_WALL_SETTINGS.showClose,
+    closePosition: CLOSE_POSITIONS.includes(source.closePosition as ClosePosition) ? source.closePosition as ClosePosition : DEFAULT_WALL_SETTINGS.closePosition,
     closeScale: clampNumber(source.closeScale, DEFAULT_WALL_SETTINGS.closeScale, CLOSE_SCALE),
     closeOffsetX: clampNumber(source.closeOffsetX, DEFAULT_WALL_SETTINGS.closeOffsetX, CLOSE_OFFSET),
     closeOffsetY: clampNumber(source.closeOffsetY, DEFAULT_WALL_SETTINGS.closeOffsetY, CLOSE_OFFSET),
@@ -85,8 +89,8 @@ export function normalizeWallSettings(value: unknown): WallSettings {
 }
 
 /** The close button options of wall settings, as shared/close-button.ts takes them. */
-export function closeButtonOptions(settings: Pick<WallSettings, 'closeScale' | 'closeOffsetX' | 'closeOffsetY'>): CloseButtonOptions {
-  return { scale: settings.closeScale, x: settings.closeOffsetX, y: settings.closeOffsetY };
+export function closeButtonOptions(settings: Pick<WallSettings, 'closeScale' | 'closeOffsetX' | 'closeOffsetY'> & Partial<Pick<WallSettings, 'closePosition'>>): CloseButtonOptions {
+  return { scale: settings.closeScale, x: settings.closeOffsetX, y: settings.closeOffsetY, position: settings.closePosition };
 }
 
 /** Pages advance on their own when the operator turned auto page on, or hid the page tabs. */

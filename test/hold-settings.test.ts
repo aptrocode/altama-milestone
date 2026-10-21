@@ -36,11 +36,11 @@ describe('hold settings', () => {
 
   it('clamps wall settings: reset seconds and card offset', () => {
     expect(normalizeWallSettings(null)).toEqual(DEFAULT_WALL_SETTINGS);
-    expect(DEFAULT_WALL_SETTINGS).toEqual({ resetSeconds: 30, cardOffsetY: 0, showClose: true, closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPage: true, autoPageSeconds: 15, scrollText: false, languageBar: 'full', showTouchDots: false, touchDotSeconds: 5 });
+    expect(DEFAULT_WALL_SETTINGS).toEqual({ resetSeconds: 30, cardOffsetY: 0, showClose: true, closePosition: 'bottom', closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: true, autoSlideSeconds: 5, showPages: true, autoPage: true, autoPageSeconds: 15, scrollText: true, languageBar: 'full', showTouchDots: false, touchDotSeconds: 5 });
     expect(normalizeWallSettings({ resetSeconds: 2, cardOffsetY: 999, autoSlideSeconds: 0 }))
       .toEqual({ ...DEFAULT_WALL_SETTINGS, resetSeconds: 5, cardOffsetY: 120, autoSlideSeconds: 2 });
     expect(normalizeWallSettings({ resetSeconds: 45.4, cardOffsetY: -31, showClose: false, showArrows: false, autoSlideSeconds: 7.6, showPages: false, autoPageSeconds: 500, languageBar: 'full', showTouchDots: true, touchDotSeconds: 99 }))
-      .toEqual({ resetSeconds: 45, cardOffsetY: -30, showClose: false, closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: false, autoSlideSeconds: 8, showPages: false, autoPage: true, autoPageSeconds: 120, scrollText: false, languageBar: 'full', showTouchDots: true, touchDotSeconds: 60 });
+      .toEqual({ resetSeconds: 45, cardOffsetY: -30, showClose: false, closePosition: 'bottom', closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: false, autoSlideSeconds: 8, showPages: false, autoPage: true, autoPageSeconds: 120, scrollText: true, languageBar: 'full', showTouchDots: true, touchDotSeconds: 60 });
     expect(normalizeWallSettings({ languageBar: 'huge' }).languageBar).toBe('full');
     expect(normalizeWallSettings({ autoPage: false }).autoPage).toBe(false);
     expect(autoPageActive({ autoPage: false, showPages: false })).toBe(true);
