@@ -102,8 +102,8 @@ Videos always play to their end while anything advances automatically, and a car
   | Tentang Altama, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, KTT | 1, no page tabs |
 
 - **Photo swipe:** a photo with more than one slide also swipes horizontally (left = next, right = previous, like the arrows): the photo follows the drag and snaps back, and a swipe counts when it is mostly horizontal and longer than a fifth of the frame. Touch, mouse, or a TouchDesigner drag.
-- **Tombol slider:** always on while Scroll teks is on (`arrowsShown`): the photo arrows show and photos do not auto-slide; the switch shows On with "Selalu on saat Scroll teks on", the Hold page lists Button slider, and Sensor Service keeps the previous/next targets.
-- **Off:** the usual pages and tabs return (Tekiro 4, KTT 3, …), the text fits its card again, and Tombol slider follows its own switch.
+- **Tombol slider:** unchanged by Scroll teks: Off still hides the arrows and auto-slides the photos.
+- **Off:** the usual pages and tabs return (Tekiro 4, KTT 3, …) and the text fits its card again.
 - **Switching:** an open card that was on a later page shows its first page when the pages merge (`clampPage`).
 - **Sensor Service:** it does not send drags yet, so on the LiDAR/TUIO path cards only take taps while scrolling is on.
 

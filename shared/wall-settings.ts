@@ -24,8 +24,7 @@ import { LANGUAGE_BAR_MODES } from './language-bar';
  * - autoPageSeconds: auto-page interval (default 15 s).
  * - scrollText: trial of vertically scrolling card text (default off). Every card keeps its Font
  *   Maks size and scrolls; its pages are grouped by `scrollPages` (default one page: Tekiro 2, RYU
- *   and Rexco keep 2); off restores the pages and tabs. While on, the photo arrows always show
- *   (arrowsShown), whatever showArrows says.
+ *   and Rexco keep 2); off restores the pages and tabs.
  * - languageBar: `compact` flag pill (default) or `full` width with larger buttons
  *   (shared/language-bar.ts); Sensor Service moves the language targets with it.
  * - showTouchDots: calibration overlay on the wall (press/release/sensor dots with coordinates).
@@ -88,11 +87,6 @@ export function normalizeWallSettings(value: unknown): WallSettings {
 /** The close button options of wall settings, as shared/close-button.ts takes them. */
 export function closeButtonOptions(settings: Pick<WallSettings, 'closeScale' | 'closeOffsetX' | 'closeOffsetY'>): CloseButtonOptions {
   return { scale: settings.closeScale, x: settings.closeOffsetX, y: settings.closeOffsetY };
-}
-
-/** Photo arrows show when the operator turned them on, and always while Scroll teks is on (client request). */
-export function arrowsShown(settings: Pick<WallSettings, 'showArrows' | 'scrollText'>): boolean {
-  return settings.showArrows || settings.scrollText;
 }
 
 /** Pages advance on their own when the operator turned auto page on, or hid the page tabs. */
