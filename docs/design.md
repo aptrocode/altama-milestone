@@ -26,7 +26,7 @@ With the Dashboard → Wall **Scroll teks** trial on, every card's text scrolls 
 | 1 | Tentang Altama | Building illustration | One page: photo slider and company history |
 | 2 | Our Brand | Tekiro, RYU, Rexco tiles; each tile opens that brand directly | Brand logo above the card; Tekiro has PAGE 1–4 (profile, products, awards 1–5, awards 6–11) with 2 + 2 tabs; RYU and Rexco have PAGE 1 / PAGE 2, each with its own photos and text |
 | 3 | Infrastruktur | Warehouse illustration | One page: photo slider and five facilities (client list); text 24–26 px |
-| 4 | Digital Trust | Phone illustration | Photo slider (ODP) and bullets in two pages (PAGE 1/2, same slider); text 24–26 px |
+| 4 | Digital Trust | Phone illustration | One page: photo slider (ODP) and five services (client list); text 24–26 px |
 | 5 | Distribusi & Pemasaran | Captioned Distribusi / Pemasaran tiles; each opens directly | Sub-item name above the card; two pages each (PAGE 1/2, same slider), bullets with logos |
 | 6 | Altama Summit 2026 | Flag ceremony illustration | Text-only Summit message on one page (partners and commitments, then the closing line); no tabs; text 24–26 px. |
 
