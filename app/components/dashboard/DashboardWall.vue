@@ -101,7 +101,7 @@ const HELP: Record<string, HelpLine[]> = {
   scrollText: [
     'Uji coba untuk semua section: teks memakai ukuran Maks dari Font dan bisa digeser ke atas/bawah (sentuh-geser, drag mouse, atau scroll wheel). Fade di bawah, scrollbar tipis, dan panah ⌄ menandakan masih ada teks.',
     { term: 'Page saat On', text: 'Tekiro 2 page (Profil + Produk, semua Penghargaan); RYU dan Rexco tetap 2 page; Tentang Altama, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, dan KTT jadi 1 page tanpa tombol page.' },
-    { term: 'Tombol slider', text: 'Selalu on selama Scroll teks on: panah foto tampil dan foto tidak auto slide.' },
+    { term: 'Tombol slider', text: 'Selalu on selama Scroll teks on: panah foto tampil dan foto tidak auto slide. Foto juga bisa di-swipe kiri/kanan.' },
     { term: 'Off', text: 'Kembali ke page seperti biasa (Tekiro 4, KTT 3, …) dan teks menyesuaikan card. Tombol slider kembali mengikuti switch-nya.' },
     { term: 'Sensor', text: 'Geser lewat touchscreen, mouse, atau TD yang mengirim drag. Sensor Service (LiDAR/TUIO) belum mengirim geser; di jalur itu hanya tap.' },
   ],
