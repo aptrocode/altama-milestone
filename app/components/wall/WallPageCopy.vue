@@ -282,8 +282,8 @@ watch(() => [props.active, props.copy], () => {
     </div>
     <template v-if="overflows">
       <div v-if="view.top > 1" class="pointer-events-none absolute inset-x-0 top-0 h-[calc(28*var(--wall-y))] bg-linear-to-b from-[#040c55] to-transparent" aria-hidden="true" />
-      <div v-if="!atEnd" class="pointer-events-none absolute inset-x-0 bottom-0 flex h-[calc(56*var(--wall-y))] items-end justify-center bg-linear-to-t from-[#040c55] to-transparent" aria-hidden="true">
-        <span v-if="view.top < 2" class="text-[length:calc(26*var(--wall-u))] leading-none text-wall-glow motion-safe:animate-bounce">⌄</span>
+      <div v-if="!atEnd" class="pointer-events-none absolute inset-x-0 bottom-0 flex h-[calc(72*var(--wall-y))] items-end justify-center bg-linear-to-t from-[#040c55] to-transparent" aria-hidden="true">
+        <span v-if="view.top < 2" class="text-[length:calc(52*var(--wall-u))] leading-none text-wall-glow motion-safe:animate-bounce">⌄</span>
       </div>
       <div class="pointer-events-none absolute right-0 inset-y-[calc(4*var(--wall-y))] w-[calc(4*var(--wall-x))] rounded-full bg-white/10" aria-hidden="true">
         <div class="absolute inset-x-0 rounded-full bg-wall-glow/80" :style="bar" />
