@@ -47,7 +47,7 @@ const LANGUAGE_BAR_OPTIONS: { value: LanguageBarMode; label: string; hint: strin
 /** Content mode: Page (tabs) or Scroll (the `scrollText` trial). */
 const CONTENT_MODE_OPTIONS: { value: boolean; label: string; hint: string }[] = [
   { value: false, label: 'Page', hint: 'Teks dibagi page dengan tab' },
-  { value: true, label: 'Scroll', hint: 'Card pendek, teks digeser' },
+  { value: true, label: 'Scroll', hint: 'Card pendek, teks digeser; Merek Kami tetap 2 page' },
 ];
 
 /** The default of a setting as the operator reads it (shown on the "Default: …" chip). */
@@ -118,7 +118,7 @@ const HELP: Record<string, HelpLine[]> = {
   ],
   scrollText: [
     { term: 'Page', text: 'Teks dibagi ke page dengan tab (Tekiro 4, KTT 3, yang lain 1–2). Card memanjang mengikuti teks, sampai di atas gedung.' },
-    { term: 'Scroll (uji coba)', text: 'Card setinggi frame idle, jadi gedung tetap terlihat. Teks memakai ukuran Maks dari Font dan digeser ke atas/bawah (sentuh-geser, drag mouse, scroll wheel); fade, scrollbar tipis, dan panah ⌄ menandakan masih ada teks. Page lebih sedikit: Tekiro, RYU, Rexco 2 page; yang lain 1 page tanpa tab. Foto juga bisa di-swipe kiri/kanan.' },
+    { term: 'Scroll (uji coba)', text: 'Card setinggi frame idle, jadi gedung tetap terlihat. Teks memakai ukuran Maks dari Font dan digeser ke atas/bawah (sentuh-geser, drag mouse, scroll wheel); fade, scrollbar tipis, dan panah ⌄ menandakan masih ada teks. Page lebih sedikit: section 2 (Merek Kami: Tekiro, RYU, Rexco) tetap punya page, masing-masing 2 page dengan tab; section lain 1 page tanpa tab. Foto juga bisa di-swipe kiri/kanan.' },
     { term: 'Saat memilih Scroll', text: 'Tombol close dan Tombol slider otomatis off (foto auto slide), dan saat disimpan semua jenis tombol di Hold jadi Tap + delay (durasinya tetap). Setelah itu semuanya masih bisa diubah lagi.' },
     { term: 'Sensor', text: 'Geser teks dan swipe foto lewat touchscreen, mouse, atau TD yang mengirim drag. Sensor Service (LiDAR/TUIO) belum mengirim geser; di jalur itu hanya tap.' },
   ],
@@ -175,9 +175,11 @@ const unit = 'text-sm text-sky-100/60';
               <template v-else>
                 <rect x="6" y="2" width="36" height="40" rx="4" class="fill-white/5 stroke-current" stroke-width="1.5" />
                 <rect x="10" y="6" width="28" height="12" rx="1.5" class="fill-current opacity-25" />
-                <rect v-for="i in 4" :key="i" x="11" :y="22 + (i - 1) * 4.5" width="22" height="2" rx="1" class="fill-current opacity-60" />
-                <rect x="36" y="22" width="2" height="16" rx="1" class="fill-current opacity-25" />
-                <rect x="36" y="22" width="2" height="7" rx="1" class="fill-current" />
+                <rect x="11" y="20" width="10" height="3.5" rx="1.5" class="fill-current" />
+                <rect x="22" y="20" width="10" height="3.5" rx="1.5" class="fill-none stroke-current" stroke-width="1" />
+                <rect v-for="i in 3" :key="i" x="11" :y="26.5 + (i - 1) * 4" width="22" height="2" rx="1" class="fill-current opacity-60" />
+                <rect x="36" y="26" width="2" height="12" rx="1" class="fill-current opacity-25" />
+                <rect x="36" y="26" width="2" height="5" rx="1" class="fill-current" />
                 <path d="M21 46 L24 49 L27 46" class="fill-none stroke-current" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
               </template>
             </svg>
