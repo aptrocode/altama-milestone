@@ -5,6 +5,7 @@ Deployed media lives in `public/`; master files stay in the git-ignored `public/
 | Path | Use | Source |
 | --- | --- | --- |
 | `public/summit/background.mp4` | Stage background (includes skyline and wave light) | 2304 × 1344 seamless looping H.264 video (7.5 MB) from `new-assets/background/` |
+| `public/favicon.svg`, `favicon.ico`, `apple-touch-icon.png` | Browser tab and phone home-screen icon | Six wall columns with the third lit (navy `#0a1872`, glow `#66ccff`); not an ALTAMA logo, since there is no official simple mark. The `.ico` holds 16/32 px drawn on whole pixels and 48 px; the 180 px touch icon is full-bleed (iOS rounds it) |
 | `public/summit/logo-powering-partnership.webp` | Header logo | Mockup 1 crop, background keyed to transparent white |
 | `public/illustrations/{column-key}.webm` | Idle card artwork for columns 1, 3, 4, 5, 6 (column 5 includes the Distribusi/Pemasaran tile panels) | Transparent VP9 WebM loop, 1050 × 1790, 30 fps, 10 s, ~3 MB, from the PNG sequence in `public/new-assets/card-sequences/{column-key}/` |
 | `public/illustrations/distribution/{distribusi,pemasaran}.webp` | Column 5 tile images (unused while the card video is set) | Mockup 1 crops without the baked-in captions |

@@ -11,7 +11,10 @@ export default defineNuxtConfig({
         lang: 'id',
       },
       link: [
-        { rel: 'icon', href: '/favicon.ico', sizes: 'any' },
+        // Six wall columns (the third one lit); the .ico is the fallback for older browsers.
+        { rel: 'icon', href: '/favicon.ico', sizes: '48x48' },
+        { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
       ],
       title: 'Altama Interactive Wall',
     },
