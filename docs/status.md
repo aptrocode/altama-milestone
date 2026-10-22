@@ -11,7 +11,7 @@ Updated 20 October 2026. Package version 1.0.0 (tag `v1.0.0`, the first stable r
   - Hold: a mode per group (card, page, slider, language, back), Tap, Hold, or Tap + delay, with 0.3–5 s; every group defaults to Hold, 1 s.
   - Font: title, sub-item, caption, and tab sizes, the title weight, and a per-card Min–Maks body range (default 24–26 px) with a live fit status. Roboto everywhere.
   - Sensor: source, ports, Invert Y, Hokuyo calibration/background, live status, contact preview.
-  - Settings are saved in localStorage with export/import and reset, applied live to the wall, and published to Sensor Service.
+  - Settings are synced through SQLite on the server (`/api/settings`, dashboard login to save, 5 s polling on every wall) with localStorage as the offline copy, export/import and reset, applied live to the wall, and published to Sensor Service.
 - One-click event-PC launcher (`start-wall.bat`): closing its window stops everything; Ctrl+Shift+D opens the dashboard inside the kiosk.
 - Sensor Service (`sensor-service/`, `bun run sensor:service`): Hokuyo UST-10LX over SCIP 2.0 (streaming, checksums, reconnect), homography calibration from 4–12 measured points, background masking, clustering and tracking; Augmenta OSC v1/v2 and TUIO 1.1 cursors with Invert Y; hit-testing against wall-v7 visible targets, dwell from published hold rules, one input per contact; protocol v2 hello/status/heartbeat/input; OSC show control `/altama/*`; config in `sensor-config.json` edited from the dashboard; Hokuyo/Augmenta/TUIO simulators.
 - Content split into one file per column (`app/data/columns/`) with typed helpers and an editing guide (`docs/content.md`).

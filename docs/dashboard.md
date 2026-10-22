@@ -2,18 +2,30 @@
 
 `/dashboard` is the operator configuration UI: a sidebar (a darker navy than the wall-blue content, same hue) links four pages (Wall, Hold, Font, Sensor: the wall configuration comes first), and `/dashboard` redirects to Wall. From `lg` (1024 px) the sidebar is fixed; below it is an off-canvas drawer opened from the ☰ top bar and closed by ✕, the backdrop, Escape, or navigating. The content column uses the full width and scrolls on its own (the document itself never scrolls; see `main.css`).
 
-### Password
+## Password
 
 When the server has `NUXT_DASHBOARD_PASSWORD` (in `.env`; `start-wall.bat` passes it on, and PM2 reads it on the VPS), `/dashboard` first shows a single centred password input, nothing else (placeholder *Clue: password wifi Aptronim*). Enter unlocks it: `POST /api/dashboard/login` checks the password on the server and sets an httpOnly cookie (a SHA-256 hash of the password, never the password) for 30 days; `GET /api/dashboard/session` tells the page whether the browser is already signed in. A wrong password shows *Password salah* after a short pause; changing the password signs every browser out. Without the variable the dashboard is open, as before. The password never reaches the client bundle (`runtimeConfig.dashboardPassword` is server-only); the wall itself never asks for it.
 
 | Page | Route | Stored in |
 | --- | --- | --- |
-| Wall | `/dashboard/wall` | this browser (`localStorage`) |
-| Hold | `/dashboard/hold` | this browser (`localStorage`) |
-| Font | `/dashboard/font` | this browser (`localStorage`) |
+| Wall | `/dashboard/wall` | the server's SQLite (`/api/settings`) + this browser (`localStorage`) |
+| Hold | `/dashboard/hold` | the server's SQLite (`/api/settings`) + this browser (`localStorage`) |
+| Font | `/dashboard/font` | the server's SQLite (`/api/settings`) + this browser (`localStorage`) |
 | Sensor | `/dashboard/sensor` | Sensor Service (`sensor-config.json` on the event PC) |
 
-The sidebar footer acts on every browser-stored setting:
+## Settings sync (SQLite)
+
+Wall, Hold, and Font settings are one document in a SQLite file on the server (`NUXT_SETTINGS_DB`, default `.data/altama.sqlite`; `bun:sqlite` under Bun, `node:sqlite` under Node), so they can be changed from a phone or any device:
+
+- `GET /api/settings` returns `{ version, updatedAt, settings }` (version 0 = nothing saved yet). It is public, `no-store`, and allows any origin, so a wall on another host can follow it.
+- `PUT /api/settings` saves (values are normalized like in the browser, missing groups keep their stored value) and bumps the version. It needs the dashboard login when `NUXT_DASHBOARD_PASSWORD` is set (401 otherwise).
+- `app/plugins/settings-sync.client.ts` runs on every page after `settings-storage`: it pulls on start, every 5 s, and when the tab becomes visible, and applies a newer server version to the store (which also updates `localStorage`, the offline fallback). Only `/dashboard` pushes: every store change (Simpan, import, reset) goes to the server 300 ms later; values that came from the server are never echoed back. The first dashboard that opens an empty server (version 0) seeds it with its browser's settings, also right after login.
+- `NUXT_PUBLIC_SETTINGS_SYNC_URL` on another host (e.g. `https://altama-milestone.nmxavw.com` on the event PC) makes the wall **follow** that server: it pulls from there, and its own dashboard changes stay in that browser until the next change on the server. Empty = this server.
+- When the database is unavailable (503, e.g. on Vercel, whose file system does not keep files) or the server cannot be reached, everything keeps working from `localStorage`.
+
+The sidebar shows where saves go, above the footer: **Tersinkron ke server** (green), **Menyimpan ke server…**, **Mengikuti <host>** (follower), **Belum tersimpan ke server: login lagi** (401), or **Server tidak tersedia: hanya di browser ini**.
+
+The sidebar footer acts on every operator setting:
 
 - **Export pengaturan** downloads `altama-settings.json` (wall, hold, and font settings).
 - **Import pengaturan** applies a backup immediately (older `altama-hold-settings.json` files with only `hold` still import).
@@ -119,9 +131,9 @@ Videos always play to their end while anything advances automatically, and a car
 
 ### Storage and scope
 
-- Wall, Hold, and Font live in this browser's `localStorage` (`altama.settings.v1`) through `app/plugins/settings-storage.client.ts`. Open the dashboard in the same browser profile as the wall on the event PC: in the kiosk started by `start-wall.bat` press **Ctrl+Shift+D** (again to return to the wall; the kiosk uses its own profile in `.wall-run/browser-profile` on `http://127.0.0.1:<WALL_PORT>`). A wall already open in another tab updates immediately (storage event); no reload is needed.
-- Clearing browser data restores the defaults; keep an exported JSON as backup.
-- There is no server or login. The page is not secret: anyone who can type a URL on the kiosk browser can open it. The wall runs fullscreen, so visitors cannot reach it in practice.
+- Wall, Hold, and Font live in the server's SQLite (see [Settings sync](#settings-sync-sqlite)) and, as the offline copy, in this browser's `localStorage` (`altama.settings.v1`) through `app/plugins/settings-storage.client.ts`. On one PC without a sync URL, open the dashboard in the same browser profile as the wall on the event PC: in the kiosk started by `start-wall.bat` press **Ctrl+Shift+D** (again to return to the wall; the kiosk uses its own profile in `.wall-run/browser-profile` on `http://127.0.0.1:<WALL_PORT>`). A wall already open in another tab updates immediately (storage event); no reload is needed.
+- Clearing browser data restores the defaults until the next pull from the server; keep an exported JSON as an extra backup.
+- With `NUXT_DASHBOARD_PASSWORD` set the dashboard asks for it (see [Password](#password)); without it anyone who can type the URL can open it.
 - The wall publishes the hold rules as `hold`, the card offset as `cardOffsetY`, the close switch as `showClose` (with its size and position as `closeScale`, `closeOffsetX`, `closeOffsetY`), the slider switch as `showArrows`, the page switch as `showPages`, the page count and tab position per column (`pageCount`, `tabsTop`, so Scroll teks drops section 6's tabs), and the language bar mode as `languageBar` in every `clientHello`/`clientState` message, so LiDAR input follows the same configuration and targets move with the cards. See [sensor](./sensor.md).
 
 ## Sensor

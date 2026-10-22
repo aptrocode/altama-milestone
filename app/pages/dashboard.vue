@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useSettingsBackup } from '~/composables/useSettingsBackup';
+import { useSettingsSync } from '~/composables/useSettingsSync';
 import { useSettingsStore } from '~/stores/settings';
 import { DEFAULT_FONT_SETTINGS } from '../../shared/font-settings';
 import { DEFAULT_WALL_SETTINGS } from '../../shared/wall-settings';
@@ -25,6 +26,21 @@ const route = useRoute();
 const pageTitle = computed(() => String(route.meta.title || 'Dashboard'));
 const pageDescription = computed(() => String(route.meta.description || ''));
 useHead({ title: () => `${pageTitle.value} · Dashboard · Altama Interactive Wall` });
+
+// Where saved settings go (settings-sync plugin): shown above the sidebar footer.
+const sync = useSettingsSync();
+const SYNC_LABEL: Record<string, { text: string; tone: string }> = {
+  checking: { text: 'Menghubungi server…', tone: 'bg-sky-300/60' },
+  synced: { text: 'Tersinkron ke server: berlaku di semua device', tone: 'bg-emerald-400' },
+  saving: { text: 'Menyimpan ke server…', tone: 'bg-sky-300 animate-pulse' },
+  follower: { text: 'Mengikuti server', tone: 'bg-amber-300' },
+  locked: { text: 'Belum tersimpan ke server: login lagi', tone: 'bg-rose-400' },
+  offline: { text: 'Server tidak tersedia: hanya di browser ini', tone: 'bg-amber-300' },
+};
+const syncLabel = computed(() => {
+  const label = SYNC_LABEL[sync.status.value] ?? SYNC_LABEL.checking!;
+  return sync.status.value === 'follower' ? { ...label, text: `Mengikuti ${sync.host.value}: ubah di sana` } : label;
+});
 
 // Password gate (NUXT_DASHBOARD_PASSWORD on the server): one input, Enter to unlock. The server
 // keeps the browser signed in with an httpOnly cookie; without a password the dashboard is open.
@@ -57,6 +73,8 @@ async function unlock() {
   try {
     await $fetch('/api/dashboard/login', { method: 'POST', body: { password: password.value } });
     access.value = 'open';
+    // Signed in: saves can reach the server now (and an empty server gets this browser's settings).
+    sync.refresh();
   }
   catch (error) {
     lock((error as { statusCode?: number }).statusCode === 401 ? 'Password salah' : 'Server tidak terhubung');
@@ -226,6 +244,11 @@ const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0
         </div>
       </nav>
 
+      <p class="flex items-start gap-2 px-5 pb-3 text-xs leading-snug text-sky-100/60" data-settings-sync :data-status="sync.status.value" aria-live="polite">
+        <span class="mt-1 size-2 shrink-0 rounded-full" :class="syncLabel.tone" aria-hidden="true" />
+        {{ syncLabel.text }}
+      </p>
+
       <div class="space-y-0.5 border-t border-white/[0.06] px-3 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <button type="button" :class="footButton" @click="exportSettings">
           <span :class="footIcon">
@@ -311,7 +334,7 @@ const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0
               Reset ke default?
             </h2>
             <p id="reset-text" class="mt-1.5 text-sm leading-relaxed text-sky-100/70">
-              Semua pengaturan <b class="text-white">Wall</b>, <b class="text-white">Hold</b>, dan <b class="text-white">Font</b> di browser ini kembali ke nilai awal dan langsung berlaku di wall. Pengaturan Sensor tidak berubah.
+              Semua pengaturan <b class="text-white">Wall</b>, <b class="text-white">Hold</b>, dan <b class="text-white">Font</b> kembali ke nilai awal dan langsung berlaku di wall (di semua device kalau tersinkron ke server). Pengaturan Sensor tidak berubah.
             </p>
           </div>
         </div>
