@@ -6,7 +6,7 @@ Every column's text, artwork, tiles, pages, and photos live in one file. Change 
 | --- | --- | --- |
 | 1 Tentang Altama | `app/data/columns/1-about-altama.ts` | single, 1 page with 4-photo slider |
 | 2 Our Brand | `app/data/columns/2-our-brands.ts` | expandable: `tekiro`, `ryu`, `rexco` |
-| 3 Infrastruktur | `app/data/columns/3-infrastructure.ts` | single, 1 page with video & 7-photo slider |
+| 3 Infrastruktur | `app/data/columns/3-infrastructure.ts` | single, 1 page with video & 8-photo slider |
 | 4 Digital Trust | `app/data/columns/4-digital-trust.ts` | single, 1 page with 5-photo slider |
 | 5 Distribusi & Pemasaran | `app/data/columns/5-distribution.ts` | expandable: `distribusi`, `pemasaran` (two pages each, sharing their photos) |
 | 6 Altama Summit 2026 | `app/data/columns/6-summit-2026.ts` | single, text only |

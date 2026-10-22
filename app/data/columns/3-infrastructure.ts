@@ -10,6 +10,7 @@ const PHOTOS = [
   provisional('/photos/infrastructure/photo-6.webp'),
   provisional('/photos/infrastructure/photo-7.webp'),
   provisional('/photos/infrastructure/photo-8.webp'),
+  provisional('/photos/infrastructure/photo-9.webp'),
 ];
 
 /** Column 3 — Infrastruktur: one page of facilities with a photo slider. */
