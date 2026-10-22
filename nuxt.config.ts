@@ -36,6 +36,8 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   runtimeConfig: {
+    // Server only (NUXT_DASHBOARD_PASSWORD): /dashboard asks for it; empty leaves the dashboard open.
+    dashboardPassword: '',
     public: {
       sensorEnabled: false,
       sensorWsUrl: '',

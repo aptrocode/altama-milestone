@@ -26,6 +26,47 @@ const pageTitle = computed(() => String(route.meta.title || 'Dashboard'));
 const pageDescription = computed(() => String(route.meta.description || ''));
 useHead({ title: () => `${pageTitle.value} · Dashboard · Altama Interactive Wall` });
 
+// Password gate (NUXT_DASHBOARD_PASSWORD on the server): one input, Enter to unlock. The server
+// keeps the browser signed in with an httpOnly cookie; without a password the dashboard is open.
+const access = ref<'checking' | 'locked' | 'open'>('checking');
+const password = ref('');
+const passwordError = ref('');
+const unlocking = ref(false);
+const passwordInput = ref<HTMLInputElement | null>(null);
+function lock(message = '') {
+  access.value = 'locked';
+  passwordError.value = message;
+  nextTick(() => passwordInput.value?.focus());
+}
+onMounted(async () => {
+  try {
+    const session = await $fetch<{ unlocked: boolean }>('/api/dashboard/session');
+    if (session.unlocked)
+      access.value = 'open';
+    else
+      lock();
+  }
+  catch {
+    lock('Server tidak terhubung');
+  }
+});
+async function unlock() {
+  if (unlocking.value || !password.value)
+    return;
+  unlocking.value = true;
+  try {
+    await $fetch('/api/dashboard/login', { method: 'POST', body: { password: password.value } });
+    access.value = 'open';
+  }
+  catch (error) {
+    lock((error as { statusCode?: number }).statusCode === 401 ? 'Password salah' : 'Server tidak terhubung');
+  }
+  finally {
+    password.value = '';
+    unlocking.value = false;
+  }
+}
+
 const drawerOpen = ref(false);
 // Reset asks for confirmation in a dialog (see askReset) so a stray tap cannot wipe settings.
 const resetDialog = ref(false);
@@ -102,7 +143,21 @@ const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0
 </script>
 
 <template>
-  <div class="h-dvh overflow-hidden bg-wall-night font-sans text-wall-ink select-text">
+  <div v-if="access !== 'open'" class="grid h-dvh place-items-center bg-wall-night px-6 font-sans text-wall-ink">
+    <form v-if="access === 'locked'" class="w-full max-w-xs" @submit.prevent="unlock">
+      <input
+        ref="passwordInput" v-model="password" type="password" autocomplete="current-password" enterkeyhint="go"
+        placeholder="Clue: password wifi Aptronim" aria-label="Password dashboard" :aria-invalid="!!passwordError" :disabled="unlocking"
+        class="w-full rounded-xl bg-white/[0.06] px-4 py-3.5 text-center text-lg text-white ring-1 transition placeholder:text-base placeholder:text-sky-100/40 focus:outline-none focus:ring-2 disabled:opacity-60"
+        :class="passwordError ? 'ring-rose-400/70 focus:ring-rose-400' : 'ring-white/15 focus:ring-wall-glow'"
+        data-dashboard-password @input="passwordError = ''"
+      >
+      <p class="mt-3 h-5 text-center text-sm text-rose-300" aria-live="polite">
+        {{ passwordError }}
+      </p>
+    </form>
+  </div>
+  <div v-else class="h-dvh overflow-hidden bg-wall-night font-sans text-wall-ink select-text">
     <!-- Drawer backdrop (below lg). -->
     <div
       v-if="drawerOpen" class="fixed inset-0 z-30 bg-black/60 backdrop-blur-[2px] lg:hidden" aria-hidden="true"

@@ -2,6 +2,10 @@
 
 `/dashboard` is the operator configuration UI: a sidebar (a darker navy than the wall-blue content, same hue) links four pages (Wall, Hold, Font, Sensor: the wall configuration comes first), and `/dashboard` redirects to Wall. From `lg` (1024 px) the sidebar is fixed; below it is an off-canvas drawer opened from the ☰ top bar and closed by ✕, the backdrop, Escape, or navigating. The content column uses the full width and scrolls on its own (the document itself never scrolls; see `main.css`).
 
+### Password
+
+When the server has `NUXT_DASHBOARD_PASSWORD` (in `.env`; `start-wall.bat` passes it on, and PM2 reads it on the VPS), `/dashboard` first shows a single centred password input, nothing else (placeholder *Clue: password wifi Aptronim*). Enter unlocks it: `POST /api/dashboard/login` checks the password on the server and sets an httpOnly cookie (a SHA-256 hash of the password, never the password) for 30 days; `GET /api/dashboard/session` tells the page whether the browser is already signed in. A wrong password shows *Password salah* after a short pause; changing the password signs every browser out. Without the variable the dashboard is open, as before. The password never reaches the client bundle (`runtimeConfig.dashboardPassword` is server-only); the wall itself never asks for it.
+
 | Page | Route | Stored in |
 | --- | --- | --- |
 | Wall | `/dashboard/wall` | this browser (`localStorage`) |
