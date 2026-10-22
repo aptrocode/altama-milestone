@@ -10,7 +10,7 @@ Deployed media lives in `public/`; master files stay in the git-ignored `public/
 | `public/illustrations/distribution/{distribusi,pemasaran}.webp` | Column 5 tile images (unused while the card video is set) | Mockup 1 crops without the baked-in captions |
 | `public/brands/tekiro-wordmark.webp` | Tekiro tile logo (on black) and logo above the open card | Mockup 2 crop, background keyed out |
 | `public/brands/ryu-tile.webp` | RYU tile (full-bleed white panel + green band, 672 × 264) | Mockup 1 crop with the rounded/blurred mockup corners squared off |
-| `public/brands/ryu-wordmark.webp` | RYU logo above the open card | Client logo, squared corners |
+| `public/brands/ryu-wordmark.webp` | RYU logo above the open card | Client logo `ryu/logo/ryu-logo.png` with its rounded black outline, transparent corners (lossless WebP 552 × 205) |
 | `public/brands/rexco.webp`, `rexco-wordmark.webp` | Rexco tile logo (on brand blue) and logo above the open card | Client logo, transparent white; the "Cleaning • Lubricating • Protecting" tagline is cropped off (wordmark and swoosh only, lossless WebP 600 × 236 / 600 × 216) |
 | `public/photos/{column-key}[/{sub-item}]/…` | Slider photos (`.webp`, 524 px wide = 2× the 262 px frame) and the infrastructure video (`.mp4`, 720p) | Client photos from `new-assets/content/` (Tekiro and some slots are still mockup crops or numbered placeholders) |
 | `public/photos/our-brands/{rexco,ryu}/penghargaan/` | Award logos (600 px), not placed in a card yet | Client files |
