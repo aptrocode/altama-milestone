@@ -294,7 +294,7 @@ describe('reset waits for the auto slideshow', () => {
 });
 
 describe('auto slide and auto page together', () => {
-  // Our Brand · Rexco: page 1 has 4 photos, page 2 has 3.
+  // Our Brand · Rexco: page 1 has 4 photos, page 2 has 2.
   function open() {
     const wall = useWallStore(createPinia());
     const scope = effectScope();
@@ -310,13 +310,13 @@ describe('auto slide and auto page together', () => {
     vi.advanceTimersByTime(15_000); // past the 10 s page interval: still page 1, photo 4
     expect(wall.publishedColumns[2]).toMatchObject({ page: 0, photo: 3 });
     vi.advanceTimersByTime(5000); // 4 photos × 5 s
-    expect(wall.publishedColumns[2]).toMatchObject({ page: 1, photo: 0, photoCount: 3 });
-    vi.advanceTimersByTime(10_000);
-    expect(wall.publishedColumns[2]).toMatchObject({ page: 1, photo: 2 });
-    expect(wall.getColumnState(2)).toBe('active'); // 30 s reset passed, last photo still showing
+    expect(wall.publishedColumns[2]).toMatchObject({ page: 1, photo: 0, photoCount: 2 });
+    vi.advanceTimersByTime(5000);
+    expect(wall.publishedColumns[2]).toMatchObject({ page: 1, photo: 1 });
+    expect(wall.getColumnState(2)).toBe('active'); // last photo showing
     vi.advanceTimersByTime(4999);
     expect(wall.getColumnState(2)).toBe('active');
-    vi.advanceTimersByTime(1); // 20 s + 15 s = 35 s
+    vi.advanceTimersByTime(1); // 20 s + 10 s = 30 s
     expect(wall.getColumnState(2)).toBe('idle');
   });
 });
