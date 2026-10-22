@@ -40,11 +40,11 @@ const LANGUAGE_BAR_OPTIONS: { value: LanguageBarMode; label: string; hint: strin
 
 /** Close button place: a title-sized pill under the card (default) or the badge on its corner. */
 const CLOSE_POSITION_OPTIONS: { value: ClosePosition; label: string; hint: string }[] = [
-  { value: 'bottom', label: 'Di bawah card', hint: 'Tombol besar dengan tulisan Tutup' },
+  { value: 'bottom', label: 'Di bawah card', hint: 'Tombol merah selebar card, tulisan Tutup' },
   { value: 'corner', label: 'Pojok kanan atas', hint: 'Badge ✕ di border card' },
 ];
 
-/** Content mode: Page (tabs) or Scroll (the `scrollText` trial). */
+/** Content mode: Page (tabs) or Scroll (`scrollText`, the default). */
 const CONTENT_MODE_OPTIONS: { value: boolean; label: string; hint: string }[] = [
   { value: false, label: 'Page', hint: 'Teks dibagi page dengan tab' },
   { value: true, label: 'Scroll', hint: 'Card pendek, teks digeser; Merek Kami tetap 2 page' },
@@ -93,7 +93,7 @@ const HELP: Record<string, HelpLine[]> = {
     'Card tetap tertutup sendiri setelah Reset otomatis, atau lewat tombol operator 1–6, R/Escape, dan OSC.',
   ],
   closePosition: [
-    { term: 'Di bawah card', text: 'Tombol besar seukuran judul section (✕ + tulisan Tutup / Close / 关闭), di luar card, tepat di bawah posisi bar bahasa. Card yang terbuka berhenti di bawah frame idle supaya tidak menabrak tombol; teks panjang bisa mengecil (lihat status di Font).' },
+    { term: 'Di bawah card', text: 'Tombol merah selebar card (✕ + tulisan tebal TUTUP / CLOSE / 关闭), 20 px di bawah frame idle. Card yang terbuka berhenti di bawah frame idle supaya tidak menabrak tombol; di mode Page teks panjang bisa mengecil (lihat status di Font).' },
     { term: 'Pojok kanan atas', text: 'Badge ✕ kecil di border card; card memanjang sampai di atas gedung seperti biasa. Ukuran dan posisi badge bisa diatur di bawah.' },
     { term: 'Sensor', text: 'Area sentuh tombol close di Sensor Service ikut pindah.' },
   ],
@@ -124,8 +124,8 @@ const HELP: Record<string, HelpLine[]> = {
     { term: 'Dengan Tombol slider off', text: 'Page berganti setelah foto terakhirnya, bukan per Auto page.' },
   ],
   scrollText: [
-    { term: 'Page', text: 'Teks dibagi ke page dengan tab (Tekiro 4, yang lain 1–2). Card memanjang mengikuti teks, sampai di atas gedung.' },
-    { term: 'Scroll (uji coba)', text: 'Card setinggi frame idle, jadi gedung tetap terlihat. Teks memakai ukuran Maks dari Font dan digeser ke atas/bawah (sentuh-geser, drag mouse, scroll wheel); fade, scrollbar tipis, dan panah ⌄ menandakan masih ada teks. Page lebih sedikit: section 2 (Merek Kami: Tekiro, RYU, Rexco) tetap punya page, masing-masing 2 page dengan tab; section lain 1 page tanpa tab. Foto juga bisa di-swipe kiri/kanan.' },
+    { term: 'Page', text: 'Teks dibagi ke page dengan tab (Tekiro 4, yang lain 1–2). Card memanjang mengikuti teks sampai di atas gedung; dengan tombol close di bawah card, card berhenti di bawah frame idle.' },
+    { term: 'Scroll (default)', text: 'Card setinggi frame idle, jadi gedung tetap terlihat. Teks memakai ukuran Maks dari Font dan digeser ke atas/bawah (sentuh-geser, drag mouse, scroll wheel); fade, scrollbar tipis, dan panah ⌄ menandakan masih ada teks. Page lebih sedikit: section 2 (Merek Kami: Tekiro, RYU, Rexco) tetap punya page, masing-masing 2 page dengan tab; section lain 1 page tanpa tab. Foto juga bisa di-swipe kiri/kanan.' },
     { term: 'Saat memilih Scroll', text: 'Tombol slider otomatis off (foto auto slide). Tombol close dan pengaturan Hold tidak diubah. Setelah itu semuanya masih bisa diubah lagi.' },
     { term: 'Sensor', text: 'Geser teks dan swipe foto lewat touchscreen, mouse, atau TD yang mengirim drag. Sensor Service (LiDAR/TUIO) belum mengirim geser; di jalur itu hanya tap.' },
   ],
@@ -158,7 +158,7 @@ const unit = 'text-sm text-sky-100/60';
   <section aria-label="Wall" class="space-y-4">
     <DashboardSection title="Mode konten" icon="card" description="Cara isi card ditampilkan saat kolom dibuka.">
       <DashboardSettingRow
-        data-wall-setting="scrollText" title="Mode konten" hint="Page: teks dibagi page dengan tab. Scroll (uji coba): card setinggi frame idle, teks digeser."
+        data-wall-setting="scrollText" title="Mode konten" hint="Page: teks dibagi page dengan tab. Scroll (default): card setinggi frame idle, teks digeser."
         :help="HELP.scrollText"
         :changed="changed('scrollText')" :default-label="defaultLabel('scrollText')" @reset="reset('scrollText')"
       >
@@ -260,7 +260,7 @@ const unit = 'text-sm text-sky-100/60';
     <DashboardSection title="Tombol di card" icon="buttons" description="Tombol yang terlihat saat card dibuka. Yang dimatikan berjalan otomatis.">
       <div>
         <DashboardSettingRow
-          data-wall-setting="showClose" title="Tombol close" hint="Tombol ✕ di card yang terbuka."
+          data-wall-setting="showClose" title="Tombol close" hint="Tombol Tutup (✕) di card yang terbuka."
           :help="HELP.showClose"
           :changed="changed('showClose')" :default-label="defaultLabel('showClose')" @reset="reset('showClose')"
         >
@@ -269,7 +269,7 @@ const unit = 'text-sm text-sky-100/60';
         <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-1" leave-active-class="transition duration-150 ease-in" leave-to-class="opacity-0 -translate-y-1">
           <DashboardSettingRow
             v-if="draft.showClose" nested data-wall-setting="closePosition" title="Letak tombol close"
-            hint="Di bawah card (besar, dengan tulisan) atau badge di pojok kanan atas."
+            hint="Di bawah card (tombol merah selebar card) atau badge ✕ di pojok kanan atas."
             :help="HELP.closePosition"
             :changed="changed('closePosition')" :default-label="defaultLabel('closePosition')" @reset="reset('closePosition')"
           >
@@ -286,10 +286,10 @@ const unit = 'text-sm text-sky-100/60';
                     <rect x="6" y="2" width="36" height="38" rx="4" class="fill-white/5 stroke-current" stroke-width="1.5" />
                     <rect x="10" y="6" width="28" height="11" rx="1.5" class="fill-current opacity-25" />
                     <rect v-for="i in 3" :key="i" x="11" :y="21 + (i - 1) * 4.5" width="24" height="2" rx="1" class="fill-current opacity-60" />
-                    <rect x="6" y="45" width="36" height="12" rx="3.5" class="fill-none stroke-current" stroke-width="1.5" />
-                    <circle cx="12.5" cy="51" r="3.5" class="fill-none stroke-current" stroke-width="1.2" />
-                    <path d="M11 49.5 L14 52.5 M14 49.5 L11 52.5" class="stroke-current" stroke-width="1" />
-                    <rect x="19" y="50" width="16" height="2.5" rx="1" class="fill-current" />
+                    <!-- Solid red capsule as wide as the card: white ✕ and the bold label. -->
+                    <rect x="6" y="45" width="36" height="11" rx="5.5" class="fill-red-600" />
+                    <path d="M14.5 48.5 L18.5 52.5 M18.5 48.5 L14.5 52.5" class="stroke-white" stroke-width="1.3" stroke-linecap="round" />
+                    <rect x="21" y="49.3" width="13" height="2.4" rx="1" class="fill-white" />
                   </template>
                   <template v-else>
                     <rect x="6" y="6" width="36" height="50" rx="4" class="fill-white/5 stroke-current" stroke-width="1.5" />

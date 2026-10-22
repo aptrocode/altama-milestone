@@ -71,6 +71,7 @@ const CARDS: { key: CardTextKey; title: string; hint: string }[] = [
 const CARD_HELP: HelpLine[] = [
   'Ukuran teks isi card saat kolom ini dibuka, untuk semua page dan bahasa. Label biru (mis. "Lahir") ikut proporsional.',
   { term: 'Min – Maks', text: 'Tiap page memakai ukuran terbesar sampai Maks yang masih muat di card tertinggi, dan tidak lebih kecil dari Min. Card memanjang mengikuti teksnya.' },
+  { term: 'Mode Scroll', text: 'Teks selalu memakai ukuran Maks dan digeser, jadi statusnya selalu ✓ di Maks. Min hanya dipakai di mode Page.' },
   { term: 'Status', text: 'Ukuran yang benar-benar dipakai di semua page dan bahasa. "Di bawah Min" berarti ada page yang tidak muat walau di ukuran Min, jadi wall mengecilkannya lagi supaya tidak terpotong. Kecilkan Min, atau minta isi card dipecah jadi page tambahan.' },
 ];
 
@@ -101,7 +102,7 @@ const SIZES: { key: SizeKey; title: string; hint: string; sample: string; weight
     weight: 0,
     upper: true,
     help: [
-      'Judul di pill setiap kolom (Tentang Altama, Our Brand, …).',
+      'Judul di pill setiap kolom (Tentang Altama, Merek Kami, …).',
       { term: 'Batas', text: 'Pill punya ukuran tetap. Judul panjang pindah ke dua baris; di atas batas maksimum teks bisa terpotong.' },
     ],
   },
