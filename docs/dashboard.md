@@ -4,7 +4,7 @@
 
 ## Password
 
-When the server has `NUXT_DASHBOARD_PASSWORD` (in `.env`; `start-wall.bat` passes it on, and PM2 reads it on the VPS), `/dashboard` first shows a single centred password input, nothing else (placeholder *Clue: password wifi Aptronim*). Enter unlocks it: `POST /api/dashboard/login` checks the password on the server and sets an httpOnly cookie (a SHA-256 hash of the password, never the password) for 30 days; `GET /api/dashboard/session` tells the page whether the browser is already signed in. A wrong password shows *Password salah* after a short pause; changing the password signs every browser out. Without the variable the dashboard is open, as before. The password never reaches the client bundle (`runtimeConfig.dashboardPassword` is server-only); the wall itself never asks for it.
+When the server has `NUXT_DASHBOARD_PASSWORD` (in `.env`; `start-wall.bat` passes it on, and PM2 reads it on the VPS), `/dashboard` first shows a single centred password input, nothing else (placeholder *Clue: password wifi Aptronim*). Enter unlocks it: `POST /api/dashboard/login` checks the password on the server and sets an httpOnly session cookie (`expires.signature`, an HMAC keyed by the password, never the password) for **3 days**. The session slides: `GET /api/dashboard/session` (every dashboard visit) and every settings save start the 3 days again, so an operator who opens the dashboard at least every 3 days never logs in again. **Keluar** at the bottom of the sidebar (under Reset ke default, only when a password is set) calls `POST /api/dashboard/logout` and shows the password input again. A wrong password shows *Password salah* after a short pause; changing the password signs every browser out. Without the variable the dashboard is open, as before. The password never reaches the client bundle (`runtimeConfig.dashboardPassword` is server-only); the wall itself never asks for it.
 
 | Page | Route | Stored in |
 | --- | --- | --- |
@@ -22,8 +22,6 @@ Wall, Hold, and Font settings are one document in a SQLite file on the server (`
 - `app/plugins/settings-sync.client.ts` runs on every page after `settings-storage`: it pulls on start, every 5 s, and when the tab becomes visible, and applies a newer server version to the store (which also updates `localStorage`, the offline fallback). Only `/dashboard` pushes: every store change (Simpan, import, reset) goes to the server 300 ms later; values that came from the server are never echoed back. The first dashboard that opens an empty server (version 0) seeds it with its browser's settings, also right after login.
 - `NUXT_PUBLIC_SETTINGS_SYNC_URL` on another host (e.g. `https://altama-milestone.nmxavw.com` on the event PC) makes the wall **follow** that server: it pulls from there, and its own dashboard changes stay in that browser until the next change on the server. Empty = this server.
 - When the database is unavailable (503, e.g. on Vercel, whose file system does not keep files) or the server cannot be reached, everything keeps working from `localStorage`.
-
-The sidebar shows where saves go, above the footer: **Tersinkron ke server** (green), **Menyimpan ke server…**, **Mengikuti <host>** (follower), **Belum tersimpan ke server: login lagi** (401), or **Server tidak tersedia: hanya di browser ini**.
 
 The sidebar footer acts on every operator setting:
 
