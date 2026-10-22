@@ -14,7 +14,7 @@ const GROUP_LABEL: Record<HoldGroup, { title: string; hint: string }> = {
   page: { title: 'Button page', hint: 'Tab PAGE 1–4' },
   slider: { title: 'Button slider', hint: 'Panah foto' },
   language: { title: 'Bahasa', hint: 'Bendera ID / EN / 中文' },
-  back: { title: 'Tombol close', hint: 'Tombol ✕ di card' },
+  back: { title: 'Tombol close', hint: 'Tombol Tutup (✕)' },
 };
 
 const settings = useSettingsStore();

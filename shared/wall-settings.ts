@@ -24,7 +24,7 @@ import { LANGUAGE_BAR_MODES } from './language-bar';
  * - autoPage: pages also change on their own while the tabs are shown (default off); with the
  *   tabs off they always do (autoPageActive).
  * - autoPageSeconds: auto-page interval (default 15 s).
- * - scrollText: trial of vertically scrolling card text (default off). Every card keeps its Font
+ * - scrollText: vertically scrolling card text (default on, client request). Every card keeps its Font
  *   Maks size and scrolls; its pages are grouped by `scrollPages` (default one page: Tekiro 2, RYU
  *   and Rexco keep 2); off restores the pages and tabs.
  * - languageBar: `full` width with larger buttons (default), the `compact` flag pill, or the 2 + 1 `grid`

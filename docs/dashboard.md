@@ -89,7 +89,7 @@ Videos always play to their end while anything advances automatically, and a car
 
 **Simpan** and **Default** work as on the Hold page.
 
-### Mode konten: Scroll (trial)
+### Mode konten: Page or Scroll
 
 **Mode konten** at the top of the page (`scrollText`) picks **Page** (text in tabbed pages, cards growing with their text) or **Scroll** (default, client request: vertically scrolling card text on every section). Like Tampilan bahasa, each option is a small card sketch: Page shows a tall card with tabs, Scroll a shorter card with a scroll bar and ⌄ above the skyline line.
 
