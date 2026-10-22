@@ -45,6 +45,8 @@ module.exports = {
 
 `/dashboard` meminta password (satu kolom, placeholder *Clue: password wifi Aptronim*). Password diambil dari `NUXT_DASHBOARD_PASSWORD` di blok `env` di atas. Setelah mengubahnya, jalankan `pm2 restart altama-milestone --update-env`; semua browser yang sudah login akan diminta password lagi. Kalau variabel ini dikosongkan, dashboard terbuka tanpa password.
 
+Login bertahan **3 hari** dan diperpanjang otomatis setiap kali dashboard dibuka atau pengaturan disimpan. Jadi kalau dashboard dibuka minimal sekali tiap 3 hari, tidak perlu login ulang. Tombol **Keluar** ada di bawah **Reset ke default** di sidebar.
+
 > Wall versi Vercel juga butuh variabel `NUXT_DASHBOARD_PASSWORD` di Vercel → Project → Settings → Environment Variables (lalu redeploy). Tanpa itu dashboard di Vercel terbuka tanpa password.
 
 ### Yang normal di VPS
@@ -178,16 +180,6 @@ MySQL dan PostgreSQL di VPS **tidak dipakai dan tidak disentuh**.
 2. **Dashboard** (setelah login password) mengirim setiap Simpan, Import, dan Reset ke server.
 3. **Setiap wall** mengambil pengaturan dari server saat dibuka, lalu mengecek perubahan **tiap 5 detik**. Perubahan dari HP sampai ke wall tanpa reload.
 4. Kalau server tidak terjangkau, wall dan dashboard tetap jalan dengan salinan terakhir di browser.
-
-Status di sidebar dashboard (di atas tombol Export) menunjukkan ke mana pengaturan disimpan:
-
-| Status | Artinya |
-|---|---|
-| 🟢 Tersinkron ke server | Simpan langsung berlaku di semua device |
-| Menyimpan ke server… | Sedang dikirim |
-| 🔴 Belum tersimpan ke server: login lagi | Login kedaluwarsa; reload `/dashboard` lalu login |
-| 🟡 Server tidak tersedia: hanya di browser ini | Server/database tidak terjangkau (normal di Vercel) |
-| 🟡 Mengikuti … | Wall ini mengikuti server lain (lihat PC event di bawah) |
 
 ### Mengaktifkan di VPS
 

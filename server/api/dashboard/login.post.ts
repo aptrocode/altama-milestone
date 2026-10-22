@@ -1,4 +1,4 @@
-import { DASHBOARD_COOKIE, DASHBOARD_COOKIE_MAX_AGE, dashboardToken, sameSecret } from '../../utils/dashboard-auth';
+import { sameSecret, setDashboardSession } from '../../utils/dashboard-auth';
 
 /** Signs this browser in to /dashboard when the password matches NUXT_DASHBOARD_PASSWORD. */
 export default defineEventHandler(async (event) => {
@@ -12,14 +12,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Password salah' });
   }
 
-  if (password) {
-    setCookie(event, DASHBOARD_COOKIE, dashboardToken(password), {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: getRequestProtocol(event) === 'https',
-      path: '/',
-      maxAge: DASHBOARD_COOKIE_MAX_AGE,
-    });
-  }
+  if (password)
+    setDashboardSession(event, password);
   return { unlocked: true };
 });

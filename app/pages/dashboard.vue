@@ -27,20 +27,8 @@ const pageTitle = computed(() => String(route.meta.title || 'Dashboard'));
 const pageDescription = computed(() => String(route.meta.description || ''));
 useHead({ title: () => `${pageTitle.value} · Dashboard · Altama Interactive Wall` });
 
-// Where saved settings go (settings-sync plugin): shown above the sidebar footer.
+// Settings sync (settings-sync plugin): pulled again right after login.
 const sync = useSettingsSync();
-const SYNC_LABEL: Record<string, { text: string; tone: string }> = {
-  checking: { text: 'Menghubungi server…', tone: 'bg-sky-300/60' },
-  synced: { text: 'Tersinkron ke server: berlaku di semua device', tone: 'bg-emerald-400' },
-  saving: { text: 'Menyimpan ke server…', tone: 'bg-sky-300 animate-pulse' },
-  follower: { text: 'Mengikuti server', tone: 'bg-amber-300' },
-  locked: { text: 'Belum tersimpan ke server: login lagi', tone: 'bg-rose-400' },
-  offline: { text: 'Server tidak tersedia: hanya di browser ini', tone: 'bg-amber-300' },
-};
-const syncLabel = computed(() => {
-  const label = SYNC_LABEL[sync.status.value] ?? SYNC_LABEL.checking!;
-  return sync.status.value === 'follower' ? { ...label, text: `Mengikuti ${sync.host.value}: ubah di sana` } : label;
-});
 
 // Password gate (NUXT_DASHBOARD_PASSWORD on the server): one input, Enter to unlock. The server
 // keeps the browser signed in with an httpOnly cookie; without a password the dashboard is open.
@@ -48,6 +36,8 @@ const access = ref<'checking' | 'locked' | 'open'>('checking');
 const password = ref('');
 const passwordError = ref('');
 const unlocking = ref(false);
+// Logout shows only when the server has a password.
+const passwordRequired = ref(false);
 const passwordInput = ref<HTMLInputElement | null>(null);
 function lock(message = '') {
   access.value = 'locked';
@@ -56,7 +46,8 @@ function lock(message = '') {
 }
 onMounted(async () => {
   try {
-    const session = await $fetch<{ unlocked: boolean }>('/api/dashboard/session');
+    const session = await $fetch<{ unlocked: boolean; required?: boolean }>('/api/dashboard/session');
+    passwordRequired.value = !!session.required;
     if (session.unlocked)
       access.value = 'open';
     else
@@ -66,6 +57,14 @@ onMounted(async () => {
     lock('Server tidak terhubung');
   }
 });
+async function logout() {
+  try {
+    await $fetch('/api/dashboard/logout', { method: 'POST' });
+  }
+  finally {
+    lock();
+  }
+}
 async function unlock() {
   if (unlocking.value || !password.value)
     return;
@@ -73,6 +72,7 @@ async function unlock() {
   try {
     await $fetch('/api/dashboard/login', { method: 'POST', body: { password: password.value } });
     access.value = 'open';
+    passwordRequired.value = true;
     // Signed in: saves can reach the server now (and an empty server gets this browser's settings).
     sync.refresh();
   }
@@ -244,11 +244,6 @@ const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0
         </div>
       </nav>
 
-      <p class="flex items-start gap-2 px-5 pb-3 text-xs leading-snug text-sky-100/60" data-settings-sync :data-status="sync.status.value" aria-live="polite">
-        <span class="mt-1 size-2 shrink-0 rounded-full" :class="syncLabel.tone" aria-hidden="true" />
-        {{ syncLabel.text }}
-      </p>
-
       <div class="space-y-0.5 border-t border-white/[0.06] px-3 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <button type="button" :class="footButton" @click="exportSettings">
           <span :class="footIcon">
@@ -277,6 +272,12 @@ const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0
             <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>
           </span>
           Reset ke default
+        </button>
+        <button v-if="passwordRequired" type="button" :class="footButton" data-dashboard-logout @click="logout">
+          <span :class="footIcon">
+            <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3" /><path d="M10 17l-5-5 5-5M5 12h11" /></svg>
+          </span>
+          Keluar
         </button>
       </div>
     </aside>

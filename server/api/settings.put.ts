@@ -1,4 +1,4 @@
-import { DASHBOARD_COOKIE, dashboardUnlocked } from '../utils/dashboard-auth';
+import { DASHBOARD_COOKIE, dashboardUnlocked, setDashboardSession } from '../utils/dashboard-auth';
 import { useSettingsDb } from '../utils/settings-db';
 
 /** Saves operator settings from /dashboard; needs the dashboard login when a password is set. */
@@ -11,6 +11,9 @@ export default defineEventHandler(async (event) => {
   if (!body || typeof body !== 'object')
     throw createError({ statusCode: 400, statusMessage: 'Settings missing' });
 
+  // Saving counts as using the dashboard: restart the 3-day session.
+  if (config.dashboardPassword)
+    setDashboardSession(event, String(config.dashboardPassword));
   setResponseHeader(event, 'Cache-Control', 'no-store');
   try {
     return (await useSettingsDb(config.settingsDb)).write(body);

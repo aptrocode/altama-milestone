@@ -1,17 +1,25 @@
+import type { H3Event } from 'h3';
 import { Buffer } from 'node:buffer';
-import { createHash, timingSafeEqual } from 'node:crypto';
+import { createHmac, timingSafeEqual } from 'node:crypto';
+import { deleteCookie, getRequestProtocol, setCookie } from 'h3';
 
 /** Cookie that keeps a browser signed in to /dashboard. */
 export const DASHBOARD_COOKIE = 'altama_dashboard';
-/** A signed-in browser stays signed in for 30 days. */
-export const DASHBOARD_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
-
 /**
- * Cookie value for a password: a hash, so the cookie never holds the password itself and
- * changing NUXT_DASHBOARD_PASSWORD signs every browser out.
+ * A session lasts 3 days and slides: every dashboard visit (session check) and every save starts
+ * the 3 days again, so an operator who opens the dashboard at least every 3 days never logs in again.
  */
-export function dashboardToken(password: string): string {
-  return createHash('sha256').update(`altama-dashboard:${password}`).digest('hex');
+export const DASHBOARD_SESSION_SECONDS = 60 * 60 * 24 * 3;
+
+/** HMAC of the expiry time, keyed by the password: changing NUXT_DASHBOARD_PASSWORD signs every browser out. */
+function sign(password: string, expires: number): string {
+  return createHmac('sha256', `altama-dashboard:${password}`).update(String(expires)).digest('hex');
+}
+
+/** Cookie value `expires.signature`: the expiry is checked on the server, never the password itself. */
+export function dashboardToken(password: string, now = Date.now()): string {
+  const expires = Math.floor(now / 1000) + DASHBOARD_SESSION_SECONDS;
+  return `${expires}.${sign(password, expires)}`;
 }
 
 /** Constant-time string comparison. */
@@ -21,9 +29,29 @@ export function sameSecret(a: string, b: string): boolean {
   return left.length === right.length && timingSafeEqual(left, right);
 }
 
-/** True when no password is configured (dashboard open) or the cookie matches it. */
-export function dashboardUnlocked(password: string, cookie: string | undefined): boolean {
+/** True when no password is configured (dashboard open), or the cookie is a valid, unexpired session. */
+export function dashboardUnlocked(password: string, cookie: string | undefined, now = Date.now()): boolean {
   if (!password)
     return true;
-  return !!cookie && sameSecret(cookie, dashboardToken(password));
+  const [rawExpires, signature] = (cookie ?? '').split('.');
+  const expires = Number(rawExpires);
+  if (!signature || !Number.isInteger(expires) || expires * 1000 <= now)
+    return false;
+  return sameSecret(signature, sign(password, expires));
+}
+
+/** Starts (or restarts) the 3-day session cookie. */
+export function setDashboardSession(event: H3Event, password: string) {
+  setCookie(event, DASHBOARD_COOKIE, dashboardToken(password), {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: getRequestProtocol(event) === 'https',
+    path: '/',
+    maxAge: DASHBOARD_SESSION_SECONDS,
+  });
+}
+
+/** Ends the session (logout). */
+export function clearDashboardSession(event: H3Event) {
+  deleteCookie(event, DASHBOARD_COOKIE, { path: '/' });
 }
