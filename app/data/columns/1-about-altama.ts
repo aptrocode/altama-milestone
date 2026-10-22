@@ -1,7 +1,7 @@
 import type { ColumnConfig } from '~/types/wall-content';
 import { onlyPage, provisional } from './helpers';
 
-/** Column 1 — Tentang Altama. Single card page with a 2-photo slider. */
+/** Column 1 — Tentang Altama. Single card page with a 4-photo slider. */
 export const ABOUT_ALTAMA: ColumnConfig = {
   id: 1,
   key: 'about-altama',
@@ -18,6 +18,8 @@ export const ABOUT_ALTAMA: ColumnConfig = {
       [
         provisional('/photos/about-altama/photo-1.webp'),
         provisional('/photos/about-altama/photo-2.webp'),
+        provisional('/photos/about-altama/photo-3.webp'),
+        provisional('/photos/about-altama/photo-4.webp'),
       ],
       {
         'id': [
