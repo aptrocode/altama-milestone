@@ -50,8 +50,8 @@ export const FONT_WEIGHTS = [400, 500, 700, 800, 900] as const;
 const RANGE: CardText = { min: 24, max: 26 };
 
 export const DEFAULT_FONT_SETTINGS: FontSettings = {
-  titleSize: 27,
-  titleWeight: 700,
+  titleSize: 29,
+  titleWeight: 900,
   subItemSize: 32,
   captionSize: 30,
   tabSize: 24,

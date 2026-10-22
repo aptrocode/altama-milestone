@@ -56,7 +56,7 @@ module.exports = {
 
 ## 2. Update saat ada perubahan di GitHub
 
-Skripnya sudah ada di repo: `scripts/update-vps.sh` (pull, install, build, restart proses `altama-milestone`, lalu cek). **Pertama kali saja**, ambil skrip itu dengan `git pull` biasa:
+Skripnya sudah ada di repo: `scripts/update-vps.sh` (backup database pengaturan, pull, install, build, restart proses `altama-milestone`, lalu cek). **Pertama kali saja**, ambil skrip itu dengan `git pull` biasa:
 
 ```bash
 cd /var/www/altama-milestone && git pull --ff-only
@@ -77,6 +77,18 @@ echo "alias update-altama='bash /var/www/altama-milestone/scripts/update-vps.sh'
 Lalu update cukup dengan `update-altama`.
 
 Baris terakhir harus `HTTP/1.1 200 OK`. Selama build berjalan, versi lama tetap melayani; gangguan hanya beberapa detik saat restart. Hanya proses `altama-milestone` yang di-restart, project lain tidak tersentuh.
+
+### Database pengaturan tidak ter-reset saat update
+
+- File `.data/altama.sqlite` di-ignore Git, jadi `git pull`, `bun install`, dan `bun run build` tidak pernah menyentuh atau mengosongkannya. Pengaturan yang sudah disimpan tetap ada setelah update.
+- Sebelum update, skrip menyalin database ke `~/backup-altama/altama-TANGGAL-JAM.sqlite` (30 salinan terbaru disimpan). Baris `==> settings database backed up to …` menandakan backup berhasil.
+- **Default baru dari update tidak menimpa pengaturan yang sudah tersimpan.** Default hanya dipakai saat database masih kosong, atau saat operator menekan **Default** di halaman (lalu Simpan) atau **Reset ke default** di sidebar.
+
+Mengembalikan backup (misalnya setelah salah Reset):
+
+```bash
+pm2 stop altama-milestone && cp ~/backup-altama/NAMA_BACKUP.sqlite /var/www/altama-milestone/.data/altama.sqlite && pm2 start altama-milestone
+```
 
 > Jangan edit file repo langsung di VPS. Kalau `git pull` menolak karena *local changes*, cek `git status` lalu kembalikan file itu dengan `git checkout -- NAMA_FILE`.
 
@@ -197,8 +209,10 @@ Sebelum ada yang menyimpan hasilnya `{"version":0,...}`; setelah dashboard login
 
 ### Backup
 
+`update-altama` sudah membuat backup otomatis setiap update (lihat [bagian 2](#2-update-saat-ada-perubahan-di-github)). Backup manual kapan saja:
+
 ```bash
-mkdir -p ~/backup-altama && cp /var/www/altama-milestone/.data/altama.sqlite ~/backup-altama/altama-$(date +%F).sqlite && ls ~/backup-altama
+mkdir -p ~/backup-altama && cp /var/www/altama-milestone/.data/altama.sqlite ~/backup-altama/altama-$(date +%Y%m%d-%H%M%S).sqlite && ls ~/backup-altama
 ```
 
 Tombol **Export pengaturan** di dashboard tetap bisa dipakai sebagai cadangan kedua (file JSON).
