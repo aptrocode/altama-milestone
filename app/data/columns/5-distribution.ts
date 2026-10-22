@@ -38,7 +38,6 @@ export const DISTRIBUTION: ColumnConfig = {
           'id': { tab: PAGE_TABS.first.id, blocks: [{ bullets: [
             {
               lead: 'Marketplace',
-              text: 'TikTok Shop, Tokped, Shopee, dan lainnya',
               images: [
                 provisional('/photos/distribution/distribusi/marketplace/tiktok-shop.webp'),
                 provisional('/photos/distribution/distribusi/marketplace/tokopedia.webp'),
@@ -48,7 +47,6 @@ export const DISTRIBUTION: ColumnConfig = {
             },
             {
               lead: 'Modern Market',
-              text: 'MR DIY, Mitra10, dan lainnya',
               images: [
                 provisional('/photos/distribution/distribusi/modern-market/mr-diy.webp'),
                 provisional('/photos/distribution/distribusi/modern-market/mitra10.webp'),
@@ -60,7 +58,6 @@ export const DISTRIBUTION: ColumnConfig = {
           'en': { tab: PAGE_TABS.first.en, blocks: [{ bullets: [
             {
               lead: 'Marketplace',
-              text: 'TikTok Shop, Tokopedia, Shopee, and others',
               images: [
                 provisional('/photos/distribution/distribusi/marketplace/tiktok-shop.webp'),
                 provisional('/photos/distribution/distribusi/marketplace/tokopedia.webp'),
@@ -70,7 +67,6 @@ export const DISTRIBUTION: ColumnConfig = {
             },
             {
               lead: 'Modern Market',
-              text: 'MR. D.I.Y., Mitra10, and others',
               images: [
                 provisional('/photos/distribution/distribusi/modern-market/mr-diy.webp'),
                 provisional('/photos/distribution/distribusi/modern-market/mitra10.webp'),
@@ -82,7 +78,6 @@ export const DISTRIBUTION: ColumnConfig = {
           'zh-Hans': { tab: PAGE_TABS.first['zh-Hans'], blocks: [{ bullets: [
             {
               lead: '电商平台',
-              text: 'TikTok Shop、Tokopedia、Shopee 及其他电商平台',
               images: [
                 provisional('/photos/distribution/distribusi/marketplace/tiktok-shop.webp'),
                 provisional('/photos/distribution/distribusi/marketplace/tokopedia.webp'),
@@ -92,7 +87,6 @@ export const DISTRIBUTION: ColumnConfig = {
             },
             {
               lead: '现代零售渠道',
-              text: 'MR. D.I.Y.、Mitra10 及其他零售卖场',
               images: [
                 provisional('/photos/distribution/distribusi/modern-market/mr-diy.webp'),
                 provisional('/photos/distribution/distribusi/modern-market/mitra10.webp'),
@@ -104,34 +98,16 @@ export const DISTRIBUTION: ColumnConfig = {
         }),
         page(DISTRIBUSI_PHOTOS, {
           'id': { tab: PAGE_TABS.second.id, blocks: [{ bullets: [
-            {
-              lead: 'Jangkauan Indonesia:',
-              text: 'Hadir di 38 provinsi lewat 800+ mitra distribusi langsung dan 100.000+ jaringan distribusi tidak langsung',
-            },
-            {
-              lead: 'Jangkauan internasional:',
-              text: 'Pendistribusian hingga mancanegara.',
-            },
+            { lead: 'Jangkauan seluruh Indonesia' },
+            { lead: 'Jangkauan Mancanegara' },
           ] }] },
           'en': { tab: PAGE_TABS.second.en, blocks: [{ bullets: [
-            {
-              lead: 'Indonesian Reach:',
-              text: 'Present across 38 provinces through 800+ direct distribution partners and 100,000+ indirect distribution networks.',
-            },
-            {
-              lead: 'International Reach:',
-              text: 'Distribution reaching international markets.',
-            },
+            { lead: 'Reach Across Indonesia' },
+            { lead: 'International Reach' },
           ] }] },
           'zh-Hans': { tab: PAGE_TABS.second['zh-Hans'], blocks: [{ bullets: [
-            {
-              lead: '印尼覆盖范围：',
-              text: '覆盖 38 个省份，拥有 800 多家直接分销合作伙伴和 100,000 多个间接分销网络。',
-            },
-            {
-              lead: '国际业务拓展：',
-              text: '产品远销海外多个国家和地区。',
-            },
+            { lead: '覆盖印尼全国' },
+            { lead: '覆盖海外市场' },
           ] }] },
         }),
       ],
