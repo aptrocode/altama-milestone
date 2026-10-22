@@ -52,7 +52,7 @@ Screens narrower than 1024 px or taller than wide (`useStackedLayout`, query `(m
 
 ## Typography
 
-Every text on the wall and the dashboard uses **Roboto** (client request; weights 400–900 load through `@nuxt/fonts` and are bundled into the build). `font-display` and `font-sans` both resolve to Roboto. Sizes and the title weight are operator settings on Dashboard → Font (`shared/font-settings.ts`); defaults: title 27 px bold, sub-item name 32, tile caption 30, page tab 24, and card body 24–26 per card (logical px). A title word that does not fit its pill shrinks just that title. Chinese text falls back to the system CJK font.
+Every text on the wall and the dashboard uses **Roboto** (client request; weights 400–900 load through `@nuxt/fonts` and are bundled into the build). `font-display` and `font-sans` both resolve to Roboto. Sizes and the title weight are operator settings on Dashboard → Font (`shared/font-settings.ts`); defaults: title 29 px Black (900), sub-item name 32, tile caption 30, page tab 24, and card body 24–26 per card (logical px). A title word that does not fit its pill shrinks just that title. Chinese text falls back to the system CJK font.
 
 ## References
 

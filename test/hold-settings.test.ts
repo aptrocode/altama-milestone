@@ -14,7 +14,7 @@ describe('hold settings', () => {
     })).toEqual({
       card: { mode: 'hold', enabled: true, seconds: 0.3 },
       page: { mode: 'tap', enabled: false, seconds: 1.3 },
-      slider: { mode: 'hold', enabled: true, seconds: 5 },
+      slider: { mode: 'delay', enabled: false, seconds: 5 },
       language: DEFAULT_HOLD_SETTINGS.language,
       back: DEFAULT_HOLD_SETTINGS.back,
     });
@@ -24,14 +24,14 @@ describe('hold settings', () => {
   it('has three modes; delay is not a sensor dwell', () => {
     expect(normalizeHoldSettings({ card: { mode: 'delay', seconds: 2 } }).card).toEqual({ mode: 'delay', enabled: false, seconds: 2 });
     expect(normalizeHoldSettings({ card: { mode: 'x', enabled: true } }).card.mode).toBe('hold');
-    // Every group defaults to Hold, 1 s.
-    expect(Object.values(DEFAULT_HOLD_SETTINGS).every(rule => rule.mode === 'hold' && rule.enabled && rule.seconds === 1)).toBe(true);
+    // Every group defaults to Tap + delay, 1 s (the wall animates the delay; no sensor dwell).
+    expect(Object.values(DEFAULT_HOLD_SETTINGS).every(rule => rule.mode === 'delay' && !rule.enabled && rule.seconds === 1)).toBe(true);
   });
 
-  it('maps every wall action to a hold group; every group is a 1 s sensor dwell by default', () => {
+  it('maps every wall action to a hold group; no group is a sensor dwell by default', () => {
     expect(HOLD_GROUP_BY_ACTION).toEqual({ main: 'card', subItem: 'card', page: 'page', previous: 'slider', next: 'slider', language: 'language', back: 'back' });
-    expect(DEFAULT_HOLD_SETTINGS.language.enabled).toBe(true);
-    expect(DEFAULT_HOLD_SETTINGS.back.enabled).toBe(true);
+    expect(DEFAULT_HOLD_SETTINGS.language.enabled).toBe(false);
+    expect(DEFAULT_HOLD_SETTINGS.back.enabled).toBe(false);
   });
 
   it('clamps wall settings: reset seconds and card offset', () => {
