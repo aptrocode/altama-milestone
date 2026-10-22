@@ -7,10 +7,10 @@ import { BASE_BODY_SIZE } from '../../../shared/font-settings';
 
 /**
  * Open-card text. One typographic system for every column (see docs/style.md, "Card copy"):
- * - paragraph: white, medium weight;
- * - `bullets`: each item has a glow dot; the lead is a small uppercase glow label and the
- *   text sits under it, aligned with the label (never under the marker); a lead without text is
- *   plain body text;
+ * headlines are white and body text is light blue (`wall-copy`);
+ * - paragraph: body text, medium weight;
+ * - `bullets`: each item has a glow dot; the lead is a white headline and its text sits under
+ *   it, aligned with the lead (never under the marker);
  * - `inline` bullets: a compact two-column fact table (label | value) with hairline dividers;
  * - `numbered`: glow numbers in a fixed column with the text aligned beside them.
  * Every paragraph and list item fades up in reading order (top to bottom) whenever the page
@@ -206,7 +206,7 @@ watch(() => [props.active, props.copy], () => {
         :style="{ '--copy-scale': scale, '--copy-base': minSize / BASE_BODY_SIZE }" :data-copy-scale="scale"
       >
         <template v-for="(block, index) in shownBlocks" :key="`${part}-${index}`">
-          <p v-if="typeof block === 'string'" class="leading-[1.3] text-white/95" data-reveal :style="reveal(index)">
+          <p v-if="typeof block === 'string'" class="leading-[1.3] text-wall-copy" data-reveal :style="reveal(index)">
             {{ block }}
           </p>
 
@@ -215,10 +215,10 @@ watch(() => [props.active, props.copy], () => {
             class="grid grid-cols-[auto_1fr] gap-x-[calc(12*var(--wall-x))] leading-[1.2] [&>dt]:border-white/12 [&>dd]:border-white/12 [&>dt:not(:first-child)]:border-t [&>dd:not(:nth-child(2))]:border-t"
           >
             <template v-for="(item, itemIndex) in block.bullets" :key="item.lead">
-              <dt class="py-[calc(5*var(--wall-y))] text-[0.82em] font-bold uppercase tracking-[0.05em] text-wall-glow" data-reveal :style="reveal(index, itemIndex)">
+              <dt class="py-[calc(5*var(--wall-y))] font-semibold text-white" data-reveal :style="reveal(index, itemIndex)">
                 {{ item.lead }}
               </dt>
-              <dd class="py-[calc(5*var(--wall-y))] font-semibold text-white" data-reveal :style="reveal(index, itemIndex)">
+              <dd class="py-[calc(5*var(--wall-y))] text-wall-copy" data-reveal :style="reveal(index, itemIndex)">
                 {{ item.text }}
               </dd>
             </template>
@@ -235,12 +235,9 @@ watch(() => [props.active, props.copy], () => {
                logos of a list line up); several logos (e.g. marketplaces), or one wide logo marked
                `logosBelow`, sit under the text and always fit the card. -->
               <div class="relative min-w-0 pl-[calc(13*var(--wall-x))] before:absolute before:left-0 before:top-[0.36em] before:size-[calc(6*var(--wall-u))] before:rounded-full before:bg-wall-glow before:shadow-[0_0_calc(6*var(--wall-u))_rgba(102,204,255,0.8)]">
-                <!-- A lead without text is the item itself, so it reads as body text rather than a label. -->
-                <span
-                  class="block"
-                  :class="item.text ? 'text-[0.82em] font-bold uppercase leading-[1.15] tracking-[0.05em] text-wall-glow' : 'font-semibold leading-[1.25] text-white'"
-                >{{ item.lead }}</span>
-                <span v-if="item.text" class="mt-[calc(2*var(--wall-y)*var(--copy-scale,1))] block leading-[1.25] text-white">{{ item.text }}</span>
+                <!-- Every lead is a white headline, with or without text; its text is light blue body copy (client request). -->
+                <span class="block font-semibold leading-[1.25] text-white">{{ item.lead }}</span>
+                <span v-if="item.text" class="mt-[calc(2*var(--wall-y)*var(--copy-scale,1))] block leading-[1.25] text-wall-copy">{{ item.text }}</span>
               </div>
               <div
                 v-if="logoBeside(item)"
@@ -273,7 +270,7 @@ watch(() => [props.active, props.copy], () => {
           <ol v-else class="grid gap-[calc(8*var(--wall-y))] [counter-reset:wall-step]">
             <li
               v-for="(item, itemIndex) in block.numbered" :key="item" data-reveal :style="reveal(index, itemIndex)"
-              class="relative pl-[1.8em] leading-[1.25] text-white [counter-increment:wall-step] before:absolute before:left-0 before:top-0 before:font-display before:font-bold before:text-wall-glow before:content-[counter(wall-step,decimal-leading-zero)]"
+              class="relative pl-[1.8em] leading-[1.25] text-wall-copy [counter-increment:wall-step] before:absolute before:left-0 before:top-0 before:font-display before:font-bold before:text-wall-glow before:content-[counter(wall-step,decimal-leading-zero)]"
             >
               {{ item }}
             </li>

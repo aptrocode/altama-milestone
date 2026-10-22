@@ -7,6 +7,8 @@
   --color-wall-navy: #0a1872;
   --color-wall-panel: #0b1a6e;
   --color-wall-glow: #66ccff;
+  /* Open-card body text: a light blue that stays readable on the navy card (headlines are white). */
+  --color-wall-copy: #a6dcff;
   --color-wall-ink: #eaf4ff;
 }
 

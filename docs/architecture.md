@@ -22,7 +22,7 @@ Language selection is accepted only while idle. The chooser is an absolute sibli
 
 Open content is a list of up to four pages (`getColumnPages(column, subItem, scrollText)`; with the Scroll teks trial on, pages are grouped by the content's `scrollPages`, default one); each page owns a photo slider and text. `previous`/`next` move `photo` within the current page only when it has at least two photo slots and wrap; `page` selects another page only when there are at least two, and resets `photo` to 0. Back always returns to idle. Manual reset preserves locale immediately. `publishedColumns` adds the current page's `photoCount`, the `pageCount`, and `tabsTop` to each snapshot for Sensor Service. When the page count shrinks under an open card (Scroll teks), `useWallController` calls `clampPage` so it shows its first page.
 
-One `getColumnCopy` resolver chooses the localized column label and open sub-item label. Page copy is typed data (paragraphs, bullets with glow labels, fact tables, numbered lists) rendered as plain text by `WallPageCopy`; no HTML interpolation or localization dependency is used. Media entries are `{ src, approved }` in the column files and `wall-media.ts`.
+One `getColumnCopy` resolver chooses the localized column label and open sub-item label. Page copy is typed data (paragraphs, bullets with white headlines, fact tables, numbered lists) rendered as plain text by `WallPageCopy`; no HTML interpolation or localization dependency is used. Media entries are `{ src, approved }` in the column files and `wall-media.ts`.
 
 ## Resource lifecycle
 

@@ -30,7 +30,7 @@ Every wall text uses Roboto. The page sets the sizes (logical px on the 2304 × 
 | Caption tile | Tile labels of column 5 (Distribusi / Pemasaran) | 30 | 22–36 |
 | Tab page | Page tab labels | 24 | 16–28 |
 
-**Isi card per section** has one row per open card (`cards` in `shared/font-settings.ts`): Tentang Altama, Tekiro, RYU, Rexco, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, and Altama Summit 2026. Each row sets a body size range, **Min** and **Maks** (14–40 px, default 24–26 px for every card; glow labels stay 0.82 ×). Every page uses the largest size up to Maks that still fits the tallest card (y 1312), never less than Min, and the card grows to that text.
+**Isi card per section** has one row per open card (`cards` in `shared/font-settings.ts`): Tentang Altama, Tekiro, RYU, Rexco, Infrastruktur, Kepercayaan Digital, Distribusi, Pemasaran, and Altama Summit 2026. Each row sets a body size range, **Min** and **Maks** (14–40 px, default 24–26 px for every card). Every page uses the largest size up to Maks that still fits the tallest card (y 1312), never less than Min, and the card grows to that text.
 
 Each row also shows a fit status, checked on every page and language at once (`DashboardCardFit` renders them invisibly in the tallest card's text box): **✓ 26 px** (or the range of sizes the pages use, e.g. ✓ 24–26 px), or **⚠ Di bawah Min · N px (PAGE p, language)** when a page does not fit even at Min and the wall has to shrink it further so it is not clipped. At 24–26 px only Tekiro does: PAGE 2 Produk (ID) about 23.5 px and the award pages 22.6–24 px. Pages are never added automatically; a card that needs a larger size than fits is split into more pages in its content file.
 

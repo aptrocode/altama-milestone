@@ -9,7 +9,7 @@
  * - cards: open-card copy per card (a single column, or a sub-item of columns 2 and 5): the body
  *   size range. Each page uses the largest size up to `max` that fits the tallest card, never less
  *   than `min`; only a page that does not fit even at `min` shrinks further (never clipped), which
- *   the dashboard flags. Glow labels stay 0.82 × the size.
+ *   the dashboard flags.
  */
 export const CARD_TEXT_KEYS = ['about-altama', 'tekiro', 'ryu', 'rexco', 'infrastructure', 'digital-partners', 'distribusi', 'pemasaran', 'summit-2026'] as const;
 export type CardTextKey = typeof CARD_TEXT_KEYS[number];
