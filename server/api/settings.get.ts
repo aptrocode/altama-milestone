@@ -7,7 +7,7 @@ import { useSettingsDb } from '../utils/settings-db';
 export default defineEventHandler(async (event) => {
   setResponseHeaders(event, { 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store' });
   try {
-    return (await useSettingsDb(String(useRuntimeConfig(event).settingsDb))).read();
+    return (await useSettingsDb(useRuntimeConfig(event).settingsDb)).read();
   }
   catch (error) {
     console.error('[settings] database unavailable', error);
