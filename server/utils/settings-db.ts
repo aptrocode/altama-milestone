@@ -89,10 +89,17 @@ export async function createSettingsStore(file: string) {
   return { read, write, close: () => db.close() };
 }
 
+/** Default SQLite file behind /api/settings. */
+export const DEFAULT_SETTINGS_DB = '.data/altama.sqlite';
+
 let store: ReturnType<typeof createSettingsStore> | undefined;
-/** The server's settings store (file from NUXT_SETTINGS_DB, default `.data/altama.sqlite`); retried after a failure. */
-export function useSettingsDb(file: string) {
-  store ??= createSettingsStore(file).catch((error) => {
+/**
+ * The server's settings store (file from NUXT_SETTINGS_DB; an empty or missing value, e.g. a
+ * server still running an older config, uses the default); retried after a failure.
+ */
+export function useSettingsDb(file: unknown) {
+  const path = typeof file === 'string' && file.trim() ? file : DEFAULT_SETTINGS_DB;
+  store ??= createSettingsStore(path).catch((error) => {
     store = undefined;
     throw error;
   });

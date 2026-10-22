@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
 
   setResponseHeader(event, 'Cache-Control', 'no-store');
   try {
-    return (await useSettingsDb(String(config.settingsDb))).write(body);
+    return (await useSettingsDb(config.settingsDb)).write(body);
   }
   catch (error) {
     console.error('[settings] database unavailable', error);
