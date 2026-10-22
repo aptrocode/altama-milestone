@@ -5,7 +5,8 @@
 # The dashboard opens inside the kiosk with Ctrl+Shift+D (same browser profile, so the same settings).
 #
 # Settings come from .env (optional): WALL_PORT (default 3300), NUXT_PUBLIC_SENSOR_ENABLED (default
-# true), NUXT_PUBLIC_SENSOR_WS_URL (default ws://127.0.0.1:<WS_PORT>), WS_PORT (default 8787).
+# true), NUXT_PUBLIC_SENSOR_WS_URL (default ws://127.0.0.1:<WS_PORT>), WS_PORT (default 8787),
+# NUXT_DASHBOARD_PASSWORD (default empty: dashboard open).
 # Keep this file ASCII: Windows PowerShell 5.1 reads BOM-less scripts in the ANSI code page.
 
 $ErrorActionPreference = 'Stop'
@@ -185,6 +186,8 @@ $env:HOST = '127.0.0.1'
 $env:WS_PORT = "$WsPort"
 $env:NUXT_PUBLIC_SENSOR_ENABLED = $SensorEnabled
 $env:NUXT_PUBLIC_SENSOR_WS_URL = $SensorWsUrl
+# /dashboard password (empty = open), passed explicitly like the settings above.
+$env:NUXT_DASHBOARD_PASSWORD = Setting 'NUXT_DASHBOARD_PASSWORD' ''
 
 function Start-WallProcess([string]$Name, [string]$Arguments) {
   $log = Join-Path $LogDir "$Name.log"

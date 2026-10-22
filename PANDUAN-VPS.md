@@ -33,12 +33,19 @@ module.exports = {
       NODE_ENV: 'production',
       NUXT_PUBLIC_SENSOR_ENABLED: 'false',
       NUXT_PUBLIC_SENSOR_WS_URL: '',
+      NUXT_DASHBOARD_PASSWORD: 'ISI_PASSWORD_DASHBOARD',
     },
     max_memory_restart: '400M',
     autorestart: true,
   }],
 };
 ```
+
+### Password dashboard
+
+`/dashboard` meminta password (satu kolom, placeholder *Clue: password wifi Aptronim*). Password diambil dari `NUXT_DASHBOARD_PASSWORD` di blok `env` di atas. Setelah mengubahnya, jalankan `pm2 restart altama-milestone --update-env`; semua browser yang sudah login akan diminta password lagi. Kalau variabel ini dikosongkan, dashboard terbuka tanpa password.
+
+> Wall versi Vercel juga butuh variabel `NUXT_DASHBOARD_PASSWORD` di Vercel → Project → Settings → Environment Variables (lalu redeploy). Tanpa itu dashboard di Vercel terbuka tanpa password.
 
 ### Yang normal di VPS
 
@@ -166,19 +173,13 @@ MySQL dan PostgreSQL di VPS **tidak dipakai dan tidak disentuh**.
 1. **API pengaturan** di server wall (`/api/settings`) yang membaca dan menyimpan pengaturan ke file SQLite di `/var/www/altama-milestone/.data/` (folder ini sudah di-ignore Git, jadi aman saat `git pull`).
 2. **Dashboard menyimpan ke server.** Begitu disimpan dari HP, nilainya masuk SQLite.
 3. **Wall mengikuti perubahan otomatis**, tanpa reload.
-4. **Login dashboard** dengan password di `.env`, karena domain ini publik.
+4. **Login dashboard** memakai password yang sudah ada (`NUXT_DASHBOARD_PASSWORD`, lihat bagian 1).
 5. **Tetap jalan kalau internet putus.** Wall menyimpan salinan terakhir di browser.
 
 ### Yang perlu dilakukan di VPS setelah fitur itu masuk
 
-1. Tambahkan password dashboard ke blok `env` di `ecosystem.config.cjs` (nama variabel final mengikuti catatan rilis fitur):
-
-   ```js
-   DASHBOARD_PASSWORD: 'PASSWORD_DASHBOARD_YANG_KUAT',
-   ```
-
-2. Jalankan `~/update-altama.sh` (sudah memakai `--update-env`).
-3. Buka `/dashboard` dari HP, login, ubah satu pengaturan, lalu cek wall di device lain ikut berubah.
+1. Jalankan `~/update-altama.sh`.
+2. Buka `/dashboard` dari HP, login, ubah satu pengaturan, lalu cek wall di device lain ikut berubah.
 
 Backup cukup menyalin file database, misalnya:
 
