@@ -7,7 +7,6 @@ const TEKIRO_PROFILE_PHOTOS = [
   provisional('/photos/our-brands/tekiro/page-1-photo-3.webp'),
 ];
 const TEKIRO_AWARD_PHOTOS = [
-  provisional('/photos/our-brands/tekiro/page-2-photo-1.webp'),
   provisional('/photos/our-brands/tekiro/page-2-photo-2.webp'),
 ];
 
@@ -66,50 +65,80 @@ export const OUR_BRANDS: ColumnConfig = {
           ] }] },
         }),
         page(TEKIRO_AWARD_PHOTOS, {
-          'id': { tab: PAGE_TABS.third.id, blocks: ['Penghargaan:', { bullets: [
-            { lead: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
-            { lead: 'Museum Rekor Indonesia - MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
-            { lead: '12x TOP Brand Award', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
+          'id': { tab: PAGE_TABS.third.id, blocks: ['Penghargaan:', { awards: [
+            { label: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
+            { label: 'MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
+            { label: 'TOP Brand', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
+            { label: 'TOP Digital PR', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
+          ] }, { bullets: [
+            { lead: 'Guinness World Records' },
+            { lead: 'Museum Rekor Indonesia - MURI' },
+            { lead: '12x TOP Brand Award' },
             { lead: '7x Indonesia Digital Popular Brand Award' },
-            { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
+            { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD' },
           ] }] },
-          'en': { tab: PAGE_TABS.third.en, blocks: ['Awards & Accolades:', { bullets: [
-            { lead: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
-            { lead: 'Museum Rekor Indonesia - MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
-            { lead: '12x TOP Brand Award', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
+          'en': { tab: PAGE_TABS.third.en, blocks: ['Awards & Accolades:', { awards: [
+            { label: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
+            { label: 'MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
+            { label: 'TOP Brand', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
+            { label: 'TOP Digital PR', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
+          ] }, { bullets: [
+            { lead: 'Guinness World Records' },
+            { lead: 'Museum Rekor Indonesia - MURI' },
+            { lead: '12x TOP Brand Award' },
             { lead: '7x Indonesia Digital Popular Brand Award' },
-            { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
+            { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD' },
           ] }] },
-          'zh-Hans': { tab: PAGE_TABS.third['zh-Hans'], blocks: ['所获荣誉：', { bullets: [
-            { lead: '吉尼斯世界纪录 (Guinness World Records)', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
-            { lead: '印尼纪录博物馆纪录 - MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
-            { lead: '12届 TOP Brand Award 顶级品牌奖', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
+          'zh-Hans': { tab: PAGE_TABS.third['zh-Hans'], blocks: ['所获荣誉：', { awards: [
+            { label: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
+            { label: 'MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
+            { label: 'TOP Brand', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
+            { label: 'TOP Digital PR', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
+          ] }, { bullets: [
+            { lead: '吉尼斯世界纪录 (Guinness World Records)' },
+            { lead: '印尼纪录博物馆纪录 - MURI' },
+            { lead: '12届 TOP Brand Award 顶级品牌奖' },
             { lead: '7届 印尼数字大众品牌大奖' },
-            { lead: '5届 顶级数字公关大奖 TOP DIGITAL PUBLIC RELATION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
+            { lead: '5届 顶级数字公关大奖 TOP DIGITAL PUBLIC RELATION AWARD' },
           ] }] },
         }),
         page(TEKIRO_AWARD_PHOTOS, {
-          'id': { tab: PAGE_TABS.fourth.id, blocks: ['Penghargaan:', { bullets: [
-            { lead: '5x SUPERBRANDS', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
-            { lead: '2x INDONESIA BRAND CHAMPION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
-            { lead: '2x INDONESIA BRAND CHOICE AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
-            { lead: '2x CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
+          'id': { tab: PAGE_TABS.fourth.id, blocks: ['Penghargaan:', { awards: [
+            { label: 'Superbrands', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
+            { label: 'Brand Champion', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
+            { label: 'Brand Choice', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
+            { label: 'CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
+          ] }, { bullets: [
+            { lead: '5x SUPERBRANDS' },
+            { lead: '2x INDONESIA BRAND CHAMPION AWARD' },
+            { lead: '2x INDONESIA BRAND CHOICE AWARD' },
+            { lead: '2x CNN Awards' },
             { lead: 'Golden Brand Of The Year' },
             { lead: 'Indonesia Best Brand Awards' },
           ] }] },
-          'en': { tab: PAGE_TABS.fourth.en, blocks: ['Awards & Accolades:', { bullets: [
-            { lead: '5x SUPERBRANDS', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
-            { lead: '2x INDONESIA BRAND CHAMPION AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
-            { lead: '2x INDONESIA BRAND CHOICE AWARD', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
-            { lead: '2x CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
+          'en': { tab: PAGE_TABS.fourth.en, blocks: ['Awards & Accolades:', { awards: [
+            { label: 'Superbrands', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
+            { label: 'Brand Champion', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
+            { label: 'Brand Choice', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
+            { label: 'CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
+          ] }, { bullets: [
+            { lead: '5x SUPERBRANDS' },
+            { lead: '2x INDONESIA BRAND CHAMPION AWARD' },
+            { lead: '2x INDONESIA BRAND CHOICE AWARD' },
+            { lead: '2x CNN Awards' },
             { lead: 'Golden Brand Of The Year' },
             { lead: 'Indonesia Best Brand Awards' },
           ] }] },
-          'zh-Hans': { tab: PAGE_TABS.fourth['zh-Hans'], blocks: ['所获荣誉：', { bullets: [
-            { lead: '5届 SUPERBRANDS 超级品牌大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
-            { lead: '2届 印尼品牌冠军大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
-            { lead: '2届 印尼品牌之选大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
-            { lead: '2届 CNN 印尼大奖', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
+          'zh-Hans': { tab: PAGE_TABS.fourth['zh-Hans'], blocks: ['所获荣誉：', { awards: [
+            { label: 'Superbrands', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
+            { label: 'Brand Champion', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
+            { label: 'Brand Choice', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
+            { label: 'CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
+          ] }, { bullets: [
+            { lead: '5届 SUPERBRANDS 超级品牌大奖' },
+            { lead: '2届 印尼品牌冠军大奖' },
+            { lead: '2届 印尼品牌之选大奖' },
+            { lead: '2届 CNN 印尼大奖' },
             { lead: '年度金牌品牌 Golden Brand Of The Year' },
             { lead: '印尼最佳品牌奖 Indonesia Best Brand Awards' },
           ] }] },
@@ -177,7 +206,6 @@ export const OUR_BRANDS: ColumnConfig = {
         ),
         page(
           [
-            provisional('/photos/our-brands/ryu/page-2-photo-1.webp'),
             provisional('/photos/our-brands/ryu/page-2-photo-2.webp'),
           ],
           {
@@ -186,10 +214,16 @@ export const OUR_BRANDS: ColumnConfig = {
               blocks: [
                 'Penghargaan:',
                 {
+                  awards: [
+                    { label: 'Superbrands', image: provisional('/photos/our-brands/ryu/penghargaan/superbrands.webp') },
+                    { label: 'Brand Champion', image: provisional('/photos/our-brands/ryu/penghargaan/indonesia-brand-champion.webp') },
+                  ],
+                },
+                {
                   bullets: [
-                    { lead: '4x Superbrands', image: provisional('/photos/our-brands/ryu/penghargaan/superbrands.webp') },
+                    { lead: '4x Superbrands' },
                     { lead: '3x Indonesia Digital Popular Brand Award' },
-                    { lead: 'Indonesia Brand Champion Award', image: provisional('/photos/our-brands/ryu/penghargaan/indonesia-brand-champion.webp') },
+                    { lead: 'Indonesia Brand Champion Award' },
                   ],
                 },
               ],
@@ -199,10 +233,16 @@ export const OUR_BRANDS: ColumnConfig = {
               blocks: [
                 'Awards & Accolades:',
                 {
+                  awards: [
+                    { label: 'Superbrands', image: provisional('/photos/our-brands/ryu/penghargaan/superbrands.webp') },
+                    { label: 'Brand Champion', image: provisional('/photos/our-brands/ryu/penghargaan/indonesia-brand-champion.webp') },
+                  ],
+                },
+                {
                   bullets: [
-                    { lead: '4x Superbrands', image: provisional('/photos/our-brands/ryu/penghargaan/superbrands.webp') },
+                    { lead: '4x Superbrands' },
                     { lead: '3x Indonesia Digital Popular Brand Award' },
-                    { lead: 'Indonesia Brand Champion Award', image: provisional('/photos/our-brands/ryu/penghargaan/indonesia-brand-champion.webp') },
+                    { lead: 'Indonesia Brand Champion Award' },
                   ],
                 },
               ],
@@ -212,10 +252,16 @@ export const OUR_BRANDS: ColumnConfig = {
               blocks: [
                 '所获荣誉：',
                 {
+                  awards: [
+                    { label: 'Superbrands', image: provisional('/photos/our-brands/ryu/penghargaan/superbrands.webp') },
+                    { label: 'Brand Champion', image: provisional('/photos/our-brands/ryu/penghargaan/indonesia-brand-champion.webp') },
+                  ],
+                },
+                {
                   bullets: [
-                    { lead: '4届 Superbrands 超级品牌大奖', image: provisional('/photos/our-brands/ryu/penghargaan/superbrands.webp') },
+                    { lead: '4届 Superbrands 超级品牌大奖' },
                     { lead: '3届 印尼数字大众品牌大奖 (Indonesia Digital Popular Brand Award)' },
-                    { lead: '印尼品牌冠军大奖 (Indonesia Brand Champion Award)', image: provisional('/photos/our-brands/ryu/penghargaan/indonesia-brand-champion.webp') },
+                    { lead: '印尼品牌冠军大奖 (Indonesia Brand Champion Award)' },
                   ],
                 },
               ],
@@ -287,7 +333,6 @@ export const OUR_BRANDS: ColumnConfig = {
         ),
         page(
           [
-            provisional('/photos/our-brands/rexco/page-2-photo-1.webp'),
             provisional('/photos/our-brands/rexco/page-2-photo-2.webp'),
             provisional('/photos/our-brands/rexco/page-2-photo-3.webp'),
           ],
@@ -297,11 +342,19 @@ export const OUR_BRANDS: ColumnConfig = {
               blocks: [
                 'Penghargaan:',
                 {
+                  awards: [
+                    { label: 'Brand Champion', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-brand-champion.webp') },
+                    { label: 'Superbrands', image: provisional('/photos/our-brands/rexco/penghargaan/superbrands.webp') },
+                    { label: 'TOP Digital PR', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-top-digital-pr-award.webp') },
+                    { label: 'Brand Choice', image: provisional('/photos/our-brands/rexco/penghargaan/brand-choice.webp') },
+                  ],
+                },
+                {
                   bullets: [
-                    { lead: 'Indonesia Brand Champion Award', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-brand-champion.webp') },
-                    { lead: 'Superbrands', image: provisional('/photos/our-brands/rexco/penghargaan/superbrands.webp') },
-                    { lead: 'Indonesia TOP Digital PR Award Platinum', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-top-digital-pr-award.webp') },
-                    { lead: 'Brand Choice Award', image: provisional('/photos/our-brands/rexco/penghargaan/brand-choice.webp') },
+                    { lead: 'Indonesia Brand Champion Award' },
+                    { lead: 'Superbrands' },
+                    { lead: 'Indonesia TOP Digital PR Award Platinum' },
+                    { lead: 'Brand Choice Award' },
                   ],
                 },
               ],
@@ -311,11 +364,19 @@ export const OUR_BRANDS: ColumnConfig = {
               blocks: [
                 'Awards & Accolades:',
                 {
+                  awards: [
+                    { label: 'Brand Champion', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-brand-champion.webp') },
+                    { label: 'Superbrands', image: provisional('/photos/our-brands/rexco/penghargaan/superbrands.webp') },
+                    { label: 'TOP Digital PR', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-top-digital-pr-award.webp') },
+                    { label: 'Brand Choice', image: provisional('/photos/our-brands/rexco/penghargaan/brand-choice.webp') },
+                  ],
+                },
+                {
                   bullets: [
-                    { lead: 'Indonesia Brand Champion Award', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-brand-champion.webp') },
-                    { lead: 'Superbrands', image: provisional('/photos/our-brands/rexco/penghargaan/superbrands.webp') },
-                    { lead: 'Indonesia TOP Digital PR Award Platinum', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-top-digital-pr-award.webp') },
-                    { lead: 'Brand Choice Award', image: provisional('/photos/our-brands/rexco/penghargaan/brand-choice.webp') },
+                    { lead: 'Indonesia Brand Champion Award' },
+                    { lead: 'Superbrands' },
+                    { lead: 'Indonesia TOP Digital PR Award Platinum' },
+                    { lead: 'Brand Choice Award' },
                   ],
                 },
               ],
@@ -325,11 +386,19 @@ export const OUR_BRANDS: ColumnConfig = {
               blocks: [
                 '所获荣誉：',
                 {
+                  awards: [
+                    { label: 'Brand Champion', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-brand-champion.webp') },
+                    { label: 'Superbrands', image: provisional('/photos/our-brands/rexco/penghargaan/superbrands.webp') },
+                    { label: 'TOP Digital PR', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-top-digital-pr-award.webp') },
+                    { label: 'Brand Choice', image: provisional('/photos/our-brands/rexco/penghargaan/brand-choice.webp') },
+                  ],
+                },
+                {
                   bullets: [
-                    { lead: '印尼品牌冠军大奖 (Indonesia Brand Champion Award)', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-brand-champion.webp') },
-                    { lead: 'Superbrands 超级品牌大奖', image: provisional('/photos/our-brands/rexco/penghargaan/superbrands.webp') },
-                    { lead: '印尼顶级数字公关白金大奖 (Indonesia TOP Digital PR Award Platinum)', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-top-digital-pr-award.webp') },
-                    { lead: '品牌之选大奖 (Brand Choice Award)', image: provisional('/photos/our-brands/rexco/penghargaan/brand-choice.webp') },
+                    { lead: '印尼品牌冠军大奖 (Indonesia Brand Champion Award)' },
+                    { lead: 'Superbrands 超级品牌大奖' },
+                    { lead: '印尼顶级数字公关白金大奖 (Indonesia TOP Digital PR Award Platinum)' },
+                    { lead: '品牌之选大奖 (Brand Choice Award)' },
                   ],
                 },
               ],

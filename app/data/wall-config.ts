@@ -43,6 +43,15 @@ function mergePages(pages: ContentPage[], tabOf: ContentPage | undefined): Conte
     pages.forEach((page, pageIndex) => page.i18n[locale].blocks.forEach((block, blockIndex) => {
       if (pageIndex > 0 && blockIndex === 0 && typeof block === 'string' && blocks.includes(block))
         return;
+      // Award logos of every page form one grid, so the merged page keeps logos above the list.
+      if (typeof block !== 'string' && 'awards' in block) {
+        const grid = blocks.findIndex(item => typeof item !== 'string' && 'awards' in item);
+        const existing = blocks[grid];
+        if (existing && typeof existing !== 'string' && 'awards' in existing) {
+          blocks[grid] = { awards: [...existing.awards, ...block.awards] };
+          return;
+        }
+      }
       const last = blocks.at(-1);
       if (last && typeof last !== 'string' && typeof block !== 'string' && 'bullets' in last && 'bullets' in block && !last.inline && !block.inline) {
         blocks[blocks.length - 1] = { ...last, bullets: [...last.bullets, ...block.bullets] };

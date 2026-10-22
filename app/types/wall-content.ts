@@ -20,11 +20,17 @@ export interface BulletItem {
   logosBelow?: boolean;
 }
 
+/** One award logo in an `awards` grid; `label` is its alt text (no name shows under the logo). */
+export interface AwardLogo {
+  label: string;
+  image: MediaAsset;
+}
+
 /**
- * A paragraph, a bullet list, or a numbered list. Bullets put their text under the bold lead
- * unless `inline` is set, which renders a compact `lead: text` list.
+ * A paragraph, a bullet list, a numbered list, or an award logo grid. Bullets put their text
+ * under the bold lead unless `inline` is set, which renders a compact `lead: text` list.
  */
-export type ContentBlock = string | { bullets: BulletItem[]; inline?: boolean } | { numbered: string[] };
+export type ContentBlock = string | { bullets: BulletItem[]; inline?: boolean } | { numbered: string[] } | { awards: AwardLogo[] };
 
 export interface PageCopy {
   /** Tab label such as a year or page; tabs render only when content has several pages. */

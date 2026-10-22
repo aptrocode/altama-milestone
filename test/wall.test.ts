@@ -144,13 +144,14 @@ describe('wall state and actions', () => {
       expect(getColumnPages(getColumnConfig(id), sub, true)).toHaveLength(1);
     expect(getColumnPages(getColumnConfig(2), 'ryu', true)).toEqual(getColumnPages(getColumnConfig(2), 'ryu'));
     expect(getColumnPages(getColumnConfig(2), 'rexco', true)).toHaveLength(2);
-    // Tekiro: profile + products, then all awards under one heading in one list.
+    // Tekiro: profile + products, then all awards under one heading: one logo grid, then one list.
     const [profile, awards] = getColumnPages(getColumnConfig(2), 'tekiro', true) as [ContentPage, ContentPage];
     expect(getColumnPages(getColumnConfig(2), 'tekiro', true)).toHaveLength(2);
     expect([profile.i18n.id.tab, awards.i18n.id.tab]).toEqual(['PAGE 1', 'PAGE 2']);
-    expect(awards.i18n.id.blocks).toHaveLength(2);
+    expect(awards.i18n.id.blocks).toHaveLength(3);
     expect(awards.i18n.id.blocks[0]).toBe('Penghargaan:');
-    expect((awards.i18n.id.blocks[1] as { bullets: unknown[] }).bullets).toHaveLength(11);
+    expect((awards.i18n.id.blocks[1] as { awards: unknown[] }).awards).toHaveLength(8);
+    expect((awards.i18n.id.blocks[2] as { bullets: unknown[] }).bullets).toHaveLength(11);
     // Section 2 keeps its tabs in scroll mode (tabsAlways); one-page cards do not.
     wall.dispatch({ type: 'subItem', columnId: 2, subItemId: 'tekiro' });
     expect(wall.publishedColumns[2]).toMatchObject({ pageCount: 2, tabsAlways: true });

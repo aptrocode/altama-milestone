@@ -25,6 +25,8 @@ function blockTexts(block: ContentBlock): string[] {
     return [block];
   if ('bullets' in block)
     return block.bullets.flatMap(item => [item.lead, ...(item.text === undefined ? [] : [item.text])]);
+  if ('awards' in block)
+    return block.awards.map(award => award.label);
   return block.numbered;
 }
 
@@ -51,6 +53,8 @@ function checkPages(owner: string, pages: ContentPage[] | undefined) {
     for (const locale of WALL_LOCALES) {
       const copy = page.i18n[locale];
       copy?.blocks.forEach((block) => {
+        if (typeof block === 'object' && 'awards' in block)
+          block.awards.forEach((award, aIndex) => media.push({ owner: `${owner} page ${index + 1} award ${aIndex + 1}`, asset: award.image }));
         if (typeof block === 'object' && 'bullets' in block) {
           block.bullets.forEach((item, bIndex) => {
             if (item.image)

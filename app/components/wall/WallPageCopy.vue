@@ -12,7 +12,9 @@ import { BASE_BODY_SIZE } from '../../../shared/font-settings';
  * - `bullets`: each item has a glow dot; the lead is a white headline and its text sits under
  *   it, aligned with the lead (never under the marker);
  * - `inline` bullets: a compact two-column fact table (label | value) with hairline dividers;
- * - `numbered`: glow numbers in a fixed column with the text aligned beside them.
+ * - `numbered`: glow numbers in a fixed column with the text aligned beside them;
+ * - `awards`: award logos in white tiles, two per row (an odd last one centred), without names;
+ *   the award list follows as plain bullets.
  * Every paragraph and list item fades up in reading order (top to bottom) whenever the page
  * becomes the visible one: when the card opens and on every page switch.
  */
@@ -165,7 +167,7 @@ const revealStart = computed(() => {
   let next = 0;
   return shownBlocks.value.map((block) => {
     const start = next;
-    next += typeof block === 'string' ? 1 : 'bullets' in block ? block.bullets.length : block.numbered.length;
+    next += typeof block === 'string' ? 1 : 'bullets' in block ? block.bullets.length : 'awards' in block ? block.awards.length : block.numbered.length;
     return start;
   });
 });
@@ -266,6 +268,17 @@ watch(() => [props.active, props.copy], () => {
               </div>
             </li>
           </ul>
+
+          <div v-else-if="'awards' in block" class="flex flex-wrap justify-center gap-y-[calc(10*var(--wall-y)*var(--copy-scale,1))]">
+            <figure
+              v-for="(award, awardIndex) in block.awards" :key="award.label" data-reveal :style="reveal(index, awardIndex)"
+              class="flex w-1/2 justify-center px-[calc(5*var(--wall-x))]"
+            >
+              <div class="flex aspect-square w-full max-w-[calc(118*var(--wall-x))] items-center justify-center rounded-[calc(14*var(--wall-u))] bg-white p-[calc(8*var(--wall-u))] shadow-[0_0_calc(10*var(--wall-u))_rgba(102,204,255,0.45)]">
+                <img :src="award.image.src" :alt="award.label" class="max-h-full max-w-full object-contain" @load="fit">
+              </div>
+            </figure>
+          </div>
 
           <ol v-else class="grid gap-[calc(8*var(--wall-y))] [counter-reset:wall-step]">
             <li
