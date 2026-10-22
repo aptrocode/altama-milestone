@@ -144,28 +144,19 @@ export const DISTRIBUTION: ColumnConfig = {
         page(PEMASARAN_PHOTOS, {
           'id': { tab: PAGE_TABS.first.id, blocks: [{ bullets: [
             { lead: 'Demonstrasi Produk' },
-            {
-              lead: 'TEKIRO Mechanic Competition:',
-              text: 'Program CSR pendidikan vokasi untuk SMK se-Indonesia.',
-            },
+            { lead: 'TEKIRO Mechanic Competition' },
             { lead: 'Pameran' },
             { lead: 'Sponsorship & Komunitas' },
           ] }] },
           'en': { tab: PAGE_TABS.first.en, blocks: [{ bullets: [
             { lead: 'Product Demonstrations' },
-            {
-              lead: 'TEKIRO Mechanic Competition:',
-              text: 'Vocational education CSR program for vocational high schools across Indonesia.',
-            },
+            { lead: 'TEKIRO Mechanic Competition' },
             { lead: 'Exhibitions & Expos' },
             { lead: 'Sponsorship & Communities' },
           ] }] },
           'zh-Hans': { tab: PAGE_TABS.first['zh-Hans'], blocks: [{ bullets: [
             { lead: '产品演示' },
-            {
-              lead: 'TEKIRO 机械师技能大赛：',
-              text: '面向全印尼职业高中的教育公益项目。',
-            },
+            { lead: 'TEKIRO 机械师技能大赛' },
             { lead: '展会活动' },
             { lead: '赞助与社群' },
           ] }] },
@@ -176,7 +167,7 @@ export const DISTRIBUTION: ColumnConfig = {
             { lead: 'Influencer/Key Opinion Leader (KOL)' },
             {
               lead: 'Social Media:',
-              text: 'Aktif dalam branding digital melalui berbagai platform media sosial lebih dari +350,000 followers dan rata-rata views tahunan +30,000,000 views.',
+              text: '+340,000 followers dan viewers tahunan rata-rata +30,000,000 views',
             },
           ] }] },
           'en': { tab: PAGE_TABS.second.en, blocks: [{ bullets: [
@@ -184,7 +175,7 @@ export const DISTRIBUTION: ColumnConfig = {
             { lead: 'Influencers / Key Opinion Leaders (KOL)' },
             {
               lead: 'Social Media:',
-              text: 'Active digital branding across social platforms with over +350,000 followers and an annual average of +30,000,000 views.',
+              text: '+340,000 followers and an annual average of +30,000,000 views',
             },
           ] }] },
           'zh-Hans': { tab: PAGE_TABS.second['zh-Hans'], blocks: [{ bullets: [
@@ -192,7 +183,7 @@ export const DISTRIBUTION: ColumnConfig = {
             { lead: '关键意见领袖 (KOL) / 达人合作' },
             {
               lead: '社交媒体运营：',
-              text: '活跃于各大社交平台进行数字化品牌推广，粉丝数超 350,000+，年均浏览量突破 30,000,000+ 次。',
+              text: '340,000+ 粉丝，年均浏览量 30,000,000+ 次',
             },
           ] }] },
         }),
