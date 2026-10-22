@@ -232,7 +232,7 @@ describe('page auto change', () => {
 });
 
 describe('reset waits for the auto slideshow', () => {
-  // Column 3 (Infrastruktur): photo 0 is a video, then 7 images; auto slide 5 s, reset 30 s.
+  // Column 3 (Infrastruktur): photo 0 is a video, then 8 images; auto slide 5 s, reset 30 s.
   function open(autoSlideMs = () => 5000) {
     const wall = useWallStore(createPinia());
     const scope = effectScope();
@@ -247,7 +247,7 @@ describe('reset waits for the auto slideshow', () => {
     // Re-evaluate the video flag now that the store is reachable.
     controls.dispatch({ type: 'next', columnId: 3 });
     controls.dispatch({ type: 'previous', columnId: 3 });
-    expect(wall.publishedColumns[3]!.photoCount).toBe(8);
+    expect(wall.publishedColumns[3]!.photoCount).toBe(9);
     return { wall, controls };
   }
 
@@ -257,21 +257,21 @@ describe('reset waits for the auto slideshow', () => {
     controls.mediaEnded(3); // the 30 s video ends
     expect(wall.getColumnState(3)).toBe('active');
     expect(wall.publishedColumns[3]!.photo).toBe(1);
-    vi.advanceTimersByTime(6 * 5000);
-    expect(wall.publishedColumns[3]!.photo).toBe(7);
+    vi.advanceTimersByTime(7 * 5000);
+    expect(wall.publishedColumns[3]!.photo).toBe(8);
     expect(wall.getColumnState(3)).toBe('active');
     vi.advanceTimersByTime(4999);
     expect(wall.getColumnState(3)).toBe('active');
-    vi.advanceTimersByTime(1); // 30 s video + 7 × 5 s images = 65 s
+    vi.advanceTimersByTime(1); // 30 s video + 8 × 5 s images = 70 s
     expect(wall.getColumnState(3)).toBe('idle');
   });
 
   it('keeps the normal reset time when the slideshow already finished', () => {
     const { wall, controls } = open(() => 3000);
     controls.mediaEnded(3); // short video
-    vi.advanceTimersByTime(7 * 3000); // whole slideshow seen (21 s), wrapped back to the video
+    vi.advanceTimersByTime(8 * 3000); // whole slideshow seen (24 s), wrapped back to the video
     expect(wall.publishedColumns[3]!.photo).toBe(0);
-    vi.advanceTimersByTime(30_000 - 7 * 3000 - 1);
+    vi.advanceTimersByTime(30_000 - 8 * 3000 - 1);
     expect(wall.getColumnState(3)).toBe('active');
     vi.advanceTimersByTime(1);
     expect(wall.getColumnState(3)).toBe('idle');
