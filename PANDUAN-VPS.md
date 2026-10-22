@@ -2,7 +2,7 @@
 
 Wall ALTAMA Summit 2026 sudah berjalan di **https://altama-milestone.nmxavw.com**, dijalankan dengan **PM2 + Bun** di belakang Nginx, di VPS yang dipakai bersama project lain.
 
-Panduan ini berisi: susunan yang sudah terpasang, cara update, cara cek kalau ada masalah, dan rencana sinkronisasi pengaturan dengan **SQLite**.
+Panduan ini berisi: susunan yang sudah terpasang, cara update, cara cek kalau ada masalah, dan sinkronisasi pengaturan dengan **SQLite**.
 
 ---
 
@@ -50,7 +50,7 @@ module.exports = {
 ### Yang normal di VPS
 
 - **Dashboard → Sensor** tidak terhubung. Sensor Service hanya berjalan di PC event yang tersambung ke LiDAR.
-- Pengaturan dashboard saat ini **hanya tersimpan di browser yang dipakai** (localStorage). Mengubahnya dari HP belum memengaruhi wall di device lain. Lihat [bagian 4](#4-sinkronisasi-pengaturan-dengan-sqlite).
+- Pengaturan dashboard tersinkron lewat SQLite di VPS: mengubahnya dari HP berlaku di semua wall dalam 5 detik. Lihat [bagian 4](#4-sinkronisasi-pengaturan-dengan-sqlite).
 
 ---
 
@@ -160,30 +160,62 @@ Yang disinkronkan hanya **satu dokumen kecil**: pengaturan Wall, Hold, dan Font 
 
 MySQL dan PostgreSQL di VPS **tidak dipakai dan tidak disentuh**.
 
-### Yang akan ditambahkan di kode (belum ada sekarang)
+### Cara kerjanya
 
-1. **API pengaturan** di server wall (`/api/settings`) yang membaca dan menyimpan pengaturan ke file SQLite di `/var/www/altama-milestone/.data/` (folder ini sudah di-ignore Git, jadi aman saat `git pull`).
-2. **Dashboard menyimpan ke server.** Begitu disimpan dari HP, nilainya masuk SQLite.
-3. **Wall mengikuti perubahan otomatis**, tanpa reload.
-4. **Login dashboard** memakai password yang sudah ada (`NUXT_DASHBOARD_PASSWORD`, lihat bagian 1).
-5. **Tetap jalan kalau internet putus.** Wall menyimpan salinan terakhir di browser.
+1. Pengaturan Wall, Hold, dan Font disimpan di file SQLite `/var/www/altama-milestone/.data/altama.sqlite`. Folder `.data/` di-ignore Git, jadi aman saat update.
+2. **Dashboard** (setelah login password) mengirim setiap Simpan, Import, dan Reset ke server.
+3. **Setiap wall** mengambil pengaturan dari server saat dibuka, lalu mengecek perubahan **tiap 5 detik**. Perubahan dari HP sampai ke wall tanpa reload.
+4. Kalau server tidak terjangkau, wall dan dashboard tetap jalan dengan salinan terakhir di browser.
 
-### Yang perlu dilakukan di VPS setelah fitur itu masuk
+Status di sidebar dashboard (di atas tombol Export) menunjukkan ke mana pengaturan disimpan:
 
-1. Jalankan `update-altama`.
-2. Buka `/dashboard` dari HP, login, ubah satu pengaturan, lalu cek wall di device lain ikut berubah.
+| Status | Artinya |
+|---|---|
+| 🟢 Tersinkron ke server | Simpan langsung berlaku di semua device |
+| Menyimpan ke server… | Sedang dikirim |
+| 🔴 Belum tersimpan ke server: login lagi | Login kedaluwarsa; reload `/dashboard` lalu login |
+| 🟡 Server tidak tersedia: hanya di browser ini | Server/database tidak terjangkau (normal di Vercel) |
+| 🟡 Mengikuti … | Wall ini mengikuti server lain (lihat PC event di bawah) |
 
-Backup cukup menyalin file database, misalnya:
+### Mengaktifkan di VPS
+
+Tidak ada yang perlu dipasang. Cukup update:
 
 ```bash
-mkdir -p ~/backup-altama && cp /var/www/altama-milestone/.data/*.sqlite ~/backup-altama/ 2>/dev/null; ls ~/backup-altama
+update-altama
+```
+
+File database dibuat otomatis saat pertama dipakai. Dashboard pertama yang login mengisinya dengan pengaturan dari browsernya. Jadi **login pertama kali dari browser yang pengaturannya sudah benar** (misalnya browser yang biasa dipakai mengatur wall).
+
+Cek:
+
+```bash
+curl -s http://127.0.0.1:3310/api/settings | head -c 120; echo
+```
+
+Sebelum ada yang menyimpan hasilnya `{"version":0,...}`; setelah dashboard login atau menyimpan, `version` naik.
+
+### Backup
+
+```bash
+mkdir -p ~/backup-altama && cp /var/www/altama-milestone/.data/altama.sqlite ~/backup-altama/altama-$(date +%F).sqlite && ls ~/backup-altama
 ```
 
 Tombol **Export pengaturan** di dashboard tetap bisa dipakai sebagai cadangan kedua (file JSON).
 
 ### Hubungan dengan PC event
 
-Disarankan: PC event tetap menjalankan `start-wall.bat` (wall + Sensor Service lokal, cepat dan tetap jalan tanpa internet), dan wall lokal itu **mengambil pengaturan dari VPS**. Perubahan dari HP sampai ke wall event selama ada internet; kalau internet putus, wall memakai pengaturan terakhir.
+PC event tetap menjalankan `start-wall.bat` (wall + Sensor Service lokal, cepat dan tetap jalan tanpa internet). Supaya wall event **mengikuti pengaturan dari VPS**, tambahkan ke `.env` di PC event:
+
+```dotenv
+NUXT_PUBLIC_SETTINGS_SYNC_URL=https://altama-milestone.nmxavw.com
+```
+
+Lalu jalankan ulang `start-wall.bat`. Setelah itu:
+
+- Atur dari HP di `https://altama-milestone.nmxavw.com/dashboard`. Wall event berubah dalam 5 detik selama ada internet.
+- Dashboard di PC event (Ctrl+Shift+D) menampilkan **Mengikuti altama-milestone.nmxavw.com**. Perubahan di sana hanya berlaku di PC itu sampai ada perubahan berikutnya dari VPS, jadi sebaiknya atur dari dashboard VPS.
+- Kalau internet putus, wall event memakai pengaturan terakhir.
 
 ---
 

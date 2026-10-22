@@ -38,7 +38,12 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Server only (NUXT_DASHBOARD_PASSWORD): /dashboard asks for it; empty leaves the dashboard open.
     dashboardPassword: '',
+    // Server only (NUXT_SETTINGS_DB): SQLite file behind /api/settings.
+    settingsDb: '.data/altama.sqlite',
     public: {
+      // NUXT_PUBLIC_SETTINGS_SYNC_URL: follow another server's settings (e.g. the VPS from the
+      // event PC); empty = this server.
+      settingsSyncUrl: '',
       sensorEnabled: false,
       sensorWsUrl: '',
     },

@@ -251,7 +251,7 @@ const stepper = 'grid size-8 place-items-center rounded-md font-bold ring-1 ring
     </DashboardSection>
 
     <p class="px-1 text-sm text-sky-100/55">
-      Semua teks memakai font Roboto. Ukuran dalam px layar wall (2304 × 1344); contoh di kanan digambar sedikit lebih kecil. Simpan untuk menerapkan ke wall di browser ini.
+      Semua teks memakai font Roboto. Ukuran dalam px layar wall (2304 × 1344); contoh di kanan digambar sedikit lebih kecil. Simpan untuk menerapkan ke wall (ke semua device saat tersinkron ke server).
     </p>
 
     <DashboardFormActions :dirty="dirty" :status="status" :changes="changes" @save="save" @discard="discard" @defaults="restoreDefaults" />
