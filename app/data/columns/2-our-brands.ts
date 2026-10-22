@@ -206,6 +206,7 @@ export const OUR_BRANDS: ColumnConfig = {
         ),
         page(
           [
+            provisional('/photos/our-brands/ryu/page-2-photo-1.webp'),
             provisional('/photos/our-brands/ryu/page-2-photo-2.webp'),
           ],
           {
