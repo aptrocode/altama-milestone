@@ -1,8 +1,9 @@
-import { sameSecret, setDashboardSession } from '../../utils/dashboard-auth';
+import { sameSecret } from '../../utils/dashboard-auth';
+import { dashboardPassword, setDashboardSession } from '../../utils/dashboard-session';
 
 /** Signs this browser in to /dashboard when the password matches NUXT_DASHBOARD_PASSWORD. */
 export default defineEventHandler(async (event) => {
-  const password = String(useRuntimeConfig(event).dashboardPassword || '');
+  const password = dashboardPassword(event);
   const body = await readBody<{ password?: unknown }>(event).catch(() => null);
   const given = typeof body?.password === 'string' ? body.password : '';
 
@@ -12,7 +13,6 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Password salah' });
   }
 
-  if (password)
-    setDashboardSession(event, password);
+  setDashboardSession(event);
   return { unlocked: true };
 });

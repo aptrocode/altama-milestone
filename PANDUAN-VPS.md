@@ -220,7 +220,7 @@ NUXT_PUBLIC_SETTINGS_SYNC_URL=https://altama-milestone.nmxavw.com
 Lalu jalankan ulang `start-wall.bat`. Setelah itu:
 
 - Atur dari HP di `https://altama-milestone.nmxavw.com/dashboard`. Wall event berubah dalam 5 detik selama ada internet.
-- Dashboard di PC event (Ctrl+Shift+D) menampilkan **Mengikuti altama-milestone.nmxavw.com**. Perubahan di sana hanya berlaku di PC itu sampai ada perubahan berikutnya dari VPS, jadi sebaiknya atur dari dashboard VPS.
+- Dashboard di PC event (Ctrl+Shift+D) tidak mengirim ke VPS: perubahan di sana hanya berlaku di PC itu sampai ada perubahan berikutnya dari VPS. Jadi atur dari dashboard VPS.
 - Kalau internet putus, wall event memakai pengaturan terakhir.
 
 ---
