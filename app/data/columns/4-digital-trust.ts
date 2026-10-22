@@ -1,9 +1,13 @@
 import type { ColumnConfig } from '~/types/wall-content';
 import { onlyPage, provisional } from './helpers';
 
+// ODP, ALTAMA e-Care, ISO 9001:2015, customer care uniforms, IndoPaket warranty claim poster.
 const PHOTOS = [
   provisional('/photos/digital-partners/photo-1.webp'),
   provisional('/photos/digital-partners/photo-2.webp'),
+  provisional('/photos/digital-partners/photo-3.webp'),
+  provisional('/photos/digital-partners/photo-4.webp'),
+  provisional('/photos/digital-partners/photo-5.webp'),
 ];
 
 /** Column 4 — Digital Trust: one page of services with a photo slider. */
