@@ -11,7 +11,7 @@ Read only the document needed:
 - `docs/dashboard.md`: operator dashboard (`/dashboard`): sidebar with Wall (Mode konten Page/Scroll at the top, reset time, card offset, close, slider, and page switches, auto slide/page, language bar mode, touch dots), Hold (Tap / Hold / Tap + delay per group), Font (text sizes, title weight, per-card Min–Maks with fit status), and Sensor pages; backup/reset.
 - `docs/assets.md`: deployed media, the `public/new-assets/` master-file layout, encoding commands, and naming.
 - `PANDUAN-SENSOR.md` (root, Indonesian): operator guide for connecting the LiDAR (OptiTUIO → TUIO → Sensor Service recommended over TouchDesigner mouse clicks), checking with the Sensor preview, and LiDAR-friendly dashboard settings.
-- `PANDUAN-VPS.md` (root, Indonesian): deploying to the shared Hostinger Ubuntu VPS at altama-milestone.nmxavw.com (port 3310 behind Nginx, PM2/systemd, Let's Encrypt) without touching other projects, and the PostgreSQL `altama_wall` database prepared for the planned settings sync.
+- `PANDUAN-VPS.md` (root, Indonesian): the deployed shared Hostinger VPS at altama-milestone.nmxavw.com (PM2 + Bun on 127.0.0.1:3310 behind Nginx, Let's Encrypt): what is installed, the update script, troubleshooting, and the planned SQLite settings sync (file in `.data/`; MySQL/PostgreSQL on the VPS stay untouched).
 - `docs/sensor.md`: protocol v2 / wall-v7, Sensor Service sources (Hokuyo, Augmenta, TUIO), calibration, admin contract, simulators, and rollout.
 - `docs/testing.md`: commands, regression coverage, and browser acceptance.
 - `docs/push.md`: issue, branch, commit, PR, review, merge, and cleanup.
