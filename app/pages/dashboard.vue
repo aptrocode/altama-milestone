@@ -30,19 +30,15 @@ useHead({ title: () => `${pageTitle.value} · Dashboard · Altama Interactive Wa
 // Settings sync (settings-sync plugin): pulled again right after login.
 const sync = useSettingsSync();
 
-// Password gate (NUXT_DASHBOARD_PASSWORD on the server): one input, Enter to unlock. The server
-// keeps the browser signed in with an httpOnly cookie; without a password the dashboard is open.
+// Password gate (NUXT_DASHBOARD_PASSWORD on the server, see DashboardLogin): the shell and its
+// pages mount only once the session check or the login succeeds; without a password it is open.
 const access = ref<'checking' | 'locked' | 'open'>('checking');
-const password = ref('');
-const passwordError = ref('');
-const unlocking = ref(false);
-// Logout shows only when the server has a password.
+const lockMessage = ref('');
+// Keluar shows only when the server has a password.
 const passwordRequired = ref(false);
-const passwordInput = ref<HTMLInputElement | null>(null);
 function lock(message = '') {
+  lockMessage.value = message;
   access.value = 'locked';
-  passwordError.value = message;
-  nextTick(() => passwordInput.value?.focus());
 }
 onMounted(async () => {
   try {
@@ -57,31 +53,18 @@ onMounted(async () => {
     lock('Server tidak terhubung');
   }
 });
+function onUnlocked() {
+  access.value = 'open';
+  passwordRequired.value = true;
+  // Signed in: saves can reach the server now (and an empty server gets this browser's settings).
+  sync.refresh();
+}
 async function logout() {
   try {
     await $fetch('/api/dashboard/logout', { method: 'POST' });
   }
   finally {
     lock();
-  }
-}
-async function unlock() {
-  if (unlocking.value || !password.value)
-    return;
-  unlocking.value = true;
-  try {
-    await $fetch('/api/dashboard/login', { method: 'POST', body: { password: password.value } });
-    access.value = 'open';
-    passwordRequired.value = true;
-    // Signed in: saves can reach the server now (and an empty server gets this browser's settings).
-    sync.refresh();
-  }
-  catch (error) {
-    lock((error as { statusCode?: number }).statusCode === 401 ? 'Password salah' : 'Server tidak terhubung');
-  }
-  finally {
-    password.value = '';
-    unlocking.value = false;
   }
 }
 
@@ -161,20 +144,8 @@ const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0
 </script>
 
 <template>
-  <div v-if="access !== 'open'" class="grid h-dvh place-items-center bg-wall-night px-6 font-sans text-wall-ink">
-    <form v-if="access === 'locked'" class="w-full max-w-xs" @submit.prevent="unlock">
-      <input
-        ref="passwordInput" v-model="password" type="password" autocomplete="current-password" enterkeyhint="go"
-        placeholder="Clue: password wifi Aptronim" aria-label="Password dashboard" :aria-invalid="!!passwordError" :disabled="unlocking"
-        class="w-full rounded-xl bg-white/[0.06] px-4 py-3.5 text-center text-lg text-white ring-1 transition placeholder:text-base placeholder:text-sky-100/40 focus:outline-none focus:ring-2 disabled:opacity-60"
-        :class="passwordError ? 'ring-rose-400/70 focus:ring-rose-400' : 'ring-white/15 focus:ring-wall-glow'"
-        data-dashboard-password @input="passwordError = ''"
-      >
-      <p class="mt-3 h-5 text-center text-sm text-rose-300" aria-live="polite">
-        {{ passwordError }}
-      </p>
-    </form>
-  </div>
+  <DashboardLogin v-if="access === 'locked'" :message="lockMessage" @unlocked="onUnlocked" />
+  <div v-else-if="access === 'checking'" class="h-dvh bg-wall-night" />
   <div v-else class="h-dvh overflow-hidden bg-wall-night font-sans text-wall-ink select-text">
     <!-- Drawer backdrop (below lg). -->
     <div

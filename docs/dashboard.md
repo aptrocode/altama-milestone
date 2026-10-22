@@ -147,9 +147,10 @@ The page talks to the Sensor Service over WebSocket (`NUXT_PUBLIC_SENSOR_WS_URL`
 
 ## Code
 
-- `app/pages/dashboard.vue`: shell (sidebar `NAV`, drawer, scrolling content column, backup/fullscreen/reset); `app/pages/dashboard/{index,wall,hold,font,sensor}.vue`: pages with `definePageMeta({ title, description })`.
-- `app/components/dashboard/`: `DashboardWall`, `DashboardHold`, `DashboardFont` (with `DashboardCardFit`, the invisible fit check), `DashboardSensor`, `DashboardFormActions` (Simpan/Batal/Default bar), and the shared `DashboardSection`, `DashboardSettingRow`, and `DashboardSwitch`.
-- `app/composables/useSettingsBackup.ts`: export/import; `app/composables/useSensorAdmin.ts`: admin socket with reconnect, owned by the Sensor page's scope.
+- `app/pages/dashboard.vue`: shell (password gate, sidebar `NAV`, drawer, scrolling content column, backup/fullscreen/reset/logout); `app/pages/dashboard/{index,wall,hold,font,sensor}.vue`: pages with `definePageMeta({ title, description })`.
+- `app/components/dashboard/`: `DashboardLogin` (password screen), `DashboardWall`, `DashboardHold`, `DashboardFont` (with `DashboardCardFit`, the invisible fit check), `DashboardSensor`, `DashboardFormActions` (Simpan/Batal/Default bar), and the shared `DashboardSection`, `DashboardSettingRow`, and `DashboardSwitch`.
+- `server/utils/dashboard-session.ts`: password, session cookie, and `requireDashboardSession` (401 + 3-day renewal) for dashboard-only API routes; `server/utils/dashboard-auth.ts`: the signed token itself.
+- `app/composables/useSettingsBackup.ts`: export/import; `app/composables/useSettingsSync.ts` + `app/plugins/settings-sync.client.ts`: server sync; `app/composables/useSensorAdmin.ts`: admin socket with reconnect, owned by the Sensor page's scope.
 - `shared/hold-settings.ts`, `shared/wall-settings.ts`, `shared/font-settings.ts`: groups/settings, defaults, limits, normalizers, and the action → hold group map (`HOLD_GROUP_BY_ACTION`); `shared/sensor-config.ts`: Sensor Service config and admin contract.
 - `app/stores/settings.ts`: serializable `hold`, `wall`, and `fonts` state. `WallHoldButton` reads its `group` rule and passes `{ mode, durationMs }` to the `v-hold` directive (`app/utils/hold.ts`).
 

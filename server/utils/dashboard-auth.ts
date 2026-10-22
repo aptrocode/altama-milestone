@@ -1,7 +1,5 @@
-import type { H3Event } from 'h3';
 import { Buffer } from 'node:buffer';
 import { createHmac, timingSafeEqual } from 'node:crypto';
-import { deleteCookie, getRequestProtocol, setCookie } from 'h3';
 
 /** Cookie that keeps a browser signed in to /dashboard. */
 export const DASHBOARD_COOKIE = 'altama_dashboard';
@@ -38,20 +36,4 @@ export function dashboardUnlocked(password: string, cookie: string | undefined, 
   if (!signature || !Number.isInteger(expires) || expires * 1000 <= now)
     return false;
   return sameSecret(signature, sign(password, expires));
-}
-
-/** Starts (or restarts) the 3-day session cookie. */
-export function setDashboardSession(event: H3Event, password: string) {
-  setCookie(event, DASHBOARD_COOKIE, dashboardToken(password), {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: getRequestProtocol(event) === 'https',
-    path: '/',
-    maxAge: DASHBOARD_SESSION_SECONDS,
-  });
-}
-
-/** Ends the session (logout). */
-export function clearDashboardSession(event: H3Event) {
-  deleteCookie(event, DASHBOARD_COOKIE, { path: '/' });
 }
