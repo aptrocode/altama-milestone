@@ -56,33 +56,25 @@ module.exports = {
 
 ## 2. Update saat ada perubahan di GitHub
 
-Buat skrip sekali saja:
+Skripnya sudah ada di repo: `scripts/update-vps.sh` (pull, install, build, restart proses `altama-milestone`, lalu cek). **Pertama kali saja**, ambil skrip itu dengan `git pull` biasa:
 
 ```bash
-nano ~/update-altama.sh
+cd /var/www/altama-milestone && git pull --ff-only
 ```
+
+Setelah itu, setiap update cukup:
 
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
-cd /var/www/altama-milestone
-git pull --ff-only
-bun install --frozen-lockfile
-bun run build
-pm2 restart altama-milestone --update-env
-sleep 2
-curl -sI http://127.0.0.1:3310 | head -1
+bash /var/www/altama-milestone/scripts/update-vps.sh
 ```
+
+Supaya lebih pendek, buat alias sekali:
 
 ```bash
-chmod +x ~/update-altama.sh
+echo "alias update-altama='bash /var/www/altama-milestone/scripts/update-vps.sh'" >> ~/.bashrc && source ~/.bashrc
 ```
 
-Setiap update cukup:
-
-```bash
-~/update-altama.sh
-```
+Lalu update cukup dengan `update-altama`.
 
 Baris terakhir harus `HTTP/1.1 200 OK`. Selama build berjalan, versi lama tetap melayani; gangguan hanya beberapa detik saat restart. Hanya proses `altama-milestone` yang di-restart, project lain tidak tersentuh.
 
@@ -149,7 +141,7 @@ cd /var/www/altama-milestone && git log --oneline -10
 git checkout HASH_COMMIT && bun install --frozen-lockfile && bun run build && pm2 restart altama-milestone
 ```
 
-Kembali ke versi terbaru: `git checkout main`, lalu `~/update-altama.sh`.
+Kembali ke versi terbaru: `git checkout main`, lalu `update-altama`.
 
 ---
 
@@ -178,7 +170,7 @@ MySQL dan PostgreSQL di VPS **tidak dipakai dan tidak disentuh**.
 
 ### Yang perlu dilakukan di VPS setelah fitur itu masuk
 
-1. Jalankan `~/update-altama.sh`.
+1. Jalankan `update-altama`.
 2. Buka `/dashboard` dari HP, login, ubah satu pengaturan, lalu cek wall di device lain ikut berubah.
 
 Backup cukup menyalin file database, misalnya:
