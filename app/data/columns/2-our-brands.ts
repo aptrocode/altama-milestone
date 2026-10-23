@@ -324,11 +324,11 @@ export const OUR_BRANDS: ColumnConfig = {
               blocks: [
                 {
                   bullets: [
-                    { lead: '创立', text: '2013 年' },
-                    { lead: 'SKU 数量', text: '共 18 个 SKU' },
+                    { lead: '创立年份：2013年' },
+                    { lead: '认证：MSDS、TDS 和 RoHS' },
+                    { lead: 'SKU 总数：18 个' },
                     { lead: '市场领域', text: '工业、汽车、家用/DIY、木工、采矿、电气。' },
                     { lead: '产品类别', text: '润滑、清洁以及个人护理与卫生' },
-                    { lead: '产品认证', text: 'MSDS、TDS 与 RoHS。' },
                   ],
                 },
               ],
@@ -388,7 +388,7 @@ export const OUR_BRANDS: ColumnConfig = {
             'zh-Hans': {
               tab: PAGE_TABS.second['zh-Hans'],
               blocks: [
-                '所获荣誉：',
+                '主要奖项：',
                 {
                   awards: [
                     { label: 'Brand Champion', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-brand-champion.webp') },
@@ -399,10 +399,11 @@ export const OUR_BRANDS: ColumnConfig = {
                 },
                 {
                   bullets: [
-                    { lead: '印尼品牌冠军大奖 (Indonesia Brand Champion Award)' },
-                    { lead: 'Superbrands 超级品牌大奖' },
-                    { lead: '印尼顶级数字公关白金大奖 (Indonesia TOP Digital PR Award Platinum)' },
-                    { lead: '品牌之选大奖 (Brand Choice Award)' },
+                    { lead: '超级品牌 4次（2023–2026年）' },
+                    { lead: '印度尼西亚品牌选择奖2次（2021–2023年）' },
+                    { lead: '印度尼西亚品牌冠军奖（2024年）' },
+                    { lead: '汽车选择奖（2024年）' },
+                    { lead: '印度尼西亚最佳品牌奖（2025年）' },
                   ],
                 },
               ],
