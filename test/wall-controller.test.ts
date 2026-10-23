@@ -232,7 +232,7 @@ describe('page auto change', () => {
 });
 
 describe('reset waits for the auto slideshow', () => {
-  // Column 3 (Infrastruktur): photo 0 is a video, then 8 images; auto slide 5 s, reset 30 s.
+  // Column 3 (Infrastruktur): photo 0 is a video, followed by its configured images.
   function open(autoSlideMs = () => 5000) {
     const wall = useWallStore(createPinia());
     const scope = effectScope();
@@ -247,31 +247,32 @@ describe('reset waits for the auto slideshow', () => {
     // Re-evaluate the video flag now that the store is reachable.
     controls.dispatch({ type: 'next', columnId: 3 });
     controls.dispatch({ type: 'previous', columnId: 3 });
-    expect(wall.publishedColumns[3]!.photoCount).toBe(9);
-    return { wall, controls };
+    const imageCount = wall.publishedColumns[3]!.photoCount - 1;
+    expect(imageCount).toBeGreaterThan(0);
+    return { wall, controls, imageCount };
   }
 
   it('closes right after the last slide when the slideshow outlasts the reset time', () => {
-    const { wall, controls } = open();
+    const { wall, controls, imageCount } = open();
     vi.advanceTimersByTime(30_000);
     controls.mediaEnded(3); // the 30 s video ends
     expect(wall.getColumnState(3)).toBe('active');
     expect(wall.publishedColumns[3]!.photo).toBe(1);
-    vi.advanceTimersByTime(7 * 5000);
-    expect(wall.publishedColumns[3]!.photo).toBe(8);
+    vi.advanceTimersByTime((imageCount - 1) * 5000);
+    expect(wall.publishedColumns[3]!.photo).toBe(imageCount);
     expect(wall.getColumnState(3)).toBe('active');
     vi.advanceTimersByTime(4999);
     expect(wall.getColumnState(3)).toBe('active');
-    vi.advanceTimersByTime(1); // 30 s video + 8 × 5 s images = 70 s
+    vi.advanceTimersByTime(1); // The video and every remaining image have finished.
     expect(wall.getColumnState(3)).toBe('idle');
   });
 
   it('keeps the normal reset time when the slideshow already finished', () => {
-    const { wall, controls } = open(() => 3000);
+    const { wall, controls, imageCount } = open(() => 3000);
     controls.mediaEnded(3); // short video
-    vi.advanceTimersByTime(8 * 3000); // whole slideshow seen (24 s), wrapped back to the video
+    vi.advanceTimersByTime(imageCount * 3000); // whole slideshow seen, wrapped back to the video
     expect(wall.publishedColumns[3]!.photo).toBe(0);
-    vi.advanceTimersByTime(30_000 - 8 * 3000 - 1);
+    vi.advanceTimersByTime(30_000 - imageCount * 3000 - 1);
     expect(wall.getColumnState(3)).toBe('active');
     vi.advanceTimersByTime(1);
     expect(wall.getColumnState(3)).toBe('idle');

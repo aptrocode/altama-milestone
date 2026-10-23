@@ -35,6 +35,8 @@ public/new-assets/
 
 Column keys: `about-altama`, `our-brands` (`tekiro`, `ryu`, `rexco`), `infrastructure`, `digital-partners`, `distribution` (`distribusi`, `pemasaran`), `summit-2026`. Deployed files are derived from these: photos as WebP 524 px wide, videos as 720p H.264 without audio, logos as WebP with alpha.
 
+Keep originals in `public/new-assets/` when a client removes a photo from the wall: remove its content reference and unused deployed derivative only. Infrastruktur now uses the overview video and `photo-7.webp`–`photo-9.webp` (Toolsman logo, service-center map, ALTAMA building). The warehouse management, delivery fleet, warehouse aerial, quality-control lab, and Toolsman fleet photos were removed from the slider and deployed `photo-2.webp`–`photo-6.webp`; their original files remain in `new-assets/content/infrastructure/slider/`.
+
 Card videos from a PNG sequence (e.g. `public/new-assets/card-sequences/distribution/distribution-00000.png`): encode a transparent loop of about 3 MB:
 
 ```bash

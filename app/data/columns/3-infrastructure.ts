@@ -3,11 +3,6 @@ import { onlyPage, provisional } from './helpers';
 
 const PHOTOS = [
   provisional('/photos/infrastructure/photo-1.mp4'),
-  provisional('/photos/infrastructure/photo-2.webp'),
-  provisional('/photos/infrastructure/photo-3.webp'),
-  provisional('/photos/infrastructure/photo-4.webp'),
-  provisional('/photos/infrastructure/photo-5.webp'),
-  provisional('/photos/infrastructure/photo-6.webp'),
   provisional('/photos/infrastructure/photo-7.webp'),
   provisional('/photos/infrastructure/photo-8.webp'),
   provisional('/photos/infrastructure/photo-9.webp'),
