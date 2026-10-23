@@ -14,20 +14,34 @@ export const SUMMIT_2026: ColumnConfig = {
     'en': { label: 'ALTAMA SUMMIT 2026' },
     'zh-Hans': { label: 'ALTAMA SUMMIT 2026' },
   },
-  // One text page (client's condensed copy): partners and commitments, then the closing line.
+  // One text page: client-supplied Indonesian/Mandarin copy and the existing English draft.
   pages: [
     onlyPage([], {
       'id': [
-        'Sejak CV. Sumber Daya Group hingga hari ini, kepercayaan mitra adalah kekuatan kami. Kami akan terus berusaha untuk menghadirkan: Produk berkualitas, inovasi, harga kompetitif, dan layanan purna-jual.',
-        'ALTAMA SUMMIT 2026: Powering Partnership, hari ini kita semua menjadi bagian sejarah. Mari lanjutkan bersama.',
+        'ALTAMA bertumbuh karena Anda. Dari CV. Sumber Daya Group hingga ALTAMA di hari ini, setiap pencapaian lahir dari kepercayaan mitra customer dan supplier.',
+        'Bersama Anda, kami terus menghadirkan:',
+        { bullets: [
+          { lead: 'Produk berkualitas' },
+          { lead: 'Inovasi berkelanjutan' },
+          { lead: 'Harga kompetitif' },
+          { lead: 'Layanan purna-jual yang mudah dijangkau' },
+        ] },
+        'ALTAMA SUMMIT: Powering Partnership, hari ini kita semua menjadi bagian dari sejarah. Mari lanjutkan bersama.',
       ],
       'en': [
         'From CV. Sumber Daya Group to this day, our partners’ trust is our strength. We will keep striving to deliver quality products, innovation, competitive prices, and after-sales service.',
         'ALTAMA SUMMIT 2026: Powering Partnership, today we all become part of history. Let’s continue together.',
       ],
       'zh-Hans': [
-        '从 CV. Sumber Daya Group 到今天，合作伙伴的信任是我们的力量。我们将继续努力，为您提供优质产品、创新、具有竞争力的价格和售后服务。',
-        'ALTAMA SUMMIT 2026：Powering Partnership，今天我们都成为历史的一部分。让我们携手前行。',
+        'ALTAMA 因您而不断成长。从 CV. Sumber Daya Group 到今天的 ALTAMA，每一项成就都源于客户与供应商合作伙伴的信赖。',
+        '与您携手，我们将持续提供：',
+        { bullets: [
+          { lead: '优质产品' },
+          { lead: '持续创新' },
+          { lead: '具有竞争力的价格' },
+          { lead: '更便捷的售后服务' },
+        ] },
+        'ALTAMA 峰会：赋能合作伙伴关系。今天，我们每个人都成为了历史的一部分。让我们继续并肩前行。',
       ],
     }),
   ],
