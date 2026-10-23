@@ -28,7 +28,7 @@ export const ABOUT_ALTAMA: ColumnConfig = {
           'Beginning with CV. Sumber Daya Group, a journey of almost six decades became the starting point of ALTAMA as it is known today.',
         ],
         'zh-Hans': [
-          '始于 CV. Sumber Daya Group，历经近六十年，成为今日 ALTAMA 的起点。',
+          '源自 CV. Sumber Daya Group，历经近六十年发展，奠定了如今广为人知的 ALTAMA 的基础。',
         ],
       },
     ),
