@@ -106,8 +106,8 @@ export const DISTRIBUTION: ColumnConfig = {
             { lead: 'International Reach' },
           ] }] },
           'zh-Hans': { tab: PAGE_TABS.second['zh-Hans'], blocks: [{ bullets: [
-            { lead: '覆盖印尼全国' },
-            { lead: '覆盖海外市场' },
+            { lead: '印度尼西亚覆盖范围：', text: '遍及38个省，拥有800多家直接分销合作伙伴及超过100,000个间接分销网络。' },
+            { lead: '国际覆盖范围：', text: '产品销往海外市场。' },
           ] }] },
         }),
       ],
@@ -132,8 +132,8 @@ export const DISTRIBUTION: ColumnConfig = {
           ] }] },
           'zh-Hans': { tab: PAGE_TABS.first['zh-Hans'], blocks: [{ bullets: [
             { lead: '产品演示' },
-            { lead: 'TEKIRO 机械师技能大赛' },
-            { lead: '展会活动' },
+            { lead: 'TEKIRO技师竞赛：', text: '面向印度尼西亚各地职业高中（SMK）的职业教育企业社会责任（CSR）项目。' },
+            { lead: '展览' },
             { lead: '赞助与社群' },
           ] }] },
         }),
@@ -155,11 +155,11 @@ export const DISTRIBUTION: ColumnConfig = {
             },
           ] }] },
           'zh-Hans': { tab: PAGE_TABS.second['zh-Hans'], blocks: [{ bullets: [
-            { lead: '品牌建设' },
-            { lead: '关键意见领袖 (KOL) / 达人合作' },
+            { lead: '品牌推广' },
+            { lead: '网红／关键意见领袖（KOL）' },
             {
-              lead: '社交媒体运营：',
-              text: '340,000+ 粉丝，年均浏览量 30,000,000+ 次',
+              lead: '社交媒体：',
+              text: '通过多个社交媒体平台积极开展数字品牌推广，拥有超过340,000名粉丝及超过1,000,000,000次观看量。',
             },
           ] }] },
         }),

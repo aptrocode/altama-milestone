@@ -45,8 +45,8 @@ export const OUR_BRANDS: ColumnConfig = {
             { lead: 'SKU count: 2,183 SKUs' },
           ] }] },
           'zh-Hans': { tab: PAGE_TABS.first['zh-Hans'], blocks: [{ bullets: [
-            { lead: '创立：1999 年' },
-            { lead: '质量标准', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
+            { lead: '创立年份：1999年' },
+            { lead: '质量标准：JIS、ANSI 和 DIN', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
             { lead: 'SKU 数量：2,183 个' },
           ] }] },
         }),
@@ -89,17 +89,17 @@ export const OUR_BRANDS: ColumnConfig = {
             { lead: '7x Indonesia Digital Popular Brand Award' },
             { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD' },
           ] }] },
-          'zh-Hans': { tab: PAGE_TABS.third['zh-Hans'], blocks: ['所获荣誉：', { awards: [
+          'zh-Hans': { tab: PAGE_TABS.third['zh-Hans'], blocks: ['所获奖项：', { awards: [
             { label: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
             { label: 'MURI', image: provisional('/photos/our-brands/tekiro/penghargaan/muri.webp') },
             { label: 'TOP Brand', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
             { label: 'TOP Digital PR', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
           ] }, { bullets: [
-            { lead: '吉尼斯世界纪录 (Guinness World Records)' },
-            { lead: '印尼纪录博物馆纪录 - MURI' },
-            { lead: '12届 TOP Brand Award 顶级品牌奖' },
-            { lead: '7届 印尼数字大众品牌大奖' },
-            { lead: '5届 顶级数字公关大奖 TOP DIGITAL PUBLIC RELATION AWARD' },
+            { lead: '吉尼斯世界纪录（2026年）' },
+            { lead: '印度尼西亚纪录博物馆MURI，（2026年）' },
+            { lead: 'TOP顶级品牌奖12次（2014–2024年）' },
+            { lead: '印度尼西亚数字热门品牌奖7次（2016–2023年）' },
+            { lead: '顶级数字公关奖5次（2019–2023年）' },
           ] }] },
         }),
         page(TEKIRO_AWARD_PHOTOS, {
@@ -129,18 +129,18 @@ export const OUR_BRANDS: ColumnConfig = {
             { lead: 'Golden Brand Of The Year' },
             { lead: 'Indonesia Best Brand Awards' },
           ] }] },
-          'zh-Hans': { tab: PAGE_TABS.fourth['zh-Hans'], blocks: ['所获荣誉：', { awards: [
+          'zh-Hans': { tab: PAGE_TABS.fourth['zh-Hans'], blocks: ['所获奖项：', { awards: [
             { label: 'Superbrands', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
             { label: 'Brand Champion', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-brand-champion.webp') },
             { label: 'Brand Choice', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
             { label: 'CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
           ] }, { bullets: [
-            { lead: '5届 SUPERBRANDS 超级品牌大奖' },
-            { lead: '2届 印尼品牌冠军大奖' },
-            { lead: '2届 印尼品牌之选大奖' },
-            { lead: '2届 CNN 印尼大奖' },
-            { lead: '年度金牌品牌 Golden Brand Of The Year' },
-            { lead: '印尼最佳品牌奖 Indonesia Best Brand Awards' },
+            { lead: '超级品牌5次（2022–2026年）' },
+            { lead: '印度尼西亚品牌冠军奖2次（2020–2024年）' },
+            { lead: '印度尼西亚品牌选择奖2次（2020–2021年）' },
+            { lead: 'CNN 奖 2次（2025–2026年）' },
+            { lead: '年度金品牌奖（2025年）' },
+            { lead: '印度尼西亚最佳品牌奖（2025年）' },
           ] }] },
         }),
       ],
@@ -193,11 +193,11 @@ export const OUR_BRANDS: ColumnConfig = {
               blocks: [
                 {
                   bullets: [
-                    { lead: '创立', text: '2006 年' },
-                    { lead: 'SKU 数量', text: '共 547 个 SKU' },
+                    { lead: '创立年份：2006年' },
+                    { lead: '认证：K3L' },
+                    { lead: 'SKU 数量：547 个' },
                     { lead: '市场领域', text: '工业、木工、建筑、家用/DIY、汽车。' },
                     { lead: '产品类别', text: '电动工具、引擎、焊接、无绳工具、配件、零配件。' },
-                    { lead: '产品认证', text: 'K3L' },
                   ],
                 },
               ],
@@ -218,6 +218,7 @@ export const OUR_BRANDS: ColumnConfig = {
                   awards: [
                     { label: 'Superbrands', image: provisional('/photos/our-brands/ryu/penghargaan/superbrands.webp') },
                     { label: 'Brand Champion', image: provisional('/photos/our-brands/ryu/penghargaan/indonesia-brand-champion.webp') },
+                    { label: 'Indonesia Digital Popular Brand Award 2022', image: provisional('/photos/our-brands/rexco/penghargaan/brand-choice.webp') },
                   ],
                 },
                 {
@@ -237,6 +238,7 @@ export const OUR_BRANDS: ColumnConfig = {
                   awards: [
                     { label: 'Superbrands', image: provisional('/photos/our-brands/ryu/penghargaan/superbrands.webp') },
                     { label: 'Brand Champion', image: provisional('/photos/our-brands/ryu/penghargaan/indonesia-brand-champion.webp') },
+                    { label: 'Indonesia Digital Popular Brand Award 2022', image: provisional('/photos/our-brands/rexco/penghargaan/brand-choice.webp') },
                   ],
                 },
                 {
@@ -251,18 +253,19 @@ export const OUR_BRANDS: ColumnConfig = {
             'zh-Hans': {
               tab: PAGE_TABS.second['zh-Hans'],
               blocks: [
-                '所获荣誉：',
+                '所获奖项：',
                 {
                   awards: [
                     { label: 'Superbrands', image: provisional('/photos/our-brands/ryu/penghargaan/superbrands.webp') },
                     { label: 'Brand Champion', image: provisional('/photos/our-brands/ryu/penghargaan/indonesia-brand-champion.webp') },
+                    { label: 'Indonesia Digital Popular Brand Award 2022', image: provisional('/photos/our-brands/rexco/penghargaan/brand-choice.webp') },
                   ],
                 },
                 {
                   bullets: [
-                    { lead: '4届 Superbrands 超级品牌大奖' },
-                    { lead: '3届 印尼数字大众品牌大奖 (Indonesia Digital Popular Brand Award)' },
-                    { lead: '印尼品牌冠军大奖 (Indonesia Brand Champion Award)' },
+                    { lead: '超级品牌 4次（2023–2026年）' },
+                    { lead: '印度尼西亚数字热门品牌奖3次（2021–2023年）' },
+                    { lead: '印度尼西亚品牌冠军奖（2024年）' },
                   ],
                 },
               ],
@@ -321,11 +324,11 @@ export const OUR_BRANDS: ColumnConfig = {
               blocks: [
                 {
                   bullets: [
-                    { lead: '创立', text: '2013 年' },
-                    { lead: 'SKU 数量', text: '共 18 个 SKU' },
+                    { lead: '创立年份：2013年' },
+                    { lead: '认证：MSDS、TDS 和 RoHS' },
+                    { lead: 'SKU 总数：18 个' },
                     { lead: '市场领域', text: '工业、汽车、家用/DIY、木工、采矿、电气。' },
                     { lead: '产品类别', text: '润滑、清洁以及个人护理与卫生' },
-                    { lead: '产品认证', text: 'MSDS、TDS 与 RoHS。' },
                   ],
                 },
               ],
@@ -385,7 +388,7 @@ export const OUR_BRANDS: ColumnConfig = {
             'zh-Hans': {
               tab: PAGE_TABS.second['zh-Hans'],
               blocks: [
-                '所获荣誉：',
+                '主要奖项：',
                 {
                   awards: [
                     { label: 'Brand Champion', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-brand-champion.webp') },
@@ -396,10 +399,11 @@ export const OUR_BRANDS: ColumnConfig = {
                 },
                 {
                   bullets: [
-                    { lead: '印尼品牌冠军大奖 (Indonesia Brand Champion Award)' },
-                    { lead: 'Superbrands 超级品牌大奖' },
-                    { lead: '印尼顶级数字公关白金大奖 (Indonesia TOP Digital PR Award Platinum)' },
-                    { lead: '品牌之选大奖 (Brand Choice Award)' },
+                    { lead: '超级品牌 4次（2023–2026年）' },
+                    { lead: '印度尼西亚品牌选择奖2次（2021–2023年）' },
+                    { lead: '印度尼西亚品牌冠军奖（2024年）' },
+                    { lead: '汽车选择奖（2024年）' },
+                    { lead: '印度尼西亚最佳品牌奖（2025年）' },
                   ],
                 },
               ],

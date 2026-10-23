@@ -1,0 +1,126 @@
+{
+  "date": "2026-10-23",
+  "videos": [
+    {
+      "asset": "distribution",
+      "width": 1050,
+      "height": 1790,
+      "fps": 30,
+      "frames": 301,
+      "seconds": 10.033,
+      "bytes": 2495943,
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "transparentCorner": true,
+      "motionDifference": 20.568,
+      "audioStreams": 0,
+      "path": "public/illustrations/distribution.webm",
+      "sha256": "b578da46e5ce33bbccbe27daf5aa3f354c6780ffbd44502459d335c65d08498a",
+      "codec": "vp9",
+      "alphaMode": 1,
+      "sourceFrames": 302,
+      "omittedBlankSourceFrames": [
+        301
+      ],
+      "masterCopyMatches": true,
+      "generatedCopyMatches": true
+    },
+    {
+      "asset": "summit-2026",
+      "width": 1050,
+      "height": 1790,
+      "fps": 30,
+      "frames": 302,
+      "seconds": 10.066,
+      "bytes": 2629021,
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "transparentCorner": true,
+      "motionDifference": 16.34,
+      "audioStreams": 0,
+      "path": "public/illustrations/summit-2026.webm",
+      "sha256": "55fe94f8e5f9dc17503ad4c5bd471530d9e66b45b9a358452145733156d360ec",
+      "codec": "vp9",
+      "alphaMode": 1,
+      "sourceFrames": 302,
+      "omittedBlankSourceFrames": [],
+      "masterCopyMatches": true,
+      "generatedCopyMatches": true
+    }
+  ],
+  "masters": {
+    "originalFilesVerified": 2485,
+    "renamedOrArchived": 1211,
+    "changedOriginalBytes": 0,
+    "invalidNames": 0,
+    "currentFiles": 2488,
+    "manifest": "public/new-assets/asset-renames-2026-10-23.json",
+    "manifestSha256": "3316d6dcf6efaf13119aa447e5212785e71d1392f50ef47f56a603670bd4fa19",
+    "manifestAndMastersGitIgnored": true,
+    "mastersAbsentFromGeneratedOutput": true
+  },
+  "geometry": {
+    "layoutVersion": "wall-v7",
+    "panelLiftSourcePixels": 22,
+    "panels": [
+      {
+        "key": "distribusi",
+        "border": {
+          "left": 1547.34,
+          "right": 1883.94,
+          "top": 546.788,
+          "bottom": 771.335
+        },
+        "target": {
+          "key": "distribusi",
+          "x": 1547,
+          "y": 546,
+          "width": 338,
+          "height": 227
+        },
+        "maxEdgeDifference": 1.665
+      },
+      {
+        "key": "pemasaran",
+        "border": {
+          "left": 1547.34,
+          "right": 1883.94,
+          "top": 781.659,
+          "bottom": 982.056
+        },
+        "target": {
+          "key": "pemasaran",
+          "x": 1547,
+          "y": 781,
+          "width": 338,
+          "height": 203
+        },
+        "maxEdgeDifference": 1.944
+      }
+    ],
+    "languageBarClearance": 7.944
+  },
+  "browser": {
+    "viewports": [
+      "2304x1344",
+      "1600x900",
+      "390x844"
+    ],
+    "videoMetadata": "Both 1050x1790, readyState 4, muted, looping, playing, no media errors",
+    "transparency": "Artwork blends into the wall background without opaque corner rectangles",
+    "interaction": "Distribusi opens only column 5; Pemasaran and Summit can open independently in columns 5 and 6; reset restores idle playback",
+    "layout": "No outer scrolling in wide viewports; phone stacks vertically without horizontal overflow",
+    "consoleErrors": 0,
+    "screenshots": [
+      "test/evidence/card-videos-before-2304x1344.jpg",
+      "test/evidence/card-videos-after-2304x1344.jpg",
+      "test/evidence/card-videos-after-1600x900.jpg",
+      "test/evidence/card-video-distribution-after-390x844.jpg",
+      "test/evidence/card-video-summit-after-390x844.jpg"
+    ]
+  }
+}

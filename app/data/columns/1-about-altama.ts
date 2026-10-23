@@ -1,7 +1,7 @@
 import type { ColumnConfig } from '~/types/wall-content';
 import { onlyPage, provisional } from './helpers';
 
-/** Column 1 — Tentang Altama. Single card page with a 4-photo slider. */
+/** Column 1 — Tentang Altama. History, office, and all BOD portraits in a 3-photo slider. */
 export const ABOUT_ALTAMA: ColumnConfig = {
   id: 1,
   key: 'about-altama',
@@ -18,8 +18,7 @@ export const ABOUT_ALTAMA: ColumnConfig = {
       [
         provisional('/photos/about-altama/photo-1.webp'),
         provisional('/photos/about-altama/photo-2.webp'),
-        provisional('/photos/about-altama/photo-3.webp'),
-        provisional('/photos/about-altama/photo-4.webp'),
+        provisional('/photos/about-altama/board-of-directors.webp'),
       ],
       {
         'id': [
@@ -29,7 +28,7 @@ export const ABOUT_ALTAMA: ColumnConfig = {
           'Beginning with CV. Sumber Daya Group, a journey of almost six decades became the starting point of ALTAMA as it is known today.',
         ],
         'zh-Hans': [
-          '始于 CV. Sumber Daya Group，历经近六十年，成为今日 ALTAMA 的起点。',
+          '源自 CV. Sumber Daya Group，历经近六十年发展，奠定了如今广为人知的 ALTAMA 的基础。',
         ],
       },
     ),
