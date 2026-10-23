@@ -14,7 +14,7 @@ export const SUMMIT_2026: ColumnConfig = {
     'en': { label: 'ALTAMA SUMMIT 2026' },
     'zh-Hans': { label: 'ALTAMA SUMMIT 2026' },
   },
-  // One text page: client-supplied Indonesian/Mandarin copy and the existing English draft.
+  // One text page: client-supplied Indonesian/Mandarin copy, with English translated from Indonesian.
   pages: [
     onlyPage([], {
       'id': [
@@ -29,8 +29,15 @@ export const SUMMIT_2026: ColumnConfig = {
         'ALTAMA SUMMIT: Powering Partnership, hari ini kita semua menjadi bagian dari sejarah. Mari lanjutkan bersama.',
       ],
       'en': [
-        'From CV. Sumber Daya Group to this day, our partners’ trust is our strength. We will keep striving to deliver quality products, innovation, competitive prices, and after-sales service.',
-        'ALTAMA SUMMIT 2026: Powering Partnership, today we all become part of history. Let’s continue together.',
+        'ALTAMA grows because of you. From CV. Sumber Daya Group to ALTAMA today, every achievement is made possible by the trust of our customers and suppliers.',
+        'Together with you, we continue to deliver:',
+        { bullets: [
+          { lead: 'Quality products' },
+          { lead: 'Continuous innovation' },
+          { lead: 'Competitive prices' },
+          { lead: 'Easily accessible after-sales service' },
+        ] },
+        'ALTAMA SUMMIT: Powering Partnership, today we all become part of history. Let’s move forward together.',
       ],
       'zh-Hans': [
         'ALTAMA 因您而不断成长。从 CV. Sumber Daya Group 到今天的 ALTAMA，每一项成就都源于客户与供应商合作伙伴的信赖。',
