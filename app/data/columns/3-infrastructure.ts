@@ -40,8 +40,8 @@ export const INFRASTRUCTURE: ColumnConfig = {
       'zh-Hans': [{ bullets: [
         { lead: '仓库管理系统' },
         { lead: '质量控制实验室' },
-        { lead: 'Toolsman', text: 'Altama 产品推广团队，深入各地服务消费者。' },
-        { lead: 'TEKIRO & RYU 服务中心' },
+        { lead: 'Toolsman：', text: '在各个地点向消费者推广 Altama 产品的团队。' },
+        { lead: 'TEKIRO 和 RYU 服务中心：', text: '售后服务中心。' },
         { lead: 'ALTAMA 大楼' },
       ] }],
     }),
