@@ -4,7 +4,7 @@ Every column's text, artwork, tiles, pages, and photos live in one file. Change 
 
 | Column | File | Kind |
 | --- | --- | --- |
-| 1 Tentang Altama | `app/data/columns/1-about-altama.ts` | single, 1 page with 3-photo slider: history, office, all BOD portraits together |
+| 1 Tentang Altama | `app/data/columns/1-about-altama.ts` | single, 1 page with 3-photo slider: history, office, five BOD portraits together in one row |
 | 2 Our Brand | `app/data/columns/2-our-brands.ts` | expandable: `tekiro`, `ryu`, `rexco` |
 | 3 Infrastruktur | `app/data/columns/3-infrastructure.ts` | single, 1 page with overview video, Toolsman logo, service-center map, and ALTAMA building |
 | 4 Digital Trust | `app/data/columns/4-digital-trust.ts` | single, 1 page with 5-photo slider |
