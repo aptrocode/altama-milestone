@@ -218,6 +218,7 @@ export const OUR_BRANDS: ColumnConfig = {
                   awards: [
                     { label: 'Superbrands', image: provisional('/photos/our-brands/ryu/penghargaan/superbrands.webp') },
                     { label: 'Brand Champion', image: provisional('/photos/our-brands/ryu/penghargaan/indonesia-brand-champion.webp') },
+                    { label: 'Indonesia Digital Popular Brand Award 2022', image: provisional('/photos/our-brands/rexco/penghargaan/brand-choice.webp') },
                   ],
                 },
                 {
@@ -237,6 +238,7 @@ export const OUR_BRANDS: ColumnConfig = {
                   awards: [
                     { label: 'Superbrands', image: provisional('/photos/our-brands/ryu/penghargaan/superbrands.webp') },
                     { label: 'Brand Champion', image: provisional('/photos/our-brands/ryu/penghargaan/indonesia-brand-champion.webp') },
+                    { label: 'Indonesia Digital Popular Brand Award 2022', image: provisional('/photos/our-brands/rexco/penghargaan/brand-choice.webp') },
                   ],
                 },
                 {
@@ -256,6 +258,7 @@ export const OUR_BRANDS: ColumnConfig = {
                   awards: [
                     { label: 'Superbrands', image: provisional('/photos/our-brands/ryu/penghargaan/superbrands.webp') },
                     { label: 'Brand Champion', image: provisional('/photos/our-brands/ryu/penghargaan/indonesia-brand-champion.webp') },
+                    { label: 'Indonesia Digital Popular Brand Award 2022', image: provisional('/photos/our-brands/rexco/penghargaan/brand-choice.webp') },
                   ],
                 },
                 {

@@ -15,7 +15,7 @@ Deployed media lives in `public/`; master files stay in the git-ignored `public/
 | `public/brands/rexco.webp`, `rexco-wordmark.webp` | Rexco tile logo (on brand blue) and logo above the open card | Client logo, transparent white; the "Cleaning • Lubricating • Protecting" tagline is cropped off (wordmark and swoosh only, lossless WebP 600 × 236 / 600 × 216) |
 | `public/photos/{column-key}[/{sub-item}]/…` | Slider photos (`.webp`, 524 px wide = 2× the 262 px frame) and the infrastructure video (`.mp4`, 720p) | Client photos from `new-assets/content/` (Tekiro and some slots are still mockup crops or numbered placeholders) |
 | `public/photos/about-altama/board-of-directors.webp` | All five BOD portraits together in one slide, after the history and office photos | Client replacement `new-assets/content/about-altama/slider/WhatsApp Image 2026-10-23 at 15.34.25.jpeg` (1600 × 900); fitted to 512 × 288 with 6 px navy padding on each side of the 524 × 288 frame so every portrait and caption remains visible. Replaces the two split BOD slides |
-| `public/photos/our-brands/{rexco,ryu}/penghargaan/` | Award logos (600 px), not placed in a card yet | Client files |
+| `public/photos/our-brands/{rexco,ryu}/penghargaan/` | Award logos (600 px) in each brand's PAGE 2 award grid | Client files; RYU also reuses `rexco/penghargaan/brand-choice.webp` from the requested `new-assets/content/our-brands/rexco/awards/brand-choice.png`. Despite its filename, the logo reads Indonesia Digital Popular Brand Award 2022 |
 | `public/flags/{indonesia,english,china}.svg` | Language controls | Local SVGs |
 
 Brand logos (Tekiro, RYU, Rexco, ODP, ALTAMA) are trademarks; replace remaining mockup crops with official files from the client's brand kit.
