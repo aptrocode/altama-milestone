@@ -9,7 +9,7 @@ Every column's text, artwork, tiles, pages, and photos live in one file. Change 
 | 3 Infrastruktur | `app/data/columns/3-infrastructure.ts` | single, 1 page with overview video, Toolsman logo, service-center map, and ALTAMA building |
 | 4 Digital Trust | `app/data/columns/4-digital-trust.ts` | single, 1 page with 5-photo slider |
 | 5 Distribusi & Pemasaran | `app/data/columns/5-distribution.ts` | expandable: `distribusi`, `pemasaran` (two pages each, sharing their photos) |
-| 6 Altama Summit 2026 | `app/data/columns/6-summit-2026.ts` | single, text only |
+| 6 Altama Summit 2026 | `app/data/columns/6-summit-2026.ts` | single, 1 text-only page: partnership opening, four commitments, and closing; client-supplied Indonesian/Mandarin copy |
 
 Related files:
 - `app/types/wall-content.ts`: the typed shape (`ColumnConfig`, `SubItem`, `ContentPage`, `ContentBlock`, `MediaAsset`).
