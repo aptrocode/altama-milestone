@@ -193,11 +193,11 @@ export const OUR_BRANDS: ColumnConfig = {
               blocks: [
                 {
                   bullets: [
-                    { lead: '创立', text: '2006 年' },
-                    { lead: 'SKU 数量', text: '共 547 个 SKU' },
+                    { lead: '创立年份：2006年' },
+                    { lead: '认证：K3L' },
+                    { lead: 'SKU 数量：547 个' },
                     { lead: '市场领域', text: '工业、木工、建筑、家用/DIY、汽车。' },
                     { lead: '产品类别', text: '电动工具、引擎、焊接、无绳工具、配件、零配件。' },
-                    { lead: '产品认证', text: 'K3L' },
                   ],
                 },
               ],
@@ -253,7 +253,7 @@ export const OUR_BRANDS: ColumnConfig = {
             'zh-Hans': {
               tab: PAGE_TABS.second['zh-Hans'],
               blocks: [
-                '所获荣誉：',
+                '所获奖项：',
                 {
                   awards: [
                     { label: 'Superbrands', image: provisional('/photos/our-brands/ryu/penghargaan/superbrands.webp') },
@@ -263,9 +263,9 @@ export const OUR_BRANDS: ColumnConfig = {
                 },
                 {
                   bullets: [
-                    { lead: '4届 Superbrands 超级品牌大奖' },
-                    { lead: '3届 印尼数字大众品牌大奖 (Indonesia Digital Popular Brand Award)' },
-                    { lead: '印尼品牌冠军大奖 (Indonesia Brand Champion Award)' },
+                    { lead: '超级品牌 4次（2023–2026年）' },
+                    { lead: '印度尼西亚数字热门品牌奖3次（2021–2023年）' },
+                    { lead: '印度尼西亚品牌冠军奖（2024年）' },
                   ],
                 },
               ],
