@@ -106,8 +106,8 @@ export const DISTRIBUTION: ColumnConfig = {
             { lead: 'International Reach' },
           ] }] },
           'zh-Hans': { tab: PAGE_TABS.second['zh-Hans'], blocks: [{ bullets: [
-            { lead: '覆盖印尼全国' },
-            { lead: '覆盖海外市场' },
+            { lead: '印度尼西亚覆盖范围：', text: '遍及38个省，拥有800多家直接分销合作伙伴及超过100,000个间接分销网络。' },
+            { lead: '国际覆盖范围：', text: '产品销往海外市场。' },
           ] }] },
         }),
       ],
