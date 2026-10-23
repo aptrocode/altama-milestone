@@ -18,7 +18,7 @@ export const ABOUT_ALTAMA: ColumnConfig = {
       [
         provisional('/photos/about-altama/photo-1.webp'),
         provisional('/photos/about-altama/photo-2.webp'),
-        provisional('/photos/about-altama/board-of-directors.webp'),
+        provisional('/photos/about-altama/board-of-directors-2026-10-23.webp'),
       ],
       {
         'id': [
