@@ -1,29 +1,18 @@
 import type { CloseButtonOptions } from './close-button';
 import type { HoldGroup } from './hold-settings';
+import type { Rect } from './installation-layout';
 import type { LanguageBarMode } from './language-bar';
-import type { ColumnId, PublishedColumn, WallAction, WallLocale } from './wall';
+import type { ColumnId, PublishedColumn, WallAction } from './wall';
 import { closeTargetRect } from './close-button';
 import { HOLD_GROUP_BY_ACTION } from './hold-settings';
-import rawLayout from './installation-layout.json';
+import { installationLayout } from './installation-layout';
 import { columnOffsetY, extendDown, languageGeometry } from './language-bar';
 import { pageTabRects } from './page-tabs';
 import { COLUMN_IDS } from './wall';
 
-export interface Rect { x: number; y: number; width: number; height: number }
+const columns = installationLayout.columns;
 
-interface ColumnGeometry {
-  id: number;
-  card: Rect;
-  main?: Rect;
-  languageBar: Rect;
-  languages: (Rect & { locale: string })[];
-  subItems?: (Rect & { key: string })[];
-  active: { card: Rect; back: Rect; previous: Rect; next: Rect; pages: (Rect & { page: number })[] };
-}
-
-const columns = rawLayout.columns as ColumnGeometry[];
-
-export const SENSOR_LAYOUT_VERSION: string = rawLayout.layoutVersion;
+export const SENSOR_LAYOUT_VERSION: string = installationLayout.layoutVersion;
 
 /** A target a contact can trigger, with the logical rectangle the renderer validates. */
 export interface SensorTarget {
@@ -74,7 +63,7 @@ export function visibleTargets(snapshots: Partial<Record<ColumnId, PublishedColu
     if (snapshot.phase === 'idle') {
       const bar = languageGeometry(geometry, languageBar);
       for (const language of bar.languages)
-        targets.push(target({ type: 'language', columnId, locale: language.locale as WallLocale }, `${columnId}:language:${language.locale}`, language, offsetY));
+        targets.push(target({ type: 'language', columnId, locale: language.locale }, `${columnId}:language:${language.locale}`, language, offsetY));
       for (const item of geometry.subItems ?? [])
         targets.push(target({ type: 'subItem', columnId, subItemId: item.key }, `${columnId}:subItem:${item.key}`, item, offsetY));
       if (geometry.main)

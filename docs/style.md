@@ -2,7 +2,7 @@
 
 Use Tailwind CSS utilities first for layout, typography, spacing, sizes, colors, borders, focus, and interaction states. Arbitrary values and CSS-variable utilities count as supported Tailwind features; do not recreate them as vanilla CSS classes.
 
-When utilities cannot define a behavior, put the smallest necessary CSS in the owning Vue component's `<style scoped>`. Custom keyframe definitions and their animation references stay together there because Vue scopes the keyframe names. Current exceptions are the SVG hold-border dash-offset animation in WallHoldButton and the wave light sweeps/corner glow keyframes in KioskBackground. Both are disabled under reduced motion. Reduced motion uses a static hold outline and disables decorative motion.
+When utilities cannot define a behavior, put the smallest necessary CSS in the owning Vue component's `<style scoped>`. Custom keyframe definitions and their animation references stay together there because Vue scopes the keyframe names. Current exceptions are scoped animation keyframes in WallHoldButton, WallOpenCard, WallPageCopy, and KioskBackground; they are disabled under reduced motion. Reduced motion uses a static hold outline and disables decorative motion.
 
 `app/assets/css/main.css` contains the Tailwind import/theme (wall colors `wall-night`, `wall-navy`, `wall-panel`, `wall-glow`, `wall-ink`; `font-sans` and `font-display` both Roboto) and global document rules that cannot be scoped to a component, such as html/body/Nuxt-root sizing. Do not put wall/card/control styles there. Use `@apply` for supported global utilities rather than rewriting their declarations.
 

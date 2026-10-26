@@ -1,3 +1,5 @@
+import type { Rect } from './installation-layout';
+
 /**
  * Close (✕) button geometry from the dashboard, in two places (`position`):
  * - `bottom` (default, client request): a capsule as wide as the open card (74 tall), 20 px
@@ -8,8 +10,6 @@
  * use `closeTargetRect`, so they stay the same rectangle. Derived from wall-v7, so the layout
  * version is unchanged.
  */
-interface Rect { x: number; y: number; width: number; height: number }
-
 export const CLOSE_POSITIONS = ['bottom', 'corner'] as const;
 export type ClosePosition = typeof CLOSE_POSITIONS[number];
 

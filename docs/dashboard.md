@@ -20,6 +20,7 @@ Wall, Hold, and Font settings are one document in a SQLite file on the server (`
 - `GET /api/settings` returns `{ version, updatedAt, settings }` (version 0 = nothing saved yet). It is public, `no-store`, and allows any origin, so a wall on another host can follow it.
 - `PUT /api/settings` saves (values are normalized like in the browser, missing groups keep their stored value) and bumps the version. It needs the dashboard login when `NUXT_DASHBOARD_PASSWORD` is set (401 otherwise).
 - `app/plugins/settings-sync.client.ts` runs on every page after `settings-storage`: it pulls on start, every 5 s, and when the tab becomes visible, and applies a newer server version to the store (which also updates `localStorage`, the offline fallback). Only `/dashboard` pushes: every store change (Simpan, import, reset) goes to the server 300 ms later; values that came from the server are never echoed back. The first dashboard that opens an empty server (version 0) seeds it with its browser's settings, also right after login.
+- Saves are captured while on the local dashboard, so leaving it during the 300 ms delay still sends the saved snapshot. GET/PUT requests are ordered; the newest pending edit wins, stale reads cannot undo saves, and failed saves stay local and retry before the next poll (including after login). Remote followers and changes originating on the wall never create saves. Server versions only advance within a browser session; reload wall/dashboard tabs after restoring an older database backup.
 - `NUXT_PUBLIC_SETTINGS_SYNC_URL` on another host (e.g. `https://altama-milestone.nmxavw.com` on the event PC) makes the wall **follow** that server: it pulls from there, and its own dashboard changes stay in that browser until the next change on the server. Empty = this server.
 - When the database is unavailable (503, e.g. on Vercel, whose file system does not keep files) or the server cannot be reached, everything keeps working from `localStorage`.
 
@@ -38,8 +39,8 @@ Every wall text uses Roboto. The page sets the sizes (logical px on the 2304 × 
 
 | Setting | Text | Default | Range |
 | --- | --- | --- | --- |
-| Judul section | Column title in the pill | 27 | 20–34 |
-| Ketebalan judul | Title weight: Regular 400, Medium 500, Bold 700, Extra 800, Black 900 | Bold | – |
+| Judul section | Column title in the pill | 29 | 20–34 |
+| Ketebalan judul | Title weight: Regular 400, Medium 500, Bold 700, Extra 800, Black 900 | Black (900) | – |
 | Nama sub-item | Open sub-item name above the card (when it has no logo) | 32 | 24–40 |
 | Caption tile | Tile labels of column 5 (Distribusi / Pemasaran) | 30 | 22–36 |
 | Tab page | Page tab labels | 24 | 16–28 |
@@ -150,7 +151,7 @@ The page talks to the Sensor Service over WebSocket (`NUXT_PUBLIC_SENSOR_WS_URL`
 - `app/pages/dashboard.vue`: shell (password gate, sidebar `NAV`, drawer, scrolling content column, backup/fullscreen/reset/logout); `app/pages/dashboard/{index,wall,hold,font,sensor}.vue`: pages with `definePageMeta({ title, description })`.
 - `app/components/dashboard/`: `DashboardLogin` (password screen), `DashboardWall`, `DashboardHold`, `DashboardFont` (with `DashboardCardFit`, the invisible fit check), `DashboardSensor`, `DashboardFormActions` (Simpan/Batal/Default bar), and the shared `DashboardSection`, `DashboardSettingRow`, and `DashboardSwitch`.
 - `server/utils/dashboard-session.ts`: password, session cookie, and `requireDashboardSession` (401 + 3-day renewal) for dashboard-only API routes; `server/utils/dashboard-auth.ts`: the signed token itself.
-- `app/composables/useSettingsBackup.ts`: export/import; `app/composables/useSettingsSync.ts` + `app/plugins/settings-sync.client.ts`: server sync; `app/composables/useSensorAdmin.ts`: admin socket with reconnect, owned by the Sensor page's scope.
+- `app/composables/useSettingsBackup.ts`: export/import; `app/composables/useSettingsSync.ts` + `app/plugins/settings-sync.client.ts`: app-owned server-sync lifecycle; `app/utils/settings-sync.ts`: request queue/retry state, independent of Nuxt; `shared/settings.ts`: browser/server document contract and normalization; `app/composables/useSensorAdmin.ts`: admin socket with reconnect, owned by the Sensor page's scope.
 - `shared/hold-settings.ts`, `shared/wall-settings.ts`, `shared/font-settings.ts`: groups/settings, defaults, limits, normalizers, and the action → hold group map (`HOLD_GROUP_BY_ACTION`); `shared/sensor-config.ts`: Sensor Service config and admin contract.
 - `app/stores/settings.ts`: serializable `hold`, `wall`, and `fonts` state. `WallHoldButton` reads its `group` rule and passes `{ mode, durationMs }` to the `v-hold` directive (`app/utils/hold.ts`).
 
