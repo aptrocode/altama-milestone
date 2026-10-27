@@ -35,6 +35,7 @@ Apa yang berubah dengan V4:
 - **Hold, Tap + delay, dan Tap** di Dashboard → Hold berjalan persis seperti di touchscreen.
 - **Multitouch:** beberapa orang bisa menekan dan menahan tombol di kolom berbeda bersamaan.
 - **Geser teks** (Mode konten Scroll) dan **swipe foto** ikut jalan.
+- **Bulatan sentuhan TouchDesigner** (lingkaran cyan berisi nomor ID TUIO, dari script ini, bukan dari Hokuyo) hanya tampil saat **Dashboard → Wall → Diagnostik → Titik sentuh** ON (sejak V4.1). Klik mouse lewat TD tidak memunculkannya karena bukan sentuhan TUIO. Channel `indicators` di CHOP `touch_settings` masih bisa menyembunyikannya. **Setelah mengganti script, reload Web Render TOP** supaya wall memuat versi terbaru.
 
 Walau masih memakai V3.2, mode **Tap + delay** tetap berjalan: wall menganggap klik dari script sebagai satu tap, lalu menunggu border penuh. Yang butuh V4 hanya mode **Hold**, multitouch, dan geser/swipe.
 

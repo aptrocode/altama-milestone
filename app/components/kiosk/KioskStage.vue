@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ColumnId, WallAction } from '../../../shared/wall';
 import type { SensorMessage } from '~/types/sensor';
-import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref, watchEffect } from 'vue';
 import KioskBackground from '~/components/kiosk/KioskBackground.vue';
 import KioskStatus from '~/components/kiosk/KioskStatus.vue';
 import KioskTouchDots from '~/components/kiosk/KioskTouchDots.vue';
@@ -115,6 +115,10 @@ const logoBox = layout.visual.logo.idle;
 // Calibration overlay: only the dashboard switch (synced to every wall), so switching it off
 // always hides it; a URL flag used to keep it on regardless.
 const showTouchDots = computed(() => settings.wall.showTouchDots);
+// The TouchDesigner TUIO bridge draws its own touch markers only while this says `on`.
+watchEffect(() => {
+  document.documentElement.dataset.touchDots = showTouchDots.value ? 'on' : 'off';
+});
 const touchDots = ref<InstanceType<typeof KioskTouchDots> | null>(null);
 
 /** The wall button of an action (for a delayed press), or null when it is not on screen. */
