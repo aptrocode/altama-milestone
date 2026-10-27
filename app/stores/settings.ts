@@ -1,8 +1,8 @@
-import type { HoldGroup } from '../../shared/hold-settings';
+import type { HoldGroup, HoldSettings } from '../../shared/hold-settings';
 import { defineStore } from 'pinia';
 import { DEFAULT_FONT_SETTINGS, normalizeFontSettings } from '../../shared/font-settings';
 import { DEFAULT_HOLD_SETTINGS, normalizeHoldSettings } from '../../shared/hold-settings';
-import { DEFAULT_WALL_SETTINGS, normalizeWallSettings } from '../../shared/wall-settings';
+import { DEFAULT_WALL_SETTINGS, effectiveHoldSettings, normalizeWallSettings } from '../../shared/wall-settings';
 
 /** localStorage key for operator settings; bump the suffix if the stored shape changes incompatibly. */
 export const SETTINGS_STORAGE_KEY = 'altama.settings.v1';
@@ -18,7 +18,11 @@ export const useSettingsStore = defineStore('settings', {
     fonts: normalizeFontSettings(DEFAULT_FONT_SETTINGS),
   }),
   getters: {
-    holdRule: state => (group: HoldGroup) => state.hold?.[group] ?? DEFAULT_HOLD_SETTINGS[group],
+    /** Hold rules in effect: the Wall page's content animation decides `card` and `page`. */
+    effectiveHold: state => effectiveHoldSettings(state.hold, state.wall),
+    holdRule(): (group: HoldGroup) => HoldSettings[HoldGroup] {
+      return group => this.effectiveHold[group] ?? DEFAULT_HOLD_SETTINGS[group];
+    },
   },
   actions: {
     setHold(next: unknown) {

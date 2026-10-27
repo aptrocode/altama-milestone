@@ -82,11 +82,11 @@ For UI work, attach before/after images or video and state the tested viewport. 
 
 Resolve every review thread or explain why no change is needed. Required checks must pass on the final commit. Convert the pull request from draft only when acceptance criteria are satisfied and the description matches the final implementation.
 
-Use squash merge unless repository maintainers request preserved commits. The final title must be a clear Conventional Commit subject. After merge:
+Use squash merge unless repository maintainers request preserved commits. The final title must be a clear Conventional Commit subject. The repository keeps only two branches, `main` and `prototype`; every `codex/*` (or other feature) branch is temporary. After merge:
 
 1. confirm the issue closed and acceptance criteria are complete;
 2. delete the remote feature branch;
-3. delete the local feature branch after switching to the updated default branch;
+3. delete the local feature branch after switching to the updated default branch, and any worktree made for it (never link `node_modules` into a worktree: removing it deletes the main checkout's packages). `git branch -a` must then list only `main`, `origin/main` and `origin/prototype`;
 4. verify deployment or release status when applicable;
 5. create a follow-up issue for deferred work instead of hiding it in comments.
 
