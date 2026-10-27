@@ -84,6 +84,7 @@ Baris terakhir harus `HTTP/1.1 200 OK`. Selama build berjalan, versi lama tetap 
 
 - File `.data/altama.sqlite` di-ignore Git, jadi `git pull`, `bun install`, dan `bun run build` tidak pernah menyentuh atau mengosongkannya. Pengaturan yang sudah disimpan tetap ada setelah update.
 - Sebelum update, skrip menyalin database ke `~/backup-altama/altama-TANGGAL-JAM.sqlite` (30 salinan terbaru disimpan). Baris `==> settings database backed up to …` menandakan backup berhasil.
+- **Wall yang sedang terbuka memuat ulang sendiri** paling lambat ±1 menit setelah update selesai (juga Web Render di TouchDesigner dan kiosk PC acara), jadi tidak ada wall yang tertinggal di versi lama. Dashboard menunggu sampai halaman dashboard ditinggalkan, supaya perubahan yang belum disimpan tidak hilang.
 - **Default baru dari update tidak menimpa pengaturan yang sudah tersimpan.** Default hanya dipakai saat database masih kosong, atau saat operator menekan **Default** di halaman (lalu Simpan) atau **Reset ke default** di sidebar.
 
 Mengembalikan backup (misalnya setelah salah Reset):
