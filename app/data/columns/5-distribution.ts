@@ -98,12 +98,12 @@ export const DISTRIBUTION: ColumnConfig = {
         }),
         page(DISTRIBUSI_PHOTOS, {
           'id': { tab: PAGE_TABS.second.id, blocks: [{ bullets: [
-            { lead: 'Jangkauan seluruh Indonesia' },
-            { lead: 'Jangkauan Mancanegara' },
+            { lead: 'Jangkauan Indonesia:', text: 'Hadir di 38 provinsi lewat 800+ mitra distribusi langsung dan 100.000+ jaringan distribusi tidak langsung.' },
+            { lead: 'Jangkauan internasional:', text: 'Pendistribusian hingga mancanegara.' },
           ] }] },
           'en': { tab: PAGE_TABS.second.en, blocks: [{ bullets: [
-            { lead: 'Reach Across Indonesia' },
-            { lead: 'International Reach' },
+            { lead: 'Reach across Indonesia:', text: 'Present in 38 provinces through 800+ direct distribution partners and 100,000+ indirect distribution outlets.' },
+            { lead: 'International reach:', text: 'Distribution to overseas markets.' },
           ] }] },
           'zh-Hans': { tab: PAGE_TABS.second['zh-Hans'], blocks: [{ bullets: [
             { lead: '印度尼西亚覆盖范围：', text: '遍及38个省，拥有800多家直接分销合作伙伴及超过100,000个间接分销网络。' },
@@ -120,13 +120,13 @@ export const DISTRIBUTION: ColumnConfig = {
         page(PEMASARAN_PHOTOS, {
           'id': { tab: PAGE_TABS.first.id, blocks: [{ bullets: [
             { lead: 'Demonstrasi Produk' },
-            { lead: 'TEKIRO Mechanic Competition' },
+            { lead: 'TEKIRO Mechanic Competition:', text: 'Program CSR pendidikan vokasi untuk SMK se-Indonesia.' },
             { lead: 'Pameran' },
             { lead: 'Sponsorship & Komunitas' },
           ] }] },
           'en': { tab: PAGE_TABS.first.en, blocks: [{ bullets: [
             { lead: 'Product Demonstrations' },
-            { lead: 'TEKIRO Mechanic Competition' },
+            { lead: 'TEKIRO Mechanic Competition:', text: 'A vocational education CSR program for vocational high schools (SMK) across Indonesia.' },
             { lead: 'Exhibitions & Expos' },
             { lead: 'Sponsorship & Communities' },
           ] }] },
@@ -143,7 +143,7 @@ export const DISTRIBUTION: ColumnConfig = {
             { lead: 'Influencer/Key Opinion Leader (KOL)' },
             {
               lead: 'Social Media:',
-              text: '+340,000 followers dan viewers tahunan rata-rata +30,000,000 views',
+              text: 'Aktif dalam branding digital melalui berbagai platform media sosial lebih dari +340,000 followers dan viewers +1,000,000,000',
             },
           ] }] },
           'en': { tab: PAGE_TABS.second.en, blocks: [{ bullets: [
@@ -151,7 +151,7 @@ export const DISTRIBUTION: ColumnConfig = {
             { lead: 'Influencers / Key Opinion Leaders (KOL)' },
             {
               lead: 'Social Media:',
-              text: '+340,000 followers and an annual average of +30,000,000 views',
+              text: 'Active in digital branding across many social media platforms, with more than +340,000 followers and +1,000,000,000 views',
             },
           ] }] },
           'zh-Hans': { tab: PAGE_TABS.second['zh-Hans'], blocks: [{ bullets: [
