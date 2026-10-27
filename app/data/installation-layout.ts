@@ -23,7 +23,7 @@ interface ColumnLayout {
 }
 
 interface VisualLayout {
-  logo: { idle: { y: number; height: number }; compact: { y: number; height: number } };
+  logo: { idle: { y: number; height: number } };
   idlePill: Rect;
   /** Open pill of expandable columns, leaving room for the sub-item name above the card. */
   activePill: Rect;

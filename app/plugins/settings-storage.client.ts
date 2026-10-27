@@ -36,9 +36,6 @@ export default defineNuxtPlugin(() => {
   window.addEventListener('storage', (event) => {
     if (event.key !== SETTINGS_STORAGE_KEY)
       return;
-    const next = read() as { hold?: unknown; wall?: unknown; fonts?: unknown } | null;
-    settings.setHold(next?.hold ?? null);
-    settings.setWall(next?.wall ?? null);
-    settings.setFonts(next?.fonts ?? null);
+    settings.applyExternal(read() as { hold?: unknown; wall?: unknown; fonts?: unknown } | null);
   });
 });

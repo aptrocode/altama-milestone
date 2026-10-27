@@ -109,9 +109,8 @@ function stackedOrigin(id: ColumnId) {
   const view = stackedWindow(id);
   return { x: getColumnLayout(id).section.x - stackedView.padX, y: view.y };
 }
-// The large idle logo overlaps the open titles and rails of columns 3/4, so it shrinks only while one of them is open.
-const compactLogo = computed(() => wall.getColumnState(3) !== 'idle' || wall.getColumnState(4) !== 'idle');
-const logoBox = computed(() => compactLogo.value ? layout.visual.logo.compact : layout.visual.logo.idle);
+// One logo size: the open pills and rails of columns 3/4 start below it, so it never shrinks (client request).
+const logoBox = layout.visual.logo.idle;
 
 // Calibration overlay: only the dashboard switch (synced to every wall), so switching it off
 // always hides it; a URL flag used to keep it on regardless.
@@ -220,7 +219,7 @@ onUnmounted(() => {
     <template v-if="!stacked">
       <img
         v-if="STAGE_MEDIA.logo" :src="STAGE_MEDIA.logo.src" alt="ALTAMA Summit 2026: Powering Partnership"
-        class="absolute left-1/2 -translate-x-1/2 w-auto max-w-none object-contain pointer-events-none transition-[top,height] duration-500 ease-out motion-reduce:transition-none"
+        class="absolute left-1/2 -translate-x-1/2 w-auto max-w-none object-contain pointer-events-none"
         :style="{ top: `calc(${logoBox.y} * var(--wall-y))`, height: `calc(${logoBox.height} * var(--wall-y))` }"
       >
       <WallColumn
