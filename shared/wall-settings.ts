@@ -1,6 +1,8 @@
 import type { CloseButtonOptions, ClosePosition } from './close-button';
+import type { HoldSettings } from './hold-settings';
 import type { LanguageBarMode } from './language-bar';
 import { CLOSE_OFFSET, CLOSE_POSITIONS, CLOSE_SCALE } from './close-button';
+import { HOLD_SECONDS } from './hold-settings';
 import { LANGUAGE_BAR_MODES } from './language-bar';
 
 /**
@@ -29,6 +31,10 @@ import { LANGUAGE_BAR_MODES } from './language-bar';
  *   and Rexco keep 2); off restores the pages and tabs.
  * - languageBar: `full` width with larger buttons (default), the `compact` flag pill, or the 2 + 1 `grid`
  *   (shared/language-bar.ts); Sensor Service moves the language targets with it.
+ * - contentAnimation / contentAnimationSeconds: opening content (cards, tiles) and switching page
+ *   tabs plays the hold border animation after a plain tap and acts when it completes (default on,
+ *   1 s, client request); off acts on the tap at once. They decide the `card` and `page` hold
+ *   rules (effectiveHoldSettings), so the Hold page leaves those two groups to the Wall page.
  * - showTouchDots: calibration overlay on the wall (press/release/sensor dots with coordinates).
  * - touchDotLabels: whether those dots show their logical x/y numbers (default on).
  * - touchDotSeconds: how long each touch dot stays after its release (or after a sensor input).
@@ -48,6 +54,8 @@ export interface WallSettings {
   autoPageSeconds: number;
   scrollText: boolean;
   languageBar: LanguageBarMode;
+  contentAnimation: boolean;
+  contentAnimationSeconds: number;
   showTouchDots: boolean;
   touchDotLabels: boolean;
   touchDotSeconds: number;
@@ -59,7 +67,7 @@ export const AUTO_SLIDE_SECONDS = { min: 2, max: 60, step: 1 } as const;
 export const AUTO_PAGE_SECONDS = { min: 3, max: 120, step: 1 } as const;
 export const TOUCH_DOT_SECONDS = { min: 1, max: 60, step: 1 } as const;
 
-export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, closePosition: 'bottom', closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: false, autoSlideSeconds: 5, showPages: true, autoPage: false, autoPageSeconds: 15, scrollText: true, languageBar: 'full', showTouchDots: false, touchDotLabels: true, touchDotSeconds: 5 };
+export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, closePosition: 'bottom', closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: false, autoSlideSeconds: 5, showPages: true, autoPage: false, autoPageSeconds: 15, scrollText: true, languageBar: 'full', contentAnimation: true, contentAnimationSeconds: 1, showTouchDots: false, touchDotLabels: true, touchDotSeconds: 5 };
 
 function clampNumber(value: unknown, fallback: number, limits: { min: number; max: number; step: number }): number {
   const raw = typeof value === 'number' && Number.isFinite(value) ? value : fallback;
@@ -85,6 +93,8 @@ export function normalizeWallSettings(value: unknown): WallSettings {
     autoPageSeconds: clampNumber(source.autoPageSeconds, DEFAULT_WALL_SETTINGS.autoPageSeconds, AUTO_PAGE_SECONDS),
     scrollText: typeof source.scrollText === 'boolean' ? source.scrollText : DEFAULT_WALL_SETTINGS.scrollText,
     languageBar: LANGUAGE_BAR_MODES.includes(source.languageBar as LanguageBarMode) ? source.languageBar as LanguageBarMode : DEFAULT_WALL_SETTINGS.languageBar,
+    contentAnimation: typeof source.contentAnimation === 'boolean' ? source.contentAnimation : DEFAULT_WALL_SETTINGS.contentAnimation,
+    contentAnimationSeconds: clampNumber(source.contentAnimationSeconds, DEFAULT_WALL_SETTINGS.contentAnimationSeconds, HOLD_SECONDS),
     showTouchDots: typeof source.showTouchDots === 'boolean' ? source.showTouchDots : DEFAULT_WALL_SETTINGS.showTouchDots,
     touchDotLabels: typeof source.touchDotLabels === 'boolean' ? source.touchDotLabels : DEFAULT_WALL_SETTINGS.touchDotLabels,
     touchDotSeconds: clampNumber(source.touchDotSeconds, DEFAULT_WALL_SETTINGS.touchDotSeconds, TOUCH_DOT_SECONDS),
@@ -99,4 +109,16 @@ export function closeButtonOptions(settings: Pick<WallSettings, 'closeScale' | '
 /** Pages advance on their own when the operator turned auto page on, or hid the page tabs. */
 export function autoPageActive(settings: Pick<WallSettings, 'autoPage' | 'showPages'>): boolean {
   return settings.autoPage || !settings.showPages;
+}
+
+/**
+ * Hold rules as the wall and Sensor Service use them: the Wall page's content animation decides the
+ * `card` and `page` groups (Tap + delay with its duration, or Tap); the other groups come from the
+ * Hold page.
+ */
+export function effectiveHoldSettings(hold: HoldSettings, wall: Pick<WallSettings, 'contentAnimation' | 'contentAnimationSeconds'>): HoldSettings {
+  const content = wall.contentAnimation
+    ? { mode: 'delay' as const, enabled: false, seconds: wall.contentAnimationSeconds }
+    : { mode: 'tap' as const, enabled: false, seconds: wall.contentAnimationSeconds };
+  return { ...hold, card: content, page: content };
 }

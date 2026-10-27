@@ -25,8 +25,10 @@ const hiddenByWall = computed(() => ({
   slider: !settings.wall.showArrows,
   back: !settings.wall.showClose,
 }) as Partial<Record<HoldGroup, boolean>>);
-const visibleGroups = computed(() => HOLD_GROUPS.filter(group => !hiddenByWall.value[group]));
-const hiddenNote = computed(() => HOLD_GROUPS.filter(group => hiddenByWall.value[group]).map(group => GROUP_LABEL[group].title));
+// Card section and Button page follow the Wall page's Animasi buka konten (effectiveHoldSettings).
+const WALL_GROUPS: readonly HoldGroup[] = ['card', 'page'];
+const visibleGroups = computed(() => HOLD_GROUPS.filter(group => !hiddenByWall.value[group] && !WALL_GROUPS.includes(group)));
+const hiddenNote = computed(() => HOLD_GROUPS.filter(group => hiddenByWall.value[group] && !WALL_GROUPS.includes(group)).map(group => GROUP_LABEL[group].title));
 const listFormat = new Intl.ListFormat('id', { type: 'conjunction' });
 const { draft, dirty, status, save, discard, restoreDefaults } = useSettingsDraft({
   saved: () => settings.hold,
@@ -93,6 +95,13 @@ const HELP: HelpLine[] = [
         </div>
       </DashboardSettingRow>
     </DashboardSection>
+    <p class="px-1 text-sm text-sky-100/60" data-hold-content-note>
+      Card section dan Button page (buka konten, ganti tab) diatur di
+      <NuxtLink to="/dashboard/wall" class="font-bold text-white underline underline-offset-2">
+        Wall → Animasi buka konten
+      </NuxtLink>
+      ({{ settings.wall.contentAnimation ? `Tap + delay ${settings.wall.contentAnimationSeconds} s` : 'Tap' }}).
+    </p>
     <p v-if="hiddenNote.length" class="px-1 text-sm text-sky-100/60" data-hold-hidden-note>
       {{ listFormat.format(hiddenNote) }} disembunyikan karena tombolnya dimatikan di
       <NuxtLink to="/dashboard/wall" class="font-bold text-white underline underline-offset-2">

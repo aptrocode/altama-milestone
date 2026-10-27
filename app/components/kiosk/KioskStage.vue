@@ -147,7 +147,7 @@ const sensorSocket = useSensorSocket({
   expectedLayoutVersion: layout.layoutVersion,
   onMessage: handleSensorMessage,
   getColumns: () => wall.publishedColumns,
-  getHold: () => settings.hold,
+  getHold: () => settings.effectiveHold,
   getCardOffsetY: () => settings.wall.cardOffsetY,
   getShowClose: () => settings.wall.showClose,
   getShowArrows: () => settings.wall.showArrows,

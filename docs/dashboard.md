@@ -55,13 +55,13 @@ A title word that does not fit its pill (e.g. INFRASTRUKTUR at a large size or B
 
 | Group | Buttons | Default |
 | --- | --- | --- |
-| Card section (`card`) | Idle main card of columns 1/3/4/6 and the sub-item tiles of columns 2/5 | Tap + delay, 1.0 s |
-| Button page (`page`) | Page tabs (PAGE 1–4) | Tap + delay, 1.0 s |
+| Card section (`card`) | Idle main card of columns 1/3/4/6 and the sub-item tiles of columns 2/5 | Set on the Wall page (Animasi buka konten): Tap + delay, 1.0 s |
+| Button page (`page`) | Page tabs (PAGE 1–4) | Set on the Wall page (Animasi buka konten): Tap + delay, 1.0 s |
 | Button slider (`slider`) | Photo arrows | Tap |
 | Bahasa (`language`) | Language flags (ID / EN / 中文) | Tap (no animation) |
 | Tombol close (`back`) | The open card's ✕ button | Tap |
 
-Each group has a **mode** (segmented **Tap / Hold / Tap + delay**) and a duration (0.3–5 s, 0.1 s steps, unused for Tap).
+The Hold page lists slider, language and close. Each has a **mode** (segmented **Tap / Hold / Tap + delay**) and a duration (0.3–5 s, 0.1 s steps, unused for Tap). Card section and Button page are not listed there: the Wall page's **Animasi buka konten** decides them (`effectiveHoldSettings` in `shared/wall-settings.ts`: On = Tap + delay with its duration, Off = Tap), and a note on the Hold page links to it and shows the current value. Their stored Hold values are kept but unused.
 
 - **Hold**: the button must be held; the border progress animation follows the duration; releasing early cancels.
 - **Tap + delay**: one tap starts the same border animation and the button activates when it completes, without holding (releasing does not cancel; another tap while it runs is ignored). Sensor Service treats it as a short contact and the wall plays the delay on the touched button (`wall:press`), so LiDAR and pointer input behave alike.
@@ -73,13 +73,15 @@ Each group has a **mode** (segmented **Tap / Hold / Tap + delay**) and a duratio
 
 ## Wall
 
-The page is grouped into five cards: **Mode konten** (Page or Scroll, at the top), **Tampilan** (language bar, card offset), **Tombol di card** (close + size/position, slider + Auto slide, page tabs, Auto page + duration), **Waktu** (reset), and **Diagnostik** (amber; touch dots + coordinate numbers + duration, with a "Masih menyala" badge while on). Each row has a one-line hint (number rows state their default), a **?** tooltip with the details (hover; a click or tap pins it and lights the **?**, closed by another click, a click elsewhere, or Escape), and, when the value differs from its default, a **↺ Default: …** chip that restores it. Switches show On/Off. Inputs that only matter while a switch is off (Auto slide, Auto page) or on (Angka koordinat, Durasi titik) sit indented under it. The language bar options are drawn as small card sketches.
+The page is grouped into five cards: **Mode konten** (Page or Scroll, at the top), **Tampilan** (language bar, card offset), **Tombol di card** (Animasi buka konten + duration, close + size/position, slider + Auto slide, page tabs, Auto page + duration), **Waktu** (reset), and **Diagnostik** (amber; touch dots + coordinate numbers + duration, with a "Masih menyala" badge while on). Each row has a one-line hint (number rows state their default), a **?** tooltip with the details (hover; a click or tap pins it and lights the **?**, closed by another click, a click elsewhere, or Escape), and, when the value differs from its default, a **↺ Default: …** chip that restores it. Switches show On/Off. Inputs that only matter while a switch is off (Auto slide, Auto page) or on (Durasi animasi, Angka koordinat, Durasi titik) sit indented under it. The language bar options are drawn as small card sketches.
 
 | Setting | Effect | Default |
 | --- | --- | --- |
 | Reset otomatis | Seconds without interaction before a column returns to idle/Indonesian; one value for every column (5–600 s). While a card advances on its own (auto slide/auto page), the reset waits until the slideshow has reached its last slide (or last page) since the last interaction: e.g. a 30 s video plus 5 × 5 s images closes at 55 s, right after the last image, while 2 images (10 s) still close at the reset time. A card never waits longer than 5 minutes past the reset time, and closes at once if the operator turns the arrows/tabs back on | 30 s |
 | Posisi Y card | Moves every column (frame, title, card, controls) up (−) or down (+) on the LED wall, −120 to 120 logical px; ↑/↓ nudge by 10. Open cards still end at y 1312 on screen; the phone/tablet layout ignores it | 0 |
 | Letak tombol close | Shown while Tombol close is on: **Di bawah card** (a solid red capsule as wide as the content card, 330 × 74, with a white ✕ and bold TUTUP / CLOSE / 关闭, 10 px under the idle frame; open cards then stop at the idle frame's bottom, so long text can shrink below Min, see Font) or **Pojok kanan atas** (the ✕ badge on the card's corner; the size and position rows below apply only to it) | Di bawah card |
+| Animasi buka konten | Opening content (main cards, the Tekiro / RYU / Rexco / Distribusi / Pemasaran tiles) and switching page tabs: On plays the hold border animation after a plain tap (no holding) and acts when it completes; Off acts at once. Flags, photo arrows and close are not affected (Hold page). Sensor Service gets the same rules | On |
+| Durasi animasi | Shown while Animasi buka konten is on: how long the border runs before the content opens (0.3–5 s, 0.1 s steps) | 1 s |
 | Tombol close | Shows the open card's ✕ button. Off hides it on every column and removes the Back touch target from Sensor Service; cards still close after the reset time, with operator keys 1–6, R/Escape, and OSC `/altama/back` | On |
 | Ukuran tombol close | Shown while Tombol close is on: 1× (the 44 px badge), 2×, or a manual 1–2× (0.1 steps); the badge grows around its centre on the card corner | 1× |
 | Posisi tombol close | Shown while Tombol close is on: X (− left / + right) and Y (− up / + down) shift of the badge, −60 to 60 logical px in 2 px steps | X 0 · Y 0 |

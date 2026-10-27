@@ -11,6 +11,7 @@ import DashboardSwitch from '~/components/dashboard/DashboardSwitch.vue';
 import { useSettingsDraft } from '~/composables/useSettingsDraft';
 import { useSettingsStore } from '~/stores/settings';
 import { CLOSE_OFFSET, CLOSE_SCALE } from '../../../shared/close-button';
+import { HOLD_SECONDS } from '../../../shared/hold-settings';
 import { AUTO_PAGE_SECONDS, AUTO_SLIDE_SECONDS, autoPageActive, CARD_OFFSET_Y, DEFAULT_WALL_SETTINGS, normalizeWallSettings, RESET_SECONDS, TOUCH_DOT_SECONDS } from '../../../shared/wall-settings';
 
 const settings = useSettingsStore();
@@ -106,6 +107,11 @@ const HELP: Record<string, HelpLine[]> = {
     { term: 'X', text: 'Minus = ke kiri, plus = ke kanan.' },
     { term: 'Y', text: 'Minus = ke atas, plus = ke bawah.' },
     'Area sentuh sensor dan perintah OSC ikut bergeser.',
+  ],
+  contentAnimation: [
+    { term: 'On', text: 'Buka konten (kartu, tile Tekiro / RYU / Pemasaran, dll.) dan ganti tab page cukup di-tap: garis animasi berjalan di tepi tombol, lalu konten terbuka setelah durasinya. Tidak perlu ditahan.' },
+    { term: 'Off', text: 'Konten langsung terbuka saat di-tap, tanpa animasi.' },
+    'Bendera bahasa, panah foto, dan tombol close tidak ikut; aturannya di halaman Hold.',
   ],
   autoPage: [
     { term: 'On', text: 'Page berikutnya muncul sendiri setiap Durasi auto page, dihitung sejak page terakhir berganti. Menekan tab memulai hitungan lagi.' },
@@ -258,6 +264,32 @@ const unit = 'text-sm text-sky-100/60';
     </DashboardSection>
 
     <DashboardSection title="Tombol di card" icon="buttons" description="Tombol yang terlihat saat card dibuka. Yang dimatikan berjalan otomatis.">
+      <div>
+        <DashboardSettingRow
+          data-wall-setting="contentAnimation" title="Animasi buka konten" hint="Tap kartu atau tab: garis animasi berjalan, lalu konten terbuka."
+          :help="HELP.contentAnimation"
+          :changed="changed('contentAnimation')" :default-label="defaultLabel('contentAnimation')" @reset="reset('contentAnimation')"
+        >
+          <DashboardSwitch :model-value="draft.contentAnimation" label="Animasi buka konten" @update:model-value="update({ contentAnimation: $event })" />
+        </DashboardSettingRow>
+        <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-1" leave-active-class="transition duration-150 ease-in" leave-to-class="opacity-0 -translate-y-1">
+          <DashboardSettingRow
+            v-if="draft.contentAnimation" nested data-wall-setting="contentAnimationSeconds" title="Durasi animasi"
+            :hint="`Lama garis berjalan sebelum konten terbuka (${HOLD_SECONDS.min}–${HOLD_SECONDS.max} s). Default ${DEFAULT_WALL_SETTINGS.contentAnimationSeconds} detik.`"
+            :changed="changed('contentAnimationSeconds')" :default-label="defaultLabel('contentAnimationSeconds')" @reset="reset('contentAnimationSeconds')"
+          >
+            <div class="flex items-center gap-1.5">
+              <input
+                type="number" inputmode="decimal" :class="field" aria-label="Detik animasi buka konten"
+                :min="HOLD_SECONDS.min" :max="HOLD_SECONDS.max" :step="HOLD_SECONDS.step"
+                :value="draft.contentAnimationSeconds" @change="setNumber('contentAnimationSeconds', ($event.target as HTMLInputElement).value)"
+              >
+              <span :class="unit">s</span>
+            </div>
+          </DashboardSettingRow>
+        </Transition>
+      </div>
+
       <div>
         <DashboardSettingRow
           data-wall-setting="showClose" title="Tombol close" hint="Tombol Tutup (✕) di card yang terbuka."
