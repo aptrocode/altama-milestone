@@ -93,7 +93,7 @@ Uji tiap bendera di keenam kolom, juga ✕, panah, dan tab page.
 
 ### Titik sentuh langsung di wall (cara A dan B)
 
-Untuk melihat di proyeksi atau LED **di mana** sentuhan benar-benar diterima halaman, nyalakan **Dashboard → Wall → Titik sentuh**, atau buka wall dengan `?dots=1` (misalnya `http://localhost:3000/?dots=1`). Ini halaman yang sama, hanya ditambah lapisan titik. Lama titik terlihat diatur di **Durasi titik** (default 5 detik):
+Untuk melihat di proyeksi atau LED **di mana** sentuhan benar-benar diterima halaman, nyalakan **Dashboard → Wall → Titik sentuh** lalu **Simpan**. Ini halaman yang sama, hanya ditambah lapisan titik. Lama titik terlihat diatur di **Durasi titik** (default 5 detik):
 
 | Tanda | Arti |
 | --- | --- |
@@ -109,9 +109,9 @@ Cara membaca:
 | Biru tepat di bendera, merah jauh | Saat tangan dilepas, posisinya bergeser | Set **Hold → Bahasa** ke Hold 0,3–0,5 detik (bagian 5) |
 | Tidak muncul titik sama sekali | Klik tidak sampai ke halaman | Cek pengiriman klik di TouchDesigner, atau output OptiTUIO |
 
-Matikan lagi (hapus `?dots=1`) sebelum acara.
+Matikan lagi (switch **Titik sentuh** OFF, **Simpan**) sebelum acara. Parameter `?dots=1` di URL sudah tidak dipakai.
 
-> **Pengaturan dashboard tersimpan per browser.** Wall yang tampil di TouchDesigner (Web Render) punya penyimpanan sendiri, terpisah dari Chrome. Mengubah dashboard di Chrome tidak mengubah wall di TouchDesigner. Ubah pengaturannya di browser yang sama dengan yang menampilkan wall (buka `/dashboard` di Web Render, atau tekan **Ctrl+Shift+D** di sana), atau pakai **Export / Import pengaturan**. Titik sentuh bisa langsung lewat `?dots=1`.
+> **Pengaturan dashboard tersinkron lewat server** (SQLite, lihat PANDUAN-VPS.md): setelah **Simpan**, setiap wall yang membuka server yang sama (termasuk Web Render di TouchDesigner) mengikutinya dalam ±5 detik. Kalau tidak berubah, cek wall dan dashboard memakai server yang sama.
 
 ## 5. Atur dashboard agar cocok untuk LiDAR
 

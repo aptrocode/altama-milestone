@@ -3,7 +3,7 @@ import { onBeforeUnmount, onMounted, reactive } from 'vue';
 import { installationLayout } from '~/data/installation-layout';
 
 /**
- * Calibration overlay (dashboard "Titik sentuh" or `?dots=1`): where each pointer pressed (blue),
+ * Calibration overlay (dashboard "Titik sentuh"): where each pointer pressed (blue),
  * where it released (red, with a line when it drifted), and where Sensor Service inputs landed
  * (green), with logical wall coordinates on the LED layout. Purely visual: it never takes input.
  */

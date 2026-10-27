@@ -17,8 +17,8 @@
         "height": 278
       },
       "compact": {
-        "y": 18,
-        "height": 206
+        "y": 40,
+        "height": 250
       }
     },
     "idlePill": {
@@ -61,10 +61,6 @@
       "tabs": 254,
       "photo": 196,
       "plain": 44
-    },
-    "rail": {
-      "y": 268,
-      "height": 790
     },
     "openCardMaxBottom": 1312,
     "stacked": {

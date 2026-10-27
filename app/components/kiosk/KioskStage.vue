@@ -113,10 +113,9 @@ function stackedOrigin(id: ColumnId) {
 const compactLogo = computed(() => wall.getColumnState(3) !== 'idle' || wall.getColumnState(4) !== 'idle');
 const logoBox = computed(() => compactLogo.value ? layout.visual.logo.compact : layout.visual.logo.idle);
 
-// Calibration overlay: the dashboard switch, or `?dots=1` in the URL (handy where the wall runs in
-// a browser without the dashboard's storage, e.g. a TouchDesigner Web Render TOP).
-const route = useRoute();
-const showTouchDots = computed(() => settings.wall.showTouchDots || route.query.dots === '1');
+// Calibration overlay: only the dashboard switch (synced to every wall), so switching it off
+// always hides it; a URL flag used to keep it on regardless.
+const showTouchDots = computed(() => settings.wall.showTouchDots);
 const touchDots = ref<InstanceType<typeof KioskTouchDots> | null>(null);
 
 /** The wall button of an action (for a delayed press), or null when it is not on screen. */

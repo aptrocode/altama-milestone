@@ -62,7 +62,8 @@ const pillStyle = computed(() => rectStyle(idle.value
   : props.column.type === 'expandable' ? visual.activePill : visual.activePillSingle));
 
 // The open card grows with its content (WallOpenCard reports the height it needs) between the
-// layout's card height and visual.openCardMaxBottom; the glow rails end 22 px below it.
+// layout's card height and visual.openCardMaxBottom; the glow rails run from the open pill's top
+// (so the centre divider never reaches up to the logo) to 22 px below it.
 const cardHeight = ref(geometry.value.active.card.height);
 // The on-screen bottom limit stays at openCardMaxBottom whatever the dashboard offset is.
 const maxCardHeight = computed(() => visual.openCardMaxBottom - props.offsetY - geometry.value.active.card.y);
@@ -86,9 +87,10 @@ const cardStyle = computed(() => ({
   ...rectStyle(geometry.value.active.card, geometry.value.section),
   height: `calc(${cardHeight.value} * var(--wall-y))`,
 }));
+const railTop = computed(() => props.column.type === 'expandable' ? visual.activePill.y : visual.activePillSingle.y);
 const railStyle = computed(() => ({
-  top: `calc(${visual.rail.y} * var(--wall-y))`,
-  height: `calc(${cardBottom.value + 22 - visual.rail.y} * var(--wall-y))`,
+  top: `calc(${railTop.value} * var(--wall-y))`,
+  height: `calc(${cardBottom.value + 22 - railTop.value} * var(--wall-y))`,
 }));
 
 function act(action: WallAction) {

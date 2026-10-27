@@ -33,7 +33,6 @@ interface VisualLayout {
   artwork: Rect;
   photo: Rect;
   textTop: { tabs: number; photo: number; plain: number };
-  rail: { y: number; height: number };
   /** Lowest bottom edge of an open card; cards grow with their content from `active.card.height` up to it. */
   openCardMaxBottom: number;
   /** Window into one column for the stacked (mobile/tablet) layout, in logical units. */
