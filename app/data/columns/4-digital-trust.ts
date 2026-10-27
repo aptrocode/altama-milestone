@@ -27,14 +27,14 @@ export const DIGITAL_TRUST: ColumnConfig = {
     onlyPage(PHOTOS, {
       'id': [{ bullets: [
         { lead: 'ODP Apps' },
-        { lead: 'ALVA (Customer Care) dan TAMI (ALTAMA Mitra Care)', text: 'Sebagai layanan customer care digital.' },
+        { lead: 'ALVA (Customer Care) dan TAMI (ALTAMA Mitra Care)', text: 'Sebagai layanan customer care digital end-user dan mitra bisnis.' },
         { lead: 'ISO 9001:2015', text: 'Standar mutu kelas dunia.' },
         { lead: 'ALTAMA e-Care Apps', text: 'Aplikasi pelayanan after sales.' },
         { lead: 'Service Delivery IndoPaket by Indomaret', text: 'Program klaim garansi gratis ongkir di seluruh Indonesia.' },
       ] }],
       'en': [{ bullets: [
         { lead: 'ODP Apps' },
-        { lead: 'ALVA (Customer Care) and TAMI (ALTAMA Mitra Care)', text: 'Digital customer care services.' },
+        { lead: 'ALVA (Customer Care) and TAMI (ALTAMA Mitra Care)', text: 'Digital customer care services for end users and business partners.' },
         { lead: 'ISO 9001:2015', text: 'World-class quality standard.' },
         { lead: 'ALTAMA e-Care Apps', text: 'After-sales service app.' },
         { lead: 'IndoPaket Service Delivery by Indomaret', text: 'Free-shipping warranty claim program across Indonesia.' },

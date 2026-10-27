@@ -30,6 +30,7 @@ import { LANGUAGE_BAR_MODES } from './language-bar';
  * - languageBar: `full` width with larger buttons (default), the `compact` flag pill, or the 2 + 1 `grid`
  *   (shared/language-bar.ts); Sensor Service moves the language targets with it.
  * - showTouchDots: calibration overlay on the wall (press/release/sensor dots with coordinates).
+ * - touchDotLabels: whether those dots show their logical x/y numbers (default on).
  * - touchDotSeconds: how long each touch dot stays after its release (or after a sensor input).
  */
 export interface WallSettings {
@@ -48,6 +49,7 @@ export interface WallSettings {
   scrollText: boolean;
   languageBar: LanguageBarMode;
   showTouchDots: boolean;
+  touchDotLabels: boolean;
   touchDotSeconds: number;
 }
 
@@ -57,7 +59,7 @@ export const AUTO_SLIDE_SECONDS = { min: 2, max: 60, step: 1 } as const;
 export const AUTO_PAGE_SECONDS = { min: 3, max: 120, step: 1 } as const;
 export const TOUCH_DOT_SECONDS = { min: 1, max: 60, step: 1 } as const;
 
-export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, closePosition: 'bottom', closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: false, autoSlideSeconds: 5, showPages: true, autoPage: false, autoPageSeconds: 15, scrollText: true, languageBar: 'full', showTouchDots: false, touchDotSeconds: 5 };
+export const DEFAULT_WALL_SETTINGS: WallSettings = { resetSeconds: 30, cardOffsetY: 0, showClose: true, closePosition: 'bottom', closeScale: 1, closeOffsetX: 0, closeOffsetY: 0, showArrows: false, autoSlideSeconds: 5, showPages: true, autoPage: false, autoPageSeconds: 15, scrollText: true, languageBar: 'full', showTouchDots: false, touchDotLabels: true, touchDotSeconds: 5 };
 
 function clampNumber(value: unknown, fallback: number, limits: { min: number; max: number; step: number }): number {
   const raw = typeof value === 'number' && Number.isFinite(value) ? value : fallback;
@@ -84,6 +86,7 @@ export function normalizeWallSettings(value: unknown): WallSettings {
     scrollText: typeof source.scrollText === 'boolean' ? source.scrollText : DEFAULT_WALL_SETTINGS.scrollText,
     languageBar: LANGUAGE_BAR_MODES.includes(source.languageBar as LanguageBarMode) ? source.languageBar as LanguageBarMode : DEFAULT_WALL_SETTINGS.languageBar,
     showTouchDots: typeof source.showTouchDots === 'boolean' ? source.showTouchDots : DEFAULT_WALL_SETTINGS.showTouchDots,
+    touchDotLabels: typeof source.touchDotLabels === 'boolean' ? source.touchDotLabels : DEFAULT_WALL_SETTINGS.touchDotLabels,
     touchDotSeconds: clampNumber(source.touchDotSeconds, DEFAULT_WALL_SETTINGS.touchDotSeconds, TOUCH_DOT_SECONDS),
   };
 }

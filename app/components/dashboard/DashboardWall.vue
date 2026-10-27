@@ -137,7 +137,7 @@ const HELP: Record<string, HelpLine[]> = {
     { term: 'Biru', text: 'Posisi saat menekan, dengan koordinat.' },
     { term: 'Merah + garis', text: 'Posisi saat dilepas, kalau bergeser.' },
     { term: 'Hijau', text: 'Input dari Sensor Service.' },
-    'Di browser lain (mis. TouchDesigner) buka wall dengan ?dots=1.',
+    'Berlaku di semua wall yang tersinkron, termasuk TouchDesigner.',
   ],
 };
 
@@ -462,6 +462,14 @@ const unit = 'text-sm text-sky-100/60';
         >
           <DashboardSwitch :model-value="draft.showTouchDots" label="Tampilkan titik sentuh" @update:model-value="update({ showTouchDots: $event })" />
         </DashboardSettingRow>
+        <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-1" leave-active-class="transition duration-150 ease-in" leave-to-class="opacity-0 -translate-y-1">
+          <DashboardSettingRow
+            v-if="draft.showTouchDots" nested data-wall-setting="touchDotLabels" title="Angka koordinat" hint="Tampilkan angka x / y di samping titik."
+            :changed="changed('touchDotLabels')" :default-label="defaultLabel('touchDotLabels')" @reset="reset('touchDotLabels')"
+          >
+            <DashboardSwitch :model-value="draft.touchDotLabels" label="Tampilkan angka koordinat" @update:model-value="update({ touchDotLabels: $event })" />
+          </DashboardSettingRow>
+        </Transition>
         <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-1" leave-active-class="transition duration-150 ease-in" leave-to-class="opacity-0 -translate-y-1">
           <DashboardSettingRow
             v-if="draft.showTouchDots" nested data-wall-setting="touchDotSeconds" title="Durasi titik"

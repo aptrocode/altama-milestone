@@ -88,8 +88,8 @@ describe('visible targets', () => {
     const bottom = { scale: 1, x: 0, y: 0, position: 'bottom' as const };
     const pill = visibleTargets(open, { close: bottom, languageBar: 'full' }).find(item => item.key === '1:back')!.rect;
     // Column 1's idle frame ends at y 426 + 642; its open card is 330 wide at x 47: the capsule
-    // spans the card, 74 tall, 20 px under the frame.
-    expect(pill).toMatchObject({ x: 47, y: 426 + 642 + 20, width: 330, height: 74 });
+    // spans the card, 74 tall, 10 px under the frame.
+    expect(pill).toMatchObject({ x: 47, y: 426 + 642 + 10, width: 330, height: 74 });
     // The grid bar makes the frame 76 px taller and raises the column 40 px.
     const grid = visibleTargets(open, { close: bottom, languageBar: 'grid' }).find(item => item.key === '1:back')!.rect;
     expect(grid.y).toBe(pill.y + 76 - 40);

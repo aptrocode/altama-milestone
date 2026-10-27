@@ -22,9 +22,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     apply(next) {
       applying = true;
       try {
-        settings.setHold(next.hold);
-        settings.setWall(next.wall);
-        settings.setFonts(next.fonts);
+        settings.applyExternal(next);
       }
       finally {
         applying = false;

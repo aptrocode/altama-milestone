@@ -27,14 +27,14 @@ export const INFRASTRUCTURE: ColumnConfig = {
         { lead: 'Warehouse Management System' },
         { lead: 'Laboratorium Quality Control' },
         { lead: 'Toolsman', text: 'Tim promosi produk Altama ke konsumen di berbagai titik.' },
-        { lead: 'Service Center TEKIRO & RYU' },
+        { lead: 'Service Center TEKIRO & RYU', text: 'Pusat layanan after sales service.' },
         { lead: 'ALTAMA Building' },
       ] }],
       'en': [{ bullets: [
         { lead: 'Warehouse Management System' },
         { lead: 'Quality Control Laboratory' },
         { lead: 'Toolsman', text: 'Altama’s product promotion team serving consumers at many locations.' },
-        { lead: 'TEKIRO & RYU Service Center' },
+        { lead: 'TEKIRO & RYU Service Center', text: 'After-sales service centre.' },
         { lead: 'ALTAMA Building' },
       ] }],
       'zh-Hans': [{ bullets: [

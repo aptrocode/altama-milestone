@@ -36,12 +36,12 @@ export const OUR_BRANDS: ColumnConfig = {
         page(TEKIRO_PROFILE_PHOTOS, {
           'id': { tab: PAGE_TABS.first.id, blocks: [{ bullets: [
             { lead: 'Lahir: 1999' },
-            { lead: 'Standar kualitas', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
+            { lead: 'Standar kualitas: JIS, ANSI, dan DIN', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
             { lead: 'Jumlah SKU: 2.183 SKU' },
           ] }] },
           'en': { tab: PAGE_TABS.first.en, blocks: [{ bullets: [
             { lead: 'Founded: 1999' },
-            { lead: 'Quality standards', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
+            { lead: 'Quality standards: JIS, ANSI, and DIN', image: provisional('/photos/our-brands/tekiro/standards.webp'), logosBelow: true },
             { lead: 'SKU count: 2,183 SKUs' },
           ] }] },
           'zh-Hans': { tab: PAGE_TABS.first['zh-Hans'], blocks: [{ bullets: [
@@ -71,11 +71,11 @@ export const OUR_BRANDS: ColumnConfig = {
             { label: 'TOP Brand', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
             { label: 'TOP Digital PR', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
           ] }, { bullets: [
-            { lead: 'Guinness World Records' },
-            { lead: 'Museum Rekor Indonesia - MURI' },
-            { lead: '12x TOP Brand Award' },
-            { lead: '7x Indonesia Digital Popular Brand Award' },
-            { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD' },
+            { lead: 'Guinness World Records (2026)' },
+            { lead: 'Museum Rekor Indonesia - MURI (2026)' },
+            { lead: '12x TOP Brand Award (2014–2024)' },
+            { lead: '7x Indonesia Digital Popular Brand Award (2016–2023)' },
+            { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD (2019–2023)' },
           ] }] },
           'en': { tab: PAGE_TABS.third.en, blocks: ['Awards & Accolades:', { awards: [
             { label: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
@@ -83,11 +83,11 @@ export const OUR_BRANDS: ColumnConfig = {
             { label: 'TOP Brand', image: provisional('/photos/our-brands/tekiro/penghargaan/top-brand.webp') },
             { label: 'TOP Digital PR', image: provisional('/photos/our-brands/tekiro/penghargaan/indonesia-top-digital-pr-award.webp') },
           ] }, { bullets: [
-            { lead: 'Guinness World Records' },
-            { lead: 'Museum Rekor Indonesia - MURI' },
-            { lead: '12x TOP Brand Award' },
-            { lead: '7x Indonesia Digital Popular Brand Award' },
-            { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD' },
+            { lead: 'Guinness World Records (2026)' },
+            { lead: 'Museum Rekor Indonesia - MURI (2026)' },
+            { lead: '12x TOP Brand Award (2014–2024)' },
+            { lead: '7x Indonesia Digital Popular Brand Award (2016–2023)' },
+            { lead: '5x TOP DIGITAL PUBLIC RELATION AWARD (2019–2023)' },
           ] }] },
           'zh-Hans': { tab: PAGE_TABS.third['zh-Hans'], blocks: ['所获奖项：', { awards: [
             { label: 'Guinness World Records', image: provisional('/photos/our-brands/tekiro/penghargaan/guinness-world-records.webp') },
@@ -109,12 +109,12 @@ export const OUR_BRANDS: ColumnConfig = {
             { label: 'Brand Choice', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
             { label: 'CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
           ] }, { bullets: [
-            { lead: '5x SUPERBRANDS' },
-            { lead: '2x INDONESIA BRAND CHAMPION AWARD' },
-            { lead: '2x INDONESIA BRAND CHOICE AWARD' },
-            { lead: '2x CNN Awards' },
-            { lead: 'Golden Brand Of The Year' },
-            { lead: 'Indonesia Best Brand Awards' },
+            { lead: '5x SUPERBRANDS (2022–2026)' },
+            { lead: '2x INDONESIA BRAND CHAMPION AWARD (2020–2024)' },
+            { lead: '2x INDONESIA BRAND CHOICE AWARD (2020–2021)' },
+            { lead: '2x CNN Awards (2025–2026)' },
+            { lead: 'Golden Brand Of The Year (2025)' },
+            { lead: 'Indonesia Best Brand Awards (2025)' },
           ] }] },
           'en': { tab: PAGE_TABS.fourth.en, blocks: ['Awards & Accolades:', { awards: [
             { label: 'Superbrands', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
@@ -122,12 +122,12 @@ export const OUR_BRANDS: ColumnConfig = {
             { label: 'Brand Choice', image: provisional('/photos/our-brands/tekiro/penghargaan/brand-choice.webp') },
             { label: 'CNN Awards', image: provisional('/photos/our-brands/tekiro/penghargaan/cnn-awards.webp') },
           ] }, { bullets: [
-            { lead: '5x SUPERBRANDS' },
-            { lead: '2x INDONESIA BRAND CHAMPION AWARD' },
-            { lead: '2x INDONESIA BRAND CHOICE AWARD' },
-            { lead: '2x CNN Awards' },
-            { lead: 'Golden Brand Of The Year' },
-            { lead: 'Indonesia Best Brand Awards' },
+            { lead: '5x SUPERBRANDS (2022–2026)' },
+            { lead: '2x INDONESIA BRAND CHAMPION AWARD (2020–2024)' },
+            { lead: '2x INDONESIA BRAND CHOICE AWARD (2020–2021)' },
+            { lead: '2x CNN Awards (2025–2026)' },
+            { lead: 'Golden Brand Of The Year (2025)' },
+            { lead: 'Indonesia Best Brand Awards (2025)' },
           ] }] },
           'zh-Hans': { tab: PAGE_TABS.fourth['zh-Hans'], blocks: ['所获奖项：', { awards: [
             { label: 'Superbrands', image: provisional('/photos/our-brands/tekiro/penghargaan/superbrands.webp') },
@@ -166,10 +166,10 @@ export const OUR_BRANDS: ColumnConfig = {
                 {
                   bullets: [
                     { lead: 'Lahir', text: '2006' },
+                    { lead: 'Sertifikasi', text: 'K3L' },
                     { lead: 'Jumlah SKU', text: '547 SKU' },
                     { lead: 'Market Segment', text: 'Industri, Perkayuan, Bangunan, DIY/Rumahan, Otomotif.' },
                     { lead: 'Kategori Produk', text: 'Power Tool, Engine, Welding, Cordless, Accessories, Spare Parts.' },
-                    { lead: 'Sertifikasi', text: 'K3L' },
                   ],
                 },
               ],
@@ -180,10 +180,10 @@ export const OUR_BRANDS: ColumnConfig = {
                 {
                   bullets: [
                     { lead: 'Founded', text: '2006' },
+                    { lead: 'Certifications', text: 'K3L' },
                     { lead: 'SKU count', text: '547 SKUs' },
                     { lead: 'Market Segments', text: 'Industry, Woodworking, Construction, DIY/Home, Automotive.' },
                     { lead: 'Product Categories', text: 'Power Tool, Engine, Welding, Cordless, Accessories, Spare Parts.' },
-                    { lead: 'Certifications', text: 'K3L' },
                   ],
                 },
               ],
@@ -223,9 +223,9 @@ export const OUR_BRANDS: ColumnConfig = {
                 },
                 {
                   bullets: [
-                    { lead: '4x Superbrands' },
-                    { lead: '3x Indonesia Digital Popular Brand Award' },
-                    { lead: 'Indonesia Brand Champion Award' },
+                    { lead: '4x Superbrands (2023–2026)' },
+                    { lead: '3x Indonesia Digital Popular Brand Award (2021–2023)' },
+                    { lead: 'Indonesia Brand Champion Award (2024)' },
                   ],
                 },
               ],
@@ -243,9 +243,9 @@ export const OUR_BRANDS: ColumnConfig = {
                 },
                 {
                   bullets: [
-                    { lead: '4x Superbrands' },
-                    { lead: '3x Indonesia Digital Popular Brand Award' },
-                    { lead: 'Indonesia Brand Champion Award' },
+                    { lead: '4x Superbrands (2023–2026)' },
+                    { lead: '3x Indonesia Digital Popular Brand Award (2021–2023)' },
+                    { lead: 'Indonesia Brand Champion Award (2024)' },
                   ],
                 },
               ],
@@ -297,10 +297,10 @@ export const OUR_BRANDS: ColumnConfig = {
                 {
                   bullets: [
                     { lead: 'Lahir', text: '2013' },
+                    { lead: 'Sertifikasi', text: 'MSDS, TDS, dan RoHS.' },
                     { lead: 'Jumlah SKU', text: '18 SKU total' },
                     { lead: 'Market Segment', text: 'Industri, Otomotif, Rumahan/DIY, Pertukangan, Mining, Kelistrikan.' },
                     { lead: 'Kategori', text: 'Pelumasan, Pembersih, dan Perawatan & Kebersihan Diri' },
-                    { lead: 'Sertifikasi', text: 'MSDS, TDS, dan RoHS.' },
                   ],
                 },
               ],
@@ -311,10 +311,10 @@ export const OUR_BRANDS: ColumnConfig = {
                 {
                   bullets: [
                     { lead: 'Founded', text: '2013' },
+                    { lead: 'Certifications', text: 'MSDS, TDS, and RoHS.' },
                     { lead: 'SKU count', text: '18 total SKUs' },
                     { lead: 'Market Segments', text: 'Industry, Automotive, Household/DIY, Carpentry, Mining, Electrical.' },
                     { lead: 'Categories', text: 'Lubrication, Cleaning, and Personal Care & Hygiene' },
-                    { lead: 'Certifications', text: 'MSDS, TDS, and RoHS.' },
                   ],
                 },
               ],
@@ -344,7 +344,7 @@ export const OUR_BRANDS: ColumnConfig = {
             'id': {
               tab: PAGE_TABS.second.id,
               blocks: [
-                'Penghargaan:',
+                'Penghargaan utama:',
                 {
                   awards: [
                     { label: 'Brand Champion', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-brand-champion.webp') },
@@ -355,10 +355,11 @@ export const OUR_BRANDS: ColumnConfig = {
                 },
                 {
                   bullets: [
-                    { lead: 'Indonesia Brand Champion Award' },
-                    { lead: 'Superbrands' },
-                    { lead: 'Indonesia TOP Digital PR Award Platinum' },
-                    { lead: 'Brand Choice Award' },
+                    { lead: '4x Superbrands (2023–2026)' },
+                    { lead: '2x Indonesia Brand Choice Award (2021–2023)' },
+                    { lead: 'Indonesia Brand Champion Award (2024)' },
+                    { lead: 'Otomotif Choice Award (2024)' },
+                    { lead: 'Indonesia Best Brand Award (2025)' },
                   ],
                 },
               ],
@@ -366,7 +367,7 @@ export const OUR_BRANDS: ColumnConfig = {
             'en': {
               tab: PAGE_TABS.second.en,
               blocks: [
-                'Awards & Accolades:',
+                'Key Awards:',
                 {
                   awards: [
                     { label: 'Brand Champion', image: provisional('/photos/our-brands/rexco/penghargaan/indonesia-brand-champion.webp') },
@@ -377,10 +378,11 @@ export const OUR_BRANDS: ColumnConfig = {
                 },
                 {
                   bullets: [
-                    { lead: 'Indonesia Brand Champion Award' },
-                    { lead: 'Superbrands' },
-                    { lead: 'Indonesia TOP Digital PR Award Platinum' },
-                    { lead: 'Brand Choice Award' },
+                    { lead: '4x Superbrands (2023–2026)' },
+                    { lead: '2x Indonesia Brand Choice Award (2021–2023)' },
+                    { lead: 'Indonesia Brand Champion Award (2024)' },
+                    { lead: 'Otomotif Choice Award (2024)' },
+                    { lead: 'Indonesia Best Brand Award (2025)' },
                   ],
                 },
               ],

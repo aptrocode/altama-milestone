@@ -26,7 +26,7 @@ export interface ColumnLayout {
 }
 
 export interface VisualLayout {
-  logo: { idle: { y: number; height: number }; compact: { y: number; height: number } };
+  logo: { idle: { y: number; height: number } };
   idlePill: Rect;
   /** Open pill of expandable columns, leaving room for the sub-item name above the card. */
   activePill: Rect;
@@ -36,7 +36,6 @@ export interface VisualLayout {
   artwork: Rect;
   photo: Rect;
   textTop: { tabs: number; photo: number; plain: number };
-  rail: { y: number; height: number };
   /** Lowest bottom edge of an open card; cards grow with their content from `active.card.height` up to it. */
   openCardMaxBottom: number;
   /** Window into one column for the stacked (mobile/tablet) layout, in logical units. */

@@ -22,10 +22,10 @@ export const ABOUT_ALTAMA: ColumnConfig = {
       ],
       {
         'id': [
-          'Berawal dari CV. Sumber Daya Group, berjalan hampir selama enam dekade dan menjadi titik awal ALTAMA seperti yang dikenal sekarang.',
+          'Berawal dari CV. Sumber Daya Group, hampir enam dekade dan menjadi titik awal ALTAMA seperti yang dikenal luas sekarang.',
         ],
         'en': [
-          'Beginning with CV. Sumber Daya Group, a journey of almost six decades became the starting point of ALTAMA as it is known today.',
+          'Beginning with CV. Sumber Daya Group, almost six decades ago, it became the starting point of ALTAMA as it is widely known today.',
         ],
         'zh-Hans': [
           '源自 CV. Sumber Daya Group，历经近六十年发展，奠定了如今广为人知的 ALTAMA 的基础。',
