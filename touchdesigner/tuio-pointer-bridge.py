@@ -14,6 +14,11 @@ import math
 #   touch up   -> pointerup (+ click when it ended on the same button)
 # Several people can press, hold, and swipe at the same time.
 #
+# V4.1: the round touch markers (TUIO id circles) follow the dashboard's
+# Diagnostik -> Titik sentuh switch (the wall sets <html data-touch-dots>).
+# The optional touch_settings CHOP channel `indicators` can still hide them;
+# without that CHOP they show only while Titik sentuh is on.
+#
 # Wall side: see docs/dashboard.md (Hold) and PANDUAN-SENSOR.md.
 # ==========================================================================
 
@@ -204,7 +209,8 @@ def onFrameStart(frame):
         m.style.border = '2px solid ' + color;
         m.style.background = t.dragging ? 'rgba(255,204,0,0.25)' : 'rgba(0,230,255,0.25)';
         m.style.boxShadow = '0 0 12px ' + color;
-        m.style.display = d.show ? 'flex' : 'none';
+        // Only while the dashboard's Titik sentuh is on (and the TD switch allows it).
+        m.style.display = d.show && document.documentElement.dataset.touchDots === 'on' ? 'flex' : 'none';
     }
 
     // REMOVE INACTIVE INDICATORS
