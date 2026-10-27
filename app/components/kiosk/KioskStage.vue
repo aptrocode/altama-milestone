@@ -247,7 +247,7 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <KioskTouchDots v-if="showTouchDots" ref="touchDots" :wall-layout="!stacked" :duration-ms="settings.wall.touchDotSeconds * 1000" />
+    <KioskTouchDots v-if="showTouchDots" ref="touchDots" :wall-layout="!stacked" :duration-ms="settings.wall.touchDotSeconds * 1000" :labels="settings.wall.touchDotLabels" />
 
     <KioskStatus
       v-if="showDiagnostics" :socket-status="system.socketStatus" :sensor-ready="system.sensorReady"
