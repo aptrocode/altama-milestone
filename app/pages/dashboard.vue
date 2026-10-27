@@ -146,7 +146,7 @@ const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0
 <template>
   <DashboardLogin v-if="access === 'locked'" :message="lockMessage" @unlocked="onUnlocked" />
   <div v-else-if="access === 'checking'" class="h-dvh bg-wall-night" />
-  <div v-else class="h-dvh overflow-hidden bg-wall-night font-sans text-wall-ink select-text">
+  <div v-else class="h-dvh overflow-hidden bg-wall-night font-dashboard text-wall-ink select-text">
     <!-- Drawer backdrop (below lg). -->
     <div
       v-if="drawerOpen" class="fixed inset-0 z-30 bg-black/60 backdrop-blur-[2px] lg:hidden" aria-hidden="true"
@@ -164,7 +164,7 @@ const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0
           <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2" /><path d="M8 20h8M12 16v4" /></svg>
         </span>
         <div class="min-w-0">
-          <p class="font-display text-lg font-bold uppercase leading-tight tracking-wider text-white">
+          <p class="font-dashboard text-lg font-bold uppercase leading-tight tracking-wider text-white">
             Dashboard
           </p>
           <p class="truncate text-xs text-sky-100/55">
@@ -263,7 +263,7 @@ const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0
         >
           <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
         </button>
-        <p class="font-display text-lg font-bold uppercase tracking-wider text-white">
+        <p class="font-dashboard text-lg font-bold uppercase tracking-wider text-white">
           {{ pageTitle }}
         </p>
       </header>
@@ -276,7 +276,7 @@ const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0
       </p>
 
       <main class="w-full flex-1 px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10">
-        <h1 class="font-display text-3xl font-bold uppercase tracking-wider text-white sm:text-4xl">
+        <h1 class="font-dashboard text-3xl font-bold uppercase tracking-wider text-white sm:text-4xl">
           {{ pageTitle }}
         </h1>
         <p v-if="pageDescription" class="mt-1 text-sm text-sky-100/60 sm:text-base">
@@ -302,7 +302,7 @@ const footIcon = 'grid size-8 shrink-0 place-items-center rounded-md bg-white/[0
             <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>
           </span>
           <div class="min-w-0">
-            <h2 id="reset-title" class="font-display text-xl font-bold uppercase tracking-wide text-white">
+            <h2 id="reset-title" class="font-dashboard text-xl font-bold uppercase tracking-wide text-white">
               Reset ke default?
             </h2>
             <p id="reset-text" class="mt-1.5 text-sm leading-relaxed text-sky-100/70">

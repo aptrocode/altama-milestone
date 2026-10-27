@@ -105,7 +105,7 @@ onBeforeUnmount(() => {
 <template>
   <div
     ref="root" aria-hidden="true" inert
-    class="pointer-events-none invisible fixed left-0 top-0 -z-10 overflow-hidden"
+    class="pointer-events-none invisible fixed left-0 top-0 -z-10 overflow-hidden font-sans"
     style="--wall-x: 1px; --wall-y: 1px; --wall-u: 1px; width: 1px; height: 1px"
   >
     <div v-for="probe in probes" :key="probe.id" class="absolute left-0 top-0" :data-probe="probe.id" :style="{ width: `${probe.width}px`, height: `${probe.height}px` }">

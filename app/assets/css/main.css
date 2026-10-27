@@ -3,6 +3,8 @@
 @theme {
   --font-sans: "Roboto", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Roboto", "Microsoft YaHei", ui-sans-serif, sans-serif;
+  /* Operator dashboard only (client request); the wall and its previews stay Roboto. */
+  --font-dashboard: "Quicksand", "Microsoft YaHei", ui-sans-serif, system-ui, sans-serif;
   --color-wall-night: #040a3a;
   --color-wall-navy: #0a1872;
   --color-wall-panel: #0b1a6e;
