@@ -3,10 +3,10 @@ import type { WallAction } from './wall';
 /**
  * Operator-configurable hold (dwell) rules, edited on /dashboard and published to Sensor Service.
  * - card: idle main card and sub-item tiles (columns 2/5)
- * - page: page tabs (1960/1996, PAGE 1/PAGE 2)
+ * - page: page tabs (PAGE 1–4)
  * - slider: photo arrows
- * - language: language flags (off by default: a normal press)
- * - back: the open card's close (✕) button (off by default)
+ * - language: language flags
+ * - back: the open card's close (✕) button
  * Each group has a mode: `tap` (activates on a normal press), `hold` (must be held for `seconds`),
  * or `delay` (a tap starts the hold animation and the button activates after `seconds`, without
  * holding). `enabled` mirrors `mode === 'hold'` for Sensor Service's dwell.
@@ -29,13 +29,17 @@ export type HoldSettings = Record<HoldGroup, HoldRule>;
 
 export const HOLD_SECONDS = { min: 0.3, max: 5, step: 0.1 } as const;
 
-/** Every group defaults to Tap + delay, 1 s (client request), in Page and Scroll mode alike. */
+/**
+ * Content buttons (opening a card or tile, switching page tabs) default to Tap + delay, 1 s: a tap
+ * plays the border animation, then opens. Flags, photo arrows and close are a plain tap, without
+ * animation (client request), in Page and Scroll mode alike.
+ */
 export const DEFAULT_HOLD_SETTINGS: HoldSettings = {
   card: { mode: 'delay', enabled: false, seconds: 1 },
   page: { mode: 'delay', enabled: false, seconds: 1 },
-  slider: { mode: 'delay', enabled: false, seconds: 1 },
-  language: { mode: 'delay', enabled: false, seconds: 1 },
-  back: { mode: 'delay', enabled: false, seconds: 1 },
+  slider: { mode: 'tap', enabled: false, seconds: 1 },
+  language: { mode: 'tap', enabled: false, seconds: 1 },
+  back: { mode: 'tap', enabled: false, seconds: 1 },
 };
 
 /** Which hold rule applies to each wall action. */

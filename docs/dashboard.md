@@ -56,9 +56,9 @@ A title word that does not fit its pill (e.g. INFRASTRUKTUR at a large size or B
 | --- | --- | --- |
 | Card section (`card`) | Idle main card of columns 1/3/4/6 and the sub-item tiles of columns 2/5 | Tap + delay, 1.0 s |
 | Button page (`page`) | Page tabs (PAGE 1–4) | Tap + delay, 1.0 s |
-| Button slider (`slider`) | Photo arrows | Tap + delay, 1.0 s |
-| Bahasa (`language`) | Language flags (ID / EN / 中文) | Tap + delay, 1.0 s |
-| Tombol close (`back`) | The open card's ✕ button | Tap + delay, 1.0 s |
+| Button slider (`slider`) | Photo arrows | Tap |
+| Bahasa (`language`) | Language flags (ID / EN / 中文) | Tap (no animation) |
+| Tombol close (`back`) | The open card's ✕ button | Tap |
 
 Each group has a **mode** (segmented **Tap / Hold / Tap + delay**) and a duration (0.3–5 s, 0.1 s steps, unused for Tap).
 

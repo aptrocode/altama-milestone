@@ -30,6 +30,16 @@ export const useSettingsStore = defineStore('settings', {
     setFonts(next: unknown) {
       this.fonts = normalizeFontSettings(next);
     },
+    /**
+     * Settings written by another tab or the server. Keys they leave out keep this browser's value,
+     * so an older build (one that does not know a newer setting) cannot reset it to its default.
+     */
+    applyExternal(next: { hold?: unknown; wall?: unknown; fonts?: unknown } | null) {
+      const merge = (current: object, value: unknown) => typeof value === 'object' && value !== null ? { ...current, ...value } : null;
+      this.setHold(merge(this.hold, next?.hold));
+      this.setWall(merge(this.wall, next?.wall));
+      this.setFonts(merge(this.fonts, next?.fonts));
+    },
     resetHold() {
       this.hold = normalizeHoldSettings(DEFAULT_HOLD_SETTINGS);
     },

@@ -15,10 +15,6 @@
       "idle": {
         "y": 70,
         "height": 278
-      },
-      "compact": {
-        "y": 40,
-        "height": 250
       }
     },
     "idlePill": {

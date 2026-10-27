@@ -39,9 +39,7 @@ export default defineNuxtPlugin(() => {
       return;
     applying = true;
     try {
-      settings.setHold(document.settings.hold);
-      settings.setWall(document.settings.wall);
-      settings.setFonts(document.settings.fonts);
+      settings.applyExternal(document.settings);
     }
     finally {
       applying = false;
