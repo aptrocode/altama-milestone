@@ -92,6 +92,8 @@ Mengembalikan backup (misalnya setelah salah Reset):
 pm2 stop altama-milestone && cp ~/backup-altama/NAMA_BACKUP.sqlite /var/www/altama-milestone/.data/altama.sqlite && pm2 start altama-milestone
 ```
 
+Setelah restore backup, muat ulang tab wall dan dashboard agar versi sinkronisasi dimulai dari database yang dipulihkan. Selama satu sesi browser, respons versi lama diabaikan untuk mencegah hasil Simpan tertimpa polling.
+
 > Jangan edit file repo langsung di VPS. Kalau `git pull` menolak karena *local changes*, cek `git status` lalu kembalikan file itu dengan `git checkout -- NAMA_FILE`.
 
 ---

@@ -1,59 +1,15 @@
 import type { CloseButtonOptions } from '../../shared/close-button';
+import type { ColumnLayout, Rect } from '../../shared/installation-layout';
 import type { LanguageBarMode } from '../../shared/language-bar';
-import type { ColumnId, WallAction, WallLocale } from '../../shared/wall';
+import type { ColumnId, WallAction } from '../../shared/wall';
 import { closeTargetRect } from '../../shared/close-button';
-import rawLayout from '../../shared/installation-layout.json';
+import { installationLayout } from '../../shared/installation-layout';
 import { columnOffsetY, extendDown, languageGeometry } from '../../shared/language-bar';
 import { allPageTabRects } from '../../shared/page-tabs';
 
-export interface Rect { x: number; y: number; width: number; height: number }
-
-interface ColumnLayout {
-  id: ColumnId;
-  section: Rect;
-  /** Idle frame. */
-  card: Rect;
-  /** Idle hold target of single columns; expandable columns use their sub-item tiles instead. */
-  main?: Rect;
-  languageBar: Rect;
-  languages: (Rect & { locale: WallLocale })[];
-  /** Idle sub-item tiles of expandable columns. */
-  subItems?: (Rect & { key: string })[];
-  active: { card: Rect; back: Rect; previous: Rect; next: Rect; pages: (Rect & { page: number })[] };
-}
-
-interface VisualLayout {
-  logo: { idle: { y: number; height: number } };
-  idlePill: Rect;
-  /** Open pill of expandable columns, leaving room for the sub-item name above the card. */
-  activePill: Rect;
-  /** Open pill of single columns, 20 px above the card (no sub-item name). */
-  activePillSingle: Rect;
-  subtitle: Rect;
-  artwork: Rect;
-  photo: Rect;
-  textTop: { tabs: number; photo: number; plain: number };
-  /** Lowest bottom edge of an open card; cards grow with their content from `active.card.height` up to it. */
-  openCardMaxBottom: number;
-  /** Window into one column for the stacked (mobile/tablet) layout, in logical units. */
-  stacked: {
-    padX: number;
-    idle: { y: number; height: number };
-    open: { y: number; height: number };
-    openSingle: { y: number; height: number };
-  };
-}
-
-interface InstallationLayout {
-  layoutVersion: string;
-  protocolVersion: number;
-  canvas: { width: number; height: number };
-  frame: { inset: number; gap: number; columnWidth: number };
-  visual: VisualLayout;
-  columns: ColumnLayout[];
-}
-
-export const installationLayout = rawLayout as InstallationLayout;
+// Keep component imports stable; the types/data now have one framework-independent owner.
+export type { Rect } from '../../shared/installation-layout';
+export { installationLayout } from '../../shared/installation-layout';
 
 export function getColumnLayout(columnId: ColumnId): ColumnLayout {
   return installationLayout.columns.find(column => column.id === columnId)!;

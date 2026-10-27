@@ -1,6 +1,6 @@
 # Project status
 
-Updated 20 October 2026. Package version 1.0.0 (tag `v1.0.0`, the first stable release for the event); later changes land on `main` through squash-merged PRs and are unreleased until the next release.
+Updated 26 October 2026. Package version 1.0.0 (tag `v1.0.0`, the first stable release for the event); later changes land on `main` through squash-merged PRs and are unreleased until the next release.
 
 ## Implemented
 
@@ -43,7 +43,10 @@ Nuxt, Vue, Pinia, Bun, and Tailwind documentation was fetched through Context7 o
 
 ## Validation
 
-- Current `main` (20 October 2026): lint, typecheck, 146 tests across 15 files, and asset validation pass. Dashboard fit check at 2304 × 1344: every card fits 24–26 px except a few Tekiro pages (22.6–23.5 px, flagged on Dashboard → Font). Scroll teks checked on/off in the browser (merge, drag, wheel, restore).
+- Settings refactor (26 October 2026, unreleased): lint, Nuxt/Sensor Service typecheck, 180 tests across 20 files, asset validation (73 provisional media files), production build and static generation passed. The 19 added tests cover draft/external-save behavior and ordered sync, navigation, retries and cleanup. UI components/templates, styles, media, content, font/hold/wall defaults and canonical wall-v7 JSON are unchanged. No new hardware or browser visual acceptance is claimed for this refactor.
+- Draft and sync contracts live in framework-independent helpers; shared geometry and settings types have one owner. Context7 was unavailable: touched Vue APIs were checked in current official documentation and Nuxt/Vue installed package types; Nuxt's official documentation endpoint returned unsupported Markdown through the browser tool.
+
+- Previous validation (20 October 2026): lint, typecheck, 146 tests across 15 files, and asset validation pass. Dashboard fit check at 2304 × 1344: every card fits 24–26 px except a few Tekiro pages (22.6–23.5 px, flagged on Dashboard → Font). Scroll teks checked on/off in the browser (merge, drag, wheel, restore).
 - Dashboard sidebar and wall settings (20 October 2026): lint, typecheck, 106 tests, asset validation, and build passed; dashboard checked at 1440 px and 375 px (drawer, page navigation, content scroll, reset); flags/close normal press, card offset, staggered reveal, and column 5 panel alignment checked in the browser.
 - Sensor Service (19 October 2026): lint, typecheck (Nuxt and `sensor-service/tsconfig.json`), 102 tests across 13 files, asset validation, build, and generate passed. End-to-end with the dev server and simulators: dashboard calibration of the simulated UST-10LX (four corners via **Ambil**), held taps opening columns 1/4/6, a language flag, and two simultaneous hands; Augmenta v2 and v1 with flipped Y and Invert Y; TUIO cursors. Dashboard checked at 1440 px and 375 px without horizontal overflow. No physical sensor was available.
 
@@ -56,7 +59,7 @@ Nuxt, Vue, Pinia, Bun, and Tailwind documentation was fetched through Context7 o
 
 ## Production gaps
 
-- Final assets from the design team: background video/sequence, official logos, illustrations, and full-resolution photos. Current files are mockup crops (photos 226 × 124 px, one per slider; other slots are numbered placeholders) and need client approval. All column copy is drafted from the client presentation and still needs approval; a few Tekiro pages are slightly below 24 px until their text is shortened.
+- Client approval of the 73 deployed media entries, all still marked `approved: false`. Media now includes client-supplied photos, logos and encoded background/card videos as well as provisional assets; see assets/content guides for current files and retained masters. Page-mode text below its configured Min remains an operator fit-check concern.
 - Client approval of company claims and the drafted English/Chinese translations.
 - Scroll teks over LiDAR: Sensor Service sends taps only; scrolling there needs a drag message in the protocol and on-site testing.
 - Sensor Service deployment on the event PC (supervised start), physical calibration of the UST-10LX, background capture, and tuning of cluster/tracker thresholds against real hands; multi-user tests. Only synthetic scans have been tested. Old services are intentionally rejected; deploy matching renderer/service geometry together before enabling input.

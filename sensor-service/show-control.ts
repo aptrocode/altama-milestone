@@ -1,21 +1,11 @@
+import type { Rect } from '../shared/installation-layout';
 import type { OscMessage } from '../shared/osc';
-import type { Rect } from '../shared/sensor-targets';
 import type { ColumnId, ColumnSnapshot, WallAction } from '../shared/wall';
-import rawLayout from '../shared/installation-layout.json';
+import { installationLayout } from '../shared/installation-layout';
 import { oscToWallActions } from '../shared/osc';
 import { MAX_PAGES, pageTabRects } from '../shared/page-tabs';
 
-interface ShowControlColumn {
-  id: number;
-  card: Rect;
-  main?: Rect;
-  languageBar: Rect;
-  languages: (Rect & { locale: string })[];
-  subItems?: (Rect & { key: string })[];
-  active: { card: Rect; back: Rect; previous: Rect; next: Rect; pages: (Rect & { page: number })[] };
-}
-
-const columns = rawLayout.columns as ShowControlColumn[];
+const columns = installationLayout.columns;
 
 /** Brand/distribution columns have no main target; OSC "open" selects their first tile instead. */
 function toTargetAction(action: WallAction): WallAction {

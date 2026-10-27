@@ -1,25 +1,7 @@
-import type { FontSettings } from '../../shared/font-settings';
-import type { HoldSettings } from '../../shared/hold-settings';
-import type { WallSettings } from '../../shared/wall-settings';
+import type { SettingsDocument } from '../../shared/settings';
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { normalizeFontSettings } from '../../shared/font-settings';
-import { normalizeHoldSettings } from '../../shared/hold-settings';
-import { normalizeWallSettings } from '../../shared/wall-settings';
-
-/** Every operator setting the dashboard edits, as stored and served by /api/settings. */
-export interface SyncedSettings {
-  hold: HoldSettings;
-  wall: WallSettings;
-  fonts: FontSettings;
-}
-
-/** `version` counts saves (0 = nothing saved yet, `settings` is then null). */
-export interface SettingsDocument {
-  version: number;
-  updatedAt: string | null;
-  settings: SyncedSettings | null;
-}
+import { normalizeSyncedSettings } from '../../shared/settings';
 
 interface SqlStatement {
   get: (...params: unknown[]) => unknown;
@@ -44,16 +26,6 @@ async function openDatabase(file: string): Promise<SqlDatabase> {
   }
   const { DatabaseSync } = await import(/* @vite-ignore */ NODE_SQLITE);
   return new DatabaseSync(file) as SqlDatabase;
-}
-
-/** Clamps any value into complete settings, the same way the browser store does. */
-export function normalizeSyncedSettings(value: unknown, fallback?: SyncedSettings | null): SyncedSettings {
-  const source = (value && typeof value === 'object' ? value : {}) as Partial<Record<keyof SyncedSettings, unknown>>;
-  return {
-    hold: normalizeHoldSettings(source.hold ?? fallback?.hold),
-    wall: normalizeWallSettings(source.wall ?? fallback?.wall),
-    fonts: normalizeFontSettings(source.fonts ?? fallback?.fonts),
-  };
 }
 
 /** One-row settings table in a SQLite file. */

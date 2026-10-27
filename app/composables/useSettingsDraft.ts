@@ -18,14 +18,17 @@ export interface SettingsDraftOptions<T> {
  */
 export function useSettingsDraft<T>(options: SettingsDraftOptions<T>) {
   const copy = (value: unknown): T => options.normalize(JSON.parse(JSON.stringify(value)));
+  const serialized = (value: unknown) => JSON.stringify(options.normalize(value));
   const draft = ref(copy(options.saved())) as Ref<T>;
   const status = ref('');
-  const dirty = computed(() => JSON.stringify(options.normalize(draft.value)) !== JSON.stringify(options.saved()));
+  const dirty = computed(() => serialized(draft.value) !== serialized(options.saved()));
 
-  watch(options.saved, (next) => {
-    if (!dirty.value)
-      draft.value = copy(next);
-  }, { deep: true });
+  // A string snapshot keeps the previous baseline intact even for in-place nested updates.
+  // Comparing dirty against the NEW saved value would make a previously clean form look edited.
+  watch(() => serialized(options.saved()), (next, previous) => {
+    if (serialized(draft.value) === previous)
+      draft.value = copy(JSON.parse(next));
+  });
 
   function save() {
     options.save(draft.value);

@@ -1,3 +1,5 @@
+import type { Rect } from './installation-layout';
+
 /**
  * Page tab geometry for an open card, derived from the wall-v7 layout so the wall drawing, wall
  * input validation, Sensor Service targets, and OSC show control agree without a layout bump:
@@ -7,7 +9,6 @@
  * - a card without any photo (`tabsTop`) has no photo frame, so its tabs move up to the frame's
  *   place at the top of the card and the text starts right under them.
  */
-interface Rect { x: number; y: number; width: number; height: number }
 type Tab = Rect & { page: number };
 
 export const MAX_PAGES = 4;

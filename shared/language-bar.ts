@@ -1,3 +1,5 @@
+import type { Rect } from './installation-layout';
+
 /**
  * Language bar geometry for the dashboard `languageBar` mode. `compact` is the layout file's pill
  * (three 64 × 48 flags in the middle of the frame); `full` stretches the pill to the frame's inner
@@ -10,8 +12,6 @@
 export type LanguageBarMode = 'compact' | 'full' | 'grid';
 
 export const LANGUAGE_BAR_MODES: readonly LanguageBarMode[] = ['compact', 'full', 'grid'];
-
-interface Rect { x: number; y: number; width: number; height: number }
 
 /** Logical px between the frame edge and the wide bar, button height, and spacing. */
 const WIDE = { inset: 14, button: 60, padding: 8, gap: 6 } as const;

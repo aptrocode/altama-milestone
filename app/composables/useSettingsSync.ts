@@ -11,4 +11,8 @@ export function useSettingsSync() {
 /** Used by the plugin only. */
 export function registerSettingsSync(handler: () => Promise<void>) {
   refreshHandler = handler;
+  return () => {
+    if (refreshHandler === handler)
+      refreshHandler = async () => {};
+  };
 }
