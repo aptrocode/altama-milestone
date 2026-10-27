@@ -137,7 +137,7 @@ const HELP: Record<string, HelpLine[]> = {
     { term: 'Biru', text: 'Posisi saat menekan, dengan koordinat.' },
     { term: 'Merah + garis', text: 'Posisi saat dilepas, kalau bergeser.' },
     { term: 'Hijau', text: 'Input dari Sensor Service.' },
-    'Di browser lain (mis. TouchDesigner) buka wall dengan ?dots=1.',
+    'Berlaku di semua wall yang tersinkron, termasuk TouchDesigner.',
   ],
 };
 

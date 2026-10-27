@@ -1,6 +1,6 @@
 /**
  * Close (✕) button geometry from the dashboard, in two places (`position`):
- * - `bottom` (default, client request): a capsule as wide as the open card (74 tall), 20 px
+ * - `bottom` (default, client request): a capsule as wide as the open card (74 tall), 10 px
  *   under the idle frame (so it follows the language bar's frame extension and the card offset);
  * - `corner`: the layout's 44 px badge on the open card's top-right corner, where `scale` grows it
  *   around its own centre and `x` / `y` (logical px) move it.
@@ -15,8 +15,8 @@ export type ClosePosition = typeof CLOSE_POSITIONS[number];
 
 export interface CloseButtonOptions { scale: number; x: number; y: number; position?: ClosePosition }
 
-/** The bottom close capsule: as wide as the open card, 74 tall (client request), 20 px under the idle frame. */
-export const BOTTOM_CLOSE = { height: 74, gap: 20 } as const;
+/** The bottom close capsule: as wide as the open card, 74 tall (client request), 10 px under the idle frame. */
+export const BOTTOM_CLOSE = { height: 74, gap: 10 } as const;
 
 export const CLOSE_SCALE = { min: 1, max: 2, step: 0.1 } as const;
 export const CLOSE_OFFSET = { min: -60, max: 60, step: 2 } as const;
