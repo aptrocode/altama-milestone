@@ -93,7 +93,7 @@ Uji tiap bendera di keenam kolom, juga ✕, panah, dan tab page.
 
 ### Titik sentuh langsung di wall (cara A dan B)
 
-Untuk melihat di proyeksi atau LED **di mana** sentuhan benar-benar diterima halaman, nyalakan **Dashboard → Wall → Titik sentuh** lalu **Simpan**. Ini halaman yang sama, hanya ditambah lapisan titik. Lama titik terlihat diatur di **Durasi titik** (default 5 detik):
+Untuk melihat di proyeksi atau LED **di mana** sentuhan benar-benar diterima halaman, nyalakan **Dashboard → Wall → Titik sentuh** lalu **Simpan**. Ini halaman yang sama, hanya ditambah lapisan titik. Angka koordinat di samping titik bisa dimatikan lewat **Angka koordinat**. Lama titik terlihat diatur di **Durasi titik** (default 5 detik):
 
 | Tanda | Arti |
 | --- | --- |

@@ -464,6 +464,14 @@ const unit = 'text-sm text-sky-100/60';
         </DashboardSettingRow>
         <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-1" leave-active-class="transition duration-150 ease-in" leave-to-class="opacity-0 -translate-y-1">
           <DashboardSettingRow
+            v-if="draft.showTouchDots" nested data-wall-setting="touchDotLabels" title="Angka koordinat" hint="Tampilkan angka x / y di samping titik."
+            :changed="changed('touchDotLabels')" :default-label="defaultLabel('touchDotLabels')" @reset="reset('touchDotLabels')"
+          >
+            <DashboardSwitch :model-value="draft.touchDotLabels" label="Tampilkan angka koordinat" @update:model-value="update({ touchDotLabels: $event })" />
+          </DashboardSettingRow>
+        </Transition>
+        <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-1" leave-active-class="transition duration-150 ease-in" leave-to-class="opacity-0 -translate-y-1">
+          <DashboardSettingRow
             v-if="draft.showTouchDots" nested data-wall-setting="touchDotSeconds" title="Durasi titik"
             :hint="`Lama titik terlihat setelah dilepas (${TOUCH_DOT_SECONDS.min}–${TOUCH_DOT_SECONDS.max} s). Default ${DEFAULT_WALL_SETTINGS.touchDotSeconds} detik.`"
             :changed="changed('touchDotSeconds')" :default-label="defaultLabel('touchDotSeconds')" @reset="reset('touchDotSeconds')"

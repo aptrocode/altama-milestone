@@ -11,6 +11,8 @@ const props = defineProps<{
   wallLayout: boolean;
   /** How long a dot stays after its release or sensor input (dashboard "Durasi titik"). */
   durationMs: number;
+  /** Show the logical x/y numbers next to each dot (dashboard "Angka koordinat"). */
+  labels: boolean;
 }>();
 
 interface Point { x: number; y: number }
@@ -33,7 +35,7 @@ function expire(mark: Mark, delay: number) {
 
 /** Logical wall coordinates of a viewport point (the LED layout fills the viewport). */
 function label(point: Point) {
-  if (!props.wallLayout)
+  if (!props.wallLayout || !props.labels)
     return '';
   return `x ${Math.round(point.x / window.innerWidth * canvas.width)} · y ${Math.round(point.y / window.innerHeight * canvas.height)}`;
 }
@@ -94,13 +96,13 @@ function drifted(mark: Mark) {
         :fill="mark.kind === 'sensor' ? '#4ade80' : '#38bdf8'" :data-dot="mark.kind === 'sensor' ? 'sensor' : 'down'"
       />
       <text
-        :x="mark.down.x + 18" :y="mark.down.y - 14" fill="white" stroke="#020617" stroke-width="4"
+        v-if="labels" :x="mark.down.x + 18" :y="mark.down.y - 14" fill="white" stroke="#020617" stroke-width="4"
         font-size="16" font-weight="700"
       >{{ label(mark.down) }}</text>
       <template v-if="mark.up">
         <circle :cx="mark.up.x" :cy="mark.up.y" r="9" fill="#f43f5e" stroke="white" stroke-width="3" data-dot="up" />
         <text
-          v-if="drifted(mark)" :x="mark.up.x + 16" :y="mark.up.y + 24" fill="#fecdd3" stroke="#020617" stroke-width="4"
+          v-if="labels && drifted(mark)" :x="mark.up.x + 16" :y="mark.up.y + 24" fill="#fecdd3" stroke="#020617" stroke-width="4"
           font-size="14" font-weight="700"
         >{{ label(mark.up) }}</text>
       </template>
