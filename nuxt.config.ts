@@ -67,5 +67,11 @@ export default defineNuxtConfig({
     enabled: false,
   },
 
+  experimental: {
+    // Look for a new deployment every minute (default 1 h); build-reload.client.ts reloads the wall
+    // so kiosk browsers (TouchDesigner Web Render) never keep running an old build.
+    checkOutdatedBuildInterval: 60_000,
+  },
+
   compatibilityDate: '2025-07-15',
 });
