@@ -149,7 +149,7 @@ const stepper = 'grid size-8 place-items-center rounded-md font-bold ring-1 ring
         >
           <div class="flex w-full flex-wrap items-center justify-end gap-3 sm:w-auto">
             <span
-              class="max-w-56 truncate rounded-md bg-[#0b1a78] px-2.5 py-1 leading-tight text-white ring-1 ring-wall-glow/30"
+              class="max-w-56 truncate rounded-md bg-[#0b1a78] px-2.5 py-1 font-sans leading-tight text-white ring-1 ring-wall-glow/30"
               :class="row.upper ? 'uppercase' : ''" aria-hidden="true"
               :style="{ fontSize: `${draft[row.key] * 0.75}px`, fontWeight: row.key === 'titleSize' ? draft.titleWeight : row.weight }"
             >{{ row.sample }}</span>
@@ -177,7 +177,7 @@ const stepper = 'grid size-8 place-items-center rounded-md font-bold ring-1 ring
           <div class="flex flex-wrap rounded-lg bg-white/10 p-1 ring-1 ring-white/15" role="radiogroup" aria-label="Ketebalan judul">
             <button
               v-for="weight in FONT_WEIGHTS" :key="weight" type="button" role="radio" :aria-checked="draft.titleWeight === weight"
-              class="rounded-md px-2.5 py-1.5 text-sm transition-colors" :style="{ fontWeight: weight }"
+              class="rounded-md px-2.5 py-1.5 font-sans text-sm transition-colors" :style="{ fontWeight: weight }"
               :class="draft.titleWeight === weight ? 'bg-wall-glow text-[#050d4f]' : 'text-sky-100/70 hover:bg-white/10'"
               @click="update({ titleWeight: weight })"
             >
@@ -228,7 +228,7 @@ const stepper = 'grid size-8 place-items-center rounded-md font-bold ring-1 ring
       >
         <div class="flex w-full flex-wrap items-center justify-end gap-3 sm:w-auto">
           <span
-            class="max-w-56 truncate rounded-md bg-[#0b1a78] px-2.5 py-1 leading-tight text-white ring-1 ring-wall-glow/30"
+            class="max-w-56 truncate rounded-md bg-[#0b1a78] px-2.5 py-1 font-sans leading-tight text-white ring-1 ring-wall-glow/30"
             :class="row.upper ? 'uppercase' : ''" aria-hidden="true"
             :style="{ fontSize: `${draft[row.key] * 0.75}px`, fontWeight: row.weight }"
           >{{ row.sample }}</span>

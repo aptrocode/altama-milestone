@@ -4,7 +4,7 @@ Use Tailwind CSS utilities first for layout, typography, spacing, sizes, colors,
 
 When utilities cannot define a behavior, put the smallest necessary CSS in the owning Vue component's `<style scoped>`. Custom keyframe definitions and their animation references stay together there because Vue scopes the keyframe names. Current exceptions are scoped animation keyframes in WallHoldButton, WallOpenCard, WallPageCopy, and KioskBackground; they are disabled under reduced motion. Reduced motion uses a static hold outline and disables decorative motion.
 
-`app/assets/css/main.css` contains the Tailwind import/theme (wall colors `wall-night`, `wall-navy`, `wall-panel`, `wall-glow`, `wall-ink`; `font-sans` and `font-display` both Roboto) and global document rules that cannot be scoped to a component, such as html/body/Nuxt-root sizing. Do not put wall/card/control styles there. Use `@apply` for supported global utilities rather than rewriting their declarations.
+`app/assets/css/main.css` contains the Tailwind import/theme (wall colors `wall-night`, `wall-navy`, `wall-panel`, `wall-glow`, `wall-ink`; `font-sans` and `font-display` both Roboto for the wall; `font-dashboard` Quicksand for the operator dashboard, whose wall previews keep `font-sans`) and global document rules that cannot be scoped to a component, such as html/body/Nuxt-root sizing. Do not put wall/card/control styles there. Use `@apply` for supported global utilities rather than rewriting their declarations.
 
 Keep class names complete and statically discoverable by Tailwind. Prefer a small reusable component for repeated markup/interaction, as with WallHoldButton; avoid opaque class generators, barrel files, and arbitrary CSS abstractions.
 

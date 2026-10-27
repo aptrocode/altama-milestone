@@ -24,7 +24,7 @@ const ICONS = {
         </svg>
       </span>
       <div class="min-w-0">
-        <h2 class="font-display text-lg font-bold uppercase tracking-wide text-white">
+        <h2 class="font-dashboard text-lg font-bold uppercase tracking-wide text-white">
           {{ title }}
         </h2>
         <p v-if="description" class="text-sm text-sky-100/60">

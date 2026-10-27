@@ -35,7 +35,7 @@ Every button, switch, link, and tab (including the Sensor source tabs) shows a p
 
 ## Font
 
-Every wall text uses Roboto. The page sets the sizes (logical px on the 2304 × 1344 canvas) and the title weight, grouped as **Judul**, **Isi card per section**, and **Tab page**. Each row shows a live sample, − / + steppers, a ? tooltip, and a **↺ Default** chip; the save bar works as on Wall.
+Every wall text uses Roboto; the dashboard itself uses Quicksand (client request), while its samples and weight buttons here stay Roboto so they match the wall. The page sets the sizes (logical px on the 2304 × 1344 canvas) and the title weight, grouped as **Judul**, **Isi card per section**, and **Tab page**. Each row shows a live sample, − / + steppers, a ? tooltip, and a **↺ Default** chip; the save bar works as on Wall.
 
 | Setting | Text | Default | Range |
 | --- | --- | --- | --- |

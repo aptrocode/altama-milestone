@@ -33,6 +33,14 @@ export default defineNuxtConfig({
         styles: ['normal'],
         global: true,
       },
+      {
+        // Operator dashboard only (client request); Quicksand has 300–700.
+        name: 'Quicksand',
+        provider: 'google',
+        weights: [400, 500, 600, 700],
+        styles: ['normal'],
+        global: true,
+      },
     ],
   },
 

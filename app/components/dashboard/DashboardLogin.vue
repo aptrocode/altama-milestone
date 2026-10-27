@@ -40,7 +40,7 @@ async function unlock() {
 </script>
 
 <template>
-  <div class="grid h-dvh place-items-center bg-wall-night px-6 font-sans text-wall-ink">
+  <div class="grid h-dvh place-items-center bg-wall-night px-6 font-dashboard text-wall-ink">
     <form class="w-full max-w-xs" @submit.prevent="unlock">
       <input
         ref="input" v-model="password" type="password" autocomplete="current-password" enterkeyhint="go"
