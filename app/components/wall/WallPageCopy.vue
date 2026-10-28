@@ -31,7 +31,7 @@ const props = defineProps<{
   scroll?: boolean;
 }>();
 /** Content height at the chosen size in CSS px; the open card grows to fit the visible page. */
-const emit = defineEmits<{ natural: [px: number] }>();
+const emit = defineEmits<{ natural: [px: number]; activity: [] }>();
 
 // Size: the largest size from `max` down to `min` (1 % steps) whose content fits the tallest text
 // box; the card then grows to that content. Only a page that does not fit even at `min` keeps
@@ -122,8 +122,13 @@ function dragStart(event: PointerEvent) {
   capturePointer(scroller.value, event.pointerId);
 }
 function dragMove(event: PointerEvent) {
-  if (drag?.id === event.pointerId && scroller.value)
-    scroller.value.scrollTop = drag.top - (event.clientY - drag.y);
+  const box = scroller.value;
+  if (drag?.id !== event.pointerId || !box)
+    return;
+  const previous = box.scrollTop;
+  box.scrollTop = drag.top - (event.clientY - drag.y);
+  if (box.scrollTop !== previous)
+    emit('activity');
 }
 function dragEnd(event: PointerEvent) {
   if (drag?.id === event.pointerId)

@@ -10,6 +10,7 @@ import { getColumnLayout, installationLayout, rectStyle } from '~/data/installat
 import { getColumnPages } from '~/data/wall-config';
 import { WALL_COPY } from '~/data/wall-copy';
 import { useSettingsStore } from '~/stores/settings';
+import { isWallPointerActivity } from '~/utils/wall-activity';
 import { closeTargetRect } from '../../../shared/close-button';
 import { cardTextKey } from '../../../shared/font-settings';
 import { extendDown, languageGeometry } from '../../../shared/language-bar';
@@ -96,13 +97,18 @@ const railStyle = computed(() => ({
 function act(action: WallAction) {
   emit('action', action);
 }
+
+function pointerActivity(event: PointerEvent) {
+  if (isWallPointerActivity(event))
+    emit('activity', props.column.id);
+}
 </script>
 
 <template>
   <section
     class="wall-column absolute text-wall-ink transition-[top] duration-500 ease-out motion-reduce:transition-none" :style="rectStyle(geometry.section, { x: origin.x, y: origin.y - offsetY })"
     :data-col="column.id" :data-phase="snapshot.phase" :lang="snapshot.locale" :aria-label="copy.label"
-    @pointerdown.capture="$emit('activity', column.id)" @wheel.capture.passive="$emit('activity', column.id)" @keydown.capture="$emit('activity', column.id)"
+    @pointerdown.capture="pointerActivity" @wheel.capture.passive="$emit('activity', column.id)" @keydown.capture="$emit('activity', column.id)"
   >
     <Transition
       enter-active-class="transition duration-500 ease-out" enter-from-class="opacity-0" enter-to-class="opacity-100"
@@ -156,6 +162,7 @@ function act(action: WallAction) {
         :column-id="column.id" :pages="pages" :locale="snapshot.locale" :photo="snapshot.photo" :page="snapshot.page"
         :geometry="geometry.active" :show-arrows="settings.wall.showArrows" :show-pages="settings.wall.showPages || tabsAlways" :auto-page="autoPageActive(settings.wall)" :scroll="scroll" :text-min="cardText?.min" :text-max="cardText?.max" :max-height="cardLimit" @action="act" @height="onCardHeight"
         @media-ended="emit('slideEnded', column.id)"
+        @activity="emit('activity', column.id)"
       />
     </Transition>
 

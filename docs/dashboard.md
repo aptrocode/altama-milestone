@@ -105,6 +105,8 @@ How the switches combine on an open card:
 
 Videos always play to their end while anything advances automatically, and a card never waits more than 5 minutes past the reset time.
 
+For **Pemasaran** (nine photos), the default 30 s reset and 5 s auto slide close the card after 45 s in Scroll mode. In Page mode with automatic pages, its two nine-photo pages finish at 90 s. With manual slider/page controls it closes at the reset time. A visitor touch restarts only that section's inactivity timer; automatic photo/page changes do not count as visitor activity. If it stays open beyond the expected slideshow end with no touch, record the browser (including TouchDesigner), saved settings and elapsed time; this is not the expected wait.
+
 **Simpan** and **Default** work as on the Hold page.
 
 ### Mode konten: Page or Scroll

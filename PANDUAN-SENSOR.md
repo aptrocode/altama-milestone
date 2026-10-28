@@ -39,6 +39,8 @@ Apa yang berubah dengan V4:
 
 Walau masih memakai V3.2, mode **Tap + delay** tetap berjalan: wall menganggap klik dari script sebagai satu tap, lalu menunggu border penuh. Yang butuh V4 hanya mode **Hold**, multitouch, dan geser/swipe.
 
+**Reset otomatis di TouchDesigner:** wall menghitung pointer sintetis sebagai aktivitas hanya ketika menekan tombol wall yang aktif. Kontak berulang pada teks/foto yang diam tidak boleh terus mengulang timer. Geser teks yang benar-benar memindahkan posisi scroll dan swipe foto tetap dihitung sebagai interaksi. Dengan pengaturan default, Pemasaran (9 foto × 5 detik) kembali idle setelah sekitar **45 detik** tanpa interaksi, karena slideshow diselesaikan dahulu. Setelah pembaruan wall, uji di Web Render TOP: buka Pemasaran, jauhkan tangan dari area sensor, dan pastikan kembali idle. Bila masih tertahan, periksa kontak pada Preview / Titik sentuh serta kemungkinan input ganda dari TouchDesigner dan Sensor Service.
+
 ## 2. Kenapa bendera bahasa susah ditekan di cara A
 
 1. **Bendera kecil.** Di mode Compact, bendera berukuran 64 × 48 px, sedangkan card 360 × 642 px. Kalau satu pixel di layar kira-kira 2–3 mm, bendera cuma sekitar 13–19 cm × 10–14 cm. Titik dari LiDAR adalah *tengah tangan*, bukan ujung jari, dan bisa meleset beberapa cm.
