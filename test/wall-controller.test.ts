@@ -3,6 +3,7 @@ import { createPinia } from 'pinia';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { effectScope, ref } from 'vue';
 import { MAX_RESET_WAIT_MS, useWallController } from '../app/composables/useWallController';
+import { WALL_CONFIG } from '../app/data/wall-config';
 import { useSettingsStore } from '../app/stores/settings';
 import { useWallStore } from '../app/stores/wall';
 
@@ -22,6 +23,29 @@ afterEach(() => {
 });
 
 describe('column inactivity lifecycle', () => {
+  const cards = WALL_CONFIG.columns.flatMap(column => column.type === 'expandable'
+    ? column.subItems!.map(sub => ({ columnId: column.id, card: sub.key }))
+    : [{ columnId: column.id, card: '' }]);
+
+  describe.each([false, true])('all cards with scrollText=%s', (scrollText) => {
+    it.each(cards)('resets column $columnId / $card at the dashboard deadline in manual mode', ({ columnId, card }) => {
+      const wall = useWallStore(createPinia());
+      const settings = useSettingsStore();
+      settings.setWall({ ...settings.wall, scrollText, resetSeconds: 10, showArrows: true });
+      const scope = effectScope();
+      scopes.push(scope);
+      const controls = scope.run(() => useWallController(wall, { resetDelayMs: () => settings.wall.resetSeconds * 1000 }))!;
+      controls.dispatch({ type: 'language', columnId, locale: 'zh-Hans' });
+      controls.dispatch(card ? { type: 'subItem', columnId, subItemId: card } : { type: 'main', columnId });
+      expect(wall.getColumnState(columnId)).toBe('active');
+      vi.advanceTimersByTime(9999);
+      expect(wall.getColumnState(columnId)).toBe('active');
+      vi.advanceTimersByTime(1);
+      expect(wall.columns[columnId]).toMatchObject({ phase: 'idle', locale: 'id', photo: 0, page: 0 });
+      expect(vi.getTimerCount()).toBe(0);
+    });
+  });
+
   it('resets an active column only after 30 seconds', () => {
     const { wall, controls } = setup();
     controls.dispatch({ type: 'main', columnId: 1 });
@@ -232,6 +256,46 @@ describe('page auto change', () => {
 });
 
 describe('reset waits for the auto slideshow', () => {
+  it('resets Pemasaran after its nine-photo slideshow without resetting another section', () => {
+    const wall = useWallStore(createPinia());
+    const scope = effectScope();
+    scopes.push(scope);
+    const controls = scope.run(() => useWallController(wall, { autoSlideMs: () => 5000 }))!;
+    controls.dispatch({ type: 'language', columnId: 5, locale: 'en' });
+    controls.dispatch({ type: 'subItem', columnId: 5, subItemId: 'pemasaran' });
+    expect(wall.publishedColumns[5]).toMatchObject({ photoCount: 9, pageCount: 1 });
+    vi.advanceTimersByTime(20_000);
+    controls.dispatch({ type: 'main', columnId: 6 });
+    vi.advanceTimersByTime(10_000);
+    expect(wall.columns[5]).toMatchObject({ phase: 'active', subItem: 'pemasaran', photo: 6 });
+    vi.advanceTimersByTime(14_999);
+    expect(wall.getColumnState(5)).toBe('active');
+    vi.advanceTimersByTime(1);
+    expect(wall.columns[5]).toMatchObject({ phase: 'idle', locale: 'id', subItem: 'distribusi', photo: 0, page: 0 });
+    expect(wall.getColumnState(6)).toBe('active');
+    vi.advanceTimersByTime(5000);
+    expect(wall.getColumnState(6)).toBe('idle');
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('finishes both Pemasaran pages before resetting when photos drive automatic pages', () => {
+    const wall = useWallStore(createPinia());
+    const settings = useSettingsStore();
+    settings.setWall({ ...settings.wall, scrollText: false });
+    const scope = effectScope();
+    scopes.push(scope);
+    const controls = scope.run(() => useWallController(wall, { autoSlideMs: () => 5000, autoPageMs: () => 15_000 }))!;
+    controls.dispatch({ type: 'subItem', columnId: 5, subItemId: 'pemasaran' });
+    expect(wall.publishedColumns[5]).toMatchObject({ photoCount: 9, pageCount: 2 });
+    vi.advanceTimersByTime(45_000);
+    expect(wall.columns[5]).toMatchObject({ phase: 'active', page: 1, photo: 0 });
+    vi.advanceTimersByTime(44_999);
+    expect(wall.getColumnState(5)).toBe('active');
+    vi.advanceTimersByTime(1);
+    expect(wall.columns[5]).toMatchObject({ phase: 'idle', locale: 'id', subItem: 'distribusi', photo: 0, page: 0 });
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
   // Column 3 (Infrastruktur): photo 0 is a video, followed by its configured images.
   function open(autoSlideMs = () => 5000) {
     const wall = useWallStore(createPinia());

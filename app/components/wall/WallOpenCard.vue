@@ -37,7 +37,7 @@ const props = defineProps<{
   /** Tallest card height in logical px (WallColumn's clamp); the text sizes itself to fit it. */
   maxHeight?: number;
 }>();
-const emit = defineEmits<{ action: [action: WallAction]; height: [logical: number]; mediaEnded: [] }>();
+const emit = defineEmits<{ action: [action: WallAction]; height: [logical: number]; mediaEnded: []; activity: [] }>();
 
 const visual = installationLayout.visual;
 const current = computed(() => props.pages[props.page] || props.pages[0]);
@@ -267,6 +267,7 @@ function onNatural(index: number, px: number) {
         :class="page === index ? 'opacity-100' : 'pointer-events-none opacity-0'"
         :aria-hidden="page !== index" :copy="item.i18n[locale]" :locale="locale" :active="page === index" :min="textMin" :max="textMax" :limit="textLimit" :scroll="scroll"
         @natural="onNatural(index, $event)"
+        @activity="emit('activity')"
       />
     </div>
     <span ref="probe" class="pointer-events-none invisible absolute top-0 left-0 w-0 h-[calc(1000*var(--wall-y))]" aria-hidden="true" />
